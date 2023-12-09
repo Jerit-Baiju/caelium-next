@@ -1,4 +1,4 @@
-import Link from "next/link";
+import Link from 'next/link';
 
 const SignUpPage = () => {
   return (
@@ -10,7 +10,7 @@ const SignUpPage = () => {
             Username
           </label>
           <input
-            className='w-full px-3 py-2 border rounded focus:outline-none focus:border-blue-300'
+            className='w-full px-3 py-2 border rounded focus:outline-none focus:border-blue-300 text-blue-700'
             type='text'
             id='username'
             placeholder='Enter your username'
@@ -21,7 +21,7 @@ const SignUpPage = () => {
             Email
           </label>
           <input
-            className='w-full px-3 py-2 border rounded focus:outline-none focus:border-blue-300'
+            className='w-full px-3 py-2 border rounded focus:outline-none focus:border-blue-300 text-blue-700'
             type='email'
             id='email'
             placeholder='Enter your email'
@@ -32,15 +32,17 @@ const SignUpPage = () => {
             Password
           </label>
           <input
-            className='w-full px-3 py-2 border rounded focus:outline-none focus:border-blue-300'
+            className='w-full px-3 py-2 border rounded focus:outline-none focus:border-blue-300 text-blue-700'
             type='password'
             id='password'
             placeholder='Enter your password'
           />
         </div>
-        <button className='bg-white text-blue-500 px-6 py-3 rounded-full font-bold hover:bg-blue-100' type='submit'>
-          Sign Up
-        </button>
+        <div className='flex justify-center'>
+          <button className='bg-white text-sky-800 px-6 py-3 rounded-3xl font-extrabold w-1/3 hover:bg-blue-50' type='submit'>
+            Sign Up
+          </button>
+        </div>
       </form>
       <p className='mt-4'>
         <Link href='login' className='text-blue-200 hover:underline'>
