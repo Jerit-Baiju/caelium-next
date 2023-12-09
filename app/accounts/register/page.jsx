@@ -1,11 +1,8 @@
-import NavBar from '@/components/NavBar';
 import Link from 'next/link';
 
 const SignUpPage = () => {
   return (
-    <main>
-      <NavBar/>
-      <div className='flex flex-col items-center justify-center h-screen bg-blue-500 text-white'>
+    <div className='flex flex-col items-center justify-center h-screen bg-blue-500 text-white'>
       <h1 className='text-4xl font-bold mb-4'>Create Your Caelium Account</h1>
       <form className='w-full max-w-sm'>
         <div className='mb-4'>
@@ -53,8 +50,6 @@ const SignUpPage = () => {
         </Link>
       </p>
     </div>
-    </main>
-    
   );
 };
 
