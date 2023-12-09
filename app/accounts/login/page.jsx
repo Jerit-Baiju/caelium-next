@@ -1,4 +1,4 @@
-import Link from "next/link";
+import Link from 'next/link';
 
 const LoginPage = () => {
   return (
@@ -33,7 +33,7 @@ const LoginPage = () => {
       </form>
       <p className='mt-4'>
         <Link href='register' className='text-blue-200 hover:underline'>
-          Don't have an account?
+          Don&apos;t have an account?
         </Link>
       </p>
     </div>
