@@ -6,7 +6,7 @@ const SignUpPage = () => {
       <h1 className='text-4xl font-bold mb-4'>Create Your Caelium Account</h1>
       <form className='w-full max-w-sm'>
         <div className='mb-4'>
-          <label className='block text-sm font-bold mb-2' htmlFor='username'>
+          <label className='block font-bold mb-2' htmlFor='username'>
             Username
           </label>
           <input
@@ -17,7 +17,7 @@ const SignUpPage = () => {
           />
         </div>
         <div className='mb-4'>
-          <label className='block text-sm font-bold mb-2' htmlFor='email'>
+          <label className='block font-bold mb-2' htmlFor='email'>
             Email
           </label>
           <input
@@ -28,7 +28,7 @@ const SignUpPage = () => {
           />
         </div>
         <div className='mb-6'>
-          <label className='block text-sm font-bold mb-2' htmlFor='password'>
+          <label className='block font-bold mb-2' htmlFor='password'>
             Password
           </label>
           <input
