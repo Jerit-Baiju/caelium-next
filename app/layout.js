@@ -1,5 +1,6 @@
 import { Handlee } from 'next/font/google'
 import './globals.css'
+import NavBar from '@/components/NavBar'
 
 const handlee = Handlee({ subsets: ['latin'], weight: '400'})
 
@@ -11,7 +12,9 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body className={handlee.className}>{children}</body>
+      <body className={handlee.className}>
+        <NavBar/>
+        {children}</body>
     </html>
   )
 }
