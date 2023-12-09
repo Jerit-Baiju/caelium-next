@@ -8,7 +8,7 @@ const NavBar = () => {
     { href: '/admin', label: 'Admin' },
   ];
   return (
-    <nav className='bg-blue-500 text-white p-6 fixed w-full z-10'>
+    <nav className='bg-blue-500 text-white p-6 w-full z-10 fixed'>
       <div className='container mx-auto flex justify-between items-center'>
         <Link href='/' className='text-3xl font-bold'>
           Caelium
