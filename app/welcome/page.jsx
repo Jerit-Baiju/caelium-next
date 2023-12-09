@@ -1,5 +1,4 @@
 import Link from 'next/link';
-import React from 'react'
 
 const page = () => {
   return (
@@ -11,6 +10,6 @@ const page = () => {
       </Link>
     </div>
   );
-}
+};
 
-export default page
+export default page;
