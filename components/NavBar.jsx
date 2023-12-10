@@ -26,9 +26,9 @@ const NavBar = () => {
                   d='M2 4.75A.75.75 0 012.75 4h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 4.75zm0 10.5a.75.75 0 01.75-.75h7.5a.75.75 0 010 1.5h-7.5a.75.75 0 01-.75-.75zM2 10a.75.75 0 01.75-.75h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 10z'></path>
               </svg>
             </button>
-            <Link href='https://flowbite.com' class='flex ms-2 md:me-24'>
-              {/* <img src='https://flowbite.com/docs/images/logo.svg' class='h-8 me-3' alt='FlowBite Logo' /> */}
-              <span class='self-center text-xl font-semibold sm:text-2xl whitespace-nowrap dark:text-white'>Caelium</span>
+            <Link href='/' class='flex ms-2 md:me-24'>
+              {/* <img src='favicon.ico' class='h-12 me-3' alt='FlowBite Logo' /> */}
+              <span class='self-center text-3xl font-semibold sm:text-3xl whitespace-nowrap dark:text-white'>Caelium</span>
             </Link>
           </div>
           <div class='flex items-center'>
@@ -40,7 +40,7 @@ const NavBar = () => {
                   aria-expanded='false'
                   data-dropdown-toggle='dropdown-user'>
                   <span class='sr-only'>Open user menu</span>
-                  <img class='w-8 h-8 rounded-full' src='https://flowbite.com/docs/images/people/profile-picture-5.jpg' alt='user photo' />
+                  <img class='h-12 w-12 rounded-full' src='/favicon.ico' alt='user photo' />
                 </button>
               </div>
               <div
