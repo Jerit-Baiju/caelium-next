@@ -13,8 +13,10 @@ export default function RootLayout({ children }) {
   return (
     <html lang='en'>
       <body className={handlee.className}>
-        <NavBar />
-        <main className='pt-20'>{children}</main>
+        <main className='min-h-screen'>
+          <NavBar />
+          <div className='pt-20'>{children}</div>
+        </main>
       </body>
     </html>
   );
