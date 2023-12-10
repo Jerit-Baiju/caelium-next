@@ -15,7 +15,7 @@ export const Input = (props) => {
 const Auth = (props) => {
   const { page } = props;
   return (
-    <div className='flex flex-col items-center justify-center h-screen -mt-20'>
+    <div className='flex flex-col items-center justify-center h-screen -mt-20 dark:text-white'>
       <div className='border-2 border-gray-400 p-10 rounded-lg flex justify-center flex-col items-center'>
         <h1 className='text-4xl font-bold mb-4'>{page === 'login' ? 'Welcome Back to Caelium' : 'Create Your Caelium Account'}</h1>
         <form className='w-full max-w-sm'>
