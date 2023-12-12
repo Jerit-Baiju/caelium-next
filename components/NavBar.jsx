@@ -39,7 +39,7 @@ const NavBar = () => {
                     aria-expanded='false'
                     data-dropdown-toggle='dropdown-user'>
                     <span className='sr-only'>Open user menu</span>
-                    <Image className='h-12 w-12 rounded-full' src='/favicon.ico' alt='user photo' />
+                    <Image className='h-12 w-12 rounded-full' src='/favicon.ico' alt='user photo' width={100} height={100}  />
                   </button>
                 </div>
                 <div
