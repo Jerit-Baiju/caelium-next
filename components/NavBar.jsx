@@ -1,10 +1,11 @@
 'use client';
+import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
 const NavBar = () => {
   const route = usePathname();
-  if (!['/accounts/login','/accounts/register'].includes(route)) {
+  if (!['/accounts/login', '/accounts/register'].includes(route)) {
     return (
       <nav className='fixed top-0 z-50 w-full bg-white border-b border-gray-200 dark:bg-gray-800 dark:border-gray-700'>
         <div className='px-3 py-3 lg:px-5 lg:pl-3'>
@@ -38,7 +39,7 @@ const NavBar = () => {
                     aria-expanded='false'
                     data-dropdown-toggle='dropdown-user'>
                     <span className='sr-only'>Open user menu</span>
-                    <img className='h-12 w-12 rounded-full' src='/favicon.ico' alt='user photo' />
+                    <Image className='h-12 w-12 rounded-full' src='/favicon.ico' alt='user photo' />
                   </button>
                 </div>
                 <div

@@ -1,5 +1,3 @@
-import NavBar from '@/components/NavBar';
-import SideBar from '@/components/SideBar';
 import { Handlee } from 'next/font/google';
 import './globals.css';
 
@@ -17,13 +15,11 @@ export default function RootLayout({ children }) {
         <meta name='mobile-web-app-capable' content='yes' />
         <link
           rel='stylesheet'
-          href='https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200'
+          href='https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=optional'
         />
         <script src='https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.0/flowbite.min.js'></script>
       </head>
-      <body className={handlee.className}>
-        {children}
-      </body>
+      <body className={handlee.className}>{children}</body>
     </html>
   );
 }
