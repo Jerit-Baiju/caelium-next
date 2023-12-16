@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { handleeFont } from './font';
 import './globals.css';
+import Script from 'next/script';
 
 export const metadata: Metadata = {
   title: 'Caelium',
@@ -12,7 +13,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang='en'>
       <head>
         <meta name='mobile-web-app-capable' content='yes' />
-        <script src='https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.0/flowbite.min.js'></script>
+        <Script src='https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.0/flowbite.min.js'></Script>
       </head>
       <body className={handleeFont.className}>{children}</body>
     </html>
