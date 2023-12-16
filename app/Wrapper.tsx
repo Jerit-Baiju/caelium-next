@@ -2,15 +2,18 @@
 import NavBar from '@/components/NavBar';
 import SideBar from '@/components/SideBar';
 import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
+import { ReactNode, useEffect } from 'react';
 
-const Wrapper = ({ children }) => {
-  const router = useRouter()
+interface WrapperProps {
+  children: ReactNode;
+}
+
+const Wrapper = ({ children }: WrapperProps) => {
+  const router = useRouter();
   const checkAuthentication = () => {
     const token = localStorage.getItem('authToken');
     return !!token;
   };
-
   useEffect(() => {
     const isAuthenticated = checkAuthentication();
     if (!isAuthenticated) {
