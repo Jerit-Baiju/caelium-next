@@ -38,16 +38,23 @@ const Auth = (props: { page?: any }) => {
 
   let submit = async (e: any) => {
     e.preventDefault();
-    console.log(email, password);
+    let response = await fetch('http://127.0.0.1:8000/api/token/', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({'username': email, 'password': password})
+    })
+    console.log(response)
   };
 
   return (
     <div className='flex flex-col items-center justify-center h-screen dark:text-white'>
       <div className='flex justify-center flex-col items-center border-2 border-gray-400 p-10 rounded-lg'>
         <h1 className='text-4xl font-bold mb-4'>{page === 'login' ? 'Welcome Back to Caelium' : 'Create Your Caelium Account'}</h1>
-        <form className='w-full'>
+        <form onSubmit={submit} className='w-full'>
           <Input setState={setEmail} name='Email' type='email' id='emailId' placeholder='Enter your email' autofocus />
-          <Input setState={setPassword} name='Password' type='password' id='password' placeholder='Enter your password' />
+          <Input setState={setPassword} name='Password' type='password' id='password' placeholder='Enter your password' autofocus/>
           <div className='flex justify-center flex-col items-center'>
             <button
               onClick={(e) => submit(e)}
