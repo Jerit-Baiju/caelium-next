@@ -20,14 +20,16 @@ export const Input = (props) => {
 const Auth = (props) => {
   const { page } = props;
   return (
-    <div className='flex flex-col items-center justify-center h-screen dark:text-white container'>
-      <div className='border-2 border-gray-400 p-10 rounded-lg'>
+    <div className='flex flex-col items-center justify-center h-screen dark:text-white'>
+      <div className='flex justify-center flex-col items-center border-2 border-gray-400 p-10 rounded-lg'>
         <h1 className='text-4xl font-bold mb-4'>{page === 'login' ? 'Welcome Back to Caelium' : 'Create Your Caelium Account'}</h1>
         <form className='w-full max-w-sm'>
           <Input name='Email' type='email' placeholder='Enter your email' />
           <Input name='Password' type='password' placeholder='Enter your password' />
           <div className='flex justify-center flex-col items-center'>
-            <button className='bg-gray-600 text-white px-6 py-3 rounded-3xl font-extrabold w-1/3 hover:bg-gray-300 hover:text-black' type='submit'>
+            <button
+              className='bg-gray-600 text-white px-6 py-3 mt-4 rounded-3xl font-extrabold w-1/3 hover:bg-gray-300 hover:text-black'
+              type='submit'>
               {page === 'login' ? 'Log In' : 'Sign Up'}
             </button>
             <p className='mt-4'>
