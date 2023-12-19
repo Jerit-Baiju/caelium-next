@@ -30,14 +30,16 @@ export const Input: React.FC<InputProps> = ({ name, type, placeholder, id, autof
   );
 };
 
-const Auth = (props: { page?: any }) => {
+const Auth = ({ page } : { page?: string}) => {
   let { loginUser, error } = useContext(AuthContext);
-  let { page } = props;
+
+  console.log(page, loginUser)
+
   return (
     <div className='flex flex-col items-center justify-center h-screen dark:text-white'>
       <div className='flex justify-center flex-col items-center border-2 border-gray-400 p-10 rounded-lg'>
         <h1 className='text-4xl font-bold mb-4'>{page === 'login' ? 'Welcome Back to Caelium' : 'Create Your Caelium Account'}</h1>
-        <form onSubmit={page === 'login' ? loginUser : null} className='w-full'>
+        <form onSubmit={page === 'login' ? loginUser : (e) => {console.log("not login page")}} className='w-full'>
           <div className='p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400' role='alert'>
             <span className='font-extrabold'>{error}</span>
           </div>

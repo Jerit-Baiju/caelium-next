@@ -7,13 +7,27 @@ interface childrenProps {
   children: ReactNode;
 }
 
-const AuthContext = createContext('');
+interface AuthContextProps {
+  user: any;
+  authTokens: any;
+  error: string;
+  loginUser: (e: any) => void;
+  logoutUser: () => void;
+}
+
+const AuthContext = createContext<AuthContextProps>({
+  user: null,
+  authTokens: null,
+  error: '',
+  loginUser: (e: any) => {},
+  logoutUser: () => {},
+});
 
 export default AuthContext;
 
 export const AuthProvider = ({ children }: childrenProps) => {
-  let [authTokens, setAuthTokens] = useState(() => (localStorage.getItem('authTokens') ? JSON.parse(localStorage.getItem('authTokens')) : null));
-  let [user, setUser] = useState(() => (localStorage.getItem('authTokens') ? jwtDecode(localStorage.getItem('authTokens')) : null));
+  let [authTokens, setAuthTokens] = useState(() => (localStorage.getItem('authTokens') ? JSON.parse(localStorage.getItem('authTokens') || "{}") : null));
+  let [user, setUser] = useState(() => (localStorage.getItem('authTokens') ? jwtDecode(localStorage.getItem('authTokens') || "") : null));
   let [loading, setLoading] = useState(true);
   let [error, setError] = useState('');
 
@@ -22,7 +36,7 @@ export const AuthProvider = ({ children }: childrenProps) => {
   let loginUser = async (e: any) => {
     console.log('ltr');
     e.preventDefault();
-    let response = await fetch('http://127.0.0.1:8000/api/auth/token/', {
+    let response = await fetch('http://localhost:8080/api/auth/token/', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -45,11 +59,11 @@ export const AuthProvider = ({ children }: childrenProps) => {
     setAuthTokens(null);
     setUser(null);
     localStorage.removeItem('authTokens');
-    router.push('/login');
+    router.push('/accounts/login');
   };
 
   let updateToken = async () => {
-    let response = await fetch('http://127.0.0.1:8000/api/auth/token/refresh/', {
+    let response = await fetch('http://localhost:8080/api/auth/token/refresh/', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -94,6 +108,7 @@ export const AuthProvider = ({ children }: childrenProps) => {
     }, fourMinutes);
     return () => clearInterval(interval);
   }, [authTokens, loading]);
+  
 
   return <AuthContext.Provider value={contextData}>{loading ? null : children}</AuthContext.Provider>;
 };
