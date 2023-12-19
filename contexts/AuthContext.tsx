@@ -1,24 +1,26 @@
-import { createContext, useState, useEffect, ReactNode } from 'react';
-import { jwtDecode } from 'jwt-decode'; 'jwt-decode';
+'use client';
+import { jwtDecode } from 'jwt-decode';
 import { useRouter } from 'next/navigation';
+import { ReactNode, createContext, useEffect, useState } from 'react';
 
 interface childrenProps {
-  children: ReactNode
+  children: ReactNode;
 }
 
 const AuthContext = createContext('');
 
 export default AuthContext;
 
-export const AuthProvider = ({ children }:childrenProps) => {
+export const AuthProvider = ({ children }: childrenProps) => {
   let [authTokens, setAuthTokens] = useState(() => (localStorage.getItem('authTokens') ? JSON.parse(localStorage.getItem('authTokens')) : null));
   let [user, setUser] = useState(() => (localStorage.getItem('authTokens') ? jwtDecode(localStorage.getItem('authTokens')) : null));
   let [loading, setLoading] = useState(true);
+  let [error, setError] = useState('');
 
   const router = useRouter();
 
-  let loginUser = async (e:any) => {
-    console.log('ltr')
+  let loginUser = async (e: any) => {
+    console.log('ltr');
     e.preventDefault();
     let response = await fetch('http://127.0.0.1:8000/api/auth/token/', {
       method: 'POST',
@@ -31,11 +33,11 @@ export const AuthProvider = ({ children }:childrenProps) => {
 
     if (response.status === 200) {
       setAuthTokens(data);
-      setUser((data.access));
+      setUser(data.access);
       localStorage.setItem('authTokens', JSON.stringify(data));
       router.push('/');
     } else {
-      alert('Something went wrong!');
+      setError('Something went wrong!');
     }
   };
 
@@ -73,6 +75,7 @@ export const AuthProvider = ({ children }:childrenProps) => {
   let contextData = {
     user: user,
     authTokens: authTokens,
+    error: error,
     loginUser: loginUser,
     logoutUser: logoutUser,
   };

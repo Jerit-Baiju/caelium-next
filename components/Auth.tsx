@@ -31,7 +31,7 @@ export const Input: React.FC<InputProps> = ({ name, type, placeholder, id, autof
 };
 
 const Auth = (props: { page?: any }) => {
-  let { loginUser } = useContext(AuthContext);
+  let { loginUser, error } = useContext(AuthContext);
   let { page } = props;
   return (
     <div className='flex flex-col items-center justify-center h-screen dark:text-white'>
@@ -39,7 +39,7 @@ const Auth = (props: { page?: any }) => {
         <h1 className='text-4xl font-bold mb-4'>{page === 'login' ? 'Welcome Back to Caelium' : 'Create Your Caelium Account'}</h1>
         <form onSubmit={page === 'login' ? loginUser : null} className='w-full'>
           <div className='p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400' role='alert'>
-            {/* <span className='font-extrabold'>{error}</span> */}
+            <span className='font-extrabold'>{error}</span>
           </div>
           <Input name='Username' type='text' id='usernameID' placeholder='Enter your username' autofocus />
           <Input name='Password' type='password' id='password' placeholder='Enter your password' />
