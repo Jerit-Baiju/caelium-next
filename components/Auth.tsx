@@ -32,19 +32,16 @@ export const Input: React.FC<InputProps> = ({ name, type, placeholder, id, autof
 
 const Auth = ({ page } : { page?: string}) => {
   let { loginUser, error } = useContext(AuthContext);
-
-  console.log(page, loginUser)
-
   return (
     <div className='flex flex-col items-center justify-center h-screen dark:text-white'>
       <div className='flex justify-center flex-col items-center border-2 border-gray-400 p-10 rounded-lg'>
         <h1 className='text-4xl font-bold mb-4'>{page === 'login' ? 'Welcome Back to Caelium' : 'Create Your Caelium Account'}</h1>
-        <form onSubmit={page === 'login' ? loginUser : (e) => {console.log("not login page")}} className='w-full'>
+        <form method='POST' onSubmit={page === 'login' ? (e)=>loginUser(e) : (e) => {console.log("not login page")}} className='w-full'>
           <div className='p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400' role='alert'>
             <span className='font-extrabold'>{error}</span>
           </div>
-          <Input name='Username' type='text' id='usernameID' placeholder='Enter your username' autofocus />
-          <Input name='Password' type='password' id='password' placeholder='Enter your password' />
+          <Input name='username' type='text' id='usernameID' placeholder='Enter your username' autofocus />
+          <Input name='password' type='password' id='password' placeholder='Enter your password' />
           <div className='flex justify-center flex-col items-center'>
             <button
               className='bg-gray-600 text-white px-6 py-3 mt-4 rounded-3xl font-extrabold w-1/3 hover:bg-gray-300 hover:text-black'

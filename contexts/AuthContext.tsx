@@ -11,7 +11,7 @@ interface AuthContextProps {
   user: any;
   authTokens: any;
   error: string;
-  loginUser: (e: any) => void;
+  loginUser: (e: any, username: string, password: string) => Promise<void>;
   logoutUser: () => void;
 }
 
@@ -19,29 +19,35 @@ const AuthContext = createContext<AuthContextProps>({
   user: null,
   authTokens: null,
   error: '',
-  loginUser: (e: any) => {},
+  loginUser: () => {},
   logoutUser: () => {},
 });
 
 export default AuthContext;
 
 export const AuthProvider = ({ children }: childrenProps) => {
-  let [authTokens, setAuthTokens] = useState(() => (localStorage.getItem('authTokens') ? JSON.parse(localStorage.getItem('authTokens') || "{}") : null));
-  let [user, setUser] = useState(() => (localStorage.getItem('authTokens') ? jwtDecode(localStorage.getItem('authTokens') || "") : null));
+  let [authTokens, setAuthTokens] = useState(() =>
+    typeof window !== 'undefined' && localStorage.getItem('authTokens') ? JSON.parse(localStorage.getItem('authTokens') || '{}') : null
+  );
+
+  let [user, setUser] = useState(() =>
+    typeof window !== 'undefined' && localStorage.getItem('authTokens') ? jwtDecode(localStorage.getItem('authTokens') || '') : null
+  );
   let [loading, setLoading] = useState(true);
   let [error, setError] = useState('');
 
   const router = useRouter();
 
-  let loginUser = async (e: any) => {
-    console.log('ltr');
+  let loginUser = async (e: any, username: string, password: string) => {
     e.preventDefault();
-    let response = await fetch('http://localhost:8080/api/auth/token/', {
+    let url = 'http://127.0.0.1:8000/api/auth/token/';
+    console.log(url);
+    let response = await fetch(url, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ username: e.target.username.value, password: e.target.password.value }),
+      body: JSON.stringify({ username: username, password: password }),
     });
     let data = await response.json();
 
@@ -63,12 +69,13 @@ export const AuthProvider = ({ children }: childrenProps) => {
   };
 
   let updateToken = async () => {
-    let response = await fetch('http://localhost:8080/api/auth/token/refresh/', {
+    let url = 'http://127.0.0.1:8000/api/auth/token/refresh/';
+    let response = await fetch(url, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ refresh: authTokens?.refresh }),
+      body: JSON.stringify({ refresh: authTokens?.refresh}),
     });
 
     let data = await response.json();
@@ -86,7 +93,7 @@ export const AuthProvider = ({ children }: childrenProps) => {
     }
   };
 
-  let contextData = {
+  let contextData: AuthContextProps = {
     user: user,
     authTokens: authTokens,
     error: error,
@@ -108,7 +115,6 @@ export const AuthProvider = ({ children }: childrenProps) => {
     }, fourMinutes);
     return () => clearInterval(interval);
   }, [authTokens, loading]);
-  
 
   return <AuthContext.Provider value={contextData}>{loading ? null : children}</AuthContext.Provider>;
 };
