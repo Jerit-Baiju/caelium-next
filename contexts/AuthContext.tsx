@@ -91,6 +91,8 @@ export const AuthProvider = ({ children }: childrenProps) => {
         setAuthTokens(data);
         setUser(jwtDecode(data.access));
         localStorage.setItem('authTokens', JSON.stringify(data));
+        console.log('updated token');
+        
       } else {
         logoutUser();
       }
@@ -113,7 +115,7 @@ export const AuthProvider = ({ children }: childrenProps) => {
       updateToken();
     }
 
-    let updateTime = 1000 * 60 * 60 * 24 * 7;
+    let updateTime = 1000 * 60 * 30
 
     let interval = setInterval(() => {
       if (authTokens) {
