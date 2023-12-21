@@ -38,26 +38,32 @@ export const AuthProvider = ({ children }: childrenProps) => {
 
   const router = useRouter();
 
-  let loginUser = async (e: any, username: string, password: string) => {
+  let loginUser = async (e: any) => {
     e.preventDefault();
-    let url = 'http://127.0.0.1:8000/api/auth/token/';
-    console.log(url);
-    let response = await fetch(url, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ username: username, password: password }),
-    });
-    let data = await response.json();
+    let username = e.target.username.value;
+    let password = e.target.password.value;
+    if (username && password) {
+      let url = process.env.NEXT_PUBLIC_API_HOST + '/api/auth/token/';
+      console.log(url);
+      let response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ username: username, password: password }),
+      });
+      let data = await response.json();
 
-    if (response.status === 200) {
-      setAuthTokens(data);
-      setUser(data.access);
-      localStorage.setItem('authTokens', JSON.stringify(data));
-      router.push('/');
+      if (response.status === 200) {
+        setAuthTokens(data);
+        setUser(data.access);
+        localStorage.setItem('authTokens', JSON.stringify(data));
+        router.push('/');
+      } else {
+        setError(data['detail']);
+      }
     } else {
-      setError('Something went wrong!');
+      setError('Enter your username and password !');
     }
   };
 
@@ -69,25 +75,26 @@ export const AuthProvider = ({ children }: childrenProps) => {
   };
 
   let updateToken = async () => {
-    let url = 'http://127.0.0.1:8000/api/auth/token/refresh/';
-    let response = await fetch(url, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ refresh: authTokens?.refresh}),
-    });
+    if (authTokens) {
+      let url = process.env.NEXT_PUBLIC_API_HOST+'/api/auth/token/refresh/';
+      let response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ refresh: authTokens?.refresh }),
+      });
 
-    let data = await response.json();
+      let data = await response.json();
 
-    if (response.status === 200) {
-      setAuthTokens(data);
-      setUser(jwtDecode(data.access));
-      localStorage.setItem('authTokens', JSON.stringify(data));
-    } else {
-      logoutUser();
+      if (response.status === 200) {
+        setAuthTokens(data);
+        setUser(jwtDecode(data.access));
+        localStorage.setItem('authTokens', JSON.stringify(data));
+      } else {
+        logoutUser();
+      }
     }
-
     if (loading) {
       setLoading(false);
     }
@@ -106,13 +113,13 @@ export const AuthProvider = ({ children }: childrenProps) => {
       updateToken();
     }
 
-    let fourMinutes = 1000 * 60 * 4;
+    let updateTime = 1000 * 60 * 60 * 24 * 7;
 
     let interval = setInterval(() => {
       if (authTokens) {
         updateToken();
       }
-    }, fourMinutes);
+    }, updateTime);
     return () => clearInterval(interval);
   }, [authTokens, loading]);
 

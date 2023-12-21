@@ -1,6 +1,18 @@
+'use client'
+import AuthContext from '@/contexts/AuthContext';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useContext, useEffect } from 'react';
 
 const page = () => {
+  const router = useRouter();
+  let { user } = useContext(AuthContext);
+
+  useEffect(() => {
+    if (user) {
+      router.replace('/')
+    }
+  }, []);
   return (
     <div className='flex flex-col items-center justify-center h-screen dark:text-white'>
       <h1 className='text-center text-6xl font-bold mb-4'>Welcome to Caelium</h1>

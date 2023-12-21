@@ -1,7 +1,8 @@
 'use client';
 import AuthContext from '@/contexts/AuthContext';
 import Link from 'next/link';
-import { useContext } from 'react';
+import { useRouter } from 'next/navigation';
+import { useContext, useEffect } from 'react';
 
 interface InputProps {
   name: string;
@@ -21,6 +22,7 @@ export const Input: React.FC<InputProps> = ({ name, type, placeholder, id, autof
       <input
         type={type}
         id={id}
+        name={name}
         className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'
         placeholder={placeholder}
         required={required}
@@ -32,6 +34,14 @@ export const Input: React.FC<InputProps> = ({ name, type, placeholder, id, autof
 
 const Auth = ({ page } : { page?: string}) => {
   let { loginUser, error } = useContext(AuthContext);
+    const router = useRouter();
+    let { user } = useContext(AuthContext);
+
+    useEffect(() => {
+      if (user) {
+        router.push('/');
+      }
+    }, [router]);
   return (
     <div className='flex flex-col items-center justify-center h-screen dark:text-white'>
       <div className='flex justify-center flex-col items-center border-2 border-gray-400 p-10 rounded-lg'>

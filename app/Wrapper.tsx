@@ -1,8 +1,9 @@
 'use client';
 import NavBar from '@/components/NavBar';
 import SideBar from '@/components/SideBar';
+import AuthContext from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
-import { ReactNode, useEffect } from 'react';
+import { ReactNode, useContext, useEffect } from 'react';
 
 interface WrapperProps {
   children: ReactNode;
@@ -10,13 +11,10 @@ interface WrapperProps {
 
 const Wrapper = ({ children }: WrapperProps) => {
   const router = useRouter();
-  const checkAuthentication = () => {
-    const token = localStorage.getItem('authToken');
-    return !!token;
-  };
+  let { user } = useContext(AuthContext);
+
   useEffect(() => {
-    const isAuthenticated = checkAuthentication();
-    if (!isAuthenticated) {
+    if (!user) {
       router.push('/welcome');
     }
   }, [router]);
