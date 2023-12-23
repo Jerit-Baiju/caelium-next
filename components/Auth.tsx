@@ -41,7 +41,7 @@ const Auth = ({ page } : { page?: string}) => {
       if (user) {
         router.push('/');
       }
-    }, [router]);
+    }, [router, user]);
   return (
     <div className='flex flex-col items-center justify-center h-screen dark:text-white'>
       <div className='flex justify-center flex-col items-center border-2 border-gray-400 p-10 rounded-lg'>

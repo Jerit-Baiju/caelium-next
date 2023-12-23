@@ -17,7 +17,7 @@ const Wrapper = ({ children }: WrapperProps) => {
     if (!user) {
       router.push('/welcome');
     }
-  }, [router]);
+  }, [router, user]);
 
   return (
     <main className='min-h-screen'>

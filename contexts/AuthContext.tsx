@@ -11,7 +11,7 @@ interface AuthContextProps {
   user: any;
   authTokens: any;
   error: string;
-  loginUser: (e: any, username: string, password: string) => Promise<void>;
+  loginUser: (e: any) => Promise<void>;
   logoutUser: () => void;
 }
 
@@ -19,7 +19,7 @@ const AuthContext = createContext<AuthContextProps>({
   user: null,
   authTokens: null,
   error: '',
-  loginUser: () => {},
+  loginUser: async (e: any) => {},
   logoutUser: () => {},
 });
 

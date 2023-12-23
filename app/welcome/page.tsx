@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useContext, useEffect } from 'react';
 
-const page = () => {
+const Page = () => {
   const router = useRouter();
   let { user } = useContext(AuthContext);
 
@@ -12,7 +12,7 @@ const page = () => {
     if (user) {
       router.replace('/')
     }
-  }, []);
+  }, [user, router]);
   return (
     <div className='flex flex-col items-center justify-center h-screen dark:text-white'>
       <h1 className='text-center text-6xl font-bold mb-4'>Welcome to Caelium</h1>
@@ -23,4 +23,4 @@ const page = () => {
     </div>
   );
 };
-export default page;
+export default Page;
