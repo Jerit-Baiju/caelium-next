@@ -2,6 +2,7 @@
 import NavBar from '@/components/NavBar';
 import SideBar from '@/components/SideBar';
 import AuthContext from '@/contexts/AuthContext';
+import { initFlowbite } from 'flowbite';
 import { useRouter } from 'next/navigation';
 import { ReactNode, useContext, useEffect } from 'react';
 
@@ -18,7 +19,9 @@ const Wrapper = ({ children }: WrapperProps) => {
       router.push('/welcome');
     }
   }, [router, user]);
-
+  useEffect(() => {
+    initFlowbite();
+  }, []);
   return (
     <main className='min-h-screen'>
       <NavBar />

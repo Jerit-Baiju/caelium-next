@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "flowbite": "^2.2.1",
     "jwt-decode": "^4.0.0",
     "next": "14.0.4",
     "react": "^18",
