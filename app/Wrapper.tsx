@@ -2,9 +2,9 @@
 import NavBar from '@/components/NavBar';
 import SideBar from '@/components/SideBar';
 import AuthContext from '@/contexts/AuthContext';
-import { initFlowbite } from 'flowbite';
 import { useRouter } from 'next/navigation';
 import { ReactNode, useContext, useEffect } from 'react';
+import { initFlowbite } from 'flowbite';
 
 interface WrapperProps {
   children: ReactNode;
