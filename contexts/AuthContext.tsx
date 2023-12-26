@@ -21,7 +21,7 @@ interface AuthContextProps {
 }
 
 const AuthContext = createContext<AuthContextProps>({
-  user: null,
+  user: {},
   authTokens: null,
   error: {},
   loginUser: async () => {},
@@ -39,10 +39,15 @@ export const AuthProvider = ({ children }: childrenProps) => {
   let [user, setUser] = useState(() =>
     typeof window !== 'undefined' && localStorage.getItem('authTokens') ? jwtDecode(localStorage.getItem('authTokens') || '') : null
   );
+
   let [loading, setLoading] = useState(true);
   let [error, setError] = useState({});
 
   const router = useRouter();
+
+  if (!user) {
+    router.replace('/welcome');
+  }
 
   let loginUser = async (e: any) => {
     e.preventDefault();
@@ -106,9 +111,9 @@ export const AuthProvider = ({ children }: childrenProps) => {
 
   let logoutUser = () => {
     setAuthTokens(null);
-    setUser(null);
+    setUser({});
     localStorage.removeItem('authTokens');
-    router.push('/accounts/login');
+    router.replace('/welcome');
   };
 
   let updateToken = async () => {
@@ -137,15 +142,6 @@ export const AuthProvider = ({ children }: childrenProps) => {
     }
   };
 
-  let contextData: AuthContextProps = {
-    user: user,
-    authTokens: authTokens,
-    error: error,
-    loginUser: loginUser,
-    registerUser: registerUser,
-    logoutUser: logoutUser,
-  };
-
   useEffect(() => {
     if (loading) {
       updateToken();
@@ -158,6 +154,15 @@ export const AuthProvider = ({ children }: childrenProps) => {
     }, updateTime);
     return () => clearInterval(interval);
   }, [authTokens, loading]);
+
+  let contextData: AuthContextProps = {
+    user: user,
+    authTokens: authTokens,
+    error: error,
+    loginUser: loginUser,
+    registerUser: registerUser,
+    logoutUser: logoutUser,
+  };
 
   return <AuthContext.Provider value={contextData}>{loading ? null : children}</AuthContext.Provider>;
 };

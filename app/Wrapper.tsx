@@ -1,9 +1,7 @@
 'use client';
 import NavBar from '@/components/NavBar';
 import SideBar from '@/components/SideBar';
-import AuthContext from '@/contexts/AuthContext';
-import { useRouter } from 'next/navigation';
-import { ReactNode, useContext, useEffect } from 'react';
+import { ReactNode, useEffect } from 'react';
 import { initFlowbite } from 'flowbite';
 
 interface WrapperProps {
@@ -11,14 +9,6 @@ interface WrapperProps {
 }
 
 const Wrapper = ({ children }: WrapperProps) => {
-  const router = useRouter();
-  let { user } = useContext(AuthContext);
-
-  useEffect(() => {
-    if (!user) {
-      router.push('/welcome');
-    }
-  }, [router, user]);
   useEffect(() => {
     initFlowbite();
   }, []);

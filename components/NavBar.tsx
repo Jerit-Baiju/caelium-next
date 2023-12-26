@@ -1,10 +1,13 @@
 'use client';
+import AuthContext from '@/contexts/AuthContext';
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useContext } from 'react';
 
 const NavBar = () => {
   const route = usePathname();
+  let { user } = useContext(AuthContext);
   if (!['/accounts/login', '/accounts/register'].includes(route)) {
     return (
       <nav className='fixed top-0 z-50 w-full bg-white border-b border-gray-200 dark:bg-gray-800 dark:border-gray-700'>
@@ -39,7 +42,7 @@ const NavBar = () => {
                     aria-expanded='false'
                     data-dropdown-toggle='dropdown-user'>
                     <span className='sr-only'>Open user menu</span>
-                    <Image className='h-12 w-12 rounded-full' src='/favicon.ico' alt='user photo' width={100} height={100}  />
+                    <Image className='h-12 w-12 rounded-full' src={user.avatar} alt='user photo' width={100} height={100} />
                   </button>
                 </div>
                 <div
