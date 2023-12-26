@@ -10,12 +10,12 @@ interface InputProps {
   type: string;
   placeholder: string;
   id?: string;
+  error?: string;
   autofocus?: boolean;
   required?: boolean;
 }
 
-export const Input: React.FC<InputProps> = ({ name, label, type, placeholder, id, autofocus = false, required = false }) => {
-  let { error } = useContext(AuthContext);
+export const Input: React.FC<InputProps> = ({ name, label, type, placeholder, id, error, autofocus = false, required = false }) => {
   return (
     <div className='max-w-sm mx-auto mb-4'>
       <label htmlFor={id} className='block mb-2 text-sm font-medium text-gray-900 dark:text-white'>
@@ -30,13 +30,13 @@ export const Input: React.FC<InputProps> = ({ name, label, type, placeholder, id
         required={required}
         autoFocus={autofocus}
       />
-      {error && <p className='mt-2 text-sm text-red-600 dark:text-red-500 font-medium'>Alright! Username available!</p>}
+      { error && <p className='mt-2 text-sm text-red-600 dark:text-red-500 font-medium'>{error}</p>}
     </div>
   );
 };
 
 const Auth = ({ page }: { page?: string }) => {
-  let { loginUser, registerUser } = useContext(AuthContext);
+  let { loginUser, registerUser, error } = useContext(AuthContext);
   const router = useRouter();
   let { user } = useContext(AuthContext);
   const isLoginPage = page === 'login';
@@ -55,16 +55,16 @@ const Auth = ({ page }: { page?: string }) => {
           <div className='p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400' role='alert'></div>
           {isLoginPage && (
             <div>
-              <Input name='username' label='Username' type='text' id='usernameID' placeholder='Enter your username' autofocus />
+              <Input name='username' label='Username' type='text' id='usernameID' placeholder='Enter your username' error={error['detail']} autofocus />
               <Input name='password' label='Password' type='password' id='password' placeholder='••••••••' />
             </div>
           )}
           {!isLoginPage && (
             <div>
-              <Input name='username' label='Username' type='text' id='usernameID' placeholder='martin_boyer' autofocus />
-              <Input name='name' label='Name' type='text' id='nameID' placeholder='Martin Boyer' />
-              <Input name='password' label='Password' type='password' id='password' placeholder='••••••••' />
-              <Input name='password2' label='Repeat Password' type='password' id='password2' placeholder='••••••••' />
+              <Input name='username' label='Username' type='text' id='usernameID' placeholder='martin_boyer' error={error['username']} autofocus />
+              <Input name='name' label='Name' type='text' id='nameID' placeholder='Martin Boyer' error={error['name']} />
+              <Input name='password' label='Password' type='password' id='password' placeholder='••••••••' error={error['password']} />
+              <Input name='password2' label='Repeat Password' type='password' id='password2' placeholder='••••••••' error={error['password2']} />
             </div>
           )}
           <div className='flex justify-center flex-col items-center'>

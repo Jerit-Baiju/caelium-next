@@ -7,10 +7,14 @@ interface childrenProps {
   children: ReactNode;
 }
 
+interface ErrorObject {
+  [key: string]: string;
+}
+
 interface AuthContextProps {
   user: any;
   authTokens: any;
-  error: string;
+  error: ErrorObject;
   loginUser: (e: any) => Promise<void>;
   registerUser: (e: any) => Promise<void>;
   logoutUser: () => void;
@@ -19,7 +23,7 @@ interface AuthContextProps {
 const AuthContext = createContext<AuthContextProps>({
   user: null,
   authTokens: null,
-  error: '',
+  error: {},
   loginUser: async () => {},
   registerUser: async () => {},
   logoutUser: () => {},
@@ -36,7 +40,7 @@ export const AuthProvider = ({ children }: childrenProps) => {
     typeof window !== 'undefined' && localStorage.getItem('authTokens') ? jwtDecode(localStorage.getItem('authTokens') || '') : null
   );
   let [loading, setLoading] = useState(true);
-  let [error, setError] = useState('');
+  let [error, setError] = useState({});
 
   const router = useRouter();
 
@@ -46,7 +50,6 @@ export const AuthProvider = ({ children }: childrenProps) => {
     let password = e.target.password.value;
     if (username && password) {
       let url = process.env.NEXT_PUBLIC_API_HOST + '/api/auth/token/';
-      console.log(url);
       let response = await fetch(url, {
         method: 'POST',
         headers: {
@@ -62,7 +65,7 @@ export const AuthProvider = ({ children }: childrenProps) => {
         localStorage.setItem('authTokens', JSON.stringify(data));
         router.push('/');
       } else {
-        setError(data['detail']);
+        setError(data);
       }
     } else {
       setError('Enter your username and password !');
@@ -75,6 +78,30 @@ export const AuthProvider = ({ children }: childrenProps) => {
     let name = e.target.name.value;
     let password = e.target.password.value;
     let password2 = e.target.password2.value;
+    let errors: ErrorObject = {};
+    username.length <= 3 && (errors.username = 'Ensure this field has at least 4 characters.');
+    !username && (errors.username = 'This field may not be blank');
+    !name && (errors.name = 'This field may not be blank');
+    password != password2 && (errors.password = "Password fields didn't match.");
+    !password && (errors.password = 'This field may not be blank');
+    !password2 && (errors.password2 = 'This field may not be blank');
+    setError(errors);
+    if (username && name && password == password2) {
+      let url = process.env.NEXT_PUBLIC_API_HOST + '/api/auth/register/';
+      let response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ username: username, name: name, password: password, password2: password2 }),
+      });
+      let data = await response.json();
+      if (response.status === 201) {
+        router.push('/accounts/login');
+      } else {
+        setError(data);
+      }
+    }
   };
 
   let logoutUser = () => {
