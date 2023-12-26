@@ -12,6 +12,7 @@ interface AuthContextProps {
   authTokens: any;
   error: string;
   loginUser: (e: any) => Promise<void>;
+  registerUser: (e: any) => Promise<void>;
   logoutUser: () => void;
 }
 
@@ -19,7 +20,8 @@ const AuthContext = createContext<AuthContextProps>({
   user: null,
   authTokens: null,
   error: '',
-  loginUser: async (e: any) => {},
+  loginUser: async () => {},
+  registerUser: async () => {},
   logoutUser: () => {},
 });
 
@@ -67,6 +69,14 @@ export const AuthProvider = ({ children }: childrenProps) => {
     }
   };
 
+  let registerUser = async (e: any) => {
+    e.preventDefault();
+    let username = e.target.username.value;
+    let name = e.target.name.value;
+    let password = e.target.password.value;
+    let password2 = e.target.password2.value;
+  };
+
   let logoutUser = () => {
     setAuthTokens(null);
     setUser(null);
@@ -76,7 +86,7 @@ export const AuthProvider = ({ children }: childrenProps) => {
 
   let updateToken = async () => {
     if (authTokens) {
-      let url = process.env.NEXT_PUBLIC_API_HOST+'/api/auth/token/refresh/';
+      let url = process.env.NEXT_PUBLIC_API_HOST + '/api/auth/token/refresh/';
       let response = await fetch(url, {
         method: 'POST',
         headers: {
@@ -91,8 +101,6 @@ export const AuthProvider = ({ children }: childrenProps) => {
         setAuthTokens(data);
         setUser(jwtDecode(data.access));
         localStorage.setItem('authTokens', JSON.stringify(data));
-        console.log('updated token');
-        
       } else {
         logoutUser();
       }
@@ -107,6 +115,7 @@ export const AuthProvider = ({ children }: childrenProps) => {
     authTokens: authTokens,
     error: error,
     loginUser: loginUser,
+    registerUser: registerUser,
     logoutUser: logoutUser,
   };
 
@@ -114,9 +123,7 @@ export const AuthProvider = ({ children }: childrenProps) => {
     if (loading) {
       updateToken();
     }
-
-    let updateTime = 1000 * 60 * 30
-
+    let updateTime = 1000 * 60 * 30;
     let interval = setInterval(() => {
       if (authTokens) {
         updateToken();
