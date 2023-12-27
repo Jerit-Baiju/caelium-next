@@ -2,7 +2,7 @@
 import Loader from "@/components/Loader";
 import { jwtDecode } from "jwt-decode";
 import { useRouter } from "next/navigation";
-import { ReactNode, createContext, useEffect, useState } from "react";
+import { ReactNode, Suspense, createContext, useEffect, useState } from "react";
 
 interface childrenProps {
   children: ReactNode;
@@ -73,7 +73,7 @@ export const AuthProvider = ({ children }: childrenProps) => {
       if (response.status === 200) {
         localStorage.setItem("authTokens", JSON.stringify(data));
         setAuthTokens(data);
-        setUser(data.access);
+        setUser(jwtDecode(data.access));
         router.push("/");
       } else {
         setError(data);
@@ -175,8 +175,7 @@ export const AuthProvider = ({ children }: childrenProps) => {
     logoutUser: logoutUser,
   };
 
-
   return (
-    <AuthContext.Provider value={contextData}>{loading ? <Loader fullScreen /> : children}</AuthContext.Provider>
+    <AuthContext.Provider value={contextData}>{loading ? <Suspense /> : children}</AuthContext.Provider>
   );
 };
