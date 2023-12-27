@@ -149,25 +149,19 @@ export const AuthProvider = ({ children }: childrenProps) => {
   };
 
   useEffect(() => {
-    if (loading) {
-      updateToken();
+    if (authTokens) {
+      setUser(jwtDecode(authTokens.access));
     }
-    let updateTime = 1000 * 60 * 30;
-    let interval = setInterval(() => {
-      if (authTokens) {
-        updateToken();
-      }
-    }, updateTime);
-    return () => clearInterval(interval);
+    setLoading(false);
   }, [authTokens, loading]);
 
   let contextData: AuthContextProps = {
-    user: user,
-    authTokens: authTokens,
-    error: error,
-    loginUser: loginUser,
-    registerUser: registerUser,
-    logoutUser: logoutUser,
+    user,
+    authTokens,
+    error,
+    loginUser,
+    registerUser,
+    logoutUser,
   };
 
   return <AuthContext.Provider value={contextData}>{loading ? <Suspense /> : children}</AuthContext.Provider>;
