@@ -1,7 +1,8 @@
-'use client';
-import { jwtDecode } from 'jwt-decode';
-import { useRouter } from 'next/navigation';
-import { ReactNode, createContext, useEffect, useState } from 'react';
+"use client";
+import Loader from "@/components/Loader";
+import { jwtDecode } from "jwt-decode";
+import { useRouter } from "next/navigation";
+import { ReactNode, createContext, useEffect, useState } from "react";
 
 interface childrenProps {
   children: ReactNode;
@@ -12,7 +13,7 @@ interface ErrorObject {
 }
 
 interface AuthContextProps {
-  user: any;
+  user?: any;
   authTokens: any;
   error: ErrorObject;
   loginUser: (e: any) => Promise<void>;
@@ -32,11 +33,15 @@ const AuthContext = createContext<AuthContextProps>({
 export default AuthContext;
 export const AuthProvider = ({ children }: childrenProps) => {
   let [authTokens, setAuthTokens] = useState(() =>
-    typeof window !== 'undefined' && localStorage.getItem('authTokens') ? JSON.parse(localStorage.getItem('authTokens') || '{}') : null
+    typeof window !== "undefined" && localStorage.getItem("authTokens")
+      ? JSON.parse(localStorage.getItem("authTokens") || "{}")
+      : null
   );
 
   let [user, setUser] = useState(() =>
-    typeof window !== 'undefined' && localStorage.getItem('authTokens') ? jwtDecode(localStorage.getItem('authTokens') || '{}') : null
+    typeof window !== "undefined" && localStorage.getItem("authTokens")
+      ? jwtDecode(localStorage.getItem("authTokens") || "{}")
+      : null
   );
 
   let [loading, setLoading] = useState(true);
@@ -46,35 +51,35 @@ export const AuthProvider = ({ children }: childrenProps) => {
 
   useEffect(() => {
     if (!user) {
-      router.push('/welcome');
+      router.replace("/welcome");
     }
-  }, [router, user]);
+  }, [router, user, loading]);
 
   let loginUser = async (e: any) => {
     e.preventDefault();
     let username = e.target.username.value;
     let password = e.target.password.value;
     if (username && password) {
-      let url = process.env.NEXT_PUBLIC_API_HOST + '/api/auth/token/';
+      let url = process.env.NEXT_PUBLIC_API_HOST + "/api/auth/token/";
       let response = await fetch(url, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({ username: username, password: password }),
       });
       let data = await response.json();
 
       if (response.status === 200) {
-        localStorage.setItem('authTokens', JSON.stringify(data));
+        localStorage.setItem("authTokens", JSON.stringify(data));
         setAuthTokens(data);
         setUser(data.access);
-        router.push('/');
+        router.push("/");
       } else {
         setError(data);
       }
     } else {
-      setError('Enter your username and password !');
+      setError("Enter your username and password !");
     }
   };
 
@@ -85,25 +90,30 @@ export const AuthProvider = ({ children }: childrenProps) => {
     let password = e.target.password.value;
     let password2 = e.target.password2.value;
     let errors: ErrorObject = {};
-    username.length <= 3 && (errors.username = 'Ensure this field has at least 4 characters.');
-    !username && (errors.username = 'This field may not be blank');
-    !name && (errors.name = 'This field may not be blank');
+    username.length <= 3 && (errors.username = "Ensure this field has at least 4 characters.");
+    !username && (errors.username = "This field may not be blank");
+    !name && (errors.name = "This field may not be blank");
     password != password2 && (errors.password = "Password fields didn't match.");
-    !password && (errors.password = 'This field may not be blank');
-    !password2 && (errors.password2 = 'This field may not be blank');
+    !password && (errors.password = "This field may not be blank");
+    !password2 && (errors.password2 = "This field may not be blank");
     setError(errors);
     if (username && name && password == password2) {
-      let url = process.env.NEXT_PUBLIC_API_HOST + '/api/auth/register/';
+      let url = process.env.NEXT_PUBLIC_API_HOST + "/api/auth/register/";
       let response = await fetch(url, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify({ username: username, name: name, password: password, password2: password2 }),
+        body: JSON.stringify({
+          username: username,
+          name: name,
+          password: password,
+          password2: password2,
+        }),
       });
       let data = await response.json();
       if (response.status === 201) {
-        router.push('/accounts/login');
+        router.push("/accounts/login");
       } else {
         setError(data);
       }
@@ -113,17 +123,17 @@ export const AuthProvider = ({ children }: childrenProps) => {
   let logoutUser = () => {
     setAuthTokens(null);
     setUser({});
-    localStorage.removeItem('authTokens');
-    router.replace('/welcome');
+    localStorage.removeItem("authTokens");
+    router.replace("/welcome");
   };
 
   let updateToken = async () => {
     if (authTokens) {
-      let url = process.env.NEXT_PUBLIC_API_HOST + '/api/auth/token/refresh/';
+      let url = process.env.NEXT_PUBLIC_API_HOST + "/api/auth/token/refresh/";
       let response = await fetch(url, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({ refresh: authTokens?.refresh }),
       });
@@ -133,7 +143,7 @@ export const AuthProvider = ({ children }: childrenProps) => {
       if (response.status === 200) {
         setAuthTokens(data);
         setUser(jwtDecode(data.access));
-        localStorage.setItem('authTokens', JSON.stringify(data));
+        localStorage.setItem("authTokens", JSON.stringify(data));
       } else {
         logoutUser();
       }
@@ -165,5 +175,8 @@ export const AuthProvider = ({ children }: childrenProps) => {
     logoutUser: logoutUser,
   };
 
-  return <AuthContext.Provider value={contextData}>{loading ? null : children}</AuthContext.Provider>;
+
+  return (
+    <AuthContext.Provider value={contextData}>{loading ? <Loader fullScreen /> : children}</AuthContext.Provider>
+  );
 };
