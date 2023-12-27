@@ -4,7 +4,7 @@ interface Chat {
 }
 const SideBar: React.FC<{ chats: Chat[] }> = ({ chats }) => {
   return (
-    <div className='w-full md:w-1/5 flex-grow-0 md:pr-4 md:border-r border-gray-200 dark:border-gray-700'>
+    <div className='w-full md:w-1/4 flex-grow-0 md:pr-4 md:border-r border-gray-200 dark:border-gray-700'>
       <h2 className='text-lg font-semibold mb-4'>Persons to Chat</h2>
       <ul role='list' className='max-w-sm divide-y divide-gray-200 dark:divide-gray-700'>
         {chats.map((chat) => (
