@@ -19,7 +19,8 @@ const Chat = () => {
 
   return (
     <Wrapper>
-      <SideBar chats={persons}/>
+      <div className='text-white flex flex-grow p-4'>
+        <SideBar chats={persons} />
         <div className='flex-1 p-4 max-sm:hidden'>
           <h2 className='text-lg font-semibold mb-4'>Chat with {currentChat.personId}</h2>
           <div className='border p-4 h-64 overflow-y-auto'>
@@ -30,6 +31,7 @@ const Chat = () => {
             ))}
           </div>
         </div>
+      </div>
     </Wrapper>
   );
 };
