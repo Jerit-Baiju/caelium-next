@@ -1,5 +1,6 @@
 'use client';
 import AuthContext from '@/contexts/AuthContext';
+import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useContext } from 'react';
 
@@ -14,7 +15,31 @@ const SideBar = () => {
           className='fixed top-0 left-0 z-40 w-64 h-screen pt-20 transition-transform -translate-x-full bg-white border-r border-gray-200 sm:translate-x-0 dark:bg-gray-800 dark:border-gray-700'
           aria-label='Sidebar'>
           <div className='h-full px-3 pb-4 overflow-y-auto bg-white dark:bg-gray-800'>
-            <ul className='space-y-2 font-medium'>
+            <ul className='space-y-2 font-medium pt-3'>
+              <li>
+                <Link
+                  href='/'
+                  className='flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group'>
+                  <span className='material-symbols-outlined'>dashboard</span>
+                  <span className='flex-1 ms-3 whitespace-nowrap'>Home</span>
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href='/gallery'
+                  className='flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group'>
+                  <span className='material-symbols-outlined'>gallery_thumbnail</span>
+                  <span className='flex-1 ms-3 whitespace-nowrap'>Gallery</span>
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href='/chats'
+                  className='flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group'>
+                  <span className='material-symbols-outlined'>chat</span>
+                  <span className='flex-1 ms-3 whitespace-nowrap'>Chats</span>
+                </Link>
+              </li>
               <li>
                 <a
                   data-modal-target='logout-modal'
@@ -37,7 +62,7 @@ const SideBar = () => {
               <button
                 type='button'
                 className='absolute top-3 end-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white'
-                data-modal-hide='logout -modal'>
+                data-modal-hide='logout-modal'>
                 <svg className='w-3 h-3' aria-hidden='true' xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 14 14'>
                   <path stroke='currentColor' strokeLinecap='round' strokeLinejoin='round' strokeWidth='2' d='m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6' />
                 </svg>
