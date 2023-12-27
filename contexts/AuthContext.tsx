@@ -46,7 +46,7 @@ export const AuthProvider = ({ children }: childrenProps) => {
 
   useEffect(() => {
     if (!user) {
-      router.replace('/welcome');
+      router.push('/welcome');
     }
   }, [router, user]);
 
