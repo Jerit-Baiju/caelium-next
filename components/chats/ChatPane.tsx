@@ -12,7 +12,11 @@ export interface Chat {
   name: string;
 }
 
-const SideBar = () => {
+interface SideBarProps {
+  chat?: boolean;
+}
+
+const SideBar: React.FC<SideBarProps> = ({ chat = false }) => {
   let { authTokens } = useContext(AuthContext);
   let [chats, setChats] = useState([]);
   useEffect(() => {
@@ -38,7 +42,7 @@ const SideBar = () => {
   }, []);
 
   return (
-    <div className='w-full md:w-1/4 flex-grow-0 md:pr-4 md:border-r border-gray-200 dark:border-gray-700'>
+    <div className={`w-full ${chat?'max-sm:hidden':null} md:w-1/4 flex-grow-0 md:pr-4 md:border-r border-gray-200 dark:border-gray-700`}>
       <h2 className='text-lg font-semibold mb-4'>Persons to Chat</h2>
       <ul role='list' className='max-w-sm divide-y divide-gray-200 dark:divide-gray-700'>
         {chats.map((item: Item, id) => (
