@@ -50,11 +50,11 @@ const NavBar = () => {
                   id='dropdown-user'>
                   <div className='px-4 py-3' role='none'>
                     <p className='text-sm text-gray-900 dark:text-white' role='none'>
-                      Neil Sims
+                      {user.name}
                     </p>
-                    <p className='text-sm font-medium text-gray-900 truncate dark:text-gray-300' role='none'>
+                    {/* <p className='text-sm font-medium text-gray-900 truncate dark:text-gray-300' role='none'>
                       neil.sims@flowbite.com
-                    </p>
+                    </p> */}
                   </div>
                   <ul className='py-1' role='none'>
                     <li>

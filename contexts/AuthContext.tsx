@@ -65,9 +65,9 @@ export const AuthProvider = ({ children }: childrenProps) => {
       let data = await response.json();
 
       if (response.status === 200) {
+        localStorage.setItem('authTokens', JSON.stringify(data));
         setAuthTokens(data);
         setUser(data.access);
-        localStorage.setItem('authTokens', JSON.stringify(data));
         router.push('/');
       } else {
         setError(data);
