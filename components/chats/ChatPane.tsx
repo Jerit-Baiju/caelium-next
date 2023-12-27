@@ -46,8 +46,8 @@ const SideBar: React.FC<SideBarProps> = ({ chat = false }) => {
       <h2 className='text-lg font-semibold mb-4'>Persons to Chat</h2>
       <ul role='list' className='max-w-sm divide-y divide-gray-200 dark:divide-gray-700'>
         {chats.map((item: Item, id) => (
-          <Link href={`/chats/${id}`}>
-            <li key={id} className='py-3 sm:py-4'>
+          <Link key={id} href={`/chats/${id}`}>
+            <li className='py-3 sm:py-4'>
               <div className='flex items-center space-x-3 rtl:space-x-reverse'>
                 <div className='flex-shrink-0'>
                   <img className='w-8 h-8 rounded-full' src={item.chat.avatar} alt='Neil image' />
