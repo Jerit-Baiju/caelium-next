@@ -5,12 +5,19 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useContext } from 'react';
 
-const NavBar = () => {
+interface NavBarProps {
+  navSM?: boolean;
+}
+
+const NavBar: React.FC<NavBarProps> = ({ navSM = true }) => {
   const route = usePathname();
   let { user } = useContext(AuthContext);
   if (!['/accounts/login', '/accounts/register'].includes(route)) {
     return (
-      <nav className='fixed top-0 z-50 w-full bg-white border-b border-gray-200 dark:bg-gray-800 dark:border-gray-700'>
+      <nav
+        className={`fixed ${
+          !navSM ? 'max-sm:hidden' : null
+        } top-0 z-50 w-full bg-white border-b border-gray-200 dark:bg-gray-800 dark:border-gray-700`}>
         <div className='px-3 py-3 lg:px-5 lg:pl-3'>
           <div className='flex items-center justify-between'>
             <div className='flex items-center justify-start rtl:justify-end'>

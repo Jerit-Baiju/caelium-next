@@ -6,15 +6,16 @@ import { ReactNode, useEffect } from 'react';
 
 interface WrapperProps {
   children: ReactNode;
+  navSM?: boolean;
 }
 
-const Wrapper = ({ children }: WrapperProps) => {
+const Wrapper = ({ children, navSM = true }: WrapperProps) => {
   useEffect(() => {
     initFlowbite();
   }, []);
   return (
     <main className='min-h-screen flex flex-col'>
-      <NavBar />
+      <NavBar navSM={navSM} />
       <SideBar />
       <div className='sm:ml-64 pt-20 flex flex-col flex-grow'>
         <div className='flex flex-grow'>{children}</div>
