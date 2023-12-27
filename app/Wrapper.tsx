@@ -13,11 +13,11 @@ const Wrapper = ({ children }: WrapperProps) => {
     initFlowbite();
   }, []);
   return (
-    <main className='min-h-screen'>
+    <main className='min-h-screen flex flex-col'>
       <NavBar />
       <SideBar />
-      <div className='p-4 sm:ml-64 pt-20'>
-        <div className='p-4'>{children}</div>
+      <div className='sm:ml-64 pt-20 flex flex-col flex-grow'>
+        <div className='p-4 flex flex-col flex-grow'>{children}</div>
       </div>
     </main>
   );
