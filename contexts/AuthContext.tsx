@@ -44,9 +44,11 @@ export const AuthProvider = ({ children }: childrenProps) => {
 
   const router = useRouter();
 
-  if (!user) {
-    router.replace('/welcome');
-  }
+  useEffect(() => {
+    if (!user) {
+      router.replace('/welcome');
+    }
+  }, [router, user]);
 
   let loginUser = async (e: any) => {
     e.preventDefault();
