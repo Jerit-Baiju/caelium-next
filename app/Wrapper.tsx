@@ -17,7 +17,7 @@ const Wrapper = ({ children }: WrapperProps) => {
       <NavBar />
       <SideBar />
       <div className='sm:ml-64 pt-20 flex flex-col flex-grow'>
-        <div className='p-4 flex flex-col flex-grow'>{children}</div>
+        <div className='flex flex-grow'>{children}</div>
       </div>
     </main>
   );

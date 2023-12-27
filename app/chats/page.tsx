@@ -1,5 +1,4 @@
 // Assuming this is your Chat component in Next.js
-
 import SideBar from '@/components/chats/SideBar';
 import Wrapper from '../Wrapper';
 
