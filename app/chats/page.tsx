@@ -1,28 +1,23 @@
-// Assuming this is your Chat component in Next.js
-import SideBar from '@/components/chats/SideBar';
-import Wrapper from '../Wrapper';
-import Image from 'next/image';
+'use client';
+import SideBar from '@/components/chats/ChatPane';
 import SpeedDial from '@/components/chats/SpeedDial';
+import Image from 'next/image';
+import Wrapper from '../Wrapper';
+
+export interface JSONSchema {
+  chat: Chat;
+}
+
+export interface Chat {
+  avatars: string;
+  names: string;
+}
 
 const Chat = () => {
-  const persons = [
-    { id: 1, name: 'Person 1' },
-    { id: 2, name: 'Person 2' },
-    { id: 3, name: 'Person 3' },
-  ];
-
-  const currentChat = {
-    personId: 1,
-    messages: [
-      { id: 1, text: 'Hi there!' },
-      { id: 2, text: 'How are you?' },
-    ],
-  };
-
   return (
     <Wrapper>
       <div className='text-white flex flex-grow p-4'>
-        <SideBar chats={persons} />
+        <SideBar />
         <div className='flex-1 p-4 max-sm:hidden flex flex-col items-center justify-center'>
           <div className='text-center'>
             <Image src={'/logos/written.png'} alt='caelium' className='-mt-32' width={500} height={100} />
@@ -36,7 +31,7 @@ const Chat = () => {
         </div>
       </div>
       <div className='md:hidden'>
-      <SpeedDial />
+        <SpeedDial />
       </div>
     </Wrapper>
   );
