@@ -11,7 +11,7 @@ interface Option {
 }
 
 const options: Option[] = [
-  { name: 'Home', url: '/dashboard', icon: 'dashboard' },
+  { name: 'Home', url: '/', icon: 'dashboard' },
   { name: 'Gallery', url: '/gallery', icon: 'gallery_thumbnail' },
   { name: 'Chats', url: '/chats', icon: 'chat' },
 ];
