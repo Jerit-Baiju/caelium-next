@@ -72,7 +72,9 @@ const SideBar: React.FC<SideBarProps> = ({ chat = false }) => {
                 <div className='flex-1 min-w-0'>
                   <p className='text-sm font-semibold text-gray-900 truncate dark:text-white'>{item.chat.name}</p>
                 </div>
-                <span className='inline-flex items-center bg-blue-100 text-blue-700 text-xs font-medium px-2 py-0.5 rounded-full dark:bg-blue-900 dark:text-blue-300'></span>
+                <span className='inline-flex items-center bg-blue-100 text-blue-700 text-xs font-medium px-2 py-0.5 rounded-full dark:bg-blue-900 dark:text-blue-300'>
+                  1
+                </span>
               </div>
             </li>
           </Link>
