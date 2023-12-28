@@ -42,7 +42,7 @@ const SideBar: React.FC<SideBarProps> = ({ chat = false }) => {
 
   return (
     <div className={`w-full ${chat ? 'max-sm:hidden' : null} p-4 md:w-1/4 flex-grow-0 md:pr-4 md:border-r border-gray-200 dark:border-gray-700`}>
-      <form className='my-1'>
+      <form className='mt-1 mb-2'>
         <label htmlFor='default-search' className='mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white'>
           Search
         </label>
@@ -51,19 +51,19 @@ const SideBar: React.FC<SideBarProps> = ({ chat = false }) => {
             <span className='material-symbols-outlined text-gray-500 dark:text-gray-400'>search</span>
           </div>
           <input
-            type='search'
+            type='text'
             id='default-search'
             className='block w-full p-1 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'
             placeholder='Search'
             required
+            autoComplete='false'
           />
         </div>
       </form>
-
       <ul role='list' className='max-w-sm divide-y divide-gray-200 dark:divide-gray-700'>
         {chats.map((item: Item, id) => (
           <Link key={id} href={`/chats/${id}`}>
-            <li className='py-3 sm:py-4'>
+            <li className='p-2 sm:py-4 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-md'>
               <div className='flex items-center space-x-3 rtl:space-x-reverse'>
                 <div className='flex-shrink-0 relative'>
                   <img className='w-10 h-10 rounded-full' src={item.chat.avatar} alt='Neil image' />
@@ -71,11 +71,8 @@ const SideBar: React.FC<SideBarProps> = ({ chat = false }) => {
                 </div>
                 <div className='flex-1 min-w-0'>
                   <p className='text-sm font-semibold text-gray-900 truncate dark:text-white'>{item.chat.name}</p>
-                  {/* <p className='text-sm text-gray-500 truncate dark:text-gray-400'>email@flowbite.com</p> */}
                 </div>
-                <span className='inline-flex items-center bg-blue-100 text-blue-700 text-xs font-medium px-2 py-0.5 rounded-full dark:bg-blue-900 dark:text-blue-300'>
-                  {/* <span className='w-2 h-2 me-1 bg-green-500 rounded-full'></span> */}1
-                </span>
+                <span className='inline-flex items-center bg-blue-100 text-blue-700 text-xs font-medium px-2 py-0.5 rounded-full dark:bg-blue-900 dark:text-blue-300'></span>
               </div>
             </li>
           </Link>
