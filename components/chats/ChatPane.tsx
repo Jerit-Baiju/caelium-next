@@ -42,7 +42,7 @@ const SideBar: React.FC<SideBarProps> = ({ chat = false }) => {
 
   return (
     <div className={`w-full ${chat ? 'max-sm:hidden' : null} p-4 md:w-1/4 flex-grow-0 md:pr-4 md:border-r border-gray-200 dark:border-gray-700`}>
-      <form className='mt-1 mb-2'>
+      <form className='mt-1 mb-4'>
         <label htmlFor='default-search' className='mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white'>
           Search
         </label>
@@ -63,7 +63,7 @@ const SideBar: React.FC<SideBarProps> = ({ chat = false }) => {
       <ul role='list' className='max-w-sm divide-y divide-gray-200 dark:divide-gray-700'>
         {chats.map((item: Item, id) => (
           <Link key={id} href={`/chats/${id}`}>
-            <li className='p-2 sm:py-4 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-md'>
+            <li className='p-2 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-md'>
               <div className='flex items-center space-x-3 rtl:space-x-reverse'>
                 <div className='flex-shrink-0 relative'>
                   <img className='w-10 h-10 rounded-full' src={item.chat.avatar} alt='Neil image' />
