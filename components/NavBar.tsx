@@ -8,6 +8,7 @@ import { useContext } from 'react';
 interface NavBarProps {
   navSM?: boolean;
 }
+
 interface Option {
   name: string;
   url: string;
@@ -17,7 +18,6 @@ const options: Option[] = [
   { name: 'Dashboard', url: '/dashboard' },
   { name: 'Settings', url: '/dash' },
 ];
-
 
 const NavBar: React.FC<NavBarProps> = ({ navSM = true }) => {
   const route = usePathname();

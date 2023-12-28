@@ -4,6 +4,19 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useContext } from 'react';
 
+interface Option {
+  name: string;
+  url: string;
+  icon: string;
+}
+
+const options: Option[] = [
+  { name: 'Home', url: '/dashboard', icon: 'dashboard' },
+  { name: 'Gallery', url: '/gallery', icon: 'gallery_thumbnail' },
+  { name: 'Chats', url: '/chats', icon: 'chat' },
+];
+
+
 const SideBar = () => {
   const route = usePathname();
   let { logoutUser } = useContext(AuthContext);
@@ -16,37 +29,27 @@ const SideBar = () => {
           aria-label='Sidebar'>
           <div className='h-full px-3 pb-4 overflow-y-auto bg-white dark:bg-gray-800'>
             <ul className='space-y-2 font-medium pt-3'>
-              <li>
-                <Link
-                  href='/'
-                  className='flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group'>
-                  <span className='material-symbols-outlined'>dashboard</span>
-                  <span className='flex-1 ms-3 whitespace-nowrap'>Home</span>
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href='/gallery'
-                  className='flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group'>
-                  <span className='material-symbols-outlined'>gallery_thumbnail</span>
-                  <span className='flex-1 ms-3 whitespace-nowrap'>Gallery</span>
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href='/chats'
-                  className='flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group'>
-                  <span className='material-symbols-outlined'>chat</span>
-                  <span className='flex-1 ms-3 whitespace-nowrap'>Chats</span>
-                </Link>
-              </li>
+              {options.map((option: Option, id) => (
+                <li key={id}>
+                  <Link
+                    href={option.url}
+                    className='flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 '>
+                    <span className='material-symbols-outlined text-gray-500 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white'>
+                      {option.icon}
+                    </span>
+                    <span className='flex-1 ms-3 whitespace-nowrap'>{option.name}</span>
+                  </Link>
+                </li>
+              ))}
               <li>
                 <a
                   data-modal-target='logout-modal'
                   data-modal-toggle='logout-modal'
                   className='flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group'
                   type='button'>
-                  <span className='material-symbols-outlined'>logout</span>
+                  <span className='material-symbols-outlined text-gray-500 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white'>
+                    logout
+                  </span>
                   <span className='flex-1 ms-3 whitespace-nowrap'>Logout</span>
                 </a>
               </li>
