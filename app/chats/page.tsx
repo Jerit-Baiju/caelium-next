@@ -16,7 +16,7 @@ export interface Chat {
 const Chat = () => {
   return (
     <Wrapper>
-      <div className='text-white flex flex-grow p-4'>
+      <div className='text-white flex flex-grow'>
         <SideBar />
         <div className='flex-1 p-4 max-sm:hidden flex flex-col items-center justify-center'>
           <div className='text-center'>

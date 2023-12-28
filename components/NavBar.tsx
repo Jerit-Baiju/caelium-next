@@ -35,9 +35,11 @@ const NavBar: React.FC<NavBarProps> = ({ navSM = true }) => {
                     d='M2 4.75A.75.75 0 012.75 4h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 4.75zm0 10.5a.75.75 0 01.75-.75h7.5a.75.75 0 010 1.5h-7.5a.75.75 0 01-.75-.75zM2 10a.75.75 0 01.75-.75h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 10z'></path>
                 </svg>
               </button>
-              <Link href='/' className='flex ms-2 md:me-24'>
-                {/* <img src='favicon.ico' className='h-12 me-3' alt='FlowBite Logo' /> */}
-                <span className='self-center text-3xl pointer-events-none font-semibold sm:text-3xl whitespace-nowrap dark:text-white'>Caelium</span>
+              <Link href='/' className='flex md:me-24'>
+                <div>
+                  <Image className='p-0 m-0' src={'/logos/written.png'} alt='caelium' width={150} height={0} />
+                </div>
+                {/* <span className='self-center text-3xl pointer-events-none font-semibold sm:text-5xl whitespace-nowrap dark:text-white'>Caelium</span> */}
               </Link>
             </div>
             <div className='flex items-center'>
