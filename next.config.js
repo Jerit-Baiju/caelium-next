@@ -12,7 +12,7 @@ const nextConfig = {
         protocol: 'https',
         hostname: 'api-caelium.jerit.in',
         port: '',
-        pathname: '/media/**',
+        pathname: '/**',
       },{
         protocol: 'https',
         hostname: 'flowbite.s3.amazonaws.com',
