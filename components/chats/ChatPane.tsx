@@ -23,7 +23,7 @@ const SideBar: React.FC<SideBarProps> = ({ chat = false }) => {
     const fetchData = async () => {
       const options = {
         method: 'GET',
-        url: 'http://192.168.43.157:8000/api/chats/',
+        url: process.env.NEXT_PUBLIC_API_HOST+'/api/chats/',
         headers: {
           Authorization: 'Bearer ' + authTokens.access,
           'content-type': 'application/json',
