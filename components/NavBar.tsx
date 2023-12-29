@@ -53,7 +53,7 @@ const NavBar: React.FC<NavBarProps> = ({ navSM = true }) => {
                     aria-expanded='false'
                     data-dropdown-toggle='dropdown-user'>
                     <span className='sr-only'>Open user menu</span>
-                    <Image className='h-12 w-12 rounded-full' src={user?.avatar} alt='user photo' width={100} height={100} />
+                    <Image className='h-14 w-14 max-sm:h-12 max-sm:w-12 rounded-full' src={user?.avatar} alt='user photo' width={100} height={100} />
                   </button>
                 </div>
                 <div
