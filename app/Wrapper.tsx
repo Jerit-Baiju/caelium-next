@@ -14,10 +14,10 @@ const Wrapper = ({ children, navSM = true }: WrapperProps) => {
     initFlowbite();
   }, []);
   return (
-    <main className='min-h-screen flex flex-col'>
+    <main className='flex flex-col h-screen'>
       <NavBar navSM={navSM} />
       <SideBar />
-      <div className={`sm:ml-64 ${!navSM ? 'md:pt-20': 'pt-20'} flex flex-col flex-grow`}>
+      <div className={`sm:ml-64 ${!navSM ? 'md:pt-20' : 'pt-20'} flex flex-col flex-grow`}>
         <div className='flex flex-grow'>{children}</div>
       </div>
     </main>

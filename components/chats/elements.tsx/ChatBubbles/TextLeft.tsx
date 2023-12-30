@@ -8,7 +8,7 @@ const TextLeft = () => {
           <span className='text-sm font-normal text-gray-500 dark:text-gray-400'>11:46</span>
         </div>
         <p className='text-sm font-normal py-2.5 text-gray-900 dark:text-white'>
-          That's awesome. I think our users will really appreciate the improvements.
+          That&apos;s awesome. I think our users will really appreciate the improvements.
         </p>
         <span className='text-sm font-normal text-gray-500 dark:text-gray-400'>Delivered</span>
       </div>
