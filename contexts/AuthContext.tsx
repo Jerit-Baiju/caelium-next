@@ -68,8 +68,8 @@ export const AuthProvider = ({ children }: childrenProps) => {
       if (response.status === 200) {
         localStorage.setItem('authTokens', JSON.stringify(data));
         setAuthTokens(data);
-        setUser(jwtDecode(data.access));
-        router.push('/');
+        setUser(jwtDecode(data.access))
+        router.prefetch('/')
       } else {
         setError(data);
       }
@@ -119,7 +119,7 @@ export const AuthProvider = ({ children }: childrenProps) => {
     setAuthTokens(null);
     setUser({});
     localStorage.removeItem('authTokens');
-    router.replace('/welcome');
+    router.push('/welcome');;
   };
 
   let updateToken = async () => {
