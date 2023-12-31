@@ -12,7 +12,7 @@ const page = ({ params }: { params: { slug: string } }) => {
         <div className='max-sm:hidden flex flex-grow flex-none sm:w-1/4'>
           <ChatsPane />
         </div>
-        <div className='flex  flex-col flex-grow h-screen sm:w-3/4'>
+        <div className='flex  flex-col flex-grow max-sm:h-screen sm:h-[calc(100dvh-5rem)] sm:w-3/4'>
           <ChatHeader />
           <ChatMain />
           <ChatInput />
