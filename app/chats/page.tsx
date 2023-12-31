@@ -2,29 +2,46 @@
 
 import ChatsPane from '@/components/chats/ChatsPane';
 import SpeedDial from '@/components/chats/elements.tsx/SpeedDial';
+import AuthContext from '@/contexts/AuthContext';
 import { getUrl } from '@/helpers/api';
 import { UserProps } from '@/helpers/props';
 import axios from 'axios';
 import { Comforter } from 'next/font/google';
-import { useEffect, useState } from 'react';
+import { useContext, useState } from 'react';
 import Wrapper from '../Wrapper';
 import { handleeFont } from '../font';
+import { useRouter } from 'next/navigation';
 
 const comforter = Comforter({ weight: '400', subsets: ['cyrillic'] });
 
 const Page = () => {
+  const router = useRouter()
+  let { user, authTokens } = useContext(AuthContext);
   let [users, setUsers] = useState([]);
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await axios.request(getUrl({ url: '/api/auth/accounts/' }));
-        setUsers(response.data);
-      } catch (error) {
-        console.error('Error fetching data:', error);
-      }
-    };
-    fetchData();
-  }, []);
+
+  const createChat = async (recipient_id: number) => {
+    console.log(recipient_id);
+    console.log(user.id);
+
+    try {
+      const response = await axios.request(
+        getUrl({ url: '/api/chats/create/', data: { participants: [recipient_id, user.id] }, token: authTokens.access, method: 'POST' })
+      );
+      console.log(response.data);
+      router.push(`/chats/${response.data.id}`);
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+  };
+
+  const fetchData = async () => {
+    try {
+      const response = await axios.request(getUrl({ url: '/api/auth/accounts/', token: authTokens.access }));
+      setUsers(response.data);
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+  };
   return (
     <Wrapper>
       <div className='flex flex-grow divide-x divide-dashed divide-gray-500'>
@@ -38,6 +55,7 @@ const Page = () => {
               Caelium
               <p className='text-6xl m-0'>Elevating your Chat Experience</p>
               <button
+                onClick={fetchData}
                 type='button'
                 data-modal-target='authentication-modal'
                 data-modal-toggle='authentication-modal'
@@ -78,15 +96,15 @@ const Page = () => {
                   />
                 </div>
                 <ul className='sm:max-h-[calc(100dvh-25rem)] overflow-y-scroll'>
-                  {users.map((user: UserProps) => (
-                    <li key={user.id} className='px-3 py-3 m-1 rounded-md hover:bg-gray-800'>
+                  {users.map((recipient: UserProps) => (
+                    <li onClick={() => createChat(recipient.id)} key={recipient.id} className='px-3 py-3 m-1 rounded-md hover:bg-gray-800'>
                       <div className='flex items-center space-x-3 rtl:space-x-reverse'>
                         <div className='flex-shrink-0'>
-                          <img className='w-12 h-12 rounded-full' src={user.avatar} alt={user.name} />
+                          <img className='w-12 h-12 rounded-full' src={recipient.avatar} alt={recipient.name} />
                         </div>
                         <div className='flex-1 min-w-0'>
-                          <p className='text-sm font-semibold text-gray-900 truncate dark:text-white'>{user.username}</p>
-                          <p className='text-sm text-gray-500 truncate dark:text-gray-400'>{user.name}</p>
+                          <p className='text-sm font-semibold text-gray-900 truncate dark:text-white'>{recipient.username}</p>
+                          <p className='text-sm text-gray-500 truncate dark:text-gray-400'>{recipient.name}</p>
                         </div>
                       </div>
                     </li>

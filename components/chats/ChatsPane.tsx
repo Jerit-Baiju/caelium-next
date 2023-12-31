@@ -21,7 +21,7 @@ const ChatsPane = () => {
     method: 'GET',
     url: process.env.NEXT_PUBLIC_API_HOST + '/api/chats/',
     headers: {
-      Authorization: 'Bearer ' + authTokens.access,
+      Authorization: 'Bearer ' + authTokens?.access,
       'content-type': 'application/json',
     },
   };
