@@ -3,16 +3,16 @@
 import ChatsPane from '@/components/chats/ChatsPane';
 import SpeedDial from '@/components/chats/elements.tsx/SpeedDial';
 import { getUrl } from '@/helpers/api';
+import { UserProps } from '@/helpers/props';
 import axios from 'axios';
 import { Comforter } from 'next/font/google';
 import { useEffect, useState } from 'react';
 import Wrapper from '../Wrapper';
 import { handleeFont } from '../font';
-import { UserProps } from '@/helpers/props';
 
 const comforter = Comforter({ weight: '400', subsets: ['cyrillic'] });
 
-const page = () => {
+const Page = () => {
   let [users, setUsers] = useState([]);
   useEffect(() => {
     const fetchData = async () => {
@@ -79,7 +79,7 @@ const page = () => {
                 </div>
                 <ul className='sm:max-h-[calc(100dvh-25rem)] overflow-y-scroll'>
                   {users.map((user: UserProps) => (
-                    <li className='px-3 py-3 m-1 rounded-md hover:bg-gray-800'>
+                    <li key={user.id} className='px-3 py-3 m-1 rounded-md hover:bg-gray-800'>
                       <div className='flex items-center space-x-3 rtl:space-x-reverse'>
                         <div className='flex-shrink-0'>
                           <img className='w-12 h-12 rounded-full' src={user.avatar} alt={user.name} />
@@ -102,4 +102,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default Page;
