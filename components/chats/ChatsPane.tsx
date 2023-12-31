@@ -39,7 +39,7 @@ const ChatsPane = () => {
   }, []);
 
   return (
-    <div className='w-full bg-gray-800 h-full overflow-x-hidden overflow-y-auto'>
+    <div className='w-full bg-gray-800 max-sm:h-screen sm:h-[calc(100dvh-5rem)] overflow-x-hidden overflow-y-auto'>
       <form className='m-3 sm:hidden'>
         <label htmlFor='default-search' className='mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white'>
           Search
