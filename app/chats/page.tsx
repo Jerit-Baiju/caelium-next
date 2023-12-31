@@ -34,7 +34,7 @@ const Page = () => {
     }
   };
 
-  const fetchData = async () => {
+  const fetchUsers = async () => {
     try {
       const response = await axios.request(getUrl({ url: '/api/auth/accounts/', token: authTokens.access }));
       setUsers(response.data);
@@ -55,7 +55,7 @@ const Page = () => {
               Caelium
               <p className='text-6xl m-0'>Elevating your Chat Experience</p>
               <button
-                onClick={fetchData}
+                onClick={fetchUsers}
                 type='button'
                 data-modal-target='authentication-modal'
                 data-modal-toggle='authentication-modal'
