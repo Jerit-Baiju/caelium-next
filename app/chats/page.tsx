@@ -2,12 +2,13 @@
 
 import ChatsPane from '@/components/chats/ChatsPane';
 import SpeedDial from '@/components/chats/elements.tsx/SpeedDial';
-import { UserProps, getUrl } from '@/helpers/api';
+import { getUrl } from '@/helpers/api';
 import axios from 'axios';
 import { Comforter } from 'next/font/google';
 import { useEffect, useState } from 'react';
 import Wrapper from '../Wrapper';
 import { handleeFont } from '../font';
+import { UserProps } from '@/helpers/props';
 
 const comforter = Comforter({ weight: '400', subsets: ['cyrillic'] });
 
