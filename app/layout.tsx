@@ -16,8 +16,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <meta name='viewport' content='width=device-width, initial-scale=1.0, interactive-widget=resizes-content'></meta>
         <link href='https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined&display=optional' rel='stylesheet' />
       </head>
-      <body className={handleeFont.className}>
+      <body className={`${handleeFont.className} bg-background`}>
         <AuthProvider>{children}</AuthProvider>
+        <script src='https://kit.fontawesome.com/c75f557ffd.js' crossOrigin='anonymous'></script>
       </body>
     </html>
   );
