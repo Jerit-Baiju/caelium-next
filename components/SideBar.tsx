@@ -15,6 +15,7 @@ export const options: Option[] = [
   { name: 'Home', url: '/', icon: 'house' },
   { name: 'Gallery', url: '/gallery', icon: 'mountain-sun' },
   { name: 'Chats', url: '/chats', icon: 'message' },
+  {name: 'Calendar', url: '/calendar', icon: 'calendar-days' },
 ];
 
 const SideBar = () => {
@@ -25,7 +26,7 @@ const SideBar = () => {
       <>
         <aside
           id='logo-sidebar'
-          className='fixed top-0 left-0 z-40 w-64 h-screen max-sm:hidden transition-transform -translate-x-full sm:translate-x-0 '
+          className='fixed top-0 left-0 z-40 w-64 border-r border-dashed border-neutral-500 h-screen max-sm:hidden transition-transform -translate-x-full sm:translate-x-0 '
           aria-label='Sidebar'>
           <div className='h-full px-3 pb-4 overflow-y-auto'>
             <Link href='/' className='flex flex-col items-center justify-center'>
@@ -34,8 +35,8 @@ const SideBar = () => {
             <ul className='space-y-2 font-medium pt-3'>
               {options.map((option: Option, id) => (
                 <li key={id}>
-                  <Link href={option.url} className='flex items-center text-lg p-2 rounded-lg text-white hover:bg-secondary hover:text-gray-700'>
-                    <i className={`fa-solid fa-${option.icon}`}></i>
+                  <Link href={option.url} className='flex items-center text-lg p-2 rounded-lg dark:text-white hover:dark:bg-neutral-900'>
+                    <i className={`fa-solid fa-${option.icon} m-1`}></i>
                     <span className='flex-1 ms-3 whitespace-nowrap'>{option.name}</span>
                   </Link>
                 </li>
@@ -44,9 +45,9 @@ const SideBar = () => {
                 <a
                   data-modal-target='logout-modal'
                   data-modal-toggle='logout-modal'
-                  className='flex items-center p-2 text-lg rounded-lg text-white hover:bg-secondary hover:text-gray-700'
+                  className='flex items-center p-2 text-lg rounded-lg dark:text-white hover:dark:bg-neutral-900'
                   type='button'>
-                  <i className={`fa-solid fa-right-from-bracket`}></i>
+                  <i className={`fa-solid fa-right-from-bracket m-1`}></i>
                   <span className='flex-1 ms-3 whitespace-nowrap'>Logout</span>
                 </a>
               </li>
