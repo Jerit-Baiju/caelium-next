@@ -30,7 +30,7 @@ export const Input: React.FC<InputProps> = ({ name, label, type, placeholder, id
         required={required}
         autoFocus={autofocus}
       />
-      { error && <p className='mt-2 text-sm text-red-600 dark:text-red-500 font-medium'>{error}</p>}
+      {error && <p className='mt-2 text-sm text-red-600 dark:text-red-500 font-medium'>{error}</p>}
     </div>
   );
 };
@@ -48,14 +48,22 @@ const Auth = ({ page }: { page?: string }) => {
   }, [router, user]);
 
   return (
-    <div className='flex flex-col items-center justify-center h-screen dark:text-white'>
+    <div className='flex flex-col m-5 items-center justify-center h-screen dark:text-white'>
       <div className='flex justify-center flex-col items-center border-2 border-gray-400 p-10 rounded-lg'>
         <h1 className='text-4xl font-bold mb-4'>{isLoginPage ? 'Welcome Back to Caelium' : 'Create Your Caelium Account'}</h1>
         <form method='POST' onSubmit={isLoginPage ? (e) => loginUser(e) : (e) => registerUser(e)} className='w-full'>
-          <div className='p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400' role='alert'></div>
+          <div className='p-4 mb-4 text-sm text-red-800 rounded-lg dark:text-red-400' role='alert'></div>
           {isLoginPage && (
             <div>
-              <Input name='username' label='Username' type='text' id='usernameID' placeholder='Enter your username' error={error['detail']} autofocus />
+              <Input
+                name='username'
+                label='Username'
+                type='text'
+                id='usernameID'
+                placeholder='Enter your username'
+                error={error['detail']}
+                autofocus
+              />
               <Input name='password' label='Password' type='password' id='password' placeholder='••••••••' />
             </div>
           )}
