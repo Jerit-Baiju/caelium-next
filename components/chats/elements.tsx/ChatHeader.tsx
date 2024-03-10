@@ -18,12 +18,12 @@ const ChatHeader = () => {
 
   return (
     <>
-      <div className='flex sticky top-0 z-10 flex-row h-16 bg-gray-700 dark:text-white'>
+      <div className='flex sticky top-0 z-10 flex-row h-16 bg-neutral-900 dark:text-white'>
         <Link className='flex flex-col my-auto self-start p-3 h-min justify-center rounded-full' href='/chats'>
-          <span className='material-symbols-outlined'>chevron_left</span>
+          <i className='fa-solid fa-arrow-left'></i>
         </Link>
         <div className='flex items-center'>
-          <Image className='h-12 my-2 w-12 max-sm:h-12 max-sm:w-12 rounded-full' src={user?.avatar} alt='user photo' width={100} height={100} />
+          <Image className='h-12 my-2 w-12 max-sm:h-12 max-sm:w-12 rounded-full dark:bg-white p-1' src={user?.avatar} alt='user photo' width={100} height={100} />
           <p className='text-2xl ps-2'>{user.name}</p>
         </div>
         <div className='flex items-center flex-grow justify-end'>
@@ -32,9 +32,7 @@ const ChatHeader = () => {
             aria-expanded='false'
             data-dropdown-toggle='dropdown-chat'
             id='dropdownDefaultButton'
-            className='material-symbols-outlined p-3'>
-            more_vert
-          </button>
+            className='fa-solid fa-ellipsis-vertical p-3 me-4'></button>
         </div>
       </div>
       <div
