@@ -7,10 +7,10 @@ import { getUrl } from '@/helpers/api';
 import { UserProps } from '@/helpers/props';
 import axios from 'axios';
 import { Comforter } from 'next/font/google';
+import { useRouter } from 'next/navigation';
 import { useContext, useState } from 'react';
 import Wrapper from '../Wrapper';
 import { handleeFont } from '../font';
-import { useRouter } from 'next/navigation';
 
 const comforter = Comforter({ weight: '400', subsets: ['cyrillic'] });
 
@@ -79,7 +79,7 @@ const Page = () => {
                 type='button'
                 className='end-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white'
                 data-modal-hide='authentication-modal'>
-                <span className='material-symbols-outlined'>close</span>
+                <i className='fa-solid fa-xmark'></i>
                 <span className='sr-only'>Close modal</span>
               </button>
             </div>

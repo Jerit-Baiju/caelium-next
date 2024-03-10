@@ -6,7 +6,7 @@ import './globals.css';
 
 export const metadata: Metadata = {
   title: 'Caelium',
-  description: 'Caelium: Unveil Your World, Connect Your Dreams – Where Privacy Meets Possibility.',
+  description: 'Caelium: Unveil Your World, Connect Your Dreams - Where Privacy Meets Possibility.',
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

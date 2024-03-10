@@ -66,18 +66,18 @@ const ChatsPane = () => {
 
   return (
     <div className='w-full bg-secondary max-sm:h-screen overflow-x-hidden overflow-y-auto'>
-      <form onSubmit={(e) => fetchUsers(e)} className='m-3 sm:hidden'>
+      <form onSubmit={(e) => fetchUsers(e)} className='m-3'>
         <label htmlFor='default-search' className='mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white'>
           Search
         </label>
         <div className='relative'>
           <div className='absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none'>
-            <span className='material-symbols-outlined text-gray-500 dark:text-gray-400'>search</span>
+            <i className='text-white fa-solid fa-magnifying-glass'></i>
           </div>
           <input
             type='text'
             id='default-search'
-            className='block w-full p-2 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'
+            className='block w-full p-2 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-neutral-900 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'
             placeholder='Search'
             required
           />
@@ -86,9 +86,9 @@ const ChatsPane = () => {
       <ul className={`${!showChats && 'max-sm:hidden'}`} role='list'>
         {chats.map((item: JSONSchema) => (
           <Link key={item.chat.id} href={`/chats/${item.chat.id}`}>
-            <li className='px-3 py-3 m-1 rounded-md hover:bg-gray-700'>
+            <li className='px-3 py-2 m-1 rounded-md hover:bg-neutral-900'>
               <div className='flex items-center space-x-3 rtl:space-x-reverse'>
-                <div className='flex-shrink-0'>
+                <div className='flex-shrink-0 dark:bg-white bg-black rounded-full p-1'>
                   <img className='w-12 h-12 rounded-full' src={item.chat.avatar} alt={item.chat.name} />
                 </div>
                 <div className='flex-1 min-w-0'>
