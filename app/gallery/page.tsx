@@ -3,7 +3,7 @@ import Wrapper from '../Wrapper';
 const page = () => {
   return (
     <Wrapper>
-      <div className='grid grid-cols-2 md:grid-cols-4 gap-4'>
+      <div className='m-4 grid grid-cols-2 md:grid-cols-4 gap-4'>
         <div className='grid gap-4'>
           <div>
             <img className='h-auto max-w-full rounded-lg' src='https://flowbite.s3.amazonaws.com/docs/gallery/masonry/image.jpg' alt='' />
