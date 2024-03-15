@@ -8,10 +8,10 @@ import { useContext, useEffect, useState } from 'react';
 import Wrapper from './Wrapper';
 
 const options = [
-  { value: 'Personal', label: 'Personal', icon: 'user'},
+  { value: 'Personal', label: 'Personal', icon: 'user' },
   { value: 'Partner', label: 'Partner', icon: 'heart' },
   { value: 'Family', label: 'Family', icon: 'people-group' },
-  { value: 'Work', label: 'Work', icon: 'building'},
+  { value: 'Work', label: 'Work', icon: 'building' },
 ];
 
 export default function Home() {
@@ -31,7 +31,7 @@ export default function Home() {
 
   return (
     <Wrapper>
-      <div className='w-full'>
+      <div className='w-full dark:text-white'>
         <div className='p-4'>
           <CustomSelect options={options} onSelect={handleSelect} defaultOption='Personal' />
         </div>
@@ -43,7 +43,15 @@ export default function Home() {
             <p className='text-lg m-2 font-normal text-gray-500 lg:text-xl dark:text-gray-400'>
               Unveil Your World, Connect Your Dreams - Where Privacy Meets Possibility.
             </p>
+            <div className='flex items-center m-4 p-4 rounded-lg bg-neutral-800'>
+              <i className='fa-solid fa-clock text-3xl'></i>
+              <div className='ml-3'>
+                <p className='font-semibold'>12/03/2004</p>
+                <p>Happy Birthday to you!</p>
+              </div>
+            </div>
           </div>
+
           <div className='w-1/3 dark:text-white'>
             <Spotify />
           </div>
