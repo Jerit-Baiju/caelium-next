@@ -60,7 +60,7 @@ const SideBar = () => {
           tabIndex={-1}
           className='hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full'>
           <div className='relative p-4 w-full max-w-md max-h-full'>
-            <div className='relative bg-slate-600 text-primary bg-secondary rounded-lg shadow'>
+            <div className='relative bg-neutral-900 text-primary bg-secondary rounded-lg shadow'>
               <button
                 type='button'
                 className='absolute top-3 end-2.5 bg-transparent rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center text-white hover:text-black hover:bg-slate-300'
@@ -89,7 +89,7 @@ const SideBar = () => {
                 <button
                   data-modal-hide='logout-modal'
                   type='button'
-                  className='bg-gray-900 text-white  rounded-lg font-medium px-5 py-2.5 hover:text-black hover:bg-slate-700'>
+                  className='bg-neutral-800 text-white  rounded-lg font-medium px-5 py-2.5 hover:bg-neutral-700'>
                   No, cancel
                 </button>
               </div>
