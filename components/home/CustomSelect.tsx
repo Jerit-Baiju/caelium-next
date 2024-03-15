@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 
 interface Option {
   value: string;
@@ -15,6 +15,7 @@ interface CustomSelectProps {
 const CustomSelect: React.FC<CustomSelectProps> = ({ options, defaultOption, onSelect }) => {
   const [selectedOption, setSelectedOption] = useState<string | null>(defaultOption || null);
   const [isOpen, setIsOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
   const handleOptionClick = (value: string) => {
     setSelectedOption(value);
@@ -22,10 +23,24 @@ const CustomSelect: React.FC<CustomSelectProps> = ({ options, defaultOption, onS
     setIsOpen(false);
   };
 
+  const handleDocumentClick = (event: MouseEvent) => {
+    if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+      setIsOpen(false);
+    }
+  };
+
+  useEffect(() => {
+    document.addEventListener('click', handleDocumentClick);
+
+    return () => {
+      document.removeEventListener('click', handleDocumentClick);
+    };
+  }, []);
+
   const filteredOptions = options.filter((option) => option.value !== selectedOption);
 
   return (
-    <div className='relative w-32'>
+    <div className='relative w-32' ref={dropdownRef}>
       <button
         onClick={() => setIsOpen(!isOpen)}
         className='bg-gray-100 dark:bg-neutral-800 dark:text-white font-semibold py-2 px-4 rounded inline-flex items-center w-full'>
