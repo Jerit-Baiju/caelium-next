@@ -1,21 +1,26 @@
 'use client';
 import AuthContext from '@/contexts/AuthContext';
-import { getUrl } from '@/helpers/api';
 import { UserProps } from '@/helpers/props';
+import { getMedia, getUrl } from '@/helpers/support';
 import axios from 'axios';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useContext, useEffect, useState } from 'react';
 
-export interface JSONSchema {
-  chat: Chat;
-}
-
 export interface Chat {
   id: number;
-  avatar: string;
-  name: string;
+  other_participant: OtherParticipant;
+  last_message_content: null;
+  last_message_time: null;
 }
+
+export interface OtherParticipant{
+  id: number;
+  username: string;
+  name: string;
+  avatar: string;
+}
+
 
 const ChatsPane = () => {
   let router = useRouter();
@@ -43,7 +48,7 @@ const ChatsPane = () => {
 
     try {
       const response = await axios.request(
-        getUrl({ url: '/api/chats/create/', data: { participants: [recipient_id, user.id] }, token: authTokens.access, method: 'POST' })
+        getUrl({ url: '/api/chats/create_chat/', data: { participants: [recipient_id, user.id] }, token: authTokens.access, method: 'POST' })
       );
       console.log(response.data);
       router.push(`/chats/${response.data.id}`);
@@ -84,16 +89,16 @@ const ChatsPane = () => {
         </div>
       </form>
       <ul className={`${!showChats && 'max-sm:hidden'}`} role='list'>
-        {chats.map((item: JSONSchema) => (
-          <Link key={item.chat.id} href={`/chats/${item.chat.id}`}>
+        {chats.map((chat: Chat) => (
+          <Link key={chat.id} href={`/chats/${chat.id}`}>
             <li className='px-3 py-2 m-1 rounded-md hover:bg-neutral-900'>
               <div className='flex items-center space-x-3 rtl:space-x-reverse'>
                 <div className='flex-shrink-0 dark:bg-white bg-black rounded-full p-1'>
-                  <img className='w-12 h-12 rounded-full' src={item.chat.avatar} alt={item.chat.name} />
+                  <img className='w-12 h-12 rounded-full' src={getMedia(chat.other_participant.avatar)} alt={chat.other_participant.name} />
                 </div>
                 <div className='flex-1 min-w-0'>
-                  <p className='text-sm font-semibold text-gray-900 truncate dark:text-white'>{item.chat.name}</p>
-                  <p className='text-sm text-gray-500 truncate dark:text-gray-400'>email@flowbite.com</p>
+                  <p className='text-sm font-semibold text-gray-900 truncate dark:text-white'>{chat.other_participant.name}</p>
+                  <p className='text-sm text-gray-500 truncate dark:text-gray-400'>{chat.last_message_content}</p>
                 </div>
                 {/* <span className='inline-flex items-center bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded-full dark:bg-gray-900 dark:text-gray-300'>
                   1

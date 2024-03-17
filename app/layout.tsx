@@ -1,8 +1,8 @@
 import { AuthProvider } from '@/contexts/AuthContext';
 import type { Metadata } from 'next';
-import Script from 'next/script';
 import { handleeFont } from './font';
 import './globals.css';
+import Script from 'next/script';
 
 export const metadata: Metadata = {
   title: 'Caelium',

@@ -3,8 +3,8 @@
 import ChatsPane from '@/components/chats/ChatsPane';
 import SpeedDial from '@/components/chats/elements.tsx/SpeedDial';
 import AuthContext from '@/contexts/AuthContext';
-import { getUrl } from '@/helpers/api';
 import { UserProps } from '@/helpers/props';
+import { getUrl } from '@/helpers/support';
 import axios from 'axios';
 import { Comforter } from 'next/font/google';
 import { useRouter } from 'next/navigation';
@@ -15,7 +15,7 @@ import { handleeFont } from '../font';
 const comforter = Comforter({ weight: '400', subsets: ['cyrillic'] });
 
 const Page = () => {
-  const router = useRouter()
+  const router = useRouter();
   let { user, authTokens } = useContext(AuthContext);
   let [users, setUsers] = useState([]);
 
@@ -25,7 +25,7 @@ const Page = () => {
 
     try {
       const response = await axios.request(
-        getUrl({ url: '/api/chats/create/', data: { participants: [recipient_id, user.id] }, token: authTokens.access, method: 'POST' })
+        getUrl({ url: '/api/chats/create_chat/', data: { participants: [recipient_id, user.id] }, token: authTokens.access, method: 'POST' })
       );
       console.log(response.data);
       router.push(`/chats/${response.data.id}`);
@@ -50,19 +50,19 @@ const Page = () => {
         </div>
         <div className='flex max-sm:hidden flex-none flex-grow sm:w-3/4'>
           <div className='flex flex-col h-full flex-grow items-center justify-center'>
-            <p
-              className={`mb-20 text-center text-9xl font-bold text-transparent bg-clip-text bg-gradient-to-r to-emerald-600 from-sky-400 ${comforter.className}`}>
-              Caelium
+            <div
+              className={`mb-20 text-center font-bold text-transparent bg-clip-text bg-gradient-to-r to-emerald-600 from-sky-400  ${comforter.className}`}>
+              <p className={`text-9xl`}>Caelium</p>
               <p className='text-6xl m-0'>Elevating your Chat Experience</p>
-              <button
-                onClick={fetchUsers}
-                type='button'
-                data-modal-target='authentication-modal'
-                data-modal-toggle='authentication-modal'
-                className={`${handleeFont.className} m-0 text-white bg-gradient-to-br from-sky-400 to-emerald-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-teal-300 dark:focus:ring-teal-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2`}>
-                Start New
-              </button>
-            </p>
+            </div>
+            <button
+              onClick={fetchUsers}
+              type='button'
+              data-modal-target='authentication-modal'
+              data-modal-toggle='authentication-modal'
+              className={`${handleeFont.className} m-0 text-white bg-gradient-to-br from-sky-400 to-emerald-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-teal-300 dark:focus:ring-teal-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2`}>
+              Start New
+            </button>
           </div>
         </div>
       </div>
