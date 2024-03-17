@@ -1,26 +1,11 @@
 'use client';
 import AuthContext from '@/contexts/AuthContext';
-import { UserProps } from '@/helpers/props';
+import { Chat, User } from '@/helpers/props';
 import { getMedia, getUrl } from '@/helpers/support';
 import axios from 'axios';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useContext, useEffect, useState } from 'react';
-
-export interface Chat {
-  id: number;
-  other_participant: OtherParticipant;
-  last_message_content: null;
-  last_message_time: null;
-}
-
-export interface OtherParticipant{
-  id: number;
-  username: string;
-  name: string;
-  avatar: string;
-}
-
 
 const ChatsPane = () => {
   let router = useRouter();
@@ -109,7 +94,7 @@ const ChatsPane = () => {
         ))}
       </ul>
       <ul className={`${showChats && 'max-sm:hidden'}`} role='list'>
-        {users.map((user: UserProps) => (
+        {users.map((user: User) => (
           <li onClick={() => createChat(user.id)} key={user.id} className='px-3 py-3 m-1 rounded-md hover:bg-gray-700'>
             <div className='flex items-center space-x-3 rtl:space-x-reverse'>
               <div className='flex-shrink-0'>

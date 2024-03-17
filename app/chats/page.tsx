@@ -3,7 +3,6 @@
 import ChatsPane from '@/components/chats/ChatsPane';
 import SpeedDial from '@/components/chats/elements.tsx/SpeedDial';
 import AuthContext from '@/contexts/AuthContext';
-import { UserProps } from '@/helpers/props';
 import { getUrl } from '@/helpers/support';
 import axios from 'axios';
 import { Comforter } from 'next/font/google';
@@ -11,6 +10,7 @@ import { useRouter } from 'next/navigation';
 import { useContext, useState } from 'react';
 import Wrapper from '../Wrapper';
 import { handleeFont } from '../font';
+import { User } from '@/helpers/props';
 
 const comforter = Comforter({ weight: '400', subsets: ['cyrillic'] });
 
@@ -96,7 +96,7 @@ const Page = () => {
                   />
                 </div>
                 <ul className='sm:max-h-[calc(100dvh-25rem)] overflow-y-scroll'>
-                  {users.map((recipient: UserProps) => (
+                  {users.map((recipient: User) => (
                     <li onClick={() => createChat(recipient.id)} key={recipient.id} className='px-3 py-3 m-1 rounded-md hover:bg-gray-800'>
                       <div className='flex items-center space-x-3 rtl:space-x-reverse'>
                         <div className='flex-shrink-0'>
