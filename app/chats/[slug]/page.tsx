@@ -5,7 +5,7 @@ import ChatHeader from '@/components/chats/elements.tsx/ChatHeader';
 import ChatInput from '@/components/chats/elements.tsx/ChatInput';
 import ChatMain from '@/components/chats/elements.tsx/ChatMain';
 
-const page = () => {
+const page = ({ params }: { params: { slug: string } }) => {
   return (
     <Wrapper>
       <div className='flex flex-grow sm:divide-x divide-dashed divide-gray-500 overflow-y-scroll'>

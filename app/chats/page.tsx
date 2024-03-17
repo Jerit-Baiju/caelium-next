@@ -72,8 +72,8 @@ const Page = () => {
         aria-hidden={true}
         className='hidden bg-black h-screen bg-opacity-50 overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 max-h-full'>
         <div className='relative p-4 w-full max-w-xl max-h-full'>
-          <div className='relative bg-white rounded-lg shadow dark:bg-gray-700'>
-            <div className='flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600'>
+          <div className='relative bg-white rounded-lg shadow dark:bg-neutral-900'>
+            <div className='flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-neutral-600'>
               <h3 className='text-xl font-semibold text-gray-900 dark:text-white'>New Chat</h3>
               <button
                 type='button'
@@ -90,7 +90,7 @@ const Page = () => {
                     type='email'
                     name='email'
                     id='email'
-                    className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white'
+                    className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-neutral-800 dark:border-neutral-500 dark:placeholder-gray-400 dark:text-white'
                     placeholder='search'
                     required
                   />
@@ -100,7 +100,7 @@ const Page = () => {
                     <li onClick={() => createChat(recipient.id)} key={recipient.id} className='px-3 py-3 m-1 rounded-md hover:bg-gray-800'>
                       <div className='flex items-center space-x-3 rtl:space-x-reverse'>
                         <div className='flex-shrink-0'>
-                          <img className='w-12 h-12 rounded-full' src={recipient.avatar} alt={recipient.name} />
+                          <img className='w-12 h-12 rounded-full dark:bg-white' src={recipient.avatar} alt={recipient.name} />
                         </div>
                         <div className='flex-1 min-w-0'>
                           <p className='text-sm font-semibold text-gray-900 truncate dark:text-white'>{recipient.username}</p>

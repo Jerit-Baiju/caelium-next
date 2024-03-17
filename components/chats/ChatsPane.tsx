@@ -108,7 +108,7 @@ const ChatsPane = () => {
           <li onClick={() => createChat(user.id)} key={user.id} className='px-3 py-3 m-1 rounded-md hover:bg-gray-700'>
             <div className='flex items-center space-x-3 rtl:space-x-reverse'>
               <div className='flex-shrink-0'>
-                <img className='w-12 h-12 rounded-full' src={user.avatar} alt={user.name} />
+                <img className='w-12 h-12 rounded-full dark:bg-white' src={user.avatar} alt={user.name} />
               </div>
               <div className='flex-1 min-w-0'>
                 <p className='text-sm font-semibold text-gray-900 truncate dark:text-white'>{user.name}</p>
