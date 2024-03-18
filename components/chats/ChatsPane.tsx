@@ -78,7 +78,7 @@ const ChatsPane = () => {
           <Link key={chat.id} href={`/chats/${chat.id}`}>
             <li className='px-3 py-2 m-1 rounded-md hover:bg-neutral-900'>
               <div className='flex items-center space-x-3 rtl:space-x-reverse'>
-                <div className='flex-shrink-0 dark:bg-white bg-black rounded-full p-1'>
+                <div className='flex-shrink-0 dark:bg-white bg-black rounded-full'>
                   <img className='w-12 h-12 rounded-full' src={getMedia(chat.other_participant.avatar)} alt={chat.other_participant.name} />
                 </div>
                 <div className='flex-1 min-w-0'>

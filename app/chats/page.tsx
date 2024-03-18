@@ -3,6 +3,7 @@
 import ChatsPane from '@/components/chats/ChatsPane';
 import SpeedDial from '@/components/chats/elements.tsx/SpeedDial';
 import AuthContext from '@/contexts/AuthContext';
+import { User } from '@/helpers/props';
 import { getUrl } from '@/helpers/support';
 import axios from 'axios';
 import { Comforter } from 'next/font/google';
@@ -10,7 +11,6 @@ import { useRouter } from 'next/navigation';
 import { useContext, useState } from 'react';
 import Wrapper from '../Wrapper';
 import { handleeFont } from '../font';
-import { User } from '@/helpers/props';
 
 const comforter = Comforter({ weight: '400', subsets: ['cyrillic'] });
 
@@ -52,8 +52,8 @@ const Page = () => {
           <div className='flex flex-col h-full flex-grow items-center justify-center'>
             <div
               className={`mb-20 text-center font-bold text-transparent bg-clip-text bg-gradient-to-r to-emerald-600 from-sky-400  ${comforter.className}`}>
-              <p className={`text-9xl`}>Caelium</p>
-              <p className='text-6xl m-0'>Elevating your Chat Experience</p>
+              <p className='text-9xl m-3'>Caelium</p>
+              <p className='text-6xl m-3'>Elevating your Chat Experience</p>
             </div>
             <button
               onClick={fetchUsers}
