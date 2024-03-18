@@ -97,7 +97,7 @@ const Page = () => {
                 </div>
                 <ul className='sm:max-h-[calc(100dvh-25rem)] overflow-y-scroll'>
                   {users.map((recipient: User) => (
-                    <li onClick={() => createChat(recipient.id)} key={recipient.id} className='px-3 py-3 m-1 rounded-md hover:bg-gray-800'>
+                    <li onClick={() => createChat(recipient.id)} key={recipient.id} className='px-3 py-3 m-1 rounded-md hover:bg-neutral-800'>
                       <div className='flex items-center space-x-3 rtl:space-x-reverse'>
                         <div className='flex-shrink-0'>
                           <img className='w-12 h-12 rounded-full dark:bg-white' src={recipient.avatar} alt={recipient.name} />
