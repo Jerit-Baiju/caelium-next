@@ -41,7 +41,7 @@ const ChatHeader = ({ chatId }: { chatId: Number }) => {
         </Link>
         <div className='flex items-center'>
           <Image
-            className='h-12 my-2 w-12 max-sm:h-12 max-sm:w-12 rounded-full dark:bg-white p-1'
+            className='h-12 my-2 w-12 max-sm:h-12 max-sm:w-12 rounded-full dark:bg-white'
             src={recipient?.avatar||''}
             alt='user photo'
             width={100}
