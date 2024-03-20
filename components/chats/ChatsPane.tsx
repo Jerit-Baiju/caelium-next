@@ -43,7 +43,7 @@ const ChatsPane = () => {
   };
 
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchChats = async () => {
       try {
         const response = await axios.request(getUrl({ url: '/api/chats/', token: authTokens?.access }));
         setChats(response.data);
@@ -51,7 +51,7 @@ const ChatsPane = () => {
         console.error('Error fetching data:', error);
       }
     };
-    fetchData();
+    fetchChats();
   }, []);
 
   return (
