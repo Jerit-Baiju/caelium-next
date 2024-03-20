@@ -1,6 +1,6 @@
 import AuthContext from '@/contexts/AuthContext';
 import { User } from '@/helpers/props';
-import { getUrl } from '@/helpers/support';
+import { getMedia, getUrl } from '@/helpers/support';
 import axios from 'axios';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -23,8 +23,8 @@ const ChatHeader = ({ chatId }: { chatId: Number }) => {
   useEffect(() => {
     const fetchRecipient = async () => {
       try {
-        const response = await axios.request(getUrl({ url: `/api/chats/get/${chatId}/`, token: authTokens?.access }));
-        setRecipient(response.data);
+        const response = await axios.request(getUrl({ url: `/api/chats/${chatId}/`, token: authTokens?.access }));
+        setRecipient(response.data['other_participant']);
         console.log(response.data);
       } catch (error) {
         console.error('Error fetching data:', error);
@@ -42,7 +42,7 @@ const ChatHeader = ({ chatId }: { chatId: Number }) => {
         <div className='flex items-center'>
           <Image
             className='h-12 my-2 w-12 max-sm:h-12 max-sm:w-12 rounded-full dark:bg-white'
-            src={recipient?.avatar||''}
+            src={getMedia(recipient?.avatar||'')}
             alt='user photo'
             width={100}
             height={100}
