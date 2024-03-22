@@ -18,4 +18,5 @@ export interface Message {
   chat: Chat;
   timestamp: Date;
   content: string;
+  side: string;
 }

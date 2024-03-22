@@ -17,11 +17,11 @@ const ChatInput = () => {
           <i className='fa-solid fa-face-smile text-xl p-1'></i>
           <span className='sr-only'>Add emoji</span>
         </button>
-        <textarea
+        <input
+          type='text'
           id='chat'
-          rows={1}
           className='block mx-4 p-2.5 w-full text-sm text-gray-900 bg-white rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-neutral-900 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'
-          placeholder='Your message...'></textarea>
+          placeholder='Your message...'></input>
         <button
           type='submit'
           className='inline-flex justify-center p-2 text-neutral-500 rounded-lg cursor-pointer hover:text-neutral-900 hover:bg-neutral-100 dark:text-neutral-400 dark:hover:text-white dark:hover:bg-neutral-600'>

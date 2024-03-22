@@ -4,7 +4,8 @@ import { Message } from '@/helpers/props';
 import { getUrl } from '@/helpers/support';
 import axios from 'axios';
 import { useContext, useEffect, useRef, useState } from 'react';
-import TextLeft from './ChatBubbles/TextLeft';
+import TextLeft from './ChatBubbles/TextMessage';
+import TextMessage from './ChatBubbles/TextMessage';
 
 const ChatMain = ({ chatId }: { chatId: Number }) => {
   let { authTokens } = useContext(AuthContext);
@@ -25,10 +26,10 @@ const ChatMain = ({ chatId }: { chatId: Number }) => {
   }, []);
   const chatContainerRef = useRef<HTMLDivElement>(null);
   return (
-    <div ref={chatContainerRef} className='flex flex-col h-full overflow-y-scroll'>
-      {messages.map((message: Message) => (
-        <TextLeft key={message.id} message={message}/>
-      ))}
+    <div ref={chatContainerRef} className='flex flex-col h-full overflow-y-scroll p-2'>
+      {messages.map((message: Message) =>
+         ( <TextMessage key={message.id} message={message} />)
+      )}
     </div>
   );
 };
