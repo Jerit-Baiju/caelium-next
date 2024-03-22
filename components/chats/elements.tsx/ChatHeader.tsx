@@ -40,7 +40,7 @@ const ChatHeader = ({ chatId }: { chatId: Number }) => {
           <i className='fa-solid fa-arrow-left'></i>
         </Link>
         <div className='flex items-center'>
-          <Image
+          <img
             className='h-12 my-2 w-12 max-sm:h-12 max-sm:w-12 rounded-full dark:bg-white'
             src={getMedia(recipient?.avatar||'')}
             alt='user photo'
