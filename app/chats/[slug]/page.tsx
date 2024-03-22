@@ -15,7 +15,7 @@ const page = ({ params }: { params: { slug: Number } }) => {
         {/* <div className='flex  flex-col flex-grow max-sm:h-screen sm:h-[calc(100dvh-5rem)] sm:w-3/4'> */}
         <div className='flex  flex-col flex-grow h-screen sm:w-3/4'>
           <ChatHeader chatId={params.slug}/>
-          <ChatMain />
+          <ChatMain chatId={params.slug} />
           <ChatInput />
         </div>
       </div>

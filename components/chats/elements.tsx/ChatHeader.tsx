@@ -24,7 +24,6 @@ const ChatHeader = ({ chatId }: { chatId: Number }) => {
       try {
         const response = await axios.request(getUrl({ url: `/api/chats/${chatId}/`, token: authTokens?.access }));
         setRecipient(response.data['other_participant']);
-        console.log(response.data);
       } catch (error) {
         console.error('Error fetching data:', error);
       }
