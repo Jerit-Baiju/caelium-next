@@ -2,7 +2,6 @@ import AuthContext from '@/contexts/AuthContext';
 import { User } from '@/helpers/props';
 import { getMedia, getUrl } from '@/helpers/support';
 import axios from 'axios';
-import Image from 'next/image';
 import Link from 'next/link';
 import { useContext, useEffect, useState } from 'react';
 
