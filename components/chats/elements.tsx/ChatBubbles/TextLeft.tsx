@@ -1,15 +1,17 @@
-const TextLeft = () => {
+import { Message } from "@/helpers/props";
+
+const TextLeft = ({ message }: { message:Message }) => {
+const date = new Date(message.timestamp);
+const formattedTime = date.toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true });
   return (
     <div className='flex items-start m-3 gap-2.5'>
-      <img className='w-8 h-8 rounded-full' src='/docs/images/people/profile-picture-3.jpg' alt='Jese image' />
+      <img className='w-8 h-8 rounded-full dark:bg-white' src={message.sender.avatar} alt={message.sender.name} />
       <div className='flex flex-col w-full max-w-[320px] leading-1.5 p-4 border-gray-200 bg-gray-100 rounded-e-xl rounded-es-xl dark:bg-neutral-800'>
         <div className='flex items-center space-x-2 rtl:space-x-reverse'>
-          <span className='text-sm font-semibold text-gray-900 dark:text-white'>Bonnie Green</span>
-          <span className='text-sm font-normal text-gray-500 dark:text-gray-400'>11:46</span>
+          <span className='text-sm font-semibold text-gray-900 dark:text-white'>{message.sender.name}</span>
+          <span className='text-sm font-normal text-gray-500 dark:text-gray-400'>{formattedTime}</span>
         </div>
-        <p className='text-sm font-normal py-2.5 text-gray-900 dark:text-white'>
-          That&apos;s awesome. I think our users will really appreciate the improvements.
-        </p>
+        <p className='text-sm font-normal py-2.5 text-gray-900 dark:text-white'>{message.content}</p>
         <span className='text-sm font-normal text-gray-500 dark:text-gray-400'>Delivered</span>
       </div>
       <button
@@ -27,7 +29,9 @@ const TextLeft = () => {
           <path d='M3.5 1.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0Zm0 6.041a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0Zm0 5.959a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0Z' />
         </svg>
       </button>
-      <div id='dropdownDots' className='z-10 hidden bg-white divide-y divide-gray-100 rounded-lg shadow w-40 dark:bg-neutral-900 dark:divide-gray-600'>
+      <div
+        id='dropdownDots'
+        className='z-10 hidden bg-white divide-y divide-gray-100 rounded-lg shadow w-40 dark:bg-neutral-900 dark:divide-gray-600'>
         <ul className='py-2 text-sm text-gray-700 dark:text-gray-200' aria-labelledby='dropdownMenuIconButton'>
           <li>
             <a href='#' className='block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white'>
