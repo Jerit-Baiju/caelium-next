@@ -7,20 +7,25 @@ import { ReactNode, useEffect } from 'react';
 
 interface WrapperProps {
   children: ReactNode;
+  navSM?: boolean;
 }
 
-const Wrapper = ({ children }: WrapperProps) => {
+const Wrapper = ({ children, navSM = true }: WrapperProps) => {
   useEffect(() => {
     initFlowbite();
   }, []);
   return (
-    <main className='flex flex-col h-screen'>
+    <main className='h-screen'>
       <SideBar />
-      <NavBar />
-      <div className={`sm:ml-64 flex flex-col flex-grow max-sm:mt-20`}>
+      <div className={navSM ? '' : 'max-sm:hidden'}>
+        <NavBar />
+      </div>
+      <div className={`sm:ml-64 h-[calc(100vh-9rem)] flex flex-col flex-grow ${navSM?'max-sm:mt-20':''}`}>
         <div className='flex flex-grow'>{children}</div>
       </div>
-      <BottomNav />
+      <div className={navSM ? '' : 'max-sm:hidden'}>
+        <BottomNav />
+      </div>
     </main>
   );
 };
