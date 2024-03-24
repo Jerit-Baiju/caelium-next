@@ -15,13 +15,13 @@ const Wrapper = ({ children, navSM = true }: WrapperProps) => {
     initFlowbite();
   }, []);
   return (
-    <main className={navSM ? 'max-sm:h-[calc(100dvh-5rem)]' : 'max-h-screen'}>
+    <main className={`${navSM ? 'max-sm:h-[calc(100dvh-5rem)]' : ''} h-screen`}>
       <SideBar />
       <div className={navSM ? '' : 'max-sm:hidden'}>
         <NavBar />
       </div>
-      <div className={`sm:ml-64 flex flex-col flex-grow ${navSM ? 'max-sm:mt-20' : ''}`}>
-        <div className={`flex flex-grow ${navSM?'max-sm:mb-16': ''}`}>{children}</div>
+      <div className={`sm:ml-64 sm:h-full flex flex-col flex-grow ${navSM ? 'max-sm:mt-20' : ''}`}>
+        <div className={`flex flex-grow ${navSM ? 'max-sm:mb-16' : ''}`}>{children}</div>
       </div>
       <div className={navSM ? '' : 'max-sm:hidden'}>
         <BottomNav />
