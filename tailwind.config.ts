@@ -10,6 +10,9 @@ const config: Config = {
       },
     },
   },
+  daisyui: {
+    themes: ['black'],
+  },
   darkMode: 'media',
   plugins: [require('daisyui')],
 };
