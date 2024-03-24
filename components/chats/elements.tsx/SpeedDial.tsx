@@ -1,6 +1,6 @@
 const SpeedDial = () => {
   return (
-    <div data-dial-init className='fixed end-6 bottom-6 group sm:hidden'>
+    <div data-dial-init className='fixed end-6 bottom-20 group sm:hidden'>
       <div id='speed-dial-menu-square' className='flex-col items-center hidden mb-4 space-y-2'>
         <button
           type='button'
