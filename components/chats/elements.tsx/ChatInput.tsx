@@ -1,6 +1,28 @@
-const ChatInput = () => {
+import AuthContext from '@/contexts/AuthContext';
+import { getUrl } from '@/helpers/support';
+import axios from 'axios';
+import { useContext, useState } from 'react';
+
+const ChatInput = ({ chatId }: { chatId: Number }) => {
+  let [textInput, setTextInput] = useState('');
+  let { authTokens } = useContext(AuthContext);
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setTextInput(e.target.value);
+  };
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    try {
+      const { data } = await axios.request(
+        getUrl({ url: `/api/chats/messages/${chatId}/`, data: { content: textInput }, method: 'POST', token: authTokens.access })
+      );
+      console.log(data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
   return (
-    <form>
+    <form onSubmit={handleSubmit}>
       <label htmlFor='chat' className='sr-only'>
         Your message
       </label>
@@ -20,8 +42,12 @@ const ChatInput = () => {
         <input
           type='text'
           id='chat'
+          value={textInput}
+          onChange={handleInputChange}
+          autoComplete='off'
           className='block mx-4 p-2.5 w-full text-sm text-neutral-900 bg-white rounded-lg border border-neutral-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-neutral-900 dark:border-neutral-600 dark:placeholder-neutral-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'
-          placeholder='Your message...'></input>
+          placeholder='Your message...'
+        />
         <button
           type='submit'
           className='inline-flex justify-center p-2 text-neutral-500 rounded-lg cursor-pointer hover:text-neutral-900 hover:bg-neutral-100 dark:text-neutral-400 dark:hover:text-white dark:hover:bg-neutral-600'>
