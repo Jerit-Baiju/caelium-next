@@ -8,7 +8,7 @@ import ChatMain from '@/components/chats/elements.tsx/ChatMain';
 const page = ({ params }: { params: { slug: Number } }) => {
   return (
     <Wrapper navSM={false}>
-      <div className='flex flex-grow sm:divide-x divide-dashed divide-gray-500 overflow-y-scroll'>
+      <div className='flex flex-grow sm:divide-x divide-dashed divide-neutral-500 overflow-y-scroll'>
         <div className='max-sm:hidden flex flex-grow flex-none sm:w-1/4'>
           <ChatsPane />
         </div>

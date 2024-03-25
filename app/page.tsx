@@ -37,10 +37,10 @@ export default function Home() {
         </div>
         <div className='max-sm:m-5 mx-4 h-min flex rounded-xl border p-10 border-solid'>
           <div className='w-2/3'>
-            <span className='mb-4 text-3xl font-extrabold text-gray-900 dark:text-white md:text-5xl lg:text-6xl'>
+            <span className='mb-4 text-3xl font-extrabold text-neutral-900 dark:text-white md:text-5xl lg:text-6xl'>
               <span>Welcome, {user?.name}</span>
             </span>
-            <p className='text-lg m-2 font-normal text-gray-500 lg:text-xl dark:text-gray-400'>
+            <p className='text-lg m-2 font-normal text-neutral-500 lg:text-xl dark:text-neutral-400'>
               Unveil Your World, Connect Your Dreams - Where Privacy Meets Possibility.
             </p>
             <div className='flex items-center m-4 p-4 rounded-lg bg-neutral-800'>

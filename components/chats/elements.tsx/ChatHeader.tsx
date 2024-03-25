@@ -57,14 +57,14 @@ const ChatHeader = ({ chatId }: { chatId: Number }) => {
         </div>
       </div>
       <div
-        className='z-50 hidden my-4 text-base list-none bg-white divide-y divide-gray-100 rounded shadow dark:bg-neutral-700 dark:divide-neutral-600'
+        className='z-50 hidden my-4 text-base list-none bg-white divide-y divide-neutral-100 rounded shadow dark:bg-neutral-700 dark:divide-neutral-600'
         id='dropdown-chat'>
         <ul className='py-1' role='none'>
           {options.map((option: Option, id) => (
             <li key={id}>
               <Link
                 href={option.url} // Use the 'to' prop for the correct URL
-                className='block px-4 py-2 text-sm text-neutral-700 hover:bg-neutral-100 dark:text-gray-300 dark:hover:bg-neutral-600 dark:hover:text-white'
+                className='block px-4 py-2 text-sm text-neutral-700 hover:bg-neutral-100 dark:text-neutral-300 dark:hover:bg-neutral-600 dark:hover:text-white'
                 role='menuitem'>
                 {option.name}
               </Link>
@@ -74,7 +74,7 @@ const ChatHeader = ({ chatId }: { chatId: Number }) => {
             <a
               data-modal-target='logout-modal'
               data-modal-toggle='logout-modal'
-              className='block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white'
+              className='block px-4 py-2 text-sm text-neutral-700 hover:bg-neutral-100 dark:text-neutral-300 dark:hover:bg-neutral-600 dark:hover:text-white'
               type='button'>
               Sign out
             </a>

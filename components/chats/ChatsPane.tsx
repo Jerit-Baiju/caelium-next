@@ -57,7 +57,7 @@ const ChatsPane = () => {
   return (
     <div className='w-full max-sm:h-min overflow-x-hidden overflow-y-auto'>
       <form onSubmit={(e) => fetchUsers(e)} className='m-3'>
-        <label htmlFor='default-search' className='mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white'>
+        <label htmlFor='default-search' className='mb-2 text-sm font-medium text-neutral-900 sr-only dark:text-white'>
           Search
         </label>
         <div className='relative'>
@@ -67,7 +67,7 @@ const ChatsPane = () => {
           <input
             type='text'
             id='default-search'
-            className='block w-full p-2 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-neutral-900 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'
+            className='block w-full p-2 ps-10 text-sm text-neutral-900 border border-neutral-300 rounded-lg bg-neutral-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-neutral-900 dark:border-neutral-600 dark:placeholder-neutral-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'
             placeholder='Search'
             required
           />
@@ -82,10 +82,10 @@ const ChatsPane = () => {
                   <img className='w-12 h-12 rounded-full' src={getMedia(chat.other_participant.avatar)} alt={chat.other_participant.name} />
                 </div>
                 <div className='flex-1 min-w-0'>
-                  <p className='text-sm font-semibold text-gray-900 truncate dark:text-white'>{chat.other_participant.name}</p>
-                  <p className='text-sm text-gray-500 truncate dark:text-gray-400'>{chat.last_message_content}</p>
+                  <p className='text-sm font-semibold text-neutral-900 truncate dark:text-white'>{chat.other_participant.name}</p>
+                  <p className='text-sm text-neutral-500 truncate dark:text-neutral-400'>{chat.last_message_content}</p>
                 </div>
-                {/* <span className='inline-flex items-center bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded-full dark:bg-gray-900 dark:text-gray-300'>
+                {/* <span className='inline-flex items-center bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded-full dark:bg-neutral-900 dark:text-neutral-300'>
                   1
                 </span> */}
               </div>
@@ -95,16 +95,16 @@ const ChatsPane = () => {
       </ul>
       <ul className={`${showChats && 'max-sm:hidden'}`} role='list'>
         {users.map((user: User) => (
-          <li onClick={() => createChat(user.id)} key={user.id} className='px-3 py-3 m-1 rounded-md hover:bg-gray-700'>
+          <li onClick={() => createChat(user.id)} key={user.id} className='px-3 py-3 m-1 rounded-md hover:bg-neutral-700'>
             <div className='flex items-center space-x-3 rtl:space-x-reverse'>
               <div className='flex-shrink-0'>
                 <img className='w-12 h-12 rounded-full dark:bg-white' src={user.avatar} alt={user.name} />
               </div>
               <div className='flex-1 min-w-0'>
-                <p className='text-sm font-semibold text-gray-900 truncate dark:text-white'>{user.name}</p>
-                <p className='text-sm text-gray-500 truncate dark:text-gray-400'>{user.username}</p>
+                <p className='text-sm font-semibold text-neutral-900 truncate dark:text-white'>{user.name}</p>
+                <p className='text-sm text-neutral-500 truncate dark:text-neutral-400'>{user.username}</p>
               </div>
-              {/* <span className='inline-flex items-center bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded-full dark:bg-gray-900 dark:text-gray-300'>
+              {/* <span className='inline-flex items-center bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded-full dark:bg-neutral-900 dark:text-neutral-300'>
                   1
                 </span> */}
             </div>
