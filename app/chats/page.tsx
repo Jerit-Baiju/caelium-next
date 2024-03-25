@@ -44,7 +44,7 @@ const Page = () => {
   };
   return (
     <Wrapper>
-      <div className='flex flex-grow divide-x divide-dashed divide-gray-500'>
+      <div className='flex flex-grow divide-x divide-dashed divide-neutral-500'>
         <div className='flex flex-grow flex-none sm:w-1/4'>
           <ChatsPane />
         </div>
@@ -74,10 +74,10 @@ const Page = () => {
         <div className='relative p-4 w-full max-w-xl max-h-full'>
           <div className='relative bg-white rounded-lg shadow dark:bg-neutral-900'>
             <div className='flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-neutral-600'>
-              <h3 className='text-xl font-semibold text-gray-900 dark:text-white'>New Chat</h3>
+              <h3 className='text-xl font-semibold text-neutral-900 dark:text-white'>New Chat</h3>
               <button
                 type='button'
-                className='end-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white'
+                className='end-2.5 text-neutral-400 bg-transparent hover:bg-neutral-200 hover:text-neutral-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-neutral-600 dark:hover:text-white'
                 data-modal-hide='authentication-modal'>
                 <i className='fa-solid fa-xmark'></i>
                 <span className='sr-only'>Close modal</span>
@@ -90,7 +90,7 @@ const Page = () => {
                     type='email'
                     name='email'
                     id='email'
-                    className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-neutral-800 dark:border-neutral-500 dark:placeholder-gray-400 dark:text-white'
+                    className='bg-neutral-50 border border-neutral-300 text-neutral-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-neutral-800 dark:border-neutral-500 dark:placeholder-neutral-400 dark:text-white'
                     placeholder='search'
                     required
                   />
@@ -103,8 +103,8 @@ const Page = () => {
                           <img className='w-12 h-12 rounded-full dark:bg-white' src={recipient.avatar} alt={recipient.name} />
                         </div>
                         <div className='flex-1 min-w-0'>
-                          <p className='text-sm font-semibold text-gray-900 truncate dark:text-white'>{recipient.username}</p>
-                          <p className='text-sm text-gray-500 truncate dark:text-gray-400'>{recipient.name}</p>
+                          <p className='text-sm font-semibold text-neutral-900 truncate dark:text-white'>{recipient.username}</p>
+                          <p className='text-sm text-neutral-500 truncate dark:text-neutral-400'>{recipient.name}</p>
                         </div>
                       </div>
                     </li>

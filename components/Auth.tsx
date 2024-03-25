@@ -18,14 +18,14 @@ interface InputProps {
 export const Input: React.FC<InputProps> = ({ name, label, type, placeholder, id, error, autofocus = false, required = false }) => {
   return (
     <div className='max-w-sm mx-auto mb-4'>
-      <label htmlFor={id} className='block mb-2 text-sm font-medium text-gray-900 dark:text-white'>
+      <label htmlFor={id} className='block mb-2 text-sm font-medium text-neutral-900 dark:text-white'>
         {label}
       </label>
       <input
         type={type}
         id={id}
         name={name}
-        className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'
+        className='bg-neutral-50 border border-neutral-300 text-neutral-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-neutral-700 dark:border-neutral-600 dark:placeholder-neutral-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'
         placeholder={placeholder}
         required={required}
         autoFocus={autofocus}
@@ -48,8 +48,8 @@ const Auth = ({ page }: { page?: string }) => {
   }, [router, user]);
 
   return (
-    <div className='flex flex-col m-5 items-center justify-center h-screen dark:text-white'>
-      <div className='flex justify-center flex-col items-center border-2 border-gray-400 p-10 rounded-lg'>
+    <div className='flex flex-col p-5 items-center justify-center h-screen dark:text-white'>
+      <div className='flex justify-center flex-col items-center border-2 border-neutral-400 p-10 rounded-lg'>
         <h1 className='text-4xl font-bold mb-4'>{isLoginPage ? 'Welcome Back to Caelium' : 'Create Your Caelium Account'}</h1>
         <form method='POST' onSubmit={isLoginPage ? (e) => loginUser(e) : (e) => registerUser(e)} className='w-full'>
           <div className='p-4 mb-4 text-sm text-red-800 rounded-lg dark:text-red-400' role='alert'></div>
@@ -77,7 +77,7 @@ const Auth = ({ page }: { page?: string }) => {
           )}
           <div className='flex justify-center flex-col items-center'>
             <button
-              className='bg-gray-600 text-white px-6 py-3 mt-4 rounded-3xl font-extrabold w-1/3 hover:bg-gray-300 hover:text-black'
+              className='bg-neutral-600 text-white px-6 py-3 mt-4 rounded-3xl font-extrabold w-1/3 hover:bg-neutral-300 hover:text-black'
               type='submit'>
               {isLoginPage ? 'Log In' : 'Sign Up'}
             </button>

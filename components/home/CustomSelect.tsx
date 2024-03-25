@@ -43,7 +43,7 @@ const CustomSelect: React.FC<CustomSelectProps> = ({ options, defaultOption, onS
     <div className='relative w-32' ref={dropdownRef}>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className='bg-gray-100 dark:bg-neutral-800 dark:text-white font-semibold py-2 px-4 rounded inline-flex items-center w-full'>
+        className='bg-neutral-100 dark:bg-neutral-800 dark:text-white font-semibold py-2 px-4 rounded inline-flex items-center w-full'>
         {selectedOption ? (
           <>
             <i className={`fa-solid fa-${options.find((option) => option.value === selectedOption)?.icon}`}></i>
