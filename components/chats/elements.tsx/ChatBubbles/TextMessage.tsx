@@ -18,7 +18,7 @@ const TextMessage = ({ message }: { message: Message }) => {
         {message.sender.name}
         <time className='text-xs opacity-50 mx-2'>{formattedTime}</time>
       </div>
-      <div className='chat-bubble bg-neutral-700 text-white'>{message.content}</div>
+      <div className='chat-bubble rounded-lg bg-neutral-700 text-white'>{message.content}</div>
       {/* <div className='chat-footer opacity-50'>Delivered</div> */}
     </div>
   );
