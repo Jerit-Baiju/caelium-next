@@ -10,6 +10,7 @@ import TextMessage from './ChatBubbles/TextMessage';
 const ChatMain = ({ chatId }: { chatId: Number }) => {
   let { authTokens } = useContext(AuthContext);
   let [messages, setMessages] = useState([]);
+  const containerRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
     const fetchRecipient = async () => {
       try {
@@ -22,14 +23,18 @@ const ChatMain = ({ chatId }: { chatId: Number }) => {
     fetchRecipient();
   }, []);
   useEffect(() => {
-    chatContainerRef.current?.scrollTo(0, chatContainerRef.current.scrollHeight);
-  }, []);
-  const chatContainerRef = useRef<HTMLDivElement>(null);
+    if (containerRef.current) {
+      containerRef.current.scrollTop = containerRef.current.scrollHeight;
+    }
+  }, [messages]);
   return (
-    <div ref={chatContainerRef} className='flex flex-col h-full overflow-y-scroll p-2'>
-      {messages.map((message: Message) => (
-        <TextMessage key={message.id} message={message} />
-      ))}
+    <div ref={containerRef} className='flex flex-col overflow-auto h-full p-2'>
+      <div className='flex-grow'/>
+      <div className='flex flex-col justify-end'>
+        {messages.map((message: Message) => (
+          <TextMessage key={message.id} message={message} />
+        ))}
+      </div>
     </div>
   );
 };
