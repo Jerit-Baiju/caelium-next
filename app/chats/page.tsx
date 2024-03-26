@@ -16,16 +16,18 @@ const comforter = Comforter({ weight: '400', subsets: ['cyrillic'] });
 
 const Page = () => {
   const router = useRouter();
-  let { user, authTokens } = useContext(AuthContext);
+  let { authTokens } = useContext(AuthContext);
   let [users, setUsers] = useState([]);
 
   const createChat = async (recipient_id: number) => {
-    console.log(recipient_id);
-    console.log(user.id);
-
     try {
       const response = await axios.request(
-        getUrl({ url: '/api/chats/create_chat/', data: { participants: [recipient_id, user.id] }, token: authTokens.access, method: 'POST' })
+        getUrl({
+          url: '/api/chats/',
+          data: { participant: recipient_id },
+          token: authTokens.access,
+          method: 'POST',
+        })
       );
       console.log(response.data);
       router.push(`/chats/${response.data.id}`);
@@ -33,7 +35,6 @@ const Page = () => {
       console.error('Error fetching data:', error);
     }
   };
-
   const fetchUsers = async () => {
     try {
       const response = await axios.request(getUrl({ url: '/api/auth/accounts/', token: authTokens.access }));
@@ -97,7 +98,10 @@ const Page = () => {
                 </div>
                 <ul className='sm:max-h-[calc(100dvh-25rem)] overflow-y-scroll'>
                   {users.map((recipient: User) => (
-                    <li onClick={() => createChat(recipient.id)} key={recipient.id} className='px-3 py-3 m-1 rounded-md hover:bg-neutral-800'>
+                    <li
+                      onClick={() => createChat(recipient.id)}
+                      key={recipient.id}
+                      className='px-3 py-3 m-1 rounded-md hover:bg-neutral-800'>
                       <div className='flex items-center space-x-3 rtl:space-x-reverse'>
                         <div className='flex-shrink-0'>
                           <img className='w-12 h-12 rounded-full dark:bg-white' src={recipient.avatar} alt={recipient.name} />
