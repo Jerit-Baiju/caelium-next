@@ -11,32 +11,31 @@ interface childrenProps {
 }
 
 interface ChatContextProps {
-  handleSubmit: (e: any) => Promise<void>;
+  handleSubmit: (e?: React.FormEvent<HTMLFormElement>) => Promise<void>;
   textInput: string;
-  setTextInput: (e: any) => void;
-  messages: any;
-  recipient: any;
+  setTextInput: (e: string) => void;
+  messages: Array<any>;
+  recipient?: User;
 }
 
 const ChatContext = createContext<ChatContextProps>({
   handleSubmit: async () => {},
   textInput: "",
   setTextInput: async () => {},
-  messages: {},
-  recipient: {},
+  messages: [],
 });
 export default ChatContext;
 
 type ErrorType = {
-  text: "CHAT_NOT_FOUND" | string;
-  code: string;
+  text: string;
+  code: "CHAT_NOT_FOUND" | "FETCH_MESSAGES_FAILED";
 };
 
 export const ChatProvider = ({ chatId, children }: childrenProps) => {
   const { authTokens } = useContext(AuthContext);
   const [textInput, setTextInput] = useState("");
   const [messages, setMessages] = useState([]);
-  const [recipient, setRecipient] = useState<User | null>(null);
+  const [recipient, setRecipient] = useState<User>();
   const [error, setError] = useState<ErrorType | null>(null);
 
   const socket = useRef<WebSocket | null>(null);
@@ -65,8 +64,8 @@ export const ChatProvider = ({ chatId, children }: childrenProps) => {
     };
   }, [chatId]);
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const handleSubmit = async (e?: React.FormEvent<HTMLFormElement>) => {
+    e?.preventDefault();
     socket.current?.send(
       JSON.stringify({
         content: textInput,
@@ -83,6 +82,8 @@ export const ChatProvider = ({ chatId, children }: childrenProps) => {
         );
         setMessages(response.data);
       } catch (error) {
+        if (error instanceof AxiosError && error.code === "ERR_BAD_REQUEST")
+          setError({ text: "Failed to fetch messages", code: "FETCH_MESSAGES_FAILED" });
         console.error("Error fetching data:", error);
       }
     };
