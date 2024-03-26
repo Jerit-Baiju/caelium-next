@@ -1,26 +1,12 @@
-import AuthContext from '@/contexts/AuthContext';
-import { getUrl } from '@/helpers/support';
-import axios from 'axios';
-import { useContext, useState } from 'react';
+import ChatContext from '@/contexts/ChatContext';
+import { useContext } from 'react';
 
-const ChatInput = ({ chatId }: { chatId: Number }) => {
-  let [textInput, setTextInput] = useState('');
-  let { authTokens } = useContext(AuthContext);
+const ChatInput = () => {
+  let { textInput, setTextInput, handleSubmit } = useContext(ChatContext);
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setTextInput(e.target.value);
   };
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    try {
-      const { data } = await axios.request(
-        getUrl({ url: `/api/chats/messages/${chatId}/`, data: { content: textInput }, method: 'POST', token: authTokens.access })
-      );
-      console.log(data);
-    } catch (error) {
-      console.error(error);
-    }
-  };
   return (
     <form onSubmit={handleSubmit}>
       <label htmlFor='chat' className='sr-only'>

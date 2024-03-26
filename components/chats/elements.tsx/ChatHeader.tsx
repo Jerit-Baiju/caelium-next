@@ -1,14 +1,10 @@
-import AuthContext from '@/contexts/AuthContext';
-import { User } from '@/helpers/props';
-import { getMedia, getUrl } from '@/helpers/support';
-import axios from 'axios';
+import ChatContext from '@/contexts/ChatContext';
+import { getMedia } from '@/helpers/support';
 import Link from 'next/link';
-import { useContext, useEffect, useState } from 'react';
+import { useContext } from 'react';
 
-const ChatHeader = ({ chatId }: { chatId: Number }) => {
-  let { authTokens } = useContext(AuthContext);
-  let [recipient, setRecipient] = useState<User | null>(null);
-
+const ChatHeader = () => {
+  let { recipient } = useContext(ChatContext);
   interface Option {
     name: string;
     url: string;
@@ -19,21 +15,9 @@ const ChatHeader = ({ chatId }: { chatId: Number }) => {
     { name: 'Settings', url: '/dash' },
   ];
 
-  useEffect(() => {
-    const fetchRecipient = async () => {
-      try {
-        const response = await axios.request(getUrl({ url: `/api/chats/${chatId}/`, token: authTokens?.access }));
-        setRecipient(response.data['other_participant']);
-      } catch (error) {
-        console.error('Error fetching data:', error);
-      }
-    };
-    fetchRecipient();
-  }, []);
-
   return (
     <>
-      <div className='flex sticky top-0 z-10 flex-row h-16 bg-neutral-900 dark:text-white'>
+      <div className='flex sticky top-0 z-10 flex-row h-16 bg-neutral-300 dark:bg-neutral-900 dark:text-white'>
         <Link className='flex flex-col my-auto self-start p-3 h-min justify-center rounded-full' href='/chats'>
           <i className='fa-solid fa-arrow-left'></i>
         </Link>

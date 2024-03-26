@@ -1,7 +1,7 @@
 'use client';
 import AuthContext from '@/contexts/AuthContext';
 import { Chat, User } from '@/helpers/props';
-import { getMedia, getUrl } from '@/helpers/support';
+import { getMedia, getTime, getUrl, truncate } from '@/helpers/support';
 import axios from 'axios';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -33,7 +33,12 @@ const ChatsPane = () => {
 
     try {
       const response = await axios.request(
-        getUrl({ url: '/api/chats/create_chat/', data: { participants: [recipient_id, user.id] }, token: authTokens.access, method: 'POST' })
+        getUrl({
+          url: '/api/chats/create_chat/',
+          data: { participants: [recipient_id, user.id] },
+          token: authTokens.access,
+          method: 'POST',
+        })
       );
       console.log(response.data);
       router.push(`/chats/${response.data.id}`);
@@ -76,18 +81,26 @@ const ChatsPane = () => {
       <ul className={`${!showChats && 'max-sm:hidden'}`} role='list'>
         {chats.map((chat: Chat) => (
           <Link key={chat.id} href={`/chats/${chat.id}`}>
-            <li className='px-3 py-2 m-1 rounded-md hover:bg-neutral-900'>
+            <li className='px-3 py-2 m-1 rounded-md hover:bg-neutral-200 dark:hover:bg-neutral-900'>
               <div className='flex items-center space-x-3 rtl:space-x-reverse'>
-                <div className='flex-shrink-0 dark:bg-white bg-black rounded-full'>
-                  <img className='w-12 h-12 rounded-full' src={getMedia(chat.other_participant.avatar)} alt={chat.other_participant.name} />
+                <div className='flex-shrink-0 dark:bg-white rounded-full'>
+                  <img
+                    className='w-12 h-12 rounded-full'
+                    src={getMedia(chat.other_participant.avatar)}
+                    alt={chat.other_participant.name}
+                  />
                 </div>
                 <div className='flex-1 min-w-0'>
                   <p className='text-sm font-semibold text-neutral-900 truncate dark:text-white'>{chat.other_participant.name}</p>
-                  <p className='text-sm text-neutral-500 truncate dark:text-neutral-400'>{chat.last_message_content}</p>
+                  <span className='text-sm text-neutral-500 dark:text-neutral-400'>
+                    {truncate({ chars: chat.last_message_content, length: 45 })}
+                  </span>
                 </div>
-                {/* <span className='inline-flex items-center bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded-full dark:bg-neutral-900 dark:text-neutral-300'>
-                  1
-                </span> */}
+                {chat.last_message_time && (
+                  <span className='inline-flex items-end bg-neutral-200 text-neutral-800 text-sm font-medium px-2.5 py-0.5 rounded-full dark:bg-neutral-900 dark:text-neutral-300'>
+                    {getTime(chat.last_message_time)}
+                  </span>
+                )}
               </div>
             </li>
           </Link>
