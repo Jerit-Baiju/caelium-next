@@ -8,8 +8,7 @@ import { useRouter } from 'next/navigation';
 import { useContext, useEffect, useState } from 'react';
 
 const ChatsPane = () => {
-  let router = useRouter();
-  let { user } = useContext(AuthContext);
+  const router = useRouter();
   let { authTokens } = useContext(AuthContext);
   let [chats, setChats] = useState([]);
   let [users, setUsers] = useState([]);
@@ -28,14 +27,11 @@ const ChatsPane = () => {
   };
 
   const createChat = async (recipient_id: number) => {
-    console.log(recipient_id);
-    console.log(user.id);
-
     try {
       const response = await axios.request(
         getUrl({
-          url: '/api/chats/create_chat/',
-          data: { participants: [recipient_id, user.id] },
+          url: '/api/chats/',
+          data: { participant: recipient_id },
           token: authTokens.access,
           method: 'POST',
         })
