@@ -38,13 +38,13 @@ export const ChatProvider = ({ chatId, children }: childrenProps) => {
 
   useEffect(() => {
     // Initialize WebSocket connection
-    socket.current = new WebSocket('ws://192.168.43.157:8000/ws/chat/' + chatId + '/');
+    socket.current = new WebSocket(`${process.env.NEXT_PUBLIC_WS_HOST}/ws/chat/' + chatId + '/'`);
 
     // Define event handlers for the WebSocket
     socket.current.onmessage = function (e) {
       let data = JSON.parse(e.data);
       if (data['type'] === 'message') {
-        alert(data['message']);
+        console.log(data['message']);
       }
     };
     socket.current.onopen = function () {
@@ -64,7 +64,8 @@ export const ChatProvider = ({ chatId, children }: childrenProps) => {
     e.preventDefault();
     socket.current?.send(
       JSON.stringify({
-        message: textInput,
+        content: textInput,
+
       })
     );
     setTextInput('');
