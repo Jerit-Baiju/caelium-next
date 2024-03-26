@@ -38,7 +38,7 @@ export const ChatProvider = ({ chatId, children }: childrenProps) => {
 
   useEffect(() => {
     // Initialize WebSocket connection
-    socket.current = new WebSocket(`${process.env.NEXT_PUBLIC_WS_HOST}/ws/chat/' + chatId + '/'`);
+    socket.current = new WebSocket(`${process.env.NEXT_PUBLIC_WS_HOST}/ws/chat/${chatId}/`);
 
     // Define event handlers for the WebSocket
     socket.current.onmessage = function (e) {
