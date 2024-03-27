@@ -35,14 +35,22 @@ const NavBar = () => {
                     type='button'
                     className='flex text-sm bg-neutral-800 rounded-full focus:ring-4 focus:ring-neutral-300 dark:focus:ring-neutral-600'
                     aria-expanded='false'
-                    data-dropdown-toggle='dropdown-user'>
+                    data-dropdown-toggle='dropdown-user'
+                  >
                     <span className='sr-only'>Open user menu</span>
-                    <img className='h-14 w-14 max-sm:h-12 max-sm:w-12 rounded-full' src={user?.avatar} alt='user photo' width={100} height={100} />
+                    <img
+                      className='h-14 w-14 max-sm:h-12 max-sm:w-12 rounded-full'
+                      src={user?.avatar}
+                      alt='user photo'
+                      width={100}
+                      height={100}
+                    />
                   </button>
                 </div>
                 <div
                   className='z-50 hidden my-4 text-base list-none bg-white divide-y divide-neutral-100 rounded shadow dark:bg-neutral-700 dark:divide-neutral-600'
-                  id='dropdown-user'>
+                  id='dropdown-user'
+                >
                   <div className='px-4 py-3' role='none'>
                     <p className='text-sm text-neutral-900 dark:text-white' role='none'>
                       {user?.name}
@@ -54,7 +62,8 @@ const NavBar = () => {
                         <Link
                           href={option.url} // Use the 'to' prop for the correct URL
                           className='block px-4 py-2 text-sm text-neutral-700 hover:bg-neutral-100 dark:text-neutral-300 dark:hover:bg-neutral-600 dark:hover:text-white'
-                          role='menuitem'>
+                          role='menuitem'
+                        >
                           {option.name}
                         </Link>
                       </li>
@@ -64,7 +73,8 @@ const NavBar = () => {
                         data-modal-target='logout-modal'
                         data-modal-toggle='logout-modal'
                         className='block px-4 py-2 text-sm text-neutral-700 hover:bg-neutral-100 dark:text-neutral-300 dark:hover:bg-neutral-600 dark:hover:text-white'
-                        type='button'>
+                        type='button'
+                      >
                         Sign out
                       </a>
                     </li>

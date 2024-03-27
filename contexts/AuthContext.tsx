@@ -32,11 +32,13 @@ const AuthContext = createContext<AuthContextProps>({
 export default AuthContext;
 export const AuthProvider = ({ children }: childrenProps) => {
   let [authTokens, setAuthTokens] = useState(() =>
-    typeof window !== 'undefined' && localStorage.getItem('authTokens') ? JSON.parse(localStorage.getItem('authTokens') || '{}') : null
+    typeof window !== 'undefined' && localStorage.getItem('authTokens')
+      ? JSON.parse(localStorage.getItem('authTokens') || '{}')
+      : null,
   );
 
   let [user, setUser] = useState(() =>
-    typeof window !== 'undefined' && localStorage.getItem('authTokens') ? jwtDecode(localStorage.getItem('authTokens') || '{}') : null
+    typeof window !== 'undefined' && localStorage.getItem('authTokens') ? jwtDecode(localStorage.getItem('authTokens') || '{}') : null,
   );
 
   let [loading, setLoading] = useState(true);

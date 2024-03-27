@@ -3,9 +3,9 @@ import { Message } from '@/helpers/props';
 const TextMessage = ({ message }: { message: Message }) => {
   const date = new Date(message.timestamp);
   const formattedTime = date.toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true });
-  let side = 'chat-start'
-  if (message.side == 'right'){
-    side = 'chat-end'
+  let side = 'chat-start';
+  if (message.side == 'right') {
+    side = 'chat-end';
   }
   return (
     <div className={`chat ${side}`}>

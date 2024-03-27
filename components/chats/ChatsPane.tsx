@@ -34,7 +34,7 @@ const ChatsPane = () => {
           data: { participant: recipient_id },
           token: authTokens.access,
           method: 'POST',
-        })
+        }),
       );
       console.log(response.data);
       router.push(`/chats/${response.data.id}`);

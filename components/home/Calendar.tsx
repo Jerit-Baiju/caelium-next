@@ -83,16 +83,18 @@ const Calendar: React.FC<CalendarProps> = ({ initialDate = new Date(), onSelectD
     for (let day = 1; day <= daysInMonth; day++) {
       const isCurrentDay = day === new Date().getDate() && currentDate.getMonth() === new Date().getMonth();
       const isEventDay = eventDates.some(
-        (event) => event.year === currentDate.getFullYear() && event.month === currentDate.getMonth() + 1 && event.day === day
+        (event) => event.year === currentDate.getFullYear() && event.month === currentDate.getMonth() + 1 && event.day === day,
       );
-      const isSelectedDay = selectedDate ? selectedDate.getDate() === day && selectedDate.getMonth() === currentDate.getMonth() : false;
+      const isSelectedDay = selectedDate
+        ? selectedDate.getDate() === day && selectedDate.getMonth() === currentDate.getMonth()
+        : false;
       const dayClasses = `text-center rounded-full ${isCurrentDay ? 'bg-blue-400 dark:bg-blue-600' : ''} ${
         isEventDay ? 'bg-neutral-200 dark:bg-neutral-600' : ''
       } ${isSelectedDay ? 'border border-black dark:border-white' : ''} cursor-pointer flex items-center justify-center w-10 h-10`;
       days.push(
         <div key={day} className={dayClasses} onClick={() => handleDateClick(day)}>
           {day}
-        </div>
+        </div>,
       );
     }
 

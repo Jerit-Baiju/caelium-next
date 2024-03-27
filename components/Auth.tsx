@@ -69,16 +69,32 @@ const Auth = ({ page }: { page?: string }) => {
           )}
           {!isLoginPage && (
             <div>
-              <Input name='username' label='Username' type='text' id='usernameID' placeholder='martin_boyer' error={error['username']} autofocus />
+              <Input
+                name='username'
+                label='Username'
+                type='text'
+                id='usernameID'
+                placeholder='martin_boyer'
+                error={error['username']}
+                autofocus
+              />
               <Input name='name' label='Name' type='text' id='nameID' placeholder='Martin Boyer' error={error['name']} />
               <Input name='password' label='Password' type='password' id='password' placeholder='••••••••' error={error['password']} />
-              <Input name='password2' label='Repeat Password' type='password' id='password2' placeholder='••••••••' error={error['password2']} />
+              <Input
+                name='password2'
+                label='Repeat Password'
+                type='password'
+                id='password2'
+                placeholder='••••••••'
+                error={error['password2']}
+              />
             </div>
           )}
           <div className='flex justify-center flex-col items-center'>
             <button
               className='bg-neutral-600 text-white px-6 py-3 mt-4 rounded-3xl font-extrabold w-1/3 hover:bg-neutral-300 hover:text-black'
-              type='submit'>
+              type='submit'
+            >
               {isLoginPage ? 'Log In' : 'Sign Up'}
             </button>
             <p className='mt-4'>
