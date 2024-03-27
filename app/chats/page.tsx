@@ -27,7 +27,7 @@ const Page = () => {
           data: { participant: recipient_id },
           token: authTokens.access,
           method: 'POST',
-        })
+        }),
       );
       console.log(response.data);
       router.push(`/chats/${response.data.id}`);
@@ -52,7 +52,8 @@ const Page = () => {
         <div className='flex max-sm:hidden flex-none flex-grow sm:w-3/4'>
           <div className='flex flex-col h-full flex-grow items-center justify-center'>
             <div
-              className={`mb-20 text-center font-bold text-transparent bg-clip-text bg-gradient-to-r to-emerald-600 from-sky-400  ${comforter.className}`}>
+              className={`mb-20 text-center font-bold text-transparent bg-clip-text bg-gradient-to-r to-emerald-600 from-sky-400  ${comforter.className}`}
+            >
               <p className='text-9xl m-3'>Caelium</p>
               <p className='text-6xl m-3'>Elevating your Chat Experience</p>
             </div>
@@ -61,7 +62,8 @@ const Page = () => {
               type='button'
               data-modal-target='authentication-modal'
               data-modal-toggle='authentication-modal'
-              className={`${handleeFont.className} m-0 text-white bg-gradient-to-br from-sky-400 to-emerald-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-teal-300 dark:focus:ring-teal-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2`}>
+              className={`${handleeFont.className} m-0 text-white bg-gradient-to-br from-sky-400 to-emerald-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-teal-300 dark:focus:ring-teal-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2`}
+            >
               Start New
             </button>
           </div>
@@ -71,7 +73,8 @@ const Page = () => {
         id='authentication-modal'
         tabIndex={-1}
         aria-hidden={true}
-        className='hidden bg-black h-screen bg-opacity-50 overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 max-h-full'>
+        className='hidden bg-black h-screen bg-opacity-50 overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 max-h-full'
+      >
         <div className='relative p-4 w-full max-w-xl max-h-full'>
           <div className='relative bg-white rounded-lg shadow dark:bg-neutral-900'>
             <div className='flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-neutral-600'>
@@ -79,7 +82,8 @@ const Page = () => {
               <button
                 type='button'
                 className='end-2.5 text-neutral-400 bg-transparent hover:bg-neutral-200 hover:text-neutral-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-neutral-600 dark:hover:text-white'
-                data-modal-hide='authentication-modal'>
+                data-modal-hide='authentication-modal'
+              >
                 <i className='fa-solid fa-xmark'></i>
                 <span className='sr-only'>Close modal</span>
               </button>
@@ -101,7 +105,8 @@ const Page = () => {
                     <li
                       onClick={() => createChat(recipient.id)}
                       key={recipient.id}
-                      className='px-3 py-3 m-1 rounded-md hover:bg-neutral-800'>
+                      className='px-3 py-3 m-1 rounded-md hover:bg-neutral-800'
+                    >
                       <div className='flex items-center space-x-3 rtl:space-x-reverse'>
                         <div className='flex-shrink-0'>
                           <img className='w-12 h-12 rounded-full dark:bg-white' src={recipient.avatar} alt={recipient.name} />
