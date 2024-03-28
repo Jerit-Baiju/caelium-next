@@ -7,7 +7,7 @@ export interface Chat {
 
 export interface User {
   id: number;
-  username: string;
+  username?: string;
   name: string;
   avatar: string;
 }
@@ -15,7 +15,7 @@ export interface User {
 export interface Message {
   id: number;
   sender: User;
-  chat: Chat;
+  chat?: Chat;
   timestamp: Date;
   content: string;
   side: string;
