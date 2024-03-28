@@ -1,6 +1,6 @@
 'use client';
-import { User } from '@/helpers/props';
-import { getUrl } from '@/helpers/support';
+import { Message, User } from '@/helpers/props';
+import { getMedia, getUrl } from '@/helpers/support';
 import axios, { AxiosError } from 'axios';
 import { ReactNode, createContext, useContext, useEffect, useRef, useState } from 'react';
 import AuthContext from './AuthContext';
@@ -32,34 +32,37 @@ type ErrorType = {
 };
 
 export const ChatProvider = ({ chatId, children }: childrenProps) => {
-  const { authTokens } = useContext(AuthContext);
+  const { authTokens, user } = useContext(AuthContext);
   const [textInput, setTextInput] = useState('');
-  const [messages, setMessages] = useState([]);
+  const [messages, setMessages] = useState<Message[]>([]);
   const [recipient, setRecipient] = useState<User>();
   const [error, setError] = useState<ErrorType | null>(null);
 
   const socket = useRef<WebSocket | null>(null);
 
   useEffect(() => {
-    // Initialize WebSocket connection
-    socket.current = new WebSocket(`${process.env.NEXT_PUBLIC_WS_HOST}/ws/chat/${chatId}/`);
-
-    // Define event handlers for the WebSocket
-    socket.current.onmessage = function (e) {
-      let data = JSON.parse(e.data);
-      if (data['type'] === 'message') {
-        console.log(data['message']);
-      }
+    socket.current = new WebSocket(`${process.env.NEXT_PUBLIC_WS_HOST}/ws/chat/${chatId}/${authTokens.access}/`);
+    socket.current.onmessage = async function (e) {
+      let data = JSON.parse(e.data)['message'];
+      const message: Message = {
+        sender: {
+          name: data.name,
+          avatar: getMedia(data.avatar),
+          id: data.user_id,
+        },
+        id: data.message_id,
+        content: data.content,
+        timestamp: data.timestamp,
+        side: user.id === data.user_id ? 'right' : 'left',
+      };
+      let newMessages = [...messages, message]
+      console.log(newMessages)
+      setMessages(newMessages);
     };
-    socket.current.onopen = function () {
-      console.log('socket opened');
-    };
 
-    // Cleanup function to close the WebSocket connection when the component unmounts
     return () => {
       if (socket.current) {
         socket.current.close();
-        console.log('socket closed');
       }
     };
   }, [chatId]);
@@ -69,6 +72,7 @@ export const ChatProvider = ({ chatId, children }: childrenProps) => {
     socket.current?.send(
       JSON.stringify({
         content: textInput,
+        token: authTokens.access,
       }),
     );
     setTextInput('');
