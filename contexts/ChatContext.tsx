@@ -55,9 +55,7 @@ export const ChatProvider = ({ chatId, children }: childrenProps) => {
         timestamp: data.timestamp,
         side: user.id === data.user_id ? 'right' : 'left',
       };
-      let newMessages = [...messages, message]
-      console.log(newMessages)
-      setMessages(newMessages);
+      setMessages((prevMessages) => [...prevMessages, message]);
     };
 
     return () => {
