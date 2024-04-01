@@ -2,7 +2,6 @@
 
 import Calendar from '@/components/home/Calendar';
 import CustomSelect from '@/components/home/CustomSelect';
-import Spotify from '@/components/home/spotify';
 import AuthContext from '@/contexts/AuthContext';
 import { useContext, useEffect, useState } from 'react';
 import Wrapper from './Wrapper';
@@ -51,13 +50,9 @@ export default function Home() {
               </div>
             </div>
           </div>
-
-          <div className='w-1/3 dark:text-white'>
-            <Spotify />
+          <div className='w-fit'>
+            <Calendar onSelectDate={handleSelectDate} />
           </div>
-        </div>
-        <div className='w-fit'>
-          <Calendar onSelectDate={handleSelectDate} />
         </div>
       </div>
     </Wrapper>
