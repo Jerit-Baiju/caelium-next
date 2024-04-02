@@ -92,9 +92,9 @@ const ChatsPane = () => {
                     {truncate({ chars: chat.last_message_content, length: 45 })}
                   </span>
                 </div>
-                {chat.last_message_time && (
+                {chat.updated_time && (
                   <span className='inline-flex items-end bg-neutral-200 text-neutral-800 text-sm font-medium px-2.5 py-0.5 rounded-full dark:bg-neutral-900 dark:text-neutral-300'>
-                    {getTime(chat.last_message_time)}
+                    {getTime(chat.updated_time)}
                   </span>
                 )}
               </div>
