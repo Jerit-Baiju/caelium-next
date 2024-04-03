@@ -3,6 +3,7 @@
 import Calendar from '@/components/home/Calendar';
 import CustomSelect from '@/components/home/CustomSelect';
 import AuthContext from '@/contexts/AuthContext';
+import Link from 'next/link';
 import { useContext, useEffect, useState } from 'react';
 import Wrapper from './Wrapper';
 
@@ -34,8 +35,8 @@ export default function Home() {
         <div className='p-4'>
           <CustomSelect options={options} onSelect={handleSelect} defaultOption='Personal' />
         </div>
-        <div className='max-sm:m-5 mx-4 h-min flex rounded-xl border p-10 border-solid'>
-          <div className='w-2/3'>
+        <div className='max-sm:m-5 mx-4 h-min flex rounded-xl border p-10 max-sm:p-5 border-solid'>
+          <div className='md:w-2/3'>
             <span className='mb-4 text-3xl font-extrabold text-neutral-900 dark:text-white md:text-5xl lg:text-6xl'>
               <span>Welcome, {user?.name}</span>
             </span>
@@ -49,8 +50,16 @@ export default function Home() {
                 <p>Happy Birthday to you!</p>
               </div>
             </div>
+            <Link href={'/crafts/create'}>
+              <button
+                type='button'
+                className='text-white bg-neutral-800 hover:bg-neutral-900 focus:outline-none focus:ring-2 focus:ring-neutral-300 font-medium rounded-lg text-lg px-5 py-2.5 me-2 mb-2 dark:bg-neutral-800 dark:hover:bg-neutral-700 dark:focus:ring-neutral-700 dark:border-neutral-700'
+              >
+                Craft <i className='fa-solid fa-feather ms-1'></i>
+              </button>
+            </Link>
           </div>
-          <div className='w-fit'>
+          <div className='w-fit max-sm:hidden'>
             <Calendar onSelectDate={handleSelectDate} />
           </div>
         </div>
