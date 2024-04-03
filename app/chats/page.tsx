@@ -1,7 +1,6 @@
 'use client';
 
 import ChatsPane from '@/components/chats/ChatsPane';
-import SpeedDial from '@/components/chats/elements.tsx/SpeedDial';
 import AuthContext from '@/contexts/AuthContext';
 import { User } from '@/helpers/props';
 import { getUrl } from '@/helpers/support';
@@ -124,7 +123,19 @@ const Page = () => {
           </div>
         </div>
       </div>
-      <SpeedDial />
+      {/* new chat dial */}
+      <div data-dial-init className='fixed end-6 bottom-20 group sm:hidden'>
+        <button
+          type='button'
+          data-dial-toggle='speed-dial-menu-square'
+          aria-controls='speed-dial-menu-square'
+          aria-expanded='false'
+          className='flex items-center justify-center text-white bg-neutral-700 rounded-lg w-14 h-14 hover:bg-neutral-800 dark:bg-neutral-900 dark:hover:bg-neutral-700 focus:ring-4 focus:ring-neutral-300 focus:outline-none dark:focus:ring-neutral-800'
+        >
+          <i className='fa-solid fa-comments'></i>
+          <span className='sr-only'>Start new chat</span>
+        </button>
+      </div>
     </Wrapper>
   );
 };
