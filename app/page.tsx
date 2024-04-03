@@ -6,6 +6,7 @@ import AuthContext from '@/contexts/AuthContext';
 import Link from 'next/link';
 import { useContext, useEffect, useState } from 'react';
 import Wrapper from './Wrapper';
+import SpeedDial from '@/components/home/SpeedDial';
 
 const options = [
   { value: 'Personal', label: 'Personal', icon: 'user' },
@@ -64,6 +65,7 @@ export default function Home() {
           </div>
         </div>
       </div>
+      <SpeedDial/>
     </Wrapper>
   );
 }
