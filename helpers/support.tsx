@@ -1,19 +1,19 @@
 export interface GetUrlProps {
   url: string;
-  method?: string;
+  method?: 'GET'|'POST'|'PUT'|'PATCH'|'DELETE';
   data?: any;
-  headers?: any;
   token?: string;
+  content_type?: 'application/json' | 'multipart/form-data';
 }
 
-export const getUrl = ({ url, method = 'GET', data, token }: GetUrlProps) => {
+export const getUrl = ({ url, method = 'GET', data, token, content_type = 'application/json' }: GetUrlProps) => {
   return {
-    method: method,
     url: `${process.env.NEXT_PUBLIC_API_HOST}${url}`,
     data: data,
+    method: method,
     headers: {
       Authorization: 'Bearer ' + token,
-      'content-type': 'application/json',
+      'content-type': content_type,
     },
   };
 };
