@@ -29,8 +29,8 @@ const CraftsHome = () => {
       <div className='flex-grow'>
         <h1 className='text-4xl text-center font-bold m-4'>Crafts</h1> {/* Heading added here */}
         <div className='mx-4 md:mb-24 max-sm:m-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6'>
-          {crafts?.map((craft: Craft) => (
-            <Link href={`/crafts/get/${craft.id}`}>
+          {crafts?.map((craft: Craft, index) => (
+            <Link key={index} href={`/crafts/get/${craft.id}`}>
               <div className='dark:bg-neutral-800 h-min rounded-lg shadow-md overflow-hidden' key={craft.id}>
                 <img src={craft.banner} alt={craft.title} className='w-full h-52 object-cover' />
                 <div className='p-6'>
