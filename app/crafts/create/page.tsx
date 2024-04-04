@@ -53,13 +53,13 @@ const BlogForm = () => {
                 Craft <i className='fa-solid fa-feather ms-1'></i>
               </h1>
               <div className='mb-4'>
-                <label htmlFor='title' className='block text-sm font-medium text-gray-700 dark:text-white'>
+                <label htmlFor='title' className='block text-sm font-medium text-neutral-700 dark:text-white'>
                   Title
                 </label>
                 <input
                   type='text'
                   id='title'
-                  className='mt-1 p-2 w-full border rounded-md focus:outline-none focus:ring focus:border-blue-300 dark:bg-neutral-800 dark:border-gray-700'
+                  className='mt-1 p-2 w-full border rounded-md focus:outline-none focus:ring focus:border-blue-300 dark:bg-neutral-800 dark:border-neutral-700'
                   placeholder='Enter title'
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
@@ -67,20 +67,20 @@ const BlogForm = () => {
                 />
               </div>
               <div className='mb-4'>
-                <label htmlFor='banner' className='block text-sm font-medium text-gray-700 dark:text-white'>
+                <label htmlFor='banner' className='block text-sm font-medium text-neutral-700 dark:text-white'>
                   Banner Image Upload
                 </label>
                 <input
                   type='file'
                   accept='image/*'
                   id='banner'
-                  className='mt-1 p-2 w-full border rounded-md focus:outline-none focus:ring focus:border-blue-300 dark:bg-neutral-800 dark:border-gray-700'
+                  className='mt-1 p-2 w-full border rounded-md focus:outline-none focus:ring focus:border-blue-300 dark:bg-neutral-800 dark:border-neutral-700'
                   onChange={handleBannerChange}
                   required
                 />
               </div>
               <div className='mb-4'>
-                <label htmlFor='content' className='block text-sm font-medium text-gray-700 dark:text-white'>
+                <label htmlFor='content' className='block text-sm font-medium text-neutral-700 dark:text-white'>
                   Content
                 </label>
                 <textarea
