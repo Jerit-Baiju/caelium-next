@@ -29,4 +29,10 @@ export interface Craft {
   date: Date;
   time: string;
   space: string;
+  owner: User;
 }
+
+export interface BaseError {
+  text: string;
+  code: 'CHAT_NOT_FOUND' | 'FETCH_MESSAGES_FAILED';
+};
