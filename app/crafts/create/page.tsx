@@ -5,7 +5,7 @@ import axios from 'axios';
 import { useContext, useState } from 'react';
 import Wrapper from '../../Wrapper';
 
-const BlogForm = () => {
+const CraftCreate = () => {
   const today = new Date();
   const formattedDate = today.toISOString().substr(0, 10);
   const [title, setTitle] = useState('');
@@ -140,4 +140,4 @@ const BlogForm = () => {
   );
 };
 
-export default BlogForm;
+export default CraftCreate;
