@@ -18,7 +18,7 @@ const CraftsHome = () => {
   const [error, setError] = useState<ErrorType | null>(null);
 
   useEffect(() => {
-    const fetchMessages = async () => {
+    const fetchCrafts = async () => {
       try {
         const response = await axios.request(getUrl({ url: `/api/crafts/`, token: authTokens?.access }));
         setCrafts(response.data);
@@ -28,7 +28,7 @@ const CraftsHome = () => {
         console.error('Error fetching data:', error);
       }
     };
-    fetchMessages();
+    fetchCrafts();
   }, []);
   const formatDate = (dateString: Date): string => {
     const options: Intl.DateTimeFormatOptions = { year: 'numeric', month: 'long', day: 'numeric' };
