@@ -1,6 +1,6 @@
 export interface GetUrlProps {
   url: string;
-  method?: 'GET'|'POST'|'PUT'|'PATCH'|'DELETE';
+  method?: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
   data?: any;
   token?: string;
   content_type?: 'application/json' | 'multipart/form-data';
@@ -31,9 +31,7 @@ export const getTime = (timestamp: string | null) => {
   const formatted = date.toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true });
   return timestamp ? formatted : '';
 };
-export const formatDate = (dateString: Date | undefined | null): string => {
-  const date = dateString ?? new Date(); 
-  const options: Intl.DateTimeFormatOptions = { year: 'numeric', month: 'long', day: 'numeric' };
-  const formattedDate = date.toLocaleDateString('en-US', options);
-  return formattedDate;
+export const formatDate = (dateString: Date | null | undefined) => {
+  const date = new Date(dateString ? dateString : '');
+  return date.toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' });
 };
