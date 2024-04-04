@@ -31,3 +31,9 @@ export const getTime = (timestamp: string | null) => {
   const formatted = date.toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true });
   return timestamp ? formatted : '';
 };
+export const formatDate = (dateString: Date | undefined | null): string => {
+  const date = dateString ?? new Date(); 
+  const options: Intl.DateTimeFormatOptions = { year: 'numeric', month: 'long', day: 'numeric' };
+  const formattedDate = date.toLocaleDateString('en-US', options);
+  return formattedDate;
+};
