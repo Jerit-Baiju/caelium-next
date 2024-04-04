@@ -20,3 +20,13 @@ export interface Message {
   content: string;
   side: string;
 }
+export interface Craft {
+  id: number;
+  title: string;
+  tag: string;
+  banner: string;
+  content: string;
+  date: Date;
+  time: string;
+  space: string;
+}
