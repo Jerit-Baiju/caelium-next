@@ -1,5 +1,5 @@
 'use client';
-import { Message, User } from '@/helpers/props';
+import { BaseError, Message, User } from '@/helpers/props';
 import { getMedia, getUrl } from '@/helpers/support';
 import axios, { AxiosError } from 'axios';
 import { ReactNode, createContext, useContext, useEffect, useRef, useState } from 'react';
@@ -26,17 +26,12 @@ const ChatContext = createContext<ChatContextProps>({
 });
 export default ChatContext;
 
-type ErrorType = {
-  text: string;
-  code: 'CHAT_NOT_FOUND' | 'FETCH_MESSAGES_FAILED';
-};
-
 export const ChatProvider = ({ chatId, children }: childrenProps) => {
   const { authTokens, user } = useContext(AuthContext);
   const [textInput, setTextInput] = useState('');
   const [messages, setMessages] = useState<Message[]>([]);
   const [recipient, setRecipient] = useState<User>();
-  const [error, setError] = useState<ErrorType | null>(null);
+  const [error, setError] = useState<BaseError | null>(null);
 
   const socket = useRef<WebSocket | null>(null);
 
@@ -104,14 +99,6 @@ export const ChatProvider = ({ chatId, children }: childrenProps) => {
     fetchMessages();
   }, []);
 
-  let contextData: ChatContextProps = {
-    handleSubmit,
-    textInput,
-    setTextInput,
-    messages,
-    recipient,
-  };
-
   if (error) {
     return (
       <div className='flex max-sm:max-h-[calc(100dvh-5rem] flex-col flex-grow h-screen sm:w-3/4'>
@@ -123,5 +110,7 @@ export const ChatProvider = ({ chatId, children }: childrenProps) => {
     );
   }
 
-  return <ChatContext.Provider value={contextData}>{children}</ChatContext.Provider>;
+  return (
+    <ChatContext.Provider value={{ handleSubmit, textInput, setTextInput, messages, recipient }}>{children}</ChatContext.Provider>
+  );
 };
