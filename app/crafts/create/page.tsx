@@ -9,6 +9,7 @@ const CraftCreate = () => {
   const today = new Date();
   const formattedDate = today.toISOString().substr(0, 10);
   const [title, setTitle] = useState('');
+  const [tag, setTag] = useState('');
   const [banner, setBanner] = useState<File | null>(null);
   const [content, setContent] = useState('');
   const [selectedDate, setSelectedDate] = useState<string>(formattedDate);
@@ -34,6 +35,7 @@ const CraftCreate = () => {
     e.preventDefault();
     const formData = new FormData();
     formData.append('title', title);
+    formData.append('tag', tag);
     formData.append('banner', banner as File);
     formData.append('content', content);
     formData.append('space', space);
@@ -63,6 +65,20 @@ const CraftCreate = () => {
                   placeholder='Enter title'
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
+                  required
+                />
+              </div>
+              <div className='mb-4'>
+                <label htmlFor='title' className='block text-sm font-medium text-neutral-700 dark:text-white'>
+                  Tag
+                </label>
+                <input
+                  type='text'
+                  id='tag'
+                  className='mt-1 p-2 w-full border rounded-md focus:outline-none focus:ring focus:border-blue-300 dark:bg-neutral-800 dark:border-neutral-700'
+                  placeholder='Enter tagline'
+                  value={tag}
+                  onChange={(e) => setTag(e.target.value)}
                   required
                 />
               </div>
