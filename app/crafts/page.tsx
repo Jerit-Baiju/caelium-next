@@ -9,7 +9,7 @@ import Wrapper from '../Wrapper';
 
 const CraftsHome = () => {
   const { authTokens } = useContext(AuthContext);
-  let [crafts, setCrafts] = useState<Craft[]|null>(null);
+  let [crafts, setCrafts] = useState<Craft[]>([]);
   const [error, setError] = useState<BaseError | null>(null);
   useEffect(() => {
     const fetchCrafts = async () => {
@@ -28,6 +28,7 @@ const CraftsHome = () => {
     <Wrapper>
       <div className='flex-grow'>
         <h1 className='text-4xl text-center font-bold m-4'>Crafts</h1>
+        {crafts?.length === 0 && <div className='text-center text-neutral-400 text-5xl pt-64'>No Crafts for you</div>}
         <div className='mx-4 md:mb-24 max-sm:m-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6'>
           {crafts?.map((craft: Craft, index) => (
             <Link key={index} href={`/crafts/get/${craft.id}`}>
