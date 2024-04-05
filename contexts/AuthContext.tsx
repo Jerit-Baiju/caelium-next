@@ -119,7 +119,7 @@ export const AuthProvider = ({ children }: childrenProps) => {
 
   let logoutUser = () => {
     setAuthTokens(null);
-    setUser({});
+    setUser(null);
     localStorage.removeItem('authTokens');
     router.push('/welcome');
   };
