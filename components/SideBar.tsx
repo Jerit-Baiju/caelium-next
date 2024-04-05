@@ -1,6 +1,5 @@
 'use client';
 import AuthContext from '@/contexts/AuthContext';
-import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useContext } from 'react';
@@ -15,7 +14,8 @@ export const options: Option[] = [
   { name: 'Home', url: '/', icon: 'house' },
   { name: 'Gallery', url: '/gallery', icon: 'mountain-sun' },
   { name: 'Chats', url: '/chats', icon: 'message' },
-  { name: 'Calendar', url: '/calendar', icon: 'calendar-days' },
+  { name: 'Crafts', url: '/crafts', icon: 'feather' },
+  {name: 'Account', url: '/account', icon: 'user'}
 ];
 
 const SideBar = () => {
@@ -26,13 +26,13 @@ const SideBar = () => {
       <>
         <aside
           id='logo-sidebar'
-          className='fixed top-0 left-0 z-40 w-64 border-r border-dashed border-neutral-500 h-screen max-sm:hidden transition-transform -translate-x-full sm:translate-x-0 '
+          className='fixed top-20 left-0 z-40 w-64 border-r border-gray-200 dark:border-gray-600 h-screen max-sm:hidden transition-transform -translate-x-full sm:translate-x-0 '
           aria-label='Sidebar'
         >
-          <div className='h-full px-3 pb-4 overflow-y-auto'>
-            <Link href='/' className='flex flex-col items-center justify-center'>
+          <div className='h-full flex flex-col justify-start pt-20 w-full px-3 pb-4 overflow-y-auto'>
+            {/* <Link href='/' className='flex flex-col items-center justify-center'>
               <Image className='mt-2 pointer-events-none' src={'/logos/written.png'} alt='caelium' width={200} height={0} />
-            </Link>
+            </Link> */}
             <ul className='space-y-2 font-medium pt-3'>
               {options.map((option: Option, id) => (
                 <li key={id}>

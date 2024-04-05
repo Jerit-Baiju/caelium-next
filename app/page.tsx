@@ -7,6 +7,7 @@ import Link from 'next/link';
 import { useContext, useEffect, useState } from 'react';
 import Wrapper from './Wrapper';
 import SpeedDial from '@/components/home/SpeedDial';
+import NavBar from '@/components/NavBar';
 
 const options = [
   { value: 'Personal', label: 'Personal', icon: 'user' },
@@ -51,14 +52,6 @@ export default function Home() {
                 <p>Happy Birthday to you!</p>
               </div>
             </div>
-            <Link href={'/crafts/create'}>
-              <button
-                type='button'
-                className='text-white bg-neutral-800 hover:bg-neutral-900 focus:outline-none focus:ring-2 focus:ring-neutral-300 font-medium rounded-lg text-lg px-5 py-2.5 me-2 mb-2 dark:bg-neutral-800 dark:hover:bg-neutral-700 dark:focus:ring-neutral-700 dark:border-neutral-700'
-              >
-                Craft <i className='fa-solid fa-feather ms-1'></i>
-              </button>
-            </Link>
           </div>
           <div className='w-fit max-sm:hidden'>
             <Calendar onSelectDate={handleSelectDate} />

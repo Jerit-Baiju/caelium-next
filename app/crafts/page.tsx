@@ -27,7 +27,7 @@ const CraftsHome = () => {
   return (
     <Wrapper>
       <div className='flex-grow'>
-        <h1 className='text-4xl text-center font-bold m-4'>Crafts</h1> {/* Heading added here */}
+        <h1 className='text-4xl text-center font-bold m-4'>Crafts</h1>
         <div className='mx-4 md:mb-24 max-sm:m-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6'>
           {crafts?.map((craft: Craft, index) => (
             <Link key={index} href={`/crafts/get/${craft.id}`}>

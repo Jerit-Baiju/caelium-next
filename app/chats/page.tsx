@@ -44,12 +44,12 @@ const Page = () => {
   };
   return (
     <Wrapper>
-      <div className='flex flex-grow divide-x divide-dashed divide-neutral-500'>
+      <div className='flex flex-grow h-[calc(100dvh-5rem)] max-sm:h-min divide-x divide-dashed divide-neutral-500 overflow-y-scroll'>
         <div className='flex flex-grow flex-none sm:w-1/4'>
           <ChatsPane />
         </div>
         <div className='flex max-sm:hidden flex-none flex-grow sm:w-3/4'>
-          <div className='flex flex-col h-full flex-grow items-center justify-center'>
+          <div className='flex flex-col flex-grow items-center justify-center'>
             <div
               className={`mb-20 text-center font-bold text-transparent bg-clip-text bg-gradient-to-r to-emerald-600 from-sky-400  ${comforter.className}`}
             >
@@ -72,9 +72,9 @@ const Page = () => {
         id='authentication-modal'
         tabIndex={-1}
         aria-hidden={true}
-        className='hidden bg-black h-screen bg-opacity-50 overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 max-h-full'
+        className='hidden bg-black bg-opacity-50 overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0'
       >
-        <div className='relative p-4 w-full max-w-xl max-h-full'>
+        <div className='relative p-4 w-full max-w-xl'>
           <div className='relative bg-white rounded-lg shadow dark:bg-neutral-900'>
             <div className='flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-neutral-600'>
               <h3 className='text-xl font-semibold text-neutral-900 dark:text-white'>New Chat</h3>
