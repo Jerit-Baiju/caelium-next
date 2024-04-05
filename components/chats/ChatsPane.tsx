@@ -56,24 +56,26 @@ const ChatsPane = () => {
   }, []);
 
   return (
-    <div className='w-full max-sm:h-min overflow-x-hidden overflow-y-auto'>
-      <form onSubmit={(e) => fetchUsers(e)} className='m-3'>
-        <label htmlFor='default-search' className='mb-2 text-sm font-medium text-neutral-900 sr-only dark:text-white'>
-          Search
-        </label>
-        <div className='relative'>
-          <div className='absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none'>
-            <i className='text-white fa-solid fa-magnifying-glass'></i>
+    <div className='flex flex-col h-[calc(100dvh-5rem)] w-full flex-grow max-sm:h-min overflow-x-hidden overflow-y-auto'>
+      <div className='flex w-full sticky top-0 z-10 flex-col'>
+        <form onSubmit={(e) => fetchUsers(e)} className='m-3'>
+          <label htmlFor='default-search' className='mb-2 text-sm font-medium text-neutral-900 sr-only dark:text-white'>
+            Search
+          </label>
+          <div className='relative'>
+            <div className='absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none'>
+              <i className='text-white fa-solid fa-magnifying-glass'></i>
+            </div>
+            <input
+              type='text'
+              id='default-search'
+              className='block w-full p-2 ps-10 text-sm text-neutral-900 border border-neutral-300 rounded-lg bg-neutral-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-neutral-900 dark:border-neutral-600 dark:placeholder-neutral-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'
+              placeholder='Search'
+              required
+            />
           </div>
-          <input
-            type='text'
-            id='default-search'
-            className='block w-full p-2 ps-10 text-sm text-neutral-900 border border-neutral-300 rounded-lg bg-neutral-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-neutral-900 dark:border-neutral-600 dark:placeholder-neutral-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'
-            placeholder='Search'
-            required
-          />
-        </div>
-      </form>
+        </form>
+      </div>
       <ul className={`${!showChats && 'max-sm:hidden'}`} role='list'>
         {chats.map((chat: Chat) => (
           <Link key={chat.id} href={`/chats/${chat.id}`}>

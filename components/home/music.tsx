@@ -26,8 +26,8 @@ const MusicController = () => {
               >
                 <path
                   stroke='currentColor'
-                  stroke-linecap='round'
-                  stroke-linejoin='round'
+                  strokeLinecap='round'
+                  strokeLinejoin='round'
                   stroke-width='2'
                   d='M11.484 6.166 13 4h6m0 0-3-3m3 3-3 3M1 14h5l1.577-2.253M1 4h5l7 10h6m0 0-3 3m3-3-3-3'
                 />
@@ -132,8 +132,8 @@ const MusicController = () => {
               >
                 <path
                   stroke='currentColor'
-                  stroke-linecap='round'
-                  stroke-linejoin='round'
+                  strokeLinecap='round'
+                  strokeLinejoin='round'
                   stroke-width='2'
                   d='M16 1v5h-5M2 19v-5h5m10-4a8 8 0 0 1-14.947 3.97M1 10a8 8 0 0 1 14.947-3.97'
                 />
