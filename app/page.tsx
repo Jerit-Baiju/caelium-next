@@ -4,6 +4,8 @@ import Calendar from '@/components/home/Calendar';
 import CustomSelect from '@/components/home/CustomSelect';
 import SpeedDial from '@/components/home/SpeedDial';
 import AuthContext from '@/contexts/AuthContext';
+
+import NavContext from '@/contexts/NavContext';
 import { useContext, useEffect, useState } from 'react';
 import Wrapper from './Wrapper';
 
@@ -16,6 +18,10 @@ const spaceOptions = [
 
 export default function Home() {
   let { user } = useContext(AuthContext);
+  const { setCtaButton } = useContext(NavContext);
+
+  setCtaButton({name: 'hehe', url: '#'})
+
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
 
   const handleSelectDate = (date: Date) => {

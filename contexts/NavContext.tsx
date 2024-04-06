@@ -1,27 +1,29 @@
-import React, { createContext, ReactNode, useState } from 'react';
+'use client';
+import { ReactNode, createContext, useState } from 'react';
 
 interface NavContextProps {
-  buttons: ButtonInfo[] | null;
-  ctaButton: ButtonInfo | null;
-  setButtons: React.Dispatch<React.SetStateAction<ButtonInfo[] | null>>;
-  setCtaButton: React.Dispatch<React.SetStateAction<ButtonInfo | null>>;
+  navLinks: NavLink[];
+  setNavLinks: any;
+  ctaButton: NavLink;
+  setCtaButton: any;
 }
 
-interface ButtonInfo {
+const NavContext = createContext<NavContextProps>({
+  navLinks: [],
+  setNavLinks: () => {},
+  ctaButton: { name: '', url: '#' },
+  setCtaButton: () => {},
+});
+export default NavContext;
+
+interface NavLink {
   name: string;
   url: string;
 }
 
-const NavContext = createContext<NavContextProps>({
-  buttons: null,
-  ctaButton: null,
-  setButtons: async () => {},
-  setCtaButton: async () => {},
-});
-export default NavContext;
-
 export const NavProvider = ({ children }: { children: ReactNode }) => {
-  const [buttons, setButtons] = useState<ButtonInfo[] | null>([]);
-  const [ctaButton, setCtaButton] = useState<ButtonInfo | null>(null);
-  return <NavContext.Provider value={{ buttons, ctaButton, setButtons, setCtaButton }}>{children}</NavContext.Provider>;
+  const [navLinks, setNavLinks] = useState<NavLink[]>([{ name: 'sample', url: 'sample' }]);
+  const [ctaButton, setCtaButton] = useState<NavLink>({name: 'Get Started', url: '/get-started'});
+
+  return <NavContext.Provider value={{ navLinks, setNavLinks, ctaButton, setCtaButton }}>{children}</NavContext.Provider>;
 };
