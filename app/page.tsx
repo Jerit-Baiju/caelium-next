@@ -2,14 +2,12 @@
 
 import Calendar from '@/components/home/Calendar';
 import CustomSelect from '@/components/home/CustomSelect';
+import SpeedDial from '@/components/home/SpeedDial';
 import AuthContext from '@/contexts/AuthContext';
-import Link from 'next/link';
 import { useContext, useEffect, useState } from 'react';
 import Wrapper from './Wrapper';
-import SpeedDial from '@/components/home/SpeedDial';
-import NavBar from '@/components/NavBar';
 
-const options = [
+const spaceOptions = [
   { value: 'Personal', label: 'Personal', icon: 'user' },
   { value: 'Partner', label: 'Partner', icon: 'heart' },
   { value: 'Family', label: 'Family', icon: 'people-group' },
@@ -35,7 +33,7 @@ export default function Home() {
     <Wrapper>
       <div className='w-full dark:text-white'>
         <div className='p-4'>
-          <CustomSelect options={options} onSelect={handleSelect} defaultOption='Personal' />
+          <CustomSelect options={spaceOptions} onSelect={handleSelect} defaultOption='Personal' />
         </div>
         <div className='max-sm:m-5 mx-4 h-min flex rounded-xl border p-10 max-sm:p-5 border-solid'>
           <div className='md:w-2/3'>
@@ -58,7 +56,7 @@ export default function Home() {
           </div>
         </div>
       </div>
-      <SpeedDial/>
+      <SpeedDial />
     </Wrapper>
   );
 }
