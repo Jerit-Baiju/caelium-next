@@ -3,10 +3,6 @@ import { jwtDecode } from 'jwt-decode';
 import { useRouter } from 'next/navigation';
 import { ReactNode, Suspense, createContext, useEffect, useState } from 'react';
 
-interface childrenProps {
-  children: ReactNode;
-}
-
 interface ErrorObject {
   [key: string]: string;
 }
@@ -30,7 +26,7 @@ const AuthContext = createContext<AuthContextProps>({
 });
 
 export default AuthContext;
-export const AuthProvider = ({ children }: childrenProps) => {
+export const AuthProvider = ({ children }: {children:ReactNode}) => {
   let [authTokens, setAuthTokens] = useState(() =>
     typeof window !== 'undefined' && localStorage.getItem('authTokens')
       ? JSON.parse(localStorage.getItem('authTokens') || '{}')
