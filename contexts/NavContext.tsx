@@ -1,29 +1,33 @@
-'use client';
-import { ReactNode, createContext, useState } from 'react';
-
-interface NavContextProps {
-  navLinks: NavLink[];
-  setNavLinks: any;
-  ctaButton: NavLink;
-  setCtaButton: any;
-}
-
-const NavContext = createContext<NavContextProps>({
-  navLinks: [],
-  setNavLinks: () => {},
-  ctaButton: { name: '', url: '#' },
-  setCtaButton: () => {},
-});
-export default NavContext;
+"use client"
+import React, { createContext, useContext, useState, Dispatch, SetStateAction } from 'react';
 
 interface NavLink {
   name: string;
   url: string;
 }
 
-export const NavProvider = ({ children }: { children: ReactNode }) => {
-  const [navLinks, setNavLinks] = useState<NavLink[]>([{ name: 'sample', url: 'sample' }]);
-  const [ctaButton, setCtaButton] = useState<NavLink>({name: 'Get Started', url: '/get-started'});
+interface NavbarContextData {
+  ctaButton: NavLink;
+  setCtaButton: Dispatch<SetStateAction<NavLink>>;
+  navLinks: NavLink[];
+  setNavLinks: Dispatch<SetStateAction<NavLink[]>>;
+}
 
-  return <NavContext.Provider value={{ navLinks, setNavLinks, ctaButton, setCtaButton }}>{children}</NavContext.Provider>;
+const NavbarContext = createContext<NavbarContextData | undefined>(undefined);
+
+export const useNavbar = () => {
+  const context = useContext(NavbarContext);
+  if (!context) {
+    throw new Error('useNavbar must be used within a NavbarProvider');
+  }
+  return context;
+};
+
+// Navbar Provider component
+export const NavbarProvider: React.FC<React.PropsWithChildren<{}>> = ({ children }) => {
+  const [ctaButton, setCtaButton] = useState<NavLink>({ name: '', url: '' });
+  const [navLinks, setNavLinks] = useState<NavLink[]>([]);
+
+
+  return <NavbarContext.Provider value={{ ctaButton, setCtaButton, navLinks, setNavLinks}}>{children}</NavbarContext.Provider>;
 };
