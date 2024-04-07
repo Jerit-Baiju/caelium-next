@@ -5,9 +5,10 @@ import CustomSelect from '@/components/home/CustomSelect';
 import SpeedDial from '@/components/home/SpeedDial';
 import AuthContext from '@/contexts/AuthContext';
 
-import NavContext from '@/contexts/NavContext';
+
 import { useContext, useEffect, useState } from 'react';
 import Wrapper from './Wrapper';
+import { useNavbar } from '@/contexts/NavContext';
 
 const spaceOptions = [
   { value: 'Personal', label: 'Personal', icon: 'user' },
@@ -18,9 +19,12 @@ const spaceOptions = [
 
 export default function Home() {
   let { user } = useContext(AuthContext);
-  const { setCtaButton } = useContext(NavContext);
+  const { setCtaButton } = useNavbar()
 
-  setCtaButton({name: 'hehe', url: '#'})
+  useEffect(() => {
+    setCtaButton({name: 'Get Started', 'url': '/get-started'})
+  }, [])
+
 
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
 
