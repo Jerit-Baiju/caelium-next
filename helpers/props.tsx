@@ -35,4 +35,15 @@ export interface Craft {
 export interface BaseError {
   text: string;
   code: 'CHAT_NOT_FOUND' | 'FETCH_MESSAGES_FAILED';
-};
+}
+
+export interface NavLink {
+  name: string;
+  url: string;
+  active?: boolean;
+}
+
+export interface DropDown{
+  name: string;
+  options: NavLink[]
+}
