@@ -31,8 +31,8 @@ let defaultNavLinks: NavLink[] = [
 let createDropdown: DropDown = {
   name: 'Create',
   options: [
-    { name: 'New Event', url: '/calendar/create' },
-    { name: 'New ToDo', url: '/todo/create' },
+    { name: 'Event', url: '/calendar/create' },
+    { name: 'ToDo', url: '/todo/create' },
   ],
 };
 

@@ -11,14 +11,14 @@ const TextMessage = ({ message }: { message: Message }) => {
     <div className={`chat ${side}`}>
       <div className='chat-image avatar'>
         <div className='w-10 rounded-full'>
-          <img className='dark:bg-white' alt={message.sender.name} src={message.sender.avatar} />
+          <img className='dark:bg-white border-1 border-neutral-200 dark:border-neutral-800' alt={message.sender.name} src={message.sender.avatar} />
         </div>
       </div>
       <div className='chat-header'>
         {message.sender.name}
         <time className='text-xs opacity-50 mx-2'>{formattedTime}</time>
       </div>
-      <div className='chat-bubble rounded-lg bg-neutral-700 text-white'>{message.content}</div>
+      <div className='chat-bubble rounded-lg bg-neutral-500 dark:bg-neutral-700 text-white'>{message.content}</div>
       {/* <div className='chat-footer opacity-50'>Delivered</div> */}
     </div>
   );
