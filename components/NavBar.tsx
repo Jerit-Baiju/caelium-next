@@ -1,11 +1,9 @@
-
-
 import { useNavbar } from '@/contexts/NavContext';
 import Image from 'next/image';
 import Link from 'next/link';
 
 const NavBar = () => {
-  let {ctaButton, navLinks } = useNavbar()
+  let { ctaButton, navLinks, dropDown } = useNavbar();
   return (
     <nav className='bg-white dark:bg-neutral-900 fixed w-full z-20 top-0 start-0 border-b border-gray-200 dark:border-gray-600'>
       <div className='max-w-screen-xl flex flex-wrap items-center h-20 justify-between mx-auto p-1'>
@@ -30,9 +28,7 @@ const NavBar = () => {
             aria-expanded='false'
           >
             <span className='sr-only'>Open main menu</span>
-            <svg className='w-5 h-5' aria-hidden='true' xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 17 14'>
-              <path stroke='currentColor' strokeLinecap='round' strokeLinejoin='round' strokeWidth='2' d='M1 1h15M1 7h15M1 13h15' />
-            </svg>
+            <i className='fa-solid fa-bars text-xl'></i>
           </button>
         </div>
         <div className='items-center justify-between hidden w-full md:flex md:w-auto md:order-1' id='navbar-sticky'>
@@ -41,13 +37,42 @@ const NavBar = () => {
               <li key={index}>
                 <Link
                   href={button.url}
-                  className='block py-2 px-3 text-white rounded md:bg-transparent md:text-blue-700 md:p-0 md:dark:text-blue-500'
+                  className={`block py-2 px-3 text-white rounded md:bg-transparent ${button.active ? 'md:text-blue-700 md:dark:text-blue-500' : null} md:p-0`}
                   aria-current='page'
                 >
                   {button.name}
                 </Link>
               </li>
             ))}
+            {dropDown && (
+              <li>
+                <button
+                  id='dropdownNavbarLink'
+                  data-dropdown-toggle='dropdownNavbar'
+                  className='flex items-center justify-between w-full py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 md:w-auto dark:text-white md:dark:hover:text-blue-500 dark:focus:text-white dark:border-gray-700 dark:hover:bg-neutral-700 md:dark:hover:bg-transparent'
+                >
+                  {dropDown.name}
+                  <i className='fa-solid fa-chevron-down px-1'></i>
+                </button>
+                <div
+                  id='dropdownNavbar'
+                  className='z-10 hidden font-normal bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-neutral-700 dark:divide-gray-600'
+                >
+                  <ul className='py-2 text-sm text-gray-700 dark:text-gray-200' aria-labelledby='dropdownLargeButton'>
+                    {dropDown.options.map((option, index) => (
+                      <li key={index}>
+                        <a
+                          href={option.url}
+                          className='block px-4 py-2 hover:bg-gray-100 dark:hover:bg-neutral-600 dark:hover:text-white'
+                        >
+                          {option.name}
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </li>
+            )}
           </ul>
         </div>
       </div>

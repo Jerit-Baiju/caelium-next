@@ -1,5 +1,6 @@
 'use client';
 import AuthContext from '@/contexts/AuthContext';
+import { useNavbar } from '@/contexts/NavContext';
 import { BaseError, Craft } from '@/helpers/props';
 import { formatDate, getUrl } from '@/helpers/support';
 import axios, { AxiosError } from 'axios';
@@ -9,6 +10,7 @@ import Wrapper from '../Wrapper';
 
 const CraftsHome = () => {
   const { authTokens } = useContext(AuthContext);
+  const { setCtaButton, defaultCtaButton} = useNavbar();
   let [crafts, setCrafts] = useState<Craft[]>([]);
   const [error, setError] = useState<BaseError | null>(null);
   useEffect(() => {
@@ -24,6 +26,11 @@ const CraftsHome = () => {
     };
     fetchCrafts();
   }, [authTokens?.access]);
+
+  useEffect(() => {
+    setCtaButton({ name: 'Create Craft', url: '/crafts/create' });
+    return () => setCtaButton(defaultCtaButton);
+  }, []);
   return (
     <Wrapper>
       <div className='flex-grow'>
@@ -34,9 +41,9 @@ const CraftsHome = () => {
             <Link key={index} href={`/crafts/get/${craft.id}`}>
               <div className='dark:bg-neutral-800 h-min rounded-lg shadow-md overflow-hidden' key={craft.id}>
                 <img src={craft.banner} alt={craft.title} className='w-full h-52 object-cover' />
-                <div className='p-6'>
+                <div className='p-6 h-56'>
                   <p className='uppercase text-xs text-neutral-300 mb-2'>{craft.tag}</p>
-                  <h2 className='text-2xl font-bold mb-2'>{craft.title}</h2>
+                  <h2 className='text-2xl font-bold line-clamp-2 mb-2'>{craft.title}</h2>
                   <p className='text-neutral-200 line-clamp-2 mb-4'>{craft.content}</p>
                   <span className='text-neutral-300'>{formatDate(craft?.date)}</span>
                   <span className='text-neutral-300 mx-2'>•</span>
