@@ -23,7 +23,7 @@ const CraftsHome = () => {
       }
     };
     fetchCrafts();
-  }, []);
+  }, [authTokens?.access]);
   return (
     <Wrapper>
       <div className='flex-grow'>

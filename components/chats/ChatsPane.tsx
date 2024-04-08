@@ -53,7 +53,7 @@ const ChatsPane = () => {
       }
     };
     fetchChats();
-  }, []);
+  }, [authTokens?.access]);
 
   return (
     <div className='flex flex-col h-[calc(100dvh-5rem)] w-full flex-grow max-sm:h-min overflow-x-hidden overflow-y-auto'>
