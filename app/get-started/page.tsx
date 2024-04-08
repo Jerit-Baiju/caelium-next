@@ -34,13 +34,13 @@ const StartExploringPage: React.FC = () => {
           </div>
           <p className='text-xl mb-4'>Under Development</p>
           <p className='text-lg mb-8'>
-            Please note that Caelium is currently under development. We're working hard to bring you the best possible experience, but
+            Please note that Caelium is currently under development. We&apos;re working hard to bring you the best possible experience, but
             there may be some features that are still in progress or undergoing improvements.
           </p>
           <p className='text-xl mb-4'>Your Feedback Matters!</p>
           <p className='text-lg mb-8'>
             We value your input! If you have any suggestions for new features or notice any bugs or issues, please let us know. You can
-            submit your feedback, feature requests, or bug reports via the "Help/Support" section in the top navigation bar. We greatly
+            submit your feedback, feature requests, or bug reports via the &quot;Help/Support&quot; section in the top navigation bar. We greatly
             appreciate your help in making Caelium even better!
           </p>
           <div className='mt-8 flex flex-col items-center'>

@@ -15,7 +15,7 @@ export const options: Option[] = [
   { name: 'Gallery', url: '/gallery', icon: 'mountain-sun' },
   { name: 'Chats', url: '/chats', icon: 'message' },
   { name: 'Crafts', url: '/crafts', icon: 'feather' },
-  {name: 'Account', url: '/account', icon: 'user'}
+  { name: 'Account', url: '/account', icon: 'user' },
 ];
 
 const SideBar = () => {
@@ -75,21 +75,7 @@ const SideBar = () => {
                 <span className='sr-only'>Close modal</span>
               </button>
               <div className='p-4 md:p-5 text-center'>
-                <svg
-                  className='mx-auto mb-4 w-12 h-12 text-white'
-                  aria-hidden='true'
-                  xmlns='http://www.w3.org/2000/svg'
-                  fill='none'
-                  viewBox='0 0 20 20'
-                >
-                  <path
-                    stroke='currentColor'
-                    strokeLinecap='round'
-                    strokeLinejoin='round'
-                    strokeWidth='2'
-                    d='M10 11V6m0 8h.01M19 10a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z'
-                  />
-                </svg>
+                <i className='fa-solid fa-circle-exclamation fa-fade text-yellow-200 text-6xl my-4'></i>
                 <h3 className='mb-5 text-lg font-normal text-white'>Are you sure you want to Logout?</h3>
                 <button
                   onClick={logoutUser}
