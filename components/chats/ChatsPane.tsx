@@ -64,7 +64,7 @@ const ChatsPane = () => {
           </label>
           <div className='relative'>
             <div className='absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none'>
-              <i className='text-white fa-solid fa-magnifying-glass'></i>
+              <i className='fa-solid fa-magnifying-glass'></i>
             </div>
             <input
               type='text'
@@ -83,7 +83,7 @@ const ChatsPane = () => {
               <div className='flex items-center space-x-3 rtl:space-x-reverse'>
                 <div className='flex-shrink-0 dark:bg-white rounded-full'>
                   <img
-                    className='w-12 h-12 rounded-full'
+                    className='w-12 h-12 rounded-full border dark:border-neutral-500 border-neutral-200'
                     src={getMedia(chat.other_participant.avatar)}
                     alt={chat.other_participant.name}
                   />
@@ -95,7 +95,7 @@ const ChatsPane = () => {
                   </span>
                 </div>
                 {chat.updated_time && (
-                  <span className='inline-flex items-end bg-neutral-200 text-neutral-800 text-sm font-medium px-2.5 py-0.5 rounded-full dark:bg-neutral-900 dark:text-neutral-300'>
+                  <span className='inline-flex items-end bg-neutral-300 text-neutral-800 text-sm font-medium px-2.5 py-0.5 rounded-full dark:bg-neutral-900 dark:text-neutral-300'>
                     {getTime(chat.updated_time)}
                   </span>
                 )}

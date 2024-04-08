@@ -4,7 +4,7 @@ import Wrapper from '../Wrapper';
 const StartExploringPage: React.FC = () => {
   return (
     <Wrapper>
-      <div className='bg-gray-200 dark:bg-neutral-950 dark:text-white text-black py-12 px-4 sm:px-6 lg:px-8'>
+      <div className='py-12 px-4 sm:px-6 lg:px-8'>
         <div className='max-w-3xl mx-auto'>
           <h1 className='text-3xl font-bold mb-6'>Welcome to Caelium!</h1>
           <p className='text-lg mb-8'>Explore and Connect with Your Spaces</p>
@@ -34,14 +34,14 @@ const StartExploringPage: React.FC = () => {
           </div>
           <p className='text-xl mb-4'>Under Development</p>
           <p className='text-lg mb-8'>
-            Please note that Caelium is currently under development. We&apos;re working hard to bring you the best possible experience, but
-            there may be some features that are still in progress or undergoing improvements.
+            Please note that Caelium is currently under development. We&apos;re working hard to bring you the best possible experience,
+            but there may be some features that are still in progress or undergoing improvements.
           </p>
           <p className='text-xl mb-4'>Your Feedback Matters!</p>
           <p className='text-lg mb-8'>
             We value your input! If you have any suggestions for new features or notice any bugs or issues, please let us know. You can
-            submit your feedback, feature requests, or bug reports via the &quot;Help/Support&quot; section in the top navigation bar. We greatly
-            appreciate your help in making Caelium even better!
+            submit your feedback, feature requests, or bug reports via the &quot;Help/Support&quot; section in the top navigation bar.
+            We greatly appreciate your help in making Caelium even better!
           </p>
           <div className='mt-8 flex flex-col items-center'>
             <button className='bg-black dark:bg-white dark:hover:bg-neutral-300 dark:text-black text-white px-6 py-3 rounded-lg font-semibold hover:bg-neutral-800'>

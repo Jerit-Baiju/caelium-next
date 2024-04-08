@@ -11,7 +11,7 @@ const config: Config = {
     },
   },
   daisyui: {
-    themes: ['black'],
+    themes: [],
   },
   darkMode: 'media',
   plugins: [require('daisyui')],

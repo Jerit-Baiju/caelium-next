@@ -65,30 +65,30 @@ const SideBar = () => {
           className='hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full'
         >
           <div className='relative p-4 w-full max-w-md max-h-full'>
-            <div className='relative bg-neutral-900 text-primary rounded-lg shadow'>
+            <div className='relative dark:bg-neutral-900 bg-neutral-200 rounded-lg shadow'>
               <button
                 type='button'
-                className='absolute top-3 end-2.5 bg-transparent rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center text-white hover:text-black hover:bg-slate-300'
+                className='absolute top-3 end-2.5 bg-transparent rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center hover:bg-neutral-300'
                 data-modal-hide='logout-modal'
               >
                 <i className='fa-solid fa-xmark'></i>
                 <span className='sr-only'>Close modal</span>
               </button>
               <div className='p-4 md:p-5 text-center'>
-                <i className='fa-solid fa-circle-exclamation fa-fade text-yellow-200 text-6xl my-4'></i>
-                <h3 className='mb-5 text-lg font-normal text-white'>Are you sure you want to Logout?</h3>
+                <i className='fa-solid fa-circle-exclamation fa-fade text-yellow-400 dark:text-yellow-200 text-6xl my-4'></i>
+                <h3 className='mb-5 text-lg font-normal'>Are you sure you want to Logout?</h3>
                 <button
                   onClick={logoutUser}
                   data-modal-hide='logout-modal'
                   type='button'
-                  className='bg-red-500 text-white hover:bg-red-800 font-medium rounded-lg text-sm inline-flex items-center px-5 py-2.5 text-center me-2'
+                  className='bg-red-500 text-white dark:hover:bg-red-800 hover:bg-red-600 font-medium rounded-lg text-sm inline-flex items-center px-5 py-2.5 text-center me-2'
                 >
                   Yes, I&apos;m sure
                 </button>
                 <button
                   data-modal-hide='logout-modal'
                   type='button'
-                  className='bg-neutral-800 text-white  rounded-lg font-medium px-5 py-2.5 hover:bg-neutral-700'
+                  className='dark:bg-neutral-800 bg-neutral-500 text-white rounded-lg font-medium px-5 py-2.5 hover:bg-neutral-700'
                 >
                   No, cancel
                 </button>
