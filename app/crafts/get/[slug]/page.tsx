@@ -23,7 +23,7 @@ const CraftRead = ({ params }: { params: { slug: Number } }) => {
       }
     };
     fetchCraft();
-  }, []);
+  }, [authTokens?.access]);
   const paragraphs = craft?.content.split('\n');
   return (
     <Wrapper>
