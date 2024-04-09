@@ -5,7 +5,14 @@
     {
       "src": "/logos/logo.png",
       "sizes": "1024x1024",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/logos/maskable-icon.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
     }
   ],
   "theme_color": "#FFFFFF",
@@ -16,36 +23,70 @@
   "description": "Welcome to Caelium! Your all-in-one platform for seamless organization and meaningful connections. Install now to effortlessly manage calendars, maps, chats, and more. Make every day extraordinary!",
   "screenshots": [
     {
-      "src": "feature-images/main.png",
+      "src": "feature-images/wide/main.png",
       "sizes": "1920x1080",
       "type": "image/png",
       "form_factor": "wide"
     },
     {
-      "src": "feature-images/blog.png",
+      "src": "feature-images/wide/blog.png",
       "sizes": "1920x1080",
       "type": "image/png",
       "form_factor": "wide"
-    },{
-      "src": "feature-images/calendar.png",
+    },
+    {
+      "src": "feature-images/wide/calendar.png",
       "sizes": "1920x1080",
       "type": "image/png",
       "form_factor": "wide"
-    },{
-      "src": "feature-images/map.png",
+    },
+    {
+      "src": "feature-images/wide/video-call.png",
       "sizes": "1920x1080",
       "type": "image/png",
       "form_factor": "wide"
-    },{
-      "src": "feature-images/video-call.png",
+    },
+    {
+      "src": "feature-images/wide/todo.png",
       "sizes": "1920x1080",
       "type": "image/png",
       "form_factor": "wide"
-    },{
-      "src": "feature-images/todo.png",
+    },
+    {
+      "src": "feature-images/wide/map.png",
       "sizes": "1920x1080",
       "type": "image/png",
       "form_factor": "wide"
+    },
+    {
+      "src": "feature-images/narrow/main.png",
+      "sizes": "1080x1920",
+      "type": "image/png",
+      "form_factor": "narrow"
+    },
+    {
+      "src": "feature-images/narrow/blog.png",
+      "sizes": "1080x1920",
+      "type": "image/png",
+      "form_factor": "narrow"
+    },
+    {
+      "src": "feature-images/narrow/calendar.png",
+      "sizes": "1080x1920",
+      "type": "image/png",
+      "form_factor": "narrow"
+    },
+    {
+      "src": "feature-images/narrow/video-call.png",
+      "sizes": "1080x1920",
+      "type": "image/png",
+      "form_factor": "narrow"
+    },
+    {
+      "src": "feature-images/narrow/todo.png",
+      "sizes": "1080x1920",
+      "type": "image/png",
+      "form_factor": "narrow"
     }
   ]
 }
