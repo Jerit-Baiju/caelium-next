@@ -41,16 +41,21 @@ const CraftsHome = () => {
             <Link key={index} href={`/crafts/get/${craft.id}`}>
               <div className='dark:bg-neutral-800 bg-neutral-200 h-min rounded-lg shadow-md overflow-hidden' key={craft.id}>
                 <img src={craft.banner} alt={craft.title} className='w-full h-52 object-cover' />
-                <div className='py-4 px-6 h-56'>
-                  <p className='uppercase text-xs mb-2 rounded-full bg-neutral-400 dark:bg-neutral-500 px-2 py-0.5 w-fit'>
-                    {craft.tag}
-                  </p>
-                  <h2 className='text-2xl font-bold line-clamp-2 mb-2'>{craft.title}</h2>
-                  <p className='text-neutral-600 dark:text-neutral-300 line-clamp-2 mb-4'>{craft.content}</p>
-                  <div className='text-neutral-500 dark:text-neutral-400'>
+                <div className='py-4 px-6 h-min md:h-56 flex flex-col justify-between'>
+                  <div className='flex flex-col'>
+                    <p className='uppercase text-xs mb-2 rounded-full bg-neutral-400 dark:bg-neutral-500 line-clamp-1 px-2 py-0.5 w-fit'>
+                      {craft.tag}
+                    </p>
+                    <h2 className='text-2xl font-bold mask-half-2 line-clamp-2 mb-1'>{craft.title}</h2>
+                    <div className='flex flex-grow h-max'>
+                      <p className={`text-neutral-600 dark:text-neutral-300 h-max mb-4 ${craft.title.length>30?'line-clamp-2':'line-clamp-4'}`}>{craft.content}</p>
+                    </div>
+                  </div>
+                  <div className='flex w-full items-center text-neutral-500 dark:text-neutral-400'>
                     <span>{formatDate(craft?.date)}</span>
                     <span className='mx-2'>•</span>
                     <span>{craft.time}</span>
+                    <div className='flex flex-grow justify-end text-end'>Author: {craft.owner.username}</div>
                   </div>
                 </div>
               </div>
