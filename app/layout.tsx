@@ -8,6 +8,20 @@ import './globals.css';
 export const metadata: Metadata = {
   title: 'Caelium',
   description: 'Caelium: Unveil Your World, Connect Your Dreams - Where Privacy Meets Possibility.',
+  generator: 'Next.js',
+  manifest: '/manifest.json',
+  keywords: ['Caelium'],
+  authors: [
+    { name: 'Jerit Baiju' },
+    {
+      name: 'Jerit Baiju',
+      url: 'https://jerit.in',
+    },
+  ],
+  icons: [
+    { rel: 'apple-touch-icon', url: 'logos/logo.png' },
+    { rel: 'icon', url: 'logos/logo.png' },
+  ],
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
