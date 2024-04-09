@@ -47,7 +47,7 @@ const CraftCreate = () => {
 
   return (
     <Wrapper>
-      <div className='flex flex-grow items-center justify-center md:p-4 max-sm:h-[calc(100dvh-9rem)]'>
+      <div className='flex flex-grow items-center justify-center md:p-4 max-sm:min-h-[calc(100dvh-9rem)]'>
         <div className='flex justify-center flex-col items-center sm:w-1/2'>
           <div className='h-full p-8 rounded-lg shadow-md w-full max-sm:w-screen'>
             <form onSubmit={handleSubmit}>
@@ -126,7 +126,7 @@ const CraftCreate = () => {
                 <label htmlFor='privacy' className='block text-sm font-medium text-gray-700 dark:text-white'>
                   Space
                 </label>
-                <div className='mt-1 grid grid-cols-4 gap-4'>
+                <div className='mt-1 grid grid-cols-4 max-sm:grid-cols-2 gap-4'>
                   {privacyOptions.map((option) => (
                     <button
                       key={option}
