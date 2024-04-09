@@ -35,3 +35,5 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 todo.txt
+public/sw.js
+public/workbox-07a7b4f2.js

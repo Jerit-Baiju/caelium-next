@@ -1,0 +1,51 @@
+{
+  "name": "Caelium",
+  "short_name": "Caelium",
+  "icons": [
+    {
+      "src": "/logos/logo.png",
+      "sizes": "1024x1024",
+      "type": "image/png"
+    }
+  ],
+  "theme_color": "#FFFFFF",
+  "background_color": "#FFFFFF",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "description": "Welcome to Caelium! Your all-in-one platform for seamless organization and meaningful connections. Install now to effortlessly manage calendars, maps, chats, and more. Make every day extraordinary!",
+  "screenshots": [
+    {
+      "src": "feature-images/main.png",
+      "sizes": "1920x1080",
+      "type": "image/png",
+      "form_factor": "wide"
+    },
+    {
+      "src": "feature-images/blog.png",
+      "sizes": "1920x1080",
+      "type": "image/png",
+      "form_factor": "wide"
+    },{
+      "src": "feature-images/calendar.png",
+      "sizes": "1920x1080",
+      "type": "image/png",
+      "form_factor": "wide"
+    },{
+      "src": "feature-images/map.png",
+      "sizes": "1920x1080",
+      "type": "image/png",
+      "form_factor": "wide"
+    },{
+      "src": "feature-images/video-call.png",
+      "sizes": "1920x1080",
+      "type": "image/png",
+      "form_factor": "wide"
+    },{
+      "src": "feature-images/todo.png",
+      "sizes": "1920x1080",
+      "type": "image/png",
+      "form_factor": "wide"
+    }
+  ]
+}
