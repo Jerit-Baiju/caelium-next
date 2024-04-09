@@ -35,7 +35,7 @@ const CraftRead = ({ params }: { params: { slug: Number } }) => {
         <div className='container mx-auto flex-1 pb-8'>
           <div className='max-w-3xl mx-auto'>
             <article className='mb-8'>
-              <img src={craft?.banner} alt='Banner' className='w-auto mb-4 rounded-lg h-96 mx-auto' />
+              <img src={craft?.banner} alt='Banner' className='w-auto mb-4 rounded-lg md:h-96 mx-auto' />
               <h2 className='text-2xl font-bold mb-2'>{craft?.title}</h2>
               <p className='dark:text-neutral-400 text-neutral-500 mb-4'>
                 {formatDate(craft?.date)} • {craft?.time}
