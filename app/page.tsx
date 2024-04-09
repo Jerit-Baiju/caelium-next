@@ -40,13 +40,13 @@ export default function Home() {
             <p className='text-lg m-2 font-normal text-neutral-500 lg:text-xl dark:text-neutral-400'>
               Unveil Your World, Connect Your Dreams - Where Privacy Meets Possibility.
             </p>
-            <div className='flex items-center m-4 p-4 rounded-lg bg-neutral-100 dark:bg-neutral-800'>
+            {/* <div className='flex items-center m-4 p-4 rounded-lg bg-neutral-100 dark:bg-neutral-800'>
               <i className='fa-solid fa-clock text-3xl'></i>
               <div className='ml-3'>
                 <p className='font-semibold'>12/03/2004</p>
                 <p>Happy Birthday to you!</p>
               </div>
-            </div>
+            </div> */}
           </div>
           <div className='w-fit max-sm:hidden'>
             <Calendar onSelectDate={handleSelectDate} />
