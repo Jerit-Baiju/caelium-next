@@ -2,6 +2,7 @@
 import { BaseError, Message, User } from '@/helpers/props';
 import { getMedia, getUrl } from '@/helpers/support';
 import axios, { AxiosError } from 'axios';
+import { useRouter } from 'next/navigation';
 import { ReactNode, createContext, useContext, useEffect, useRef, useState } from 'react';
 import AuthContext from './AuthContext';
 
@@ -16,6 +17,7 @@ interface ChatContextProps {
   setTextInput: (e: string) => void;
   messages: Array<any>;
   recipient?: User;
+  clearChat: () => void;
 }
 
 const ChatContext = createContext<ChatContextProps>({
@@ -23,6 +25,7 @@ const ChatContext = createContext<ChatContextProps>({
   textInput: '',
   setTextInput: async () => {},
   messages: [],
+  clearChat: async () => {},
 });
 export default ChatContext;
 
@@ -34,6 +37,7 @@ export const ChatProvider = ({ chatId, children }: childrenProps) => {
   const [error, setError] = useState<BaseError | null>(null);
 
   const socket = useRef<WebSocket | null>(null);
+  const router = useRouter();
 
   useEffect(() => {
     socket.current = new WebSocket(`${process.env.NEXT_PUBLIC_WS_HOST}/ws/chat/${chatId}/${authTokens.access}/`);
@@ -69,6 +73,11 @@ export const ChatProvider = ({ chatId, children }: childrenProps) => {
       }),
     );
     setTextInput('');
+  };
+
+  const clearChat = async () => {
+    await axios.request(getUrl({ url: `/api/chats/${chatId}`, method: 'DELETE', token: authTokens?.access }));
+    router.push('/chats');
   };
 
   useEffect(() => {
@@ -111,6 +120,8 @@ export const ChatProvider = ({ chatId, children }: childrenProps) => {
   }
 
   return (
-    <ChatContext.Provider value={{ handleSubmit, textInput, setTextInput, messages, recipient }}>{children}</ChatContext.Provider>
+    <ChatContext.Provider value={{ handleSubmit, textInput, setTextInput, messages, recipient, clearChat }}>
+      {children}
+    </ChatContext.Provider>
   );
 };
