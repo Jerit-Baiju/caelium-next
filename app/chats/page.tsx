@@ -91,9 +91,9 @@ const Page = () => {
               <form className='space-y-4' action='#'>
                 <div>
                   <input
-                    type='email'
-                    name='email'
-                    id='email'
+                    type='text'
+                    name='username'
+                    id='username'
                     className='bg-neutral-50 border border-neutral-300 text-neutral-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-neutral-800 dark:border-neutral-500 dark:placeholder-neutral-400 dark:text-white'
                     placeholder='search'
                     required
