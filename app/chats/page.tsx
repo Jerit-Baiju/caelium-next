@@ -59,8 +59,8 @@ const Page = () => {
             <button
               onClick={fetchUsers}
               type='button'
-              data-modal-target='authentication-modal'
-              data-modal-toggle='authentication-modal'
+              data-modal-target='new-chat-modal'
+              data-modal-toggle='new-chat-modal'
               className={`${handleeFont.className} m-0 text-white bg-gradient-to-br from-sky-400 to-emerald-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-teal-300 dark:focus:ring-teal-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2`}
             >
               Start New
@@ -69,10 +69,10 @@ const Page = () => {
         </div>
       </div>
       <div
-        id='authentication-modal'
+        id='new-chat-modal'
         tabIndex={-1}
         aria-hidden={true}
-        className='hidden bg-black bg-opacity-50 overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0'
+        className='hidden flex-grow bg-black bg-opacity-50 overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0'
       >
         <div className='relative p-4 w-full max-w-xl'>
           <div className='relative bg-white rounded-lg shadow dark:bg-neutral-900'>
@@ -81,7 +81,7 @@ const Page = () => {
               <button
                 type='button'
                 className='end-2.5 text-neutral-400 bg-transparent hover:bg-neutral-200 hover:text-neutral-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-neutral-600 dark:hover:text-white'
-                data-modal-hide='authentication-modal'
+                data-modal-hide='new-chat-modal'
               >
                 <i className='fa-solid fa-xmark'></i>
                 <span className='sr-only'>Close modal</span>
@@ -126,8 +126,9 @@ const Page = () => {
       <div data-dial-init className='fixed end-6 bottom-20 group sm:hidden'>
         <button
           type='button'
-          data-dial-toggle='speed-dial-menu-square'
-          aria-controls='speed-dial-menu-square'
+          onClick={fetchUsers}
+          data-dial-toggle='new-chat-modal'
+          aria-controls='new-chat-modal'
           aria-expanded='false'
           className='flex items-center justify-center text-white bg-neutral-500 rounded-lg w-14 h-14 hover:bg-neutral-600 dark:bg-neutral-800 dark:hover:bg-neutral-700 focus:ring-4 focus:ring-neutral-300 focus:outline-none dark:focus:ring-neutral-800'
         >
