@@ -1,7 +1,6 @@
 'use client';
 import AuthContext from '@/contexts/AuthContext';
-import { getUrl } from '@/helpers/support';
-import axios from 'axios';
+import useAxios from '@/helpers/useAxios';
 import { useContext, useState } from 'react';
 import Wrapper from '../../Wrapper';
 
@@ -14,7 +13,7 @@ const CraftCreate = () => {
   const [content, setContent] = useState('');
   const [selectedDate, setSelectedDate] = useState<string>(formattedDate);
   const [space, setSpace] = useState('personal');
-  const { authTokens } = useContext(AuthContext);
+  const api = useAxios();
 
   const handleDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSelectedDate(event.target.value);
@@ -40,9 +39,7 @@ const CraftCreate = () => {
     formData.append('content', content);
     formData.append('space', space);
     formData.append('date', selectedDate);
-    axios.request(
-      getUrl({ url: '/api/crafts/', method: 'POST', data: formData, token: authTokens.access, content_type: 'multipart/form-data' }),
-    );
+    api.post('/api/crafts/', formData, { headers: { 'Content-Type': 'multipart/form-data' } });
   };
 
   return (

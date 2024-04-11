@@ -5,6 +5,7 @@ import axios, { AxiosError } from 'axios';
 import { useRouter } from 'next/navigation';
 import { ReactNode, createContext, useContext, useEffect, useRef, useState } from 'react';
 import AuthContext from './AuthContext';
+import useAxios from '@/helpers/useAxios';
 
 interface childrenProps {
   chatId: Number;
@@ -38,6 +39,7 @@ export const ChatProvider = ({ chatId, children }: childrenProps) => {
 
   const socket = useRef<WebSocket | null>(null);
   const router = useRouter();
+  const api = useAxios();
 
   useEffect(() => {
     socket.current = new WebSocket(`${process.env.NEXT_PUBLIC_WS_HOST}/ws/chat/${chatId}/${authTokens.access}/`);
@@ -76,26 +78,23 @@ export const ChatProvider = ({ chatId, children }: childrenProps) => {
   };
 
   const clearChat = async () => {
-    await axios.request(getUrl({ url: `/api/chats/${chatId}`, method: 'DELETE', token: authTokens?.access }));
+    await api.delete(`/api/chats/${chatId}/`);
     router.push('/chats');
   };
 
   useEffect(() => {
     const fetchMessages = async () => {
       try {
-        const response = await axios.request(getUrl({ url: `/api/chats/messages/${chatId}/`, token: authTokens?.access }));
+        const response = await api.get(`/api/chats/messages/${chatId}/`)
         setMessages(response.data);
+        // setRecipient(response.data['other_partici']);
       } catch (error) {
         if (error instanceof AxiosError && error.code === 'ERR_BAD_REQUEST')
           setError({ text: 'Failed to fetch messages', code: 'FETCH_MESSAGES_FAILED' });
         console.error('Error fetching data:', error);
       }
     };
-    fetchMessages();
-  }, []);
-
-  useEffect(() => {
-    const fetchMessages = async () => {
+    const fetchParticipant = async () => {
       try {
         const response = await axios.request(getUrl({ url: `/api/chats/${chatId}/`, token: authTokens?.access }));
         setRecipient(response.data['other_participant']);
@@ -106,6 +105,7 @@ export const ChatProvider = ({ chatId, children }: childrenProps) => {
       }
     };
     fetchMessages();
+    fetchParticipant()
   }, []);
 
   if (error) {

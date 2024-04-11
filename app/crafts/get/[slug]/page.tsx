@@ -1,20 +1,20 @@
 'use client';
 import Wrapper from '@/app/Wrapper';
-import AuthContext from '@/contexts/AuthContext';
 import { BaseError, Craft } from '@/helpers/props';
-import { formatDate, getUrl } from '@/helpers/support';
-import axios, { AxiosError } from 'axios';
-import { useContext, useEffect, useState } from 'react';
+import { formatDate } from '@/helpers/support';
+import useAxios from '@/helpers/useAxios';
+import { AxiosError } from 'axios';
+import { useEffect, useState } from 'react';
 
 const CraftRead = ({ params }: { params: { slug: Number } }) => {
-  const { authTokens } = useContext(AuthContext);
   let [error, setError] = useState<BaseError | null>(null);
   let [craft, setCraft] = useState<Craft | null>(null);
+  const api = useAxios();
 
   useEffect(() => {
     const fetchCraft = async () => {
       try {
-        const response = await axios.request(getUrl({ url: `/api/crafts/${params.slug}/`, token: authTokens?.access }));
+        const response = await api.get(`/api/crafts/${params.slug}`);
         setCraft(response.data);
       } catch (error) {
         if (error instanceof AxiosError && error.code === 'ERR_BAD_REQUEST')

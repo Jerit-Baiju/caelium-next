@@ -1,8 +1,8 @@
 'use client';
 import AuthContext from '@/contexts/AuthContext';
 import { Chat } from '@/helpers/props';
-import { getMedia, getTime, getUrl, truncate } from '@/helpers/support';
-import axios from 'axios';
+import { getMedia, getTime, truncate } from '@/helpers/support';
+import useAxios from '@/helpers/useAxios';
 import Link from 'next/link';
 import { useContext, useEffect, useState } from 'react';
 
@@ -10,11 +10,12 @@ const ChatsPane = () => {
   let { authTokens } = useContext(AuthContext);
   let [chats, setChats] = useState([]);
   let [search_query, setSearch_query] = useState('');
+  let api = useAxios();
 
   const searchChats = async (e: any) => {
     e.preventDefault();
     try {
-      const response = await axios.request(getUrl({ url: `/api/chats/?search=${search_query}`, token: authTokens?.access }));
+      const response = await api.get(`/api/chats/?search=${search_query}`);
       setChats(response.data);
     } catch (error) {
       console.error('Error fetching data:', error);
@@ -23,12 +24,13 @@ const ChatsPane = () => {
 
   const fetchChats = async () => {
     try {
-      const response = await axios.request(getUrl({ url: '/api/chats/', token: authTokens?.access }));
+      const response = await api.get('/api/chats/');
       setChats(response.data);
     } catch (error) {
       console.error('Error fetching data:', error);
     }
   };
+
   useEffect(() => {
     fetchChats();
   }, [authTokens?.access]);
@@ -41,7 +43,7 @@ const ChatsPane = () => {
 
   return (
     <div className='flex flex-col h-[calc(100dvh-5rem)] w-full flex-grow max-sm:h-min overflow-x-hidden overflow-y-auto'>
-      <div className='flex w-full sticky top-0 z-10 flex-col'>
+      <div className='flex w-full max-sm:w-screen sticky top-0 z-10 flex-col'>
         <form onSubmit={(e) => searchChats(e)} className='m-3'>
           <label htmlFor='default-search' className='mb-2 text-sm font-medium text-neutral-900 sr-only dark:text-white'>
             Search
