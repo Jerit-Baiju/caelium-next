@@ -1,13 +1,11 @@
 'use client';
 
 import ChatsPane from '@/components/chats/ChatsPane';
-import AuthContext from '@/contexts/AuthContext';
 import { User } from '@/helpers/props';
-import { getUrl } from '@/helpers/support';
-import axios from 'axios';
+import useAxios from '@/helpers/useAxios';
 import { Comforter } from 'next/font/google';
 import { useRouter } from 'next/navigation';
-import { useContext, useState } from 'react';
+import { useState } from 'react';
 import Wrapper from '../Wrapper';
 import { handleeFont } from '../font';
 
@@ -15,20 +13,12 @@ const comforter = Comforter({ weight: '400', subsets: ['cyrillic'] });
 
 const Page = () => {
   const router = useRouter();
-  let { authTokens } = useContext(AuthContext);
   let [users, setUsers] = useState([]);
+  let api = useAxios();
 
   const createChat = async (recipient_id: number) => {
     try {
-      const response = await axios.request(
-        getUrl({
-          url: '/api/chats/',
-          data: { participant: recipient_id },
-          token: authTokens.access,
-          method: 'POST',
-        }),
-      );
-      console.log(response.data);
+      const response = await api.post('/api/chats/', { participant: recipient_id });
       router.push(`/chats/${response.data.id}`);
     } catch (error) {
       console.error('Error fetching data:', error);
@@ -36,7 +26,7 @@ const Page = () => {
   };
   const fetchUsers = async () => {
     try {
-      const response = await axios.request(getUrl({ url: '/api/auth/accounts/', token: authTokens.access }));
+      const response = await api.get('/api/auth/accounts/');
       setUsers(response.data);
     } catch (error) {
       console.error('Error fetching data:', error);

@@ -14,6 +14,8 @@ interface AuthContextProps {
   loginUser: (e: any) => Promise<void>;
   registerUser: (e: any) => Promise<void>;
   logoutUser: () => void;
+  setUser: (e: any) => void;
+  setAuthTokens: (e: any) => void;
 }
 
 const AuthContext = createContext<AuthContextProps>({
@@ -23,10 +25,12 @@ const AuthContext = createContext<AuthContextProps>({
   loginUser: async () => {},
   registerUser: async () => {},
   logoutUser: () => {},
+  setUser: () => {},
+  setAuthTokens: () => {},
 });
 
 export default AuthContext;
-export const AuthProvider = ({ children }: {children:ReactNode}) => {
+export const AuthProvider = ({ children }: { children: ReactNode }) => {
   let [authTokens, setAuthTokens] = useState(() =>
     typeof window !== 'undefined' && localStorage.getItem('authTokens')
       ? JSON.parse(localStorage.getItem('authTokens') || '{}')
@@ -120,31 +124,6 @@ export const AuthProvider = ({ children }: {children:ReactNode}) => {
     router.push('/welcome');
   };
 
-  let updateToken = async () => {
-    if (authTokens) {
-      let url = process.env.NEXT_PUBLIC_API_HOST + '/api/auth/token/refresh/';
-      let response = await fetch(url, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ refresh: authTokens?.refresh }),
-      });
-
-      let data = await response.json();
-
-      if (response.status === 200) {
-        setAuthTokens(data);
-        setUser(jwtDecode(data.access));
-        localStorage.setItem('authTokens', JSON.stringify(data));
-      } else {
-        logoutUser();
-      }
-    }
-    if (loading) {
-      setLoading(false);
-    }
-  };
 
   useEffect(() => {
     if (authTokens) {
@@ -160,6 +139,8 @@ export const AuthProvider = ({ children }: {children:ReactNode}) => {
     loginUser,
     registerUser,
     logoutUser,
+    setUser,
+    setAuthTokens
   };
 
   return <AuthContext.Provider value={contextData}>{loading ? <Suspense /> : children}</AuthContext.Provider>;

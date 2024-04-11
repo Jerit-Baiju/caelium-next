@@ -7,16 +7,19 @@ import axios, { AxiosError } from 'axios';
 import Link from 'next/link';
 import { useContext, useEffect, useState } from 'react';
 import Wrapper from '../Wrapper';
+import useAxios from '@/helpers/useAxios';
 
 const CraftsHome = () => {
   const { authTokens } = useContext(AuthContext);
   const { setCtaButton, defaultCtaButton } = useNavbar();
   let [crafts, setCrafts] = useState<Craft[]>([]);
   const [error, setError] = useState<BaseError | null>(null);
+  let api = useAxios()
+
   useEffect(() => {
     const fetchCrafts = async () => {
       try {
-        const response = await axios.request(getUrl({ url: `/api/crafts/`, token: authTokens?.access }));
+        const response = await api.get('/api/crafts/')
         setCrafts(response.data);
       } catch (error) {
         if (error instanceof AxiosError && error.code === 'ERR_BAD_REQUEST')
