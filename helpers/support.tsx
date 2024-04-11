@@ -19,7 +19,7 @@ export const getUrl = ({ url, method = 'GET', data, token, content_type = 'appli
 };
 
 export const getMedia = (path: string) => {
-  return `${process.env.NEXT_PUBLIC_API_HOST + '/' + path}`;
+  return `${process.env.NEXT_PUBLIC_API_HOST + path}`;
 };
 
 export const truncate = ({ chars, length }: { chars: string | null; length: number }) => {
