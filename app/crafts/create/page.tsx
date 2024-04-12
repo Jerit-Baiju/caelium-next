@@ -1,7 +1,7 @@
 'use client';
-import AuthContext from '@/contexts/AuthContext';
 import useAxios from '@/helpers/useAxios';
-import { useContext, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { useState } from 'react';
 import Wrapper from '../../Wrapper';
 
 const CraftCreate = () => {
@@ -13,6 +13,7 @@ const CraftCreate = () => {
   const [content, setContent] = useState('');
   const [selectedDate, setSelectedDate] = useState<string>(formattedDate);
   const [space, setSpace] = useState('personal');
+  const router = useRouter();
   const api = useAxios();
 
   const handleDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -39,12 +40,20 @@ const CraftCreate = () => {
     formData.append('content', content);
     formData.append('space', space);
     formData.append('date', selectedDate);
-    api.post('/api/crafts/', formData, { headers: { 'Content-Type': 'multipart/form-data' } });
+    try {
+      const request = await api.post('/api/crafts/', formData, { headers: { 'Content-Type': 'multipart/form-data' } });
+      if (request.status === 201) {
+        router.push(`/crafts/get/${request.data.id}`);
+      }
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   return (
     <Wrapper>
-      <div className='flex flex-grow items-center justify-center md:p-4 max-sm:min-h-[calc(100dvh-9rem)]'>
+      <div className='flex flex-col flex-grow items-center justify-center md:p-4 max-sm:min-h-[calc(100dvh-9rem)]'>
+
         <div className='flex justify-center flex-col items-center sm:w-1/2'>
           <div className='h-full p-8 rounded-lg shadow-md w-full max-sm:w-screen'>
             <form onSubmit={handleSubmit}>
