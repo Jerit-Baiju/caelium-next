@@ -1,11 +1,11 @@
 'use client';
 import { BaseError, Message, User } from '@/helpers/props';
 import { getMedia, getUrl } from '@/helpers/support';
+import useAxios from '@/helpers/useAxios';
 import axios, { AxiosError } from 'axios';
 import { useRouter } from 'next/navigation';
 import { ReactNode, createContext, useContext, useEffect, useRef, useState } from 'react';
 import AuthContext from './AuthContext';
-import useAxios from '@/helpers/useAxios';
 
 interface childrenProps {
   chatId: Number;
@@ -85,9 +85,8 @@ export const ChatProvider = ({ chatId, children }: childrenProps) => {
   useEffect(() => {
     const fetchMessages = async () => {
       try {
-        const response = await api.get(`/api/chats/messages/${chatId}/`)
+        const response = await api.get(`/api/chats/messages/${chatId}/`);
         setMessages(response.data);
-        // setRecipient(response.data['other_partici']);
       } catch (error) {
         if (error instanceof AxiosError && error.code === 'ERR_BAD_REQUEST')
           setError({ text: 'Failed to fetch messages', code: 'FETCH_MESSAGES_FAILED' });
@@ -105,7 +104,7 @@ export const ChatProvider = ({ chatId, children }: childrenProps) => {
       }
     };
     fetchMessages();
-    fetchParticipant()
+    fetchParticipant();
   }, []);
 
   if (error) {

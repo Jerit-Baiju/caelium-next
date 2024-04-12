@@ -43,7 +43,13 @@ export interface NavLink {
   active?: boolean;
 }
 
-export interface DropDown{
+export interface DropDown {
   name: string;
-  options: NavLink[]
+  options: NavLink[];
+}
+
+export interface Alert {
+  id?: number
+  content: string;
+  type: 'success' | 'error' | 'warning' | 'info';
 }
