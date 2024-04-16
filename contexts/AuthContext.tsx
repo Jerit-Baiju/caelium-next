@@ -1,4 +1,5 @@
 'use client';
+import { User } from '@/helpers/props';
 import { jwtDecode } from 'jwt-decode';
 import { useRouter } from 'next/navigation';
 import { ReactNode, Suspense, createContext, useEffect, useState } from 'react';
@@ -8,25 +9,27 @@ interface ErrorObject {
 }
 
 interface AuthContextProps {
-  user?: any;
+  tokenData?: any;
   authTokens: any;
   error: ErrorObject;
   loginUser: (e: any) => Promise<void>;
   registerUser: (e: any) => Promise<void>;
   logoutUser: () => void;
-  setUser: (e: any) => void;
+  setTokenData: (e: any) => void;
   setAuthTokens: (e: any) => void;
+  user: any;
 }
 
 const AuthContext = createContext<AuthContextProps>({
-  user: {},
+  tokenData: {},
   authTokens: {},
   error: {},
   loginUser: async () => {},
   registerUser: async () => {},
   logoutUser: () => {},
-  setUser: () => {},
+  setTokenData: () => {},
   setAuthTokens: () => {},
+  user: {},
 });
 
 export default AuthContext;
@@ -37,20 +40,32 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       : null,
   );
 
-  let [user, setUser] = useState(() =>
+  let [tokenData, setTokenData] = useState(() =>
     typeof window !== 'undefined' && localStorage.getItem('authTokens') ? jwtDecode(localStorage.getItem('authTokens') || '{}') : null,
   );
 
   let [loading, setLoading] = useState(true);
   let [error, setError] = useState({});
+  let [user, setUser] = useState<User | null>(null);
 
   const router = useRouter();
 
   useEffect(() => {
-    if (!user) {
+    if (!tokenData) {
       router.replace('/welcome');
     }
-  }, [router, user, loading]);
+  }, [router, tokenData, loading]);
+
+  useEffect(() => {
+    const fetchMe = async () => {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_HOST}/api/auth/accounts/${(jwtDecode(authTokens.access) as { id: string }).id}/`,
+      );
+      const userData = await response.json();
+      setUser(userData);
+    };
+    fetchMe();
+  }, []);
 
   let loginUser = async (e: any) => {
     e.preventDefault();
@@ -70,8 +85,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       if (response.status === 200) {
         localStorage.setItem('authTokens', JSON.stringify(data));
         setAuthTokens(data);
-        setUser(jwtDecode(data.access));
-        router.prefetch('/');
+        setTokenData(jwtDecode(data.access));
+        router.push('/');
       } else {
         setError(data);
       }
@@ -119,28 +134,28 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   let logoutUser = () => {
     setAuthTokens(null);
-    setUser(null);
+    setTokenData(null);
     localStorage.removeItem('authTokens');
     router.push('/welcome');
   };
 
-
   useEffect(() => {
     if (authTokens) {
-      setUser(jwtDecode(authTokens.access));
+      setTokenData(jwtDecode(authTokens.access));
     }
     setLoading(false);
   }, [authTokens, loading]);
 
   let contextData: AuthContextProps = {
-    user,
+    tokenData,
     authTokens,
     error,
     loginUser,
     registerUser,
     logoutUser,
-    setUser,
-    setAuthTokens
+    setTokenData,
+    setAuthTokens,
+    user,
   };
 
   return <AuthContext.Provider value={contextData}>{loading ? <Suspense /> : children}</AuthContext.Provider>;

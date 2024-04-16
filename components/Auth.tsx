@@ -38,14 +38,14 @@ export const Input: React.FC<InputProps> = ({ name, label, type, placeholder, id
 const Auth = ({ page }: { page?: string }) => {
   let { loginUser, registerUser, error } = useContext(AuthContext);
   const router = useRouter();
-  let { user } = useContext(AuthContext);
+  let { tokenData } = useContext(AuthContext);
   const isLoginPage = page === 'login';
 
   useEffect(() => {
-    if (user) {
+    if (tokenData) {
       router.push('/');
     }
-  }, [router, user]);
+  }, [router, tokenData]);
 
   return (
     <div className='flex flex-col p-5 items-center justify-center h-screen dark:text-white'>

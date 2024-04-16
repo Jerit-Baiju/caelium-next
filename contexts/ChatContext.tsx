@@ -70,7 +70,6 @@ export const ChatProvider = ({ chatId, children }: childrenProps) => {
       const message: Message = {
         sender: {
           name: data.name,
-          avatar: recipient?.avatar || '',
           id: data.user_id,
         },
         id: data.message_id,
@@ -78,8 +77,6 @@ export const ChatProvider = ({ chatId, children }: childrenProps) => {
         timestamp: data.timestamp,
         side: user.id === data.user_id ? 'right' : 'left',
       };
-      console.log(message);
-      console.log(recipient)
       setMessages((prevMessages) => [...prevMessages, message]);
     };
 

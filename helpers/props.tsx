@@ -9,7 +9,7 @@ export interface User {
   id: number;
   username?: string;
   name: string;
-  avatar: string;
+  avatar?: string;
 }
 
 export interface Message {
