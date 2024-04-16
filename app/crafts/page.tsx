@@ -2,8 +2,8 @@
 import AuthContext from '@/contexts/AuthContext';
 import { useNavbar } from '@/contexts/NavContext';
 import { BaseError, Craft } from '@/helpers/props';
-import { formatDate, getUrl } from '@/helpers/support';
-import axios, { AxiosError } from 'axios';
+import { formatDate } from '@/helpers/support';
+import { AxiosError } from 'axios';
 import Link from 'next/link';
 import { useContext, useEffect, useState } from 'react';
 import Wrapper from '../Wrapper';
@@ -14,12 +14,12 @@ const CraftsHome = () => {
   const { setCtaButton, defaultCtaButton } = useNavbar();
   let [crafts, setCrafts] = useState<Craft[]>([]);
   const [error, setError] = useState<BaseError | null>(null);
-  let api = useAxios()
+  let api = useAxios();
 
   useEffect(() => {
     const fetchCrafts = async () => {
       try {
-        const response = await api.get('/api/crafts/')
+        const response = await api.get('/api/crafts/');
         setCrafts(response.data);
       } catch (error) {
         if (error instanceof AxiosError && error.code === 'ERR_BAD_REQUEST')
@@ -51,7 +51,11 @@ const CraftsHome = () => {
                     </p>
                     <h2 className='text-2xl font-bold mask-half-2 line-clamp-2 mb-1'>{craft.title}</h2>
                     <div className='flex flex-grow h-max'>
-                      <p className={`text-neutral-600 dark:text-neutral-300 h-max mb-4 ${craft.title.length>30?'line-clamp-2':'line-clamp-4'}`}>{craft.content}</p>
+                      <p
+                        className={`text-neutral-600 dark:text-neutral-300 h-max mb-4 ${craft.title.length > 30 ? 'line-clamp-2' : 'line-clamp-4'}`}
+                      >
+                        {craft.content}
+                      </p>
                     </div>
                   </div>
                   <div className='flex w-full items-center text-neutral-500 dark:text-neutral-400'>

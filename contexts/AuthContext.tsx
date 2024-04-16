@@ -65,7 +65,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setUser(userData);
     };
     fetchMe();
-  }, []);
+  }, [tokenData]);
 
   let loginUser = async (e: any) => {
     e.preventDefault();
