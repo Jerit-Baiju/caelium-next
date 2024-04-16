@@ -1,7 +1,7 @@
 'use client';
 import AuthContext from '@/contexts/AuthContext';
 import { Chat } from '@/helpers/props';
-import { getMedia, getTime, truncate } from '@/helpers/support';
+import { getTime, truncate } from '@/helpers/support';
 import useAxios from '@/helpers/useAxios';
 import Link from 'next/link';
 import { useContext, useEffect, useState } from 'react';
@@ -88,7 +88,7 @@ const ChatsPane = () => {
                 <div className='flex-shrink-0 dark:bg-white rounded-full'>
                   <img
                     className='w-12 h-12 rounded-full border dark:border-neutral-500 border-neutral-200'
-                    src={getMedia(chat.other_participant.avatar)}
+                    src={chat.other_participant.avatar}
                     alt={chat.other_participant.name}
                   />
                 </div>
