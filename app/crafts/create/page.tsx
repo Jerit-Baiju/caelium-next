@@ -53,7 +53,6 @@ const CraftCreate = () => {
   return (
     <Wrapper>
       <div className='flex flex-col flex-grow items-center justify-center md:p-4 max-sm:min-h-[calc(100dvh-9rem)]'>
-
         <div className='flex justify-center flex-col items-center sm:w-1/2'>
           <div className='h-full p-8 rounded-lg shadow-md w-full max-sm:w-screen'>
             <form onSubmit={handleSubmit}>
