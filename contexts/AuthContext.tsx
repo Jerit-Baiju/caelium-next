@@ -59,7 +59,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     const fetchMe = async () => {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_HOST}/api/auth/accounts/${(jwtDecode(authTokens.access) as { id: string }).id}/`,
+        `${process.env.NEXT_PUBLIC_API_HOST}/api/auth/accounts/${(jwtDecode(authTokens?.access) as { id: string }).id}/`,
       );
       const userData = await response.json();
       setUser(userData);
@@ -100,16 +100,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     let username = e.target.username.value;
     let name = e.target.name.value;
     let password = e.target.password.value;
-    let password2 = e.target.password2.value;
     let errors: ErrorObject = {};
     username.length <= 3 && (errors.username = 'Ensure this field has at least 4 characters.');
     !username && (errors.username = 'This field may not be blank');
     !name && (errors.name = 'This field may not be blank');
-    password != password2 && (errors.password = "Password fields didn't match.");
     !password && (errors.password = 'This field may not be blank');
-    !password2 && (errors.password2 = 'This field may not be blank');
     setError(errors);
-    if (username && name && password == password2) {
+    if (username && name && password) {
       let url = process.env.NEXT_PUBLIC_API_HOST + '/api/auth/register/';
       let response = await fetch(url, {
         method: 'POST',
@@ -120,7 +117,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           username: username,
           name: name,
           password: password,
-          password2: password2,
         }),
       });
       let data = await response.json();

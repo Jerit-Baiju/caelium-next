@@ -80,14 +80,6 @@ const Auth = ({ page }: { page?: string }) => {
               />
               <Input name='name' label='Name' type='text' id='nameID' placeholder='Martin Boyer' error={error['name']} />
               <Input name='password' label='Password' type='password' id='password' placeholder='••••••••' error={error['password']} />
-              <Input
-                name='password2'
-                label='Repeat Password'
-                type='password'
-                id='password2'
-                placeholder='••••••••'
-                error={error['password2']}
-              />
             </div>
           )}
           <div className='flex justify-center flex-col items-center'>
