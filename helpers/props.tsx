@@ -53,3 +53,14 @@ export interface Alert {
   content: string;
   type: 'success' | 'error' | 'warning' | 'info';
 }
+
+export interface InputProps {
+  name: string;
+  label?: string;
+  type: string;
+  placeholder: string;
+  id?: string;
+  error?: string;
+  autofocus?: boolean;
+  required?: boolean;
+}
