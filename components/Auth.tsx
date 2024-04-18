@@ -18,18 +18,10 @@ interface InputProps {
 export const Input: React.FC<InputProps> = ({ name, label, type, placeholder, id, error, autofocus = false, required = false }) => {
   return (
     <div className='max-w-sm mx-auto mb-4'>
-      <label htmlFor={id} className='block mb-2 text-sm font-medium text-neutral-900 dark:text-white'>
+      <label htmlFor={id} className='input input-bordered flex items-center gap-2 m-4'>
         {label}
+        <input id={id} name={name} required={required} autoFocus={autofocus} type={type} className='grow' placeholder={placeholder} />
       </label>
-      <input
-        type={type}
-        id={id}
-        name={name}
-        className='bg-neutral-50 border border-neutral-300 text-neutral-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-neutral-700 dark:border-neutral-600 dark:placeholder-neutral-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'
-        placeholder={placeholder}
-        required={required}
-        autoFocus={autofocus}
-      />
       {error && <p className='mt-2 text-sm text-red-600 dark:text-red-500 font-medium'>{error}</p>}
     </div>
   );
