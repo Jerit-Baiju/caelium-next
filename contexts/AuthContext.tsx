@@ -67,8 +67,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       } catch (error) {
         console.error(error);
       }
-      fetchMe();
     };
+    fetchMe();
   }, [tokenData]);
 
   let loginUser = async (e: any) => {
