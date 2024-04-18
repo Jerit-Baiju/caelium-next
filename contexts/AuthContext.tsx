@@ -58,13 +58,17 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     const fetchMe = async () => {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_HOST}/api/auth/accounts/${(jwtDecode(authTokens?.access) as { id: string }).id}/`,
-      );
-      const userData = await response.json();
-      setUser(userData);
+      try {
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_API_HOST}/api/auth/accounts/${(jwtDecode(authTokens?.access) as { id: string }).id}/`,
+        );
+        const userData = await response.json();
+        setUser(userData);
+      } catch (error) {
+        console.error(error);
+      }
+      fetchMe();
     };
-    fetchMe();
   }, [tokenData]);
 
   let loginUser = async (e: any) => {
