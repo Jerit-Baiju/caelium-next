@@ -24,19 +24,19 @@ const Auth = ({ page }: { page?: string }) => {
           <div className='p-4 mb-4 text-sm text-red-800 rounded-lg dark:text-red-400' role='alert'></div>
           {isLoginPage && (
             <div>
-              <input type='text' placeholder='Enter your username' className='input input-bordered w-full mb-2' autoFocus />
+              <input type='text' name='username' placeholder='Enter your username' className='input input-bordered w-full mb-2' autoFocus />
               {error && <p className='mt-2 text-sm text-red-600 dark:text-red-500 font-medium'>{error['detail']}</p>}
-              <input type='password' placeholder='••••••••' className='input input-bordered w-full' />
+              <input type='password' name='password' placeholder='••••••••' className='input input-bordered w-full' />
               {error && <p className='mt-2 text-sm text-red-600 dark:text-red-500 font-medium'>{error['password']}</p>}
             </div>
           )}
           {!isLoginPage && (
             <div>
-              <input type='text' placeholder='martin_boyer' className='input input-bordered w-full mb-2' autoFocus />
+              <input type='text' name='username' placeholder='martin_boyer' className='input input-bordered w-full mb-2' autoFocus />
               {error && <p className='mt-2 text-sm text-red-600 dark:text-red-500 font-medium'>{error['username']}</p>}
-              <input type='text' placeholder='Martin Boyer' className='input input-bordered w-full mb-2' />
+              <input type='text' name='name' placeholder='Martin Boyer' className='input input-bordered w-full mb-2' />
               {error && <p className='mt-2 text-sm text-red-600 dark:text-red-500 font-medium'>{error['name']}</p>}
-              <input type='password' placeholder='••••••••' className='input input-bordered w-full' autoFocus />
+              <input type='password' name='password' placeholder='••••••••' className='input input-bordered w-full' autoFocus />
               {error && <p className='mt-2 text-sm text-red-600 dark:text-red-500 font-medium'>{error['password']}</p>}
             </div>
           )}
