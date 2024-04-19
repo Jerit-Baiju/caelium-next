@@ -53,3 +53,16 @@ export interface Alert {
   content: string;
   type: 'success' | 'error' | 'warning' | 'info';
 }
+
+export interface InputProps {
+  id?: string;
+  name?: string;
+  value?: string;
+  label?: string;
+  type: string;
+  placeholder?: string;
+  error?: string;
+  autofocus?: boolean;
+  required?: boolean;
+  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+}
