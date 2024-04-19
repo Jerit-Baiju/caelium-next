@@ -3,6 +3,7 @@ import useAxios from '@/helpers/useAxios';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import Wrapper from '../../Wrapper';
+import { InputProps } from '@/helpers/props';
 
 const CraftCreate = () => {
   const today = new Date();
@@ -50,6 +51,27 @@ const CraftCreate = () => {
     }
   };
 
+  const Input: React.FC<InputProps> = ({ name, label, type, placeholder, id, error, autofocus = false, required = false }) => {
+    return (
+      <div className='mx-auto mb-4'>
+        <label htmlFor={id} className='input input-bordered flex items-center gap-2'>
+          {label}
+          <input
+            id={id}
+            name={name}
+            required={required}
+            autoFocus={autofocus}
+            type={type}
+            className='grow'
+            placeholder={placeholder}
+            autoComplete='off'
+          />
+        </label>
+        {error && <p className='mt-2 text-sm text-red-600 dark:text-red-500 font-medium'>{error}</p>}
+      </div>
+    );
+  };
+
   return (
     <Wrapper>
       <div className='flex flex-col flex-grow items-center justify-center md:p-4 max-sm:min-h-[calc(100dvh-9rem)]'>
@@ -59,60 +81,38 @@ const CraftCreate = () => {
               <h1 className='text-4xl font-bold mb-4 text-center'>
                 Craft <i className='fa-solid fa-feather ms-1'></i>
               </h1>
-              <div className='mb-4'>
-                <label htmlFor='title' className='block text-sm font-medium text-neutral-700 dark:text-white'>
-                  Title
-                </label>
-                <input
-                  type='text'
-                  id='title'
-                  className='mt-1 p-2 w-full border rounded-md focus:outline-none focus:ring focus:border-blue-300 dark:bg-neutral-800 dark:border-neutral-700'
-                  placeholder='Enter title'
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-                  required
-                />
-              </div>
-              <div className='mb-4'>
-                <label htmlFor='title' className='block text-sm font-medium text-neutral-700 dark:text-white'>
-                  Tag
-                </label>
-                <input
-                  type='text'
-                  id='tag'
-                  className='mt-1 p-2 w-full border rounded-md focus:outline-none focus:ring focus:border-blue-300 dark:bg-neutral-800 dark:border-neutral-700'
-                  placeholder='Enter tagline'
-                  value={tag}
-                  onChange={(e) => setTag(e.target.value)}
-                  required
-                />
-              </div>
-              <div className='mb-4'>
-                <label htmlFor='banner' className='block text-sm font-medium text-neutral-700 dark:text-white'>
-                  Banner Image Upload
-                </label>
-                <input
-                  type='file'
-                  accept='image/*'
-                  id='banner'
-                  className='mt-1 p-2 w-full border rounded-md focus:outline-none focus:ring focus:border-blue-300 dark:bg-neutral-800 dark:border-neutral-700'
-                  onChange={handleBannerChange}
-                  required
-                />
-              </div>
-              <div className='mb-4'>
-                <label htmlFor='content' className='block text-sm font-medium text-neutral-700 dark:text-white'>
-                  Content
-                </label>
-                <textarea
-                  id='content'
-                  className='mt-1 p-2 w-full border rounded-md focus:outline-none focus:ring focus:border-blue-300 h-40 resize-none dark:bg-neutral-800 dark:border-neutral-700'
-                  placeholder='Write your content here'
-                  value={content}
-                  onChange={(e) => setContent(e.target.value)}
-                  required
-                ></textarea>
-              </div>
+              <Input
+                name='title'
+                placeholder='Enter Title'
+                type='text'
+                value={title}
+                onChange={(e) => {
+                  setTitle(e.target.value);
+                }}
+                required
+              />
+              <Input
+                name='tag'
+                placeholder='Enter tagline'
+                type='text'
+                value={tag}
+                onChange={(e) => setTag(e.target.value)}
+                required
+              />
+              <input
+                type='file'
+                accept='image/*'
+                onChange={handleBannerChange}
+                required
+                className='file-input mb-4 file-input-bordered w-full'
+              />
+              <textarea
+                className='textarea textarea-bordered w-full h-64 mb-4'
+                placeholder='Write your content here'
+                value={content}
+                onChange={(e) => setContent(e.target.value)}
+                required
+              />
               <div className='mb-4'>
                 <label htmlFor='banner' className='block text-sm font-medium text-gray-700 dark:text-white'>
                   Date
