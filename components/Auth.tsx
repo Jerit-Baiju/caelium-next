@@ -1,10 +1,8 @@
 'use client';
 import AuthContext from '@/contexts/AuthContext';
-import { Input } from '@/helpers/Elements';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useContext, useEffect } from 'react';
-
 
 const Auth = ({ page }: { page?: string }) => {
   let { loginUser, registerUser, error } = useContext(AuthContext);
@@ -26,31 +24,20 @@ const Auth = ({ page }: { page?: string }) => {
           <div className='p-4 mb-4 text-sm text-red-800 rounded-lg dark:text-red-400' role='alert'></div>
           {isLoginPage && (
             <div>
-              <Input
-                name='username'
-                label='Username'
-                type='text'
-                id='usernameID'
-                placeholder='Enter your username'
-                error={error['detail']}
-                autofocus
-              />
-              <Input name='password' label='Password' type='password' id='password' placeholder='••••••••' />
+              <input type='text' placeholder='Enter your username' className='input input-bordered w-full mb-2' autoFocus />
+              {error && <p className='mt-2 text-sm text-red-600 dark:text-red-500 font-medium'>{error['detail']}</p>}
+              <input type='password' placeholder='••••••••' className='input input-bordered w-full' />
+              {error && <p className='mt-2 text-sm text-red-600 dark:text-red-500 font-medium'>{error['password']}</p>}
             </div>
           )}
           {!isLoginPage && (
             <div>
-              <Input
-                name='username'
-                label='Username'
-                type='text'
-                id='usernameID'
-                placeholder='martin_boyer'
-                error={error['username']}
-                autofocus
-              />
-              <Input name='name' label='Name' type='text' id='nameID' placeholder='Martin Boyer' error={error['name']} />
-              <Input name='password' label='Password' type='password' id='password' placeholder='••••••••' error={error['password']} />
+              <input type='text' placeholder='martin_boyer' className='input input-bordered w-full mb-2' autoFocus />
+              {error && <p className='mt-2 text-sm text-red-600 dark:text-red-500 font-medium'>{error['username']}</p>}
+              <input type='text' placeholder='Martin Boyer' className='input input-bordered w-full mb-2' />
+              {error && <p className='mt-2 text-sm text-red-600 dark:text-red-500 font-medium'>{error['name']}</p>}
+              <input type='password' placeholder='••••••••' className='input input-bordered w-full' autoFocus />
+              {error && <p className='mt-2 text-sm text-red-600 dark:text-red-500 font-medium'>{error['password']}</p>}
             </div>
           )}
           <div className='flex justify-center flex-col items-center'>
