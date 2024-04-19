@@ -3,7 +3,6 @@ import useAxios from '@/helpers/useAxios';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import Wrapper from '../../Wrapper';
-import { InputProps } from '@/helpers/props';
 
 const CraftCreate = () => {
   const today = new Date();
@@ -51,27 +50,6 @@ const CraftCreate = () => {
     }
   };
 
-  const Input: React.FC<InputProps> = ({ name, label, type, placeholder, id, error, autofocus = false, required = false }) => {
-    return (
-      <div className='mx-auto mb-4'>
-        <label htmlFor={id} className='input input-bordered flex items-center gap-2'>
-          {label}
-          <input
-            id={id}
-            name={name}
-            required={required}
-            autoFocus={autofocus}
-            type={type}
-            className='grow'
-            placeholder={placeholder}
-            autoComplete='off'
-          />
-        </label>
-        {error && <p className='mt-2 text-sm text-red-600 dark:text-red-500 font-medium'>{error}</p>}
-      </div>
-    );
-  };
-
   return (
     <Wrapper>
       <div className='flex flex-col flex-grow items-center justify-center md:p-4 max-sm:min-h-[calc(100dvh-9rem)]'>
@@ -81,22 +59,27 @@ const CraftCreate = () => {
               <h1 className='text-4xl font-bold mb-4 text-center'>
                 Craft <i className='fa-solid fa-feather ms-1'></i>
               </h1>
-              <Input
-                name='title'
-                placeholder='Enter Title'
-                type='text'
+              <input
                 value={title}
+                type='text'
+                className='input input-bordered w-full mb-4'
+                placeholder='Enter Title'
+                autoComplete='off'
                 onChange={(e) => {
                   setTitle(e.target.value);
                 }}
+                autoFocus
                 required
               />
-              <Input
-                name='tag'
-                placeholder='Enter tagline'
-                type='text'
+              <input
                 value={tag}
-                onChange={(e) => setTag(e.target.value)}
+                type='text'
+                className='input input-bordered w-full mb-4'
+                placeholder='Enter Tagline'
+                autoComplete='off'
+                onChange={(e) => {
+                  setTag(e.target.value);
+                }}
                 required
               />
               <input
