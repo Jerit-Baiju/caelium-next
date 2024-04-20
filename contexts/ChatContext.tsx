@@ -63,7 +63,7 @@ export const ChatProvider = ({ chatId, children }: childrenProps) => {
     };
     fetchMessages();
     fetchParticipant();
-    
+
     socket.current = new WebSocket(`${process.env.NEXT_PUBLIC_WS_HOST}/ws/chat/${chatId}/${authTokens.access}/`);
     socket.current.onmessage = async function (e) {
       let data = JSON.parse(e.data)['message'];
