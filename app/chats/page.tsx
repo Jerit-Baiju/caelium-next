@@ -1,40 +1,25 @@
 'use client';
 
 import ChatsPane from '@/components/chats/ChatsPane';
+import useChatUtils from '@/helpers/chats';
 import { User } from '@/helpers/props';
-import useAxios from '@/helpers/useAxios';
 import { Comforter } from 'next/font/google';
-import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import Link from 'next/link';
+import { useEffect } from 'react';
 import Wrapper from '../Wrapper';
 import { handleeFont } from '../font';
 
 const comforter = Comforter({ weight: '400', subsets: ['cyrillic'] });
 
 const Page = () => {
-  const router = useRouter();
-  let [users, setUsers] = useState([]);
-  let api = useAxios();
+  const { createChat, fetchNewChats, newChats } = useChatUtils();
+  useEffect(() => {
+    fetchNewChats();
+  }, []);
 
-  const createChat = async (recipient_id: number) => {
-    try {
-      const response = await api.post('/api/chats/', { participant: recipient_id });
-      router.push(`/chats/${response.data.id}`);
-    } catch (error) {
-      console.error('Error fetching data:', error);
-    }
-  };
-  const fetchUsers = async () => {
-    try {
-      const response = await api.get('/api/auth/accounts/');
-      setUsers(response.data);
-    } catch (error) {
-      console.error('Error fetching data:', error);
-    }
-  };
   return (
     <Wrapper>
-      <div className='flex flex-grow h-[calc(100dvh-5rem)] max-sm:h-min divide-x divide-dashed divide-neutral-500 overflow-y-scroll'>
+      <div className='flex flex-grow smh-[calc(100dvh-5rem)] max-sm:h-min divide-x divide-dashed divide-neutral-500 overflow-y-scroll'>
         <div className='flex flex-grow flex-none sm:w-1/4'>
           <ChatsPane />
         </div>
@@ -47,7 +32,6 @@ const Page = () => {
               <p className='text-6xl m-3'>Elevating your Chat Experience</p>
             </div>
             <button
-              onClick={fetchUsers}
               type='button'
               data-modal-target='new-chat-modal'
               data-modal-toggle='new-chat-modal'
@@ -64,7 +48,7 @@ const Page = () => {
         aria-hidden={true}
         className='hidden flex-grow bg-black bg-opacity-50 overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0'
       >
-        <div className='relative p-4 w-full max-w-xl'>
+        <div className='relative sm:p-4 w-full max-w-xl'>
           <div className='relative bg-white rounded-lg shadow dark:bg-neutral-900'>
             <div className='flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-neutral-600'>
               <h3 className='text-xl font-semibold text-neutral-900 dark:text-white'>New Chat</h3>
@@ -90,7 +74,7 @@ const Page = () => {
                   />
                 </div>
                 <ul className='sm:max-h-[calc(100dvh-25rem)] overflow-y-scroll'>
-                  {users.map((recipient: User) => (
+                  {newChats.map((recipient: User) => (
                     <li
                       onClick={() => createChat(recipient.id)}
                       key={recipient.id}
@@ -113,18 +97,14 @@ const Page = () => {
           </div>
         </div>
       </div>
-      <div data-dial-init className='fixed end-6 bottom-20 group sm:hidden'>
-        <button
-          type='button'
-          onClick={fetchUsers}
-          data-dial-toggle='new-chat-modal'
-          aria-controls='new-chat-modal'
-          aria-expanded='false'
+      <div className='fixed end-6 bottom-20 group sm:hidden'>
+        <Link
+          href={'/chats/new-chat'}
           className='flex items-center justify-center text-white bg-neutral-500 rounded-lg w-14 h-14 hover:bg-neutral-600 dark:bg-neutral-800 dark:hover:bg-neutral-700 focus:ring-4 focus:ring-neutral-300 focus:outline-none dark:focus:ring-neutral-800'
         >
           <i className='fa-solid fa-comments text-xl'></i>
           <span className='sr-only'>Start new chat</span>
-        </button>
+        </Link>
       </div>
     </Wrapper>
   );
