@@ -15,7 +15,7 @@ export const options: Option[] = [
   { name: 'Gallery', url: '/gallery', icon: 'mountain-sun' },
   { name: 'Chats', url: '/chats', icon: 'message' },
   { name: 'Crafts', url: '/crafts', icon: 'feather' },
-  { name: 'Account', url: '/account', icon: 'user' },
+  { name: 'Profile', url: '/accounts/profile', icon: 'user' },
 ];
 
 const SideBar = () => {
