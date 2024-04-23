@@ -37,7 +37,7 @@ const Profile = () => {
   };
   return (
     <Wrapper>
-      <div className='flex flex-col items-center justify-center w-full min-h-[calc(100dvh-9rem)]'>
+      <div className='flex flex-col items-center justify-center my-8 w-full min-h-[calc(100dvh-9rem)]'>
         <div className='relative flex flex-col items-center justify-center'>
           <img className='dark:bg-white h-64 rounded-full border' src={user?.avatar} alt='' />
           <i className='absolute ml-44 mt-44 dark:bg-neutral-700 bg-neutral-300 p-2 rounded-full text-2xl fa-regular fa-pen-to-square'></i>
