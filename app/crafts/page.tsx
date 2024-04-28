@@ -2,7 +2,7 @@
 import AuthContext from '@/contexts/AuthContext';
 import { useNavbar } from '@/contexts/NavContext';
 import { BaseError, Craft } from '@/helpers/props';
-import { formatDate } from '@/helpers/support';
+import { getTime } from '@/helpers/support';
 import { AxiosError } from 'axios';
 import Link from 'next/link';
 import { useContext, useEffect, useState } from 'react';
@@ -59,7 +59,7 @@ const CraftsHome = () => {
                     </div>
                   </div>
                   <div className='flex w-full items-center text-neutral-500 dark:text-neutral-400'>
-                    <span>{formatDate(craft?.date)}</span>
+                    <span>{getTime(craft?.date)}</span>
                     <span className='mx-2'>•</span>
                     <span>{craft.time}</span>
                     <div className='flex flex-grow justify-end text-end'>Author: {craft.owner.username}</div>

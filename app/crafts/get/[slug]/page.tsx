@@ -1,7 +1,7 @@
 'use client';
 import Wrapper from '@/app/Wrapper';
 import { BaseError, Craft } from '@/helpers/props';
-import { formatDate } from '@/helpers/support';
+import { getTime } from '@/helpers/support';
 import useAxios from '@/helpers/useAxios';
 import { AxiosError } from 'axios';
 import { useEffect, useState } from 'react';
@@ -38,7 +38,7 @@ const CraftRead = ({ params }: { params: { slug: Number } }) => {
               <img src={craft?.banner} alt='Banner' className='w-auto mb-4 rounded-lg md:h-96 mx-auto' />
               <h2 className='text-2xl font-bold mb-2'>{craft?.title}</h2>
               <p className='dark:text-neutral-400 text-neutral-500 mb-4'>
-                {formatDate(craft?.date)} • {craft?.time}
+                {getTime(craft?.date)} • {craft?.time}
               </p>
               {paragraphs?.map((paragraph, index) => (
                 <p key={index} className='leading-relaxed my-4 text-lg'>

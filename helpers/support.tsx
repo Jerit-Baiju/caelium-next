@@ -2,13 +2,22 @@ export const truncate = ({ chars, length }: { chars: string | null; length: numb
   return chars ? `${chars?.substring(0, length)}...` : '';
 };
 
-export const getTime = (timestamp: string | null) => {
-  const date = new Date(timestamp ? timestamp : '');
-  const formatted = date.toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true });
-  return timestamp ? formatted : '';
-};
-
-export const formatDate = (dateString: Date | null | undefined) => {
-  const date = new Date(dateString ? dateString : '');
-  return date.toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' });
+export const getTime = (timestamp: string | null | undefined | Date): string => {
+  if (!timestamp) return '';
+  const date = new Date(timestamp);
+  const currentDate = new Date();
+  const timeDiff = currentDate.getTime() - date.getTime();
+  if (timeDiff < 24 * 60 * 60 * 1000) {
+    return date.toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true });
+  }
+  if (timeDiff < 48 * 60 * 60 * 1000) {
+    return 'Yesterday';
+  }
+  if (date.getDay() >= (currentDate.getDay() - 1 + 7) % 7) {
+    return date.toLocaleString('en-US', { weekday: 'long' });
+  }
+  if (date.getFullYear() === currentDate.getFullYear()) {
+    return date.toLocaleString('en-US', { month: 'long', day: 'numeric' });
+  }
+  return date.toLocaleString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
 };
