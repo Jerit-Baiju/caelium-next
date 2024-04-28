@@ -162,9 +162,9 @@ const Profile = () => {
         </div>
         <div className='md:w-3/5 w-full'>
           {fields.map((field, i) => (
-            <div key={i}>
+            <div className='px-4' key={i}>
               {field.type != 'select' ? (
-                <label className='input input-bordered flex items-center gap-2 my-4 max-sm:mx-4 dark:[color-scheme:dark]'>
+                <label className='input input-bordered flex items-center gap-2 my-4 dark:[color-scheme:dark]'>
                   {field.name}:
                   <input
                     type={field.type || 'text'}
