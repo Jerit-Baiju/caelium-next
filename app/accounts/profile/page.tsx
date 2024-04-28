@@ -2,7 +2,7 @@
 import Wrapper from '@/app/Wrapper';
 import AuthContext from '@/contexts/AuthContext';
 import useAxios from '@/helpers/useAxios';
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useRef, useState } from 'react';
 
 const Profile = () => {
   const api = useAxios();
@@ -16,6 +16,7 @@ const Profile = () => {
   const [editable, setEditable] = useState(false);
   const [errors, setErrors] = useState({});
   const [alert, setAlert] = useState(false);
+  const [avatarSrc, setAvatarSrc] = useState<string | undefined>(user?.avatar);
   let [newData, setNewData] = useState({});
 
   useEffect(() => {
@@ -25,6 +26,7 @@ const Profile = () => {
     setBirthdate(user?.birthdate);
     setLocation(user?.location);
     setGender(user?.gender);
+    setAvatarSrc(user?.avatar);
   }, [user]);
 
   const fields: { name: string; value: string; placeholder?: string; type?: string; fieldName: string; options?: string[] }[] = [
@@ -88,6 +90,32 @@ const Profile = () => {
       });
   };
 
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleEditAvatarClick = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
+    }
+  };
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const formData = new FormData();
+    formData.append('avatar', file);
+    setAvatarSrc(URL.createObjectURL(file));
+    try {
+      await api.patch(`/api/auth/update/${user.id}/`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      setAlert(true);
+    } catch (error) {
+      console.error('Error updating avatar:', error);
+    }
+  };
+
   return (
     <Wrapper>
       {alert && (
@@ -100,8 +128,14 @@ const Profile = () => {
       )}
       <div className='flex flex-col items-center justify-center my-8 w-full min-h-[calc(100dvh-9rem)]'>
         <div className='relative flex flex-col items-center justify-center'>
-          <img className='dark:bg-white h-64 rounded-full border' src={user?.avatar} alt='' />
-          <i className='absolute ml-44 mt-44 dark:bg-neutral-700 bg-neutral-300 p-2 rounded-full text-2xl fa-regular fa-pen-to-square'></i>
+          <img className='dark:bg-white h-64 rounded-full border' src={avatarSrc} alt='' />
+          <div>
+            <input type='file' ref={fileInputRef} className='hidden' onChange={handleFileChange} />
+          </div>
+          <button
+            onClick={handleEditAvatarClick}
+            className='absolute ml-44 mt-44 dark:bg-neutral-700 bg-neutral-300 p-2 rounded-full text-2xl fa-regular fa-pen-to-square'
+          />
         </div>
         <h1 className='text-3xl mt-4'>{user?.name}</h1>
         <div className='flex px-10 my-4 max-sm:w-full items-center justify-center'>
