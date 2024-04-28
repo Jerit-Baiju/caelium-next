@@ -188,7 +188,7 @@ const Profile = () => {
                   <option disabled selected>
                     {field.name}
                   </option>
-                  {field.options?.map((option) => <option>{option}</option>)}
+                  {field.options?.map((option, i) => <option key={i}>{option}</option>)}
                 </select>
               )}
               {errors[field.fieldName as keyof typeof errors] && (
