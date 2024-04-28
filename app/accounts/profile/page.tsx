@@ -2,7 +2,7 @@
 import Wrapper from '@/app/Wrapper';
 import AuthContext from '@/contexts/AuthContext';
 import useAxios from '@/helpers/useAxios';
-import { useContext, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 
 const Profile = () => {
   const api = useAxios();
@@ -14,29 +14,90 @@ const Profile = () => {
   const [location, setLocation] = useState(user?.location);
   const [gender, setGender] = useState(user?.gender);
   const [editable, setEditable] = useState(false);
+  const [errors, setErrors] = useState({});
+  const [alert, setAlert] = useState(false);
   let [newData, setNewData] = useState({});
 
-  const fields: { name: string; value: string; placeholder?: string; type?: string }[] = [
-    { name: 'Name', value: name },
-    { name: 'Username', value: username },
-    { name: 'Email', value: email, placeholder: 'Add your E-mail here' },
-    { name: 'Date of Birth', value: birthdate, placeholder: 'Add your age here', type: 'date' },
-    { name: 'Location', value: location, placeholder: 'Mark your location' },
-    { name: 'Gender', value: gender, placeholder: 'Choose Gender' },
+  useEffect(() => {
+    setName(user?.name);
+    setUsername(user?.username);
+    setEmail(user?.email);
+    setBirthdate(user?.birthdate);
+    setLocation(user?.location);
+    setGender(user?.gender);
+  }, [user]);
+
+  const fields: { name: string; value: string; placeholder?: string; type?: string; fieldName: string; options?: string[] }[] = [
+    { name: 'Name', value: name, fieldName: 'name' },
+    { name: 'Username', value: username, fieldName: 'username' },
+    { name: 'Email', value: email, placeholder: 'Add your E-mail here', fieldName: 'email' },
+    { name: 'Date of Birth', value: birthdate, placeholder: 'Add your age here', type: 'date', fieldName: 'birthdate' },
+    { name: 'Location', value: location, placeholder: 'Mark your location', fieldName: 'location' },
+    {
+      name: 'Gender',
+      value: gender,
+      placeholder: 'Choose Gender',
+      fieldName: 'gender',
+      type: 'select',
+      options: ['Male', 'Female', 'Other'],
+    },
   ];
 
-  const handleInputChange = (fieldName: string, value: any) => {
+  const handleInputChange = (fieldName: string, stateName: string, value: any) => {
+    setErrors({ ...errors, [fieldName]: null });
     setNewData((prevData) => ({
       ...prevData,
       [fieldName]: value,
     }));
+
+    switch (stateName) {
+      case 'Name':
+        setName(value);
+        break;
+      case 'Username':
+        setUsername(value);
+        break;
+      case 'Email':
+        setEmail(value);
+        break;
+      case 'Date of Birth':
+        setBirthdate(value);
+        break;
+      case 'Location':
+        setLocation(value);
+        break;
+      case 'Gender':
+        setGender(value);
+        break;
+      default:
+        break;
+    }
   };
 
   const updateProfile = () => {
-    api.patch(`/api/auth/update/${user.id}/`, newData);
+    api
+      .patch(`/api/auth/update/${user.id}/`, newData)
+      .then(() => {
+        setAlert(true);
+      })
+      .catch((error) => {
+        if (error.response && error.response.data) {
+          setErrors(error.response.data);
+          setEditable(true);
+        }
+      });
   };
+
   return (
     <Wrapper>
+      {alert && (
+        <div
+          className='p-4 m-4 text-sm text-center text-green-800 rounded-lg bg-green-50 dark:bg-neutral-800 dark:text-green-400'
+          role='alert'
+        >
+          <span className='font-medium'>Profile updated successfully.</span>
+        </div>
+      )}
       <div className='flex flex-col items-center justify-center my-8 w-full min-h-[calc(100dvh-9rem)]'>
         <div className='relative flex flex-col items-center justify-center'>
           <img className='dark:bg-white h-64 rounded-full border' src={user?.avatar} alt='' />
@@ -67,18 +128,41 @@ const Profile = () => {
         </div>
         <div className='md:w-3/5 w-full'>
           {fields.map((field, i) => (
-            <label key={i} className='input input-bordered flex items-center gap-2 my-4 max-sm:mx-4 dark:[color-scheme:dark]'>
-              {field.name}
-              <input
-                type={field.type || 'text'}
-                className='grow'
-                value={field.value || ''}
-                placeholder={field.placeholder}
-                disabled={!editable}
-                onChange={(e) => handleInputChange(field.name, e.target.value)}
-              />
-              {!field.value && <i className='fa-solid fa-triangle-exclamation dark:text-red-400 text-red-500' />}
-            </label>
+            <div key={i}>
+              {field.type != 'select' ? (
+                <label className='input input-bordered flex items-center gap-2 my-4 max-sm:mx-4 dark:[color-scheme:dark]'>
+                  {field.name}:
+                  <input
+                    type={field.type || 'text'}
+                    className='grow'
+                    value={field.value || ''}
+                    placeholder={field.placeholder}
+                    disabled={!editable}
+                    onChange={(e) => handleInputChange(field.fieldName, field.name, e.target.value)}
+                  />
+                  {errors[field.fieldName as keyof typeof errors] || !field.value ? (
+                    <i className='fa-solid fa-triangle-exclamation dark:text-red-400 text-red-500' />
+                  ) : null}
+                </label>
+              ) : (
+                <select
+                  value={field.value}
+                  className='select select-bordered w-full mb-4'
+                  disabled={!editable}
+                  onChange={(e) => handleInputChange(field.fieldName, field.name, e.target.value)}
+                >
+                  <option disabled selected>
+                    {field.name}
+                  </option>
+                  {field.options?.map((option) => <option>{option}</option>)}
+                </select>
+              )}
+              {errors[field.fieldName as keyof typeof errors] && (
+                <p className='text-sm mx-4 text-red-600 dark:text-red-500 font-medium'>
+                  {(errors[field.fieldName as keyof typeof errors] as string[])[0]}
+                </p>
+              )}
+            </div>
           ))}
         </div>
       </div>
