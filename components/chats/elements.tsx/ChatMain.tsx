@@ -2,6 +2,7 @@
 import ChatContext from '@/contexts/ChatContext';
 import { Message } from '@/helpers/props';
 import { useContext, useEffect, useRef } from 'react';
+import ImageMessage from './ChatBubbles/ImageMessage';
 import TextMessage from './ChatBubbles/TextMessage';
 
 const ChatMain = () => {
@@ -19,9 +20,15 @@ const ChatMain = () => {
       <div className='flex-grow' />
       <div className='flex flex-col justify-end'>
         {messages.length === 0 && <div className='text-center text-neutral-400'>No messages yet</div>}
-        {messages.map((message: Message) => (
-          <TextMessage key={message.id} message={message} />
-        ))}
+        {messages.map((message: Message) => {
+          if (message.type === 'text') {
+            return <TextMessage key={message.id} message={message} />;
+          } else if (message.type === 'image') {
+            return <ImageMessage key={message.id} message={message} />;
+          } else {
+            return null; // Handle other types of messages as needed
+          }
+        })}
       </div>
     </div>
   );

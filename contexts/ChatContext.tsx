@@ -18,6 +18,7 @@ interface ChatContextProps {
   messages: Array<any>;
   recipient?: User;
   clearChat: () => void;
+  sendFile: (file: File) => void;
 }
 
 const ChatContext = createContext<ChatContextProps>({
@@ -26,6 +27,7 @@ const ChatContext = createContext<ChatContextProps>({
   setTextInput: async () => {},
   messages: [],
   clearChat: async () => {},
+  sendFile: async () => {},
 });
 export default ChatContext;
 
@@ -67,17 +69,9 @@ export const ChatProvider = ({ chatId, children }: childrenProps) => {
     socket.current = new WebSocket(`${process.env.NEXT_PUBLIC_WS_HOST}/ws/chat/${chatId}/${authTokens.access}/`);
     socket.current.onmessage = async function (e) {
       let data = JSON.parse(e.data)['message'];
-      const message: Message = {
-        sender: {
-          name: data.name,
-          id: data.user_id,
-        },
-        id: data.message_id,
-        content: data.content,
-        timestamp: data.timestamp,
-        side: user.id === data.user_id ? 'right' : 'left',
-      };
-      setMessages((prevMessages) => [...prevMessages, message]);
+      console.log(data);
+      const message = await api.get(`/api/chats/messages/${chatId}/${data['message_id']}/`)
+      setMessages((prevMessages) => [...prevMessages, message.data]);
     };
 
     return () => {
@@ -85,17 +79,27 @@ export const ChatProvider = ({ chatId, children }: childrenProps) => {
         socket.current.close();
       }
     };
-  }, [chatId]);
+  }, [chatId, user]);
+
+  const sendMessage = async (type: 'text' | 'image', content?: string, file?: File) => {
+    const formData = new FormData();
+    formData.append('type', type);
+    formData.append('content', content ? content : '');
+    formData.append('file', file ? file : '');
+    const response = await api.post(`api/chats/messages/${chatId}/`, formData, { headers: { 'Content-Type': 'multipart/form-data' } });
+    if (response.status === 201) {
+      socket.current?.send(JSON.stringify({ message_id: response.data['id'] }));
+    }
+  };
 
   const handleSubmit = async (e?: React.FormEvent<HTMLFormElement>) => {
     e?.preventDefault();
-    socket.current?.send(
-      JSON.stringify({
-        content: textInput,
-        token: authTokens.access,
-      }),
-    );
+    sendMessage('text', textInput);
     setTextInput('');
+  };
+
+  const sendFile = (file: File) => {
+    sendMessage('image', '', file);
   };
 
   const clearChat = async () => {
@@ -115,7 +119,7 @@ export const ChatProvider = ({ chatId, children }: childrenProps) => {
   }
 
   return (
-    <ChatContext.Provider value={{ handleSubmit, textInput, setTextInput, messages, recipient, clearChat }}>
+    <ChatContext.Provider value={{ handleSubmit, textInput, setTextInput, messages, recipient, clearChat, sendFile }}>
       {children}
     </ChatContext.Provider>
   );
