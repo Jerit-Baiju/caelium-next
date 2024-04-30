@@ -2,7 +2,7 @@ import ChatContext from '@/contexts/ChatContext';
 import { useContext, useRef } from 'react';
 
 const ChatInput = () => {
-  let { textInput, setTextInput, handleSubmit } = useContext(ChatContext);
+  let { textInput, setTextInput, handleSubmit, sendFile } = useContext(ChatContext);
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setTextInput(e.target.value);
   };
@@ -23,7 +23,7 @@ const ChatInput = () => {
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    console.log(file);
+    file ? sendFile(file) : null;
   };
 
   return (
@@ -40,7 +40,6 @@ const ChatInput = () => {
           onClick={handleButtonClick}
           className='inline-flex justify-center p-2 text-neutral-600 rounded-lg cursor-pointer hover:text-neutral-900 hover:bg-neutral-100 dark:text-neutral-400 dark:hover:text-white dark:hover:bg-neutral-600'
         >
-          <input className='hidden' type='file' name='' id='' />
           <i className='fa-solid fa-image text-xl p-1'></i>
           <span className='sr-only'>Upload image</span>
         </button>
