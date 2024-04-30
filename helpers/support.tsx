@@ -1,5 +1,5 @@
 export const truncate = ({ chars, length }: { chars: string | null; length: number }) => {
-  return chars ? `${chars?.substring(0, length)}...` : '';
+  return chars ? `${chars?.substring(0, length)}` : '';
 };
 
 export const getTime = (timestamp: string | null | undefined | Date): string => {
