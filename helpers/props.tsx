@@ -16,10 +16,13 @@ export interface Message {
   id: number;
   sender: User;
   chat?: Chat;
-  timestamp: Date;
-  content: string;
   side: string;
+  timestamp: Date;
+  type: string;
+  content: string;
+  file: null;
 }
+
 export interface Craft {
   id: number;
   title: string;
@@ -49,7 +52,7 @@ export interface DropDown {
 }
 
 export interface Alert {
-  id?: number
+  id?: number;
   content: string;
   type: 'success' | 'error' | 'warning' | 'info';
 }
