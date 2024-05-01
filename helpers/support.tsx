@@ -4,20 +4,38 @@ export const truncate = ({ chars, length }: { chars: string | null; length: numb
 
 export const getTime = (timestamp: string | null | undefined | Date): string => {
   if (!timestamp) return '';
-  const date = new Date(timestamp);
-  const currentDate = new Date();
-  const timeDiff = currentDate.getTime() - date.getTime();
-  if (timeDiff < 24 * 60 * 60 * 1000) {
-    return date.toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true });
+
+  const lastChatDate = new Date(timestamp);
+
+  const formatTime = (date: Date): string => {
+    const hours = date.getHours();
+    const minutes = date.getMinutes();
+    const amPM = hours >= 12 ? 'PM' : 'AM';
+    const formattedHours = hours % 12 || 12;
+    const formattedMinutes = minutes < 10 ? '0' + minutes : minutes;
+    return `${formattedHours}:${formattedMinutes} ${amPM}`;
   }
-  if (timeDiff < 48 * 60 * 60 * 1000) {
-    return 'Yesterday';
+
+  const formatDate = (date: Date): string => {
+    const day = date.getDate();
+    const month = date.getMonth() + 1;
+    const year = date.getFullYear().toString().slice(-2);
+    return `${day}/${month}/${year}`;
   }
-  if (date.getDay() >= (currentDate.getDay() - 1 + 7) % 7) {
-    return date.toLocaleString('en-US', { weekday: 'long' });
+
+  const getLastChatTime = (lastChatDate: Date): string => {
+    const currentDate = new Date();
+    const lastChatDay = lastChatDate.getDate();
+    const currentDay = currentDate.getDate();
+  
+    if (currentDay === lastChatDay) {
+      return formatTime(lastChatDate);
+    } else if (currentDay - lastChatDay === 1) {
+      return 'Yesterday';
+    } else {
+      return formatDate(lastChatDate);
+    }
   }
-  if (date.getFullYear() === currentDate.getFullYear()) {
-    return date.toLocaleString('en-US', { month: 'long', day: 'numeric' });
-  }
-  return date.toLocaleString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
-};
+
+  return getLastChatTime(lastChatDate);
+}
