@@ -17,6 +17,9 @@ export interface Message {
   sender: User;
   chat?: Chat;
   side: string;
+  size?: null | string;
+  extension?: null | string;
+  file_name: string | null;
   timestamp: Date;
   type: string;
   content: string;
