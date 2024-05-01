@@ -87,7 +87,7 @@ const ChatsPane = () => {
               <div className='flex items-center space-x-3 rtl:space-x-reverse'>
                 <div className='flex-shrink-0 dark:bg-white rounded-full'>
                   <img
-                    className='w-12 h-12 rounded-full border dark:border-neutral-500 border-neutral-200'
+                    className='w-12 h-12 rounded-full border dark:border-neutral-500 border-neutral-200 object-cover'
                     src={chat.other_participant.avatar}
                     alt={chat.other_participant.name}
                   />

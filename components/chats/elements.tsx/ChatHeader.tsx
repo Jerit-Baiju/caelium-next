@@ -19,7 +19,7 @@ const ChatHeader = () => {
         </Link>
         <div className='flex items-center'>
           <img
-            className='h-12 my-2 w-12 max-sm:h-12 max-sm:w-12 rounded-full dark:bg-white'
+            className='h-12 my-2 w-12 max-sm:h-12 max-sm:w-12 rounded-full dark:bg-white object-cover'
             src={recipient?.avatar || ''}
             alt='user photo'
             width={100}
