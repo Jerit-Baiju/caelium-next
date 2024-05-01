@@ -47,7 +47,7 @@ const CraftRead = ({ params }: { params: { slug: Number } }) => {
               ))}
             </article>
             <div className='flex items-center justify-end pe-6'>
-              <img src={craft?.owner.avatar} alt='User Avatar' className='w-12 h-12 rounded-full mr-4 border' />
+              <img src={craft?.owner.avatar} alt='User Avatar' className='w-12 h-12 rounded-full mr-4 border object-cover' />
               <div>
                 <p className='font-bold text-lg'>{craft?.owner.name}</p>
                 <p className='text-sm'>{craft?.owner.username}</p>
