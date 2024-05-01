@@ -128,7 +128,7 @@ const Profile = () => {
       )}
       <div className='flex flex-col items-center justify-center my-8 w-full min-h-[calc(100dvh-9rem)]'>
         <div className='relative flex flex-col items-center justify-center'>
-          <img className='dark:bg-white h-64 rounded-full border' src={avatarSrc} alt='' />
+          <img className='dark:bg-white h-64 w-64 rounded-full border object-cover' src={avatarSrc} alt='' />
           <div>
             <input type='file' ref={fileInputRef} className='hidden' onChange={handleFileChange} />
           </div>
