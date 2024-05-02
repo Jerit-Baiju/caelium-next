@@ -29,7 +29,7 @@ const ImageMessage = ({ message }: { message: Message }) => {
       </div>
       <div className='chat-bubble rounded-lg bg-neutral-500 dark:bg-neutral-700 text-white overscroll-none break-words p-1'>
         <img className='h-64' src={message.file ? message.file : ''} alt='' />
-        <p className='mt-1 ms-1'> {message.content}</p>
+        {message.content && <p className='mt-1 ms-1'> {message.content}</p>}
       </div>
 
       {/* <div className='chat-footer opacity-50'>Delivered</div> */}
