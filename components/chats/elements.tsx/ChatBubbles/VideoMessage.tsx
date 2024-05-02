@@ -32,7 +32,7 @@ const VideoMessage = ({ message }: { message: Message }) => {
           <source src={message.file?message.file:''} type='video/mp4' />
           Your browser does not support the video tag.
         </video>
-        <p className='mt-1 ms-1'> {message.content}</p>
+        {message.content && <p className='mt-1 ms-1'> {message.content}</p>}
       </div>
 
       {/* <div className='chat-footer opacity-50'>Delivered</div> */}
