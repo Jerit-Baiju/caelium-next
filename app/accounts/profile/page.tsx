@@ -6,7 +6,7 @@ import { useContext, useEffect, useRef, useState } from 'react';
 
 const Profile = () => {
   const api = useAxios();
-  const { user } = useContext(AuthContext);
+  const { user, logoutUser } = useContext(AuthContext);
   const [name, setName] = useState(user?.name);
   const [username, setUsername] = useState(user?.username);
   const [email, setEmail] = useState(user?.email);
@@ -152,7 +152,14 @@ const Profile = () => {
           >
             {editable ? 'Save' : 'Edit'}
           </button>
-          <input type='text' id='shareLink' value={'this is to copy k'} hidden disabled readOnly />
+          <input
+            type='text'
+            id='shareLink'
+            value={`${process.env.NEXT_PUBLIC_DOM}/accounts/profile/${user?.id}`}
+            hidden
+            disabled
+            readOnly
+          />
           <button
             data-copy-to-clipboard-target='shareLink'
             className='dark:bg-neutral-700 bg-neutral-300 p-1 rounded-lg max-sm:text-xl m-3 w-full md:w-24'
@@ -198,6 +205,11 @@ const Profile = () => {
               )}
             </div>
           ))}
+        </div>
+        <div className='flex flex-grow w-full align-middle justify-center'>
+          <button onClick={logoutUser} className='dark:bg-red-700 bg-red-500 text-white p-1 rounded-lg max-sm:text-xl mx-14 max-sm:w-full w-44'>
+            <span id='default-message'>Logout</span>
+          </button>
         </div>
       </div>
     </Wrapper>
