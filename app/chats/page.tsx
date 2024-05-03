@@ -19,7 +19,7 @@ const Page = () => {
 
   return (
     <Wrapper>
-      <div className='flex flex-grow smh-[calc(100dvh-5rem)] max-sm:h-min divide-x divide-dashed divide-neutral-500 overflow-y-scroll'>
+      <div className='flex flex-grow max-sm:h-min divide-x divide-dashed divide-neutral-500 overflow-y-scroll'>
         <div className='flex flex-grow flex-none sm:w-1/4'>
           <ChatsPane />
         </div>

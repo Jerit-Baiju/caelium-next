@@ -1,9 +1,9 @@
 'use client';
 import Wrapper from '@/app/Wrapper';
 import ChatsPane from '@/components/chats/ChatsPane';
-import ChatHeader from '@/components/chats/elements.tsx/ChatHeader';
-import ChatInput from '@/components/chats/elements.tsx/ChatInput';
-import ChatMain from '@/components/chats/elements.tsx/ChatMain';
+import ChatHeader from '@/components/chats/elements/ChatHeader';
+import ChatInput from '@/components/chats/elements/ChatInput';
+import ChatMain from '@/components/chats/elements/ChatMain';
 import { ChatProvider } from '@/contexts/ChatContext';
 
 const page = ({ params }: { params: { slug: Number } }) => {
