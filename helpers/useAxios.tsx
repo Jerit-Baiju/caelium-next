@@ -28,7 +28,7 @@ const useAxios = () => {
       return request;
     } catch (error) {
       logoutUser();
-      throw error
+      throw error;
     }
   });
   return axiosInstance;
