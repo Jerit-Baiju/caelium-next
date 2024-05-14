@@ -72,3 +72,9 @@ export interface InputProps {
   required?: boolean;
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
+
+export interface Task {
+  name: string;
+  completed: boolean;
+  id: number;
+}
