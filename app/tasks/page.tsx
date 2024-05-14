@@ -15,7 +15,6 @@ const Page = () => {
       try {
         const response = await api.get('/api/tasks');
         setTasks(response.data);
-        console.log(response.data);
       } catch (error) {
         console.error('Error fetching data:', error);
       }
