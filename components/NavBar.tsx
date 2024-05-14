@@ -1,5 +1,4 @@
 import { useNavbar } from '@/contexts/NavContext';
-import Image from 'next/image';
 import Link from 'next/link';
 
 const NavBar = () => {
@@ -8,7 +7,7 @@ const NavBar = () => {
     <nav className='bg-neutral-100 dark:bg-neutral-900 fixed w-full z-20 top-0 start-0 border-b border-gray-200 dark:border-gray-600'>
       <div className='max-w-screen-xl flex flex-wrap items-center h-20 justify-between mx-auto p-1'>
         <Link href='/' className='flex  p-0 m-0 items-center space-x-3 rtl:space-x-reverse'>
-          <Image
+          <img
             className='p-0 m-0 pointer-events-none dark:invert'
             src={'/logos/written-dark.png'}
             alt='caelium'
