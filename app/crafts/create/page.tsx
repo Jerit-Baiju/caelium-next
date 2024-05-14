@@ -102,7 +102,7 @@ const CraftCreate = () => {
                 </label>
                 <input
                   type='date'
-                  className='mt-1 p-2 w-fit border rounded-md focus:outline-none focus:ring focus:border-blue-300 resize-none dark:bg-neutral-800 dark:border-neutral-700'
+                  className='mt-1 p-2 w-fit border rounded-md focus:outline-none focus:ring focus:border-blue-300 resize-none dark:bg-neutral-800 dark:border-neutral-700 dark:[color-scheme:dark]'
                   placeholder='Select date'
                   name='date'
                   value={selectedDate}
