@@ -5,7 +5,7 @@ import useAxios from '@/helpers/useAxios';
 import { FormEvent, useEffect, useState } from 'react';
 import Wrapper from '../Wrapper';
 
-const page = () => {
+const Page = () => {
   let [newTask, setNewTask] = useState('');
   let [tasks, setTasks] = useState<Task[]>([]);
   let api = useAxios();
@@ -89,4 +89,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default Page;
