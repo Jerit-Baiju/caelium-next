@@ -78,3 +78,13 @@ export interface Task {
   completed: boolean;
   id: number;
 }
+
+export interface Event {
+  id: number;
+  name: string;
+  start_time: Date;
+  end_time: Date;
+  location: string;
+  description: string;
+  space: string;
+}
