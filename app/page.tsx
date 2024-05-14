@@ -65,7 +65,7 @@ export default function Home() {
               </div>
               <div className='bg-neutral-800 rounded-lg' />
             </div>
-            <div className='grid grid-cols-1 md:grid-cols-4 gap-8 pt-8'>
+            <div className='grid grid-cols-1 md:grid-cols-4 gap-8 md:pt-8'>
               <div
                 className='dark:bg-neutral-800 h-72 rounded-lg cursor-pointer'
                 onClick={() => {
