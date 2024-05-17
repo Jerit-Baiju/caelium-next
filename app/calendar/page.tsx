@@ -1,8 +1,18 @@
 'use client';
-
+import { useNavbar } from '@/contexts/NavContext';
+import { NavLink } from '@/helpers/props';
+import { useEffect } from 'react';
 import Wrapper from '../Wrapper';
 
 const CalendarPage = () => {
+  const { navLinks, setNavLinks, setCtaButton } = useNavbar();
+  useEffect(() => {
+    setCtaButton({ name: 'Create Event', url: 'calendar/create' });
+    const newLinks: NavLink[] = navLinks ? [...navLinks] : [];
+    newLinks[2] = { name: 'Groups', url: '/calendar/groups' };
+    setNavLinks(newLinks);
+  }, []);
+
   return (
     <Wrapper>
       <div className='p-4 grid place-items-center w-full'>
