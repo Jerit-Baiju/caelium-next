@@ -5,12 +5,15 @@ import { useEffect } from 'react';
 import Wrapper from '../Wrapper';
 
 const CalendarPage = () => {
-  const { navLinks, setNavLinks, setCtaButton } = useNavbar();
+  const { navLinks, setNavLinks, setCtaButton, defaultCtaButton, } = useNavbar();
   useEffect(() => {
     setCtaButton({ name: 'Create Event', url: 'calendar/create' });
     const newLinks: NavLink[] = navLinks ? [...navLinks] : [];
     newLinks[2] = { name: 'Groups', url: '/calendar/groups' };
     setNavLinks(newLinks);
+    return () => {
+      setCtaButton(defaultCtaButton);
+    };
   }, []);
 
   return (
