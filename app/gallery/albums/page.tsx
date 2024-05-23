@@ -25,10 +25,10 @@ const Albums = () => {
         <div className='my-5'>
           <div className='p-4 bg-neutral-900 rounded-3xl'>
             <p className='text-3xl py-2'>Album 1</p>
-            <div className='grid grid-cols-1 max-sm:grid-cols-2 md:grid-cols-5 gap-4'>
+            <div className='grid grid-cols-1 max-sm:grid-cols-4 md:grid-cols-7 gap-4'>
               {images.map((image, i) => (
                 <Link key={i} href={'/gallery/image'}>
-                  <img className='w-full md:h-52 h-full sm:h-40 rounded-lg object-cover' key={i} src={image} />
+                  <img className='aspect-square rounded-lg object-cover' key={i} src={image} />
                 </Link>
               ))}
             </div>

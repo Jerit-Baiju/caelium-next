@@ -30,10 +30,10 @@ const page = () => {
     <Wrapper>
       <div className='p-4'>
         <p className='text-3xl py-2'>Jan 8, 2024</p>
-        <div className='grid grid-cols-1 max-sm:grid-cols-2 md:grid-cols-5 gap-4'>
+        <div className='grid grid-cols-1 max-sm:grid-cols-2 md:grid-cols-7 gap-4'>
           {images.map((image, i) => (
             <Link key={i} href={'/gallery/image/id'}>
-              <img className='w-full md:h-72 h-full sm:h-40 rounded-lg object-cover' key={i} src={image} />
+              <img className='aspect-square rounded-lg object-cover' key={i} src={image} />
             </Link>
           ))}
         </div>
