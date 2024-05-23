@@ -3,9 +3,9 @@ import Wrapper from '@/app/Wrapper';
 import { useState } from 'react';
 
 const CreateAlbum = () => {
-  const [selectedImages, setSelectedImages] = useState<string[]>([]);
+  const [selectedImages, setSelectedImages] = useState<number[]>([]);
 
-  const toggleSelectImage = (image: string) => {
+  const toggleSelectImage = (image: number) => {
     setSelectedImages((prevSelected) =>
       prevSelected.includes(image) ? prevSelected.filter((i) => i !== image) : [...prevSelected, image],
     );
@@ -16,6 +16,10 @@ const CreateAlbum = () => {
     'https://images.unsplash.com/photo-1715586041798-9583f0642747?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxlZGl0b3JpYWwtZmVlZHwyfHx8ZW58MHx8fHx8',
     'https://images.unsplash.com/photo-1715624849529-3f99fafffee5?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxlZGl0b3JpYWwtZmVlZHw1NHx8fGVufDB8fHx8fA%3D%3D',
     'https://images.unsplash.com/photo-1714572877812-7b416fbd4314?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxlZGl0b3JpYWwtZmVlZHw2Nnx8fGVufDB8fHx8fA%3D%3D',
+    'https://images.unsplash.com/photo-1714715362537-4aa538a6f0ab?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxlZGl0b3JpYWwtZmVlZHw3NXx8fGVufDB8fHx8fA%3D%3D',
+    'https://images.unsplash.com/photo-1715639732762-cf660da518c6?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHx0b3BpYy1mZWVkfDR8aG1lbnZRaFVteE18fGVufDB8fHx8fA%3D%3D',
+    'https://images.unsplash.com/photo-1714715362537-4aa538a6f0ab?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxlZGl0b3JpYWwtZmVlZHw3NXx8fGVufDB8fHx8fA%3D%3D',
+    'https://images.unsplash.com/photo-1715639732762-cf660da518c6?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHx0b3BpYy1mZWVkfDR8aG1lbnZRaFVteE18fGVufDB8fHx8fA%3D%3D',
     'https://images.unsplash.com/photo-1714715362537-4aa538a6f0ab?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxlZGl0b3JpYWwtZmVlZHw3NXx8fGVufDB8fHx8fA%3D%3D',
     'https://images.unsplash.com/photo-1715639732762-cf660da518c6?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHx0b3BpYy1mZWVkfDR8aG1lbnZRaFVteE18fGVufDB8fHx8fA%3D%3D',
   ];
@@ -35,18 +39,34 @@ const CreateAlbum = () => {
         </div>
         <div className='flex items-center justify-center sm:mt-16'>
           <div className='bg-neutral-900 h-96 w-1/2 rounded-lg p-4'>
-            <div className='h-full grid grid-cols-4 md:grid-cols-6 gap-4 overflow-auto rounded-lg'>
+            <div className='h-min grid grid-cols-4 md:grid-cols-6 gap-4 overflow-auto rounded-lg'>
               {images.map((image, i) => (
                 <img
                   key={i}
-                  className={`md:h-24 w-24 h-24 object-cover rounded-lg cursor-pointer ${selectedImages.includes(image) ? 'border-4 rounded-lg border-blue-500 object-cover' : ''}`}
+                  className={`md:h-24 w-24 h-24 object-cover rounded-lg cursor-pointer ${selectedImages.includes(i) ? 'border-4 rounded-lg border-blue-500 object-cover' : ''}`}
                   src={image}
                   alt={`image-${i}`}
-                  onClick={() => toggleSelectImage(image)}
+                  onClick={() => toggleSelectImage(i)}
                 />
               ))}
             </div>
           </div>
+        </div>
+        <div className='flex items-center justify-center'>
+          <div className='flex w-1/2 justify-between mt-2'>
+            <p className='p-2'>{`selected images: ${selectedImages.length}`}</p>
+            {selectedImages.length != 0 ? (
+              <button
+                onClick={() => {
+                  setSelectedImages([]);
+                }}
+                className='px-4 py-0.5 hover:bg-neutral-800 rounded-lg flex items-center justify-center'
+              >
+                <span className='fa-solid fa-xmark mr-2'></span>
+                <span>Clear</span>
+              </button>
+            ) : null}
+          </div>{' '}
         </div>
       </div>
     </Wrapper>
