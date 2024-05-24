@@ -33,7 +33,7 @@ const page = () => {
         <p className='text-3xl py-2'>Jan 8, 2024</p>
         <div className='grid grid-cols-1 max-sm:grid-cols-2 md:grid-cols-7 gap-4'>
           {images.map((image: Image, i) => (
-            <Link key={i} href={'/gallery/image/id'}>
+            <Link key={i} href={`/gallery/image/${image.id}`}>
               <img className='aspect-square rounded-lg object-cover' key={i} src={image.file} />
             </Link>
           ))}
