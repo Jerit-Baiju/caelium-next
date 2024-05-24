@@ -30,6 +30,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <head>
         <meta name='mobile-web-app-capable' content='yes' />
         <meta name='viewport' content='width=device-width, initial-scale=1.0, interactive-widget=resizes-content'></meta>
+        <link
+          rel='stylesheet'
+          href='https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0'
+        />
       </head>
       <body className={`${handleeFont.className} dark:bg-neutral-950 bg-white dark:text-neutral-200 text-neutral-800`}>
         <NavbarProvider>
