@@ -88,3 +88,12 @@ export interface Event {
   description: string;
   space: string;
 }
+export interface Image {
+  id: number;
+  file: string;
+  timestamp: Date;
+  media_type: string;
+  owner: number;
+  album: any[];
+}
+
