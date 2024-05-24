@@ -28,7 +28,7 @@ const CraftsHome = () => {
       }
     };
     fetchCrafts();
-  }, [authTokens?.access]);
+  }, []);
 
   useEffect(() => {
     setCtaButton({ name: 'Create Craft', url: '/crafts/create' });
