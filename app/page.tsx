@@ -7,6 +7,9 @@ import useAxios from '@/helpers/useAxios';
 import { useRouter } from 'next/navigation';
 import { useContext, useEffect, useState } from 'react';
 import Wrapper from './Wrapper';
+import { useSession } from 'next-auth/react';
+
+
 
 const spaceOptions = [
   { value: 'Personal', label: 'Personal', icon: 'user' },
@@ -19,6 +22,8 @@ export default function Home() {
   let api = useAxios();
   const router = useRouter();
   let { user } = useContext(AuthContext);
+  const { data: session } = useSession();
+
   let [tasks, setTasks] = useState<Task[]>([]);
 
   useEffect(() => {
@@ -57,7 +62,7 @@ export default function Home() {
             <div className='grid grid-cols-1 md:grid-cols-2 gap-8'>
               <div className='flex flex-col justify-center h-28'>
                 <span className='text-3xl font-extrabold text-neutral-900 dark:text-white md:text-5xl lg:text-6xl'>
-                  <span>Welcome, {user?.name}</span>
+                  <span>Welcome, {session?.user.name}</span>
                 </span>
                 <p className='text-lg font-normal text-neutral-500 lg:text-xl dark:text-neutral-400'>
                   Unveil Your World, Connect Your Dreams - Where Privacy Meets Possibility.

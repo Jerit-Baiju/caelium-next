@@ -1,8 +1,9 @@
 'use client';
 import { Vortex } from '@/components/ui/vortex';
-import Link from 'next/link';
+import { signIn, signOut, useSession } from 'next-auth/react';
 
 const Page = () => {
+  const { data: session } = useSession();
   return (
     <div className='flex flex-col items-center justify-center h-screen dark:text-white'>
       <Vortex
@@ -16,9 +17,18 @@ const Page = () => {
           Welcome to Caelium
         </h1>
         <p className='text-xl text-center mb-8'>Unveil Your World, Connect Your Dreams - Where Privacy Meets Possibility.</p>
-        <Link href='/accounts/register' className='bg-white text-neutral-800 px-6 py-3 rounded-full font-bold hover:bg-blue-100'>
-          Get Started <i className='fa-solid fa-arrow-right ps-1'></i>
-        </Link>
+        {!session ? (
+          <button onClick={() => signIn('google')}>Sign in with Google</button>
+        ) : (
+          <>
+            <p>Welcome, {session.user?.name}</p>
+            <p>{session.user.address}</p>
+            <p>{session.user.email}</p>
+            <img src={session.user?.image!} alt="" />
+
+            <button onClick={() => signOut()}>Sign out</button>
+          </>
+        )}
       </Vortex>
     </div>
   );
