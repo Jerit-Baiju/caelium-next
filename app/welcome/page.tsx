@@ -1,9 +1,16 @@
 'use client';
 import { Vortex } from '@/components/ui/vortex';
-import { signIn, signOut, useSession } from 'next-auth/react';
+import { signIn, useSession } from 'next-auth/react';
+import { redirect } from 'next/navigation';
+import { useEffect } from 'react';
 
 const Page = () => {
-  const { data: session } = useSession();
+  const session = useSession();
+  useEffect(() => {
+    if (session.status == 'authenticated') {
+      redirect('/');
+    }
+  }, [session]);
   return (
     <div className='flex flex-col items-center justify-center h-screen dark:text-white'>
       <Vortex
@@ -17,18 +24,13 @@ const Page = () => {
           Welcome to Caelium
         </h1>
         <p className='text-xl text-center mb-8'>Unveil Your World, Connect Your Dreams - Where Privacy Meets Possibility.</p>
-        {!session ? (
-          <button onClick={() => signIn('google')}>Sign in with Google</button>
-        ) : (
-          <>
-            <p>Welcome, {session.user?.name}</p>
-            <p>{session.user.address}</p>
-            <p>{session.user.email}</p>
-            <img src={session.user?.image!} alt="" />
-
-            <button onClick={() => signOut()}>Sign out</button>
-          </>
-        )}
+        <button
+          className='flex items-center justify-center p-2 gap-1 bg-white rounded-lg text-black'
+          onClick={() => signIn('google')}
+        >
+          <img loading='lazy' height='24' width='24' id='provider-logo' src='https://authjs.dev/img/providers/google.svg'></img>
+          <p className='font-sans font-normal'>Continue with Google</p>
+        </button>
       </Vortex>
     </div>
   );
