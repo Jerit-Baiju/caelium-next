@@ -1,15 +1,12 @@
 'use client';
 import CustomSelect from '@/components/home/CustomSelect';
 import SpeedDial from '@/components/home/SpeedDial';
-import AuthContext from '@/contexts/AuthContext';
 import { Task } from '@/helpers/props';
 import useAxios from '@/helpers/useAxios';
-import { useRouter } from 'next/navigation';
-import { useContext, useEffect, useState } from 'react';
-import Wrapper from './Wrapper';
 import { useSession } from 'next-auth/react';
-
-
+import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import Wrapper from './Wrapper';
 
 const spaceOptions = [
   { value: 'Personal', label: 'Personal', icon: 'user' },
@@ -21,7 +18,6 @@ const spaceOptions = [
 export default function Home() {
   let api = useAxios();
   const router = useRouter();
-  let { user } = useContext(AuthContext);
   const { data: session } = useSession();
 
   let [tasks, setTasks] = useState<Task[]>([]);
