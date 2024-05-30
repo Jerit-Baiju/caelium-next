@@ -33,7 +33,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className={`${handleeFont.className} dark:bg-neutral-950 bg-white dark:text-neutral-200 text-neutral-800`}>
         <ProvidersWrapper>{children}</ProvidersWrapper>
         <Script src='https://kit.fontawesome.com/c75f557ffd.js' crossOrigin='anonymous'></Script>
-        <script src='https://accounts.google.com/gsi/client' async></script>
       </body>
     </html>
   );
