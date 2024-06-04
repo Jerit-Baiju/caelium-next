@@ -42,9 +42,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         console.error(error);
       }
     };
-    fetchMe();
+    if (authTokens?.access) {
+      fetchMe();
+    }
+    else{
+      signOut()
+    }
     setLoading(false);
-  }, [authTokens]);
+  }, [authTokens, session]);
 
   useEffect(() => {
     if (!localStorage.getItem(authTokens)) {
