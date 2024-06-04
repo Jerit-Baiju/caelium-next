@@ -1,8 +1,6 @@
 'use client';
-import AuthContext from '@/contexts/AuthContext';
+import { signOut } from 'next-auth/react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import { useContext } from 'react';
 
 interface Option {
   name: string;
@@ -19,9 +17,7 @@ export const options: Option[] = [
 ];
 
 const SideBar = () => {
-  const route = usePathname();
-  let { logoutUser } = useContext(AuthContext);
-  if (!['/accounts/login', '/accounts/register'].includes(route)) {
+
     return (
       <>
         <aside
@@ -78,7 +74,7 @@ const SideBar = () => {
                 <i className='fa-solid fa-circle-exclamation fa-fade text-yellow-500 dark:text-yellow-300 text-6xl my-4'></i>
                 <h3 className='mb-5 text-lg font-normal'>Are you sure you want to Logout?</h3>
                 <button
-                  onClick={logoutUser}
+                  onClick={()=>signOut()}
                   data-modal-hide='logout-modal'
                   type='button'
                   className='bg-red-500 text-white dark:hover:bg-red-800 hover:bg-red-600 font-medium rounded-lg text-sm inline-flex items-center px-5 py-2.5 text-center me-2'
@@ -98,7 +94,7 @@ const SideBar = () => {
         </div>
       </>
     );
-  }
+
 };
 
 export default SideBar;

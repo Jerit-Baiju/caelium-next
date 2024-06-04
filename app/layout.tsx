@@ -1,9 +1,8 @@
-import { AuthProvider } from '@/contexts/AuthContext';
-import { NavbarProvider } from '@/contexts/NavContext';
 import type { Metadata } from 'next';
 import Script from 'next/script';
 import { handleeFont } from './font';
 import './globals.css';
+import ProvidersWrapper from './providers';
 
 export const metadata: Metadata = {
   title: 'Caelium',
@@ -36,9 +35,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         />
       </head>
       <body className={`${handleeFont.className} dark:bg-neutral-950 bg-white dark:text-neutral-200 text-neutral-800`}>
-        <NavbarProvider>
-          <AuthProvider>{children}</AuthProvider>
-        </NavbarProvider>
+        <ProvidersWrapper>{children}</ProvidersWrapper>
         <Script src='https://kit.fontawesome.com/c75f557ffd.js' crossOrigin='anonymous'></Script>
       </body>
     </html>

@@ -1,8 +1,16 @@
 'use client';
 import { Vortex } from '@/components/ui/vortex';
-import Link from 'next/link';
+import { signIn, useSession } from 'next-auth/react';
+import { redirect } from 'next/navigation';
+import { useEffect } from 'react';
 
 const Page = () => {
+  const session = useSession();
+  useEffect(() => {
+    if (session.status == 'authenticated') {
+      redirect('/');
+    }
+  }, [session]);
   return (
     <div className='flex flex-col items-center justify-center h-screen dark:text-white'>
       <Vortex
@@ -16,9 +24,13 @@ const Page = () => {
           Welcome to Caelium
         </h1>
         <p className='text-xl text-center mb-8'>Unveil Your World, Connect Your Dreams - Where Privacy Meets Possibility.</p>
-        <Link href='/accounts/register' className='bg-white text-neutral-800 px-6 py-3 rounded-full font-bold hover:bg-blue-100'>
-          Get Started <i className='fa-solid fa-arrow-right ps-1'></i>
-        </Link>
+        <button
+          className='flex items-center justify-center p-2 gap-1 bg-white rounded-lg text-black'
+          onClick={() => signIn('google')}
+        >
+          <img loading='lazy' height='24' width='24' id='provider-logo' src='https://authjs.dev/img/providers/google.svg'></img>
+          <p className='font-sans font-normal'>Continue with Google</p>
+        </button>
       </Vortex>
     </div>
   );
