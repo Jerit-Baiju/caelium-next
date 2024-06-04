@@ -1,18 +1,11 @@
 'use client';
 import { User } from '@/helpers/props';
 import { jwtDecode } from 'jwt-decode';
-import { useSession } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
+import { signOut, useSession } from 'next-auth/react';
 import { ReactNode, Suspense, createContext, useEffect, useState } from 'react';
-
-interface ErrorObject {
-  [key: string]: string;
-}
 
 interface AuthContextProps {
   authTokens: any;
-  error: ErrorObject;
-
   logoutUser: () => void;
   setAuthTokens: (e: any) => void;
   user: any;
@@ -20,27 +13,22 @@ interface AuthContextProps {
 
 const AuthContext = createContext<AuthContextProps>({
   authTokens: {},
-  error: {},
   logoutUser: () => {},
   setAuthTokens: () => {},
   user: {},
 });
 
 export default AuthContext;
+
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
+  const session = useSession();
+  let [loading, setLoading] = useState(true);
+  let [user, setUser] = useState<User | null>(null);
   let [authTokens, setAuthTokens] = useState(() =>
     typeof window !== 'undefined' && localStorage.getItem('authTokens')
       ? JSON.parse(localStorage.getItem('authTokens') || '{}')
       : null,
   );
-
-  let [loading, setLoading] = useState(true);
-  let [error, setError] = useState({});
-  let [user, setUser] = useState<User | null>(null);
-
-  const router = useRouter();
-
-  const session = useSession();
 
   useEffect(() => {
     const fetchMe = async () => {
@@ -55,6 +43,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       }
     };
     fetchMe();
+    setLoading(false);
   }, [authTokens]);
 
   useEffect(() => {
@@ -64,16 +53,15 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   let logoutUser = () => {
     setAuthTokens(null);
     localStorage.removeItem('authTokens');
-    router.push('/welcome');
+    signOut();
   };
 
   let contextData: AuthContextProps = {
     authTokens,
-    error,
     logoutUser,
     setAuthTokens,
     user,
   };
 
-  return <AuthContext.Provider value={contextData}>{children}</AuthContext.Provider>;
+  return <AuthContext.Provider value={contextData}>{loading ? <Suspense /> : children}</AuthContext.Provider>;
 };
