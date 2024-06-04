@@ -62,7 +62,7 @@ const CraftsHome = () => {
                     <span>{getTime(craft?.date)}</span>
                     <span className='mx-2'>•</span>
                     <span>{craft.time}</span>
-                    <div className='flex flex-grow justify-end text-end'>Author: {craft.owner.username}</div>
+                    <div className='flex flex-grow justify-end text-end'>Author: {craft.owner.name}</div>
                   </div>
                 </div>
               </div>

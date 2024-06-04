@@ -8,7 +8,6 @@ const Profile = () => {
   const api = useAxios();
   const { user, logoutUser } = useContext(AuthContext);
   const [name, setName] = useState(user?.name);
-  const [username, setUsername] = useState(user?.username);
   const [email, setEmail] = useState(user?.email);
   const [birthdate, setBirthdate] = useState(user?.birthdate);
   const [location, setLocation] = useState(user?.location);
@@ -21,7 +20,6 @@ const Profile = () => {
 
   useEffect(() => {
     setName(user?.name);
-    setUsername(user?.username);
     setEmail(user?.email);
     setBirthdate(user?.birthdate);
     setLocation(user?.location);
@@ -31,7 +29,7 @@ const Profile = () => {
 
   const fields: { name: string; value: string; placeholder?: string; type?: string; fieldName: string; options?: string[] }[] = [
     { name: 'Name', value: name, fieldName: 'name' },
-    { name: 'Username', value: username, fieldName: 'username' },
+
     { name: 'Email', value: email, placeholder: 'Add your E-mail here', fieldName: 'email' },
     { name: 'Date of Birth', value: birthdate, placeholder: 'Add your age here', type: 'date', fieldName: 'birthdate' },
     { name: 'Location', value: location, placeholder: 'Mark your location', fieldName: 'location' },
@@ -55,9 +53,6 @@ const Profile = () => {
     switch (stateName) {
       case 'Name':
         setName(value);
-        break;
-      case 'Username':
-        setUsername(value);
         break;
       case 'Email':
         setEmail(value);

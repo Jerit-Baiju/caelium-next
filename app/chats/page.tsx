@@ -66,8 +66,8 @@ const Page = () => {
                 <div>
                   <input
                     type='text'
-                    name='username'
-                    id='username'
+                    name='name'
+                    id='name'
                     className='bg-neutral-50 border border-neutral-300 text-neutral-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-neutral-800 dark:border-neutral-500 dark:placeholder-neutral-400 dark:text-white'
                     placeholder='search'
                     required
@@ -85,7 +85,7 @@ const Page = () => {
                           <img className='w-12 h-12 rounded-full dark:bg-white object-cover' src={recipient.avatar} alt={recipient.name} />
                         </div>
                         <div className='flex-1 min-w-0'>
-                          <p className='text-sm font-semibold text-neutral-900 truncate dark:text-white'>{recipient.username}</p>
+                          <p className='text-sm font-semibold text-neutral-900 truncate dark:text-white'>{recipient.email}</p>
                           <p className='text-sm text-neutral-500 truncate dark:text-neutral-400'>{recipient.name}</p>
                         </div>
                       </div>
