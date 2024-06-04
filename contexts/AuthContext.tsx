@@ -47,7 +47,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }, [authTokens]);
 
   useEffect(() => {
-    localStorage.setItem('authTokens', JSON.stringify({ access: session.data?.accessToken, refresh: session.data?.refreshToken }));
+    if (!localStorage.getItem(authTokens)) {
+      localStorage.setItem('authTokens', JSON.stringify({ access: session.data?.accessToken, refresh: session.data?.refreshToken }));
+    }
   }, [session]);
 
   let logoutUser = () => {
