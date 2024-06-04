@@ -45,9 +45,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     if (authTokens?.access) {
       fetchMe();
     }
-    else{
-      signOut()
-    }
     setLoading(false);
   }, [authTokens, session]);
 
