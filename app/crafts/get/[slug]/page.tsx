@@ -23,7 +23,7 @@ const CraftRead = ({ params }: { params: { slug: Number } }) => {
       }
     };
     fetchCraft();
-  },[]);
+  }, []);
   const paragraphs = craft?.content.split('\n');
   return (
     <Wrapper>
@@ -50,7 +50,7 @@ const CraftRead = ({ params }: { params: { slug: Number } }) => {
               <img src={craft?.owner.avatar} alt='User Avatar' className='w-12 h-12 rounded-full mr-4 border object-cover' />
               <div>
                 <p className='font-bold text-lg'>{craft?.owner.name}</p>
-                <p className='text-sm'>{craft?.owner.username}</p>
+                <p className='text-sm'>{craft?.owner.email}</p>
               </div>
             </div>
           </div>
