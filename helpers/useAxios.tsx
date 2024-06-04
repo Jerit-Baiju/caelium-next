@@ -7,7 +7,7 @@ import { useContext } from 'react';
 const baseURL = process.env.NEXT_PUBLIC_API_HOST;
 
 const useAxios = () => {
-  const { authTokens, setTokenData, setAuthTokens, logoutUser } = useContext(AuthContext);
+  const { authTokens, setAuthTokens, logoutUser } = useContext(AuthContext);
   const axiosInstance = axios.create({
     baseURL,
     headers: { Authorization: `Bearer ${authTokens?.access}` },
@@ -22,7 +22,6 @@ const useAxios = () => {
       });
       localStorage.setItem('authTokens', JSON.stringify(response.data));
       setAuthTokens(response.data);
-      setTokenData(jwtDecode(response.data.access));
       request.headers.Authorization = `Bearer ${response.data.access}`;
       console.log('update auth token');
       return request;

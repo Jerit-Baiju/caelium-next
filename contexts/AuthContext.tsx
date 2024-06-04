@@ -1,66 +1,40 @@
 'use client';
 import { User } from '@/helpers/props';
 import { jwtDecode } from 'jwt-decode';
-import { useRouter } from 'next/navigation';
+import { signOut, useSession } from 'next-auth/react';
 import { ReactNode, Suspense, createContext, useEffect, useState } from 'react';
 
-interface ErrorObject {
-  [key: string]: string;
-}
-
 interface AuthContextProps {
-  tokenData?: any;
   authTokens: any;
-  error: ErrorObject;
-  loginUser: (e: any) => Promise<void>;
-  registerUser: (e: any) => Promise<void>;
   logoutUser: () => void;
-  setTokenData: (e: any) => void;
   setAuthTokens: (e: any) => void;
   user: any;
 }
 
 const AuthContext = createContext<AuthContextProps>({
-  tokenData: {},
   authTokens: {},
-  error: {},
-  loginUser: async () => {},
-  registerUser: async () => {},
   logoutUser: () => {},
-  setTokenData: () => {},
   setAuthTokens: () => {},
   user: {},
 });
 
 export default AuthContext;
+
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
+  const session = useSession();
+  let [loading, setLoading] = useState(true);
+  let [user, setUser] = useState<User | null>(null);
   let [authTokens, setAuthTokens] = useState(() =>
     typeof window !== 'undefined' && localStorage.getItem('authTokens')
       ? JSON.parse(localStorage.getItem('authTokens') || '{}')
       : null,
   );
 
-  let [tokenData, setTokenData] = useState(() =>
-    typeof window !== 'undefined' && localStorage.getItem('authTokens') ? jwtDecode(localStorage.getItem('authTokens') || '{}') : null,
-  );
-
-  let [loading, setLoading] = useState(true);
-  let [error, setError] = useState({});
-  let [user, setUser] = useState<User | null>(null);
-
-  const router = useRouter();
-
-  useEffect(() => {
-    if (!tokenData) {
-      router.replace('/welcome');
-    }
-  }, [router, tokenData, loading]);
-
   useEffect(() => {
     const fetchMe = async () => {
       try {
         const response = await fetch(
-          `${process.env.NEXT_PUBLIC_API_HOST}/api/auth/accounts/${(jwtDecode(authTokens?.access) as { id: string }).id}/`,
+          `${process.env.NEXT_PUBLIC_API_HOST}/api/auth/accounts/${jwtDecode<{ user_id: string }>(authTokens?.access).user_id}/`,
         );
         const userData = await response.json();
         setUser(userData);
@@ -69,91 +43,24 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       }
     };
     fetchMe();
-  }, [tokenData]);
+    setLoading(false);
+  }, [authTokens]);
 
-  let loginUser = async (e: any) => {
-    e.preventDefault();
-    let username = e.target.username.value;
-    let password = e.target.password.value;
-    if (username && password) {
-      let url = process.env.NEXT_PUBLIC_API_HOST + '/api/auth/token/';
-      let response = await fetch(url, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ username: username, password: password }),
-      });
-      let data = await response.json();
-
-      if (response.status === 200) {
-        localStorage.setItem('authTokens', JSON.stringify(data));
-        setAuthTokens(data);
-        setTokenData(jwtDecode(data.access));
-        router.push('/');
-      } else {
-        setError(data);
-      }
-    } else {
-      setError('Enter your username and password !');
+  useEffect(() => {
+    if (!localStorage.getItem(authTokens)) {
+      localStorage.setItem('authTokens', JSON.stringify({ access: session.data?.accessToken, refresh: session.data?.refreshToken }));
     }
-  };
-
-  let registerUser = async (e: any) => {
-    e.preventDefault();
-    let username = e.target.username.value;
-    let name = e.target.name.value;
-    let password = e.target.password.value;
-    let errors: ErrorObject = {};
-    username.length <= 3 && (errors.username = 'Ensure this field has at least 4 characters.');
-    !username && (errors.username = 'This field may not be blank');
-    !name && (errors.name = 'This field may not be blank');
-    !password && (errors.password = 'This field may not be blank');
-    setError(errors);
-    if (username && name && password) {
-      let url = process.env.NEXT_PUBLIC_API_HOST + '/api/auth/register/';
-      let response = await fetch(url, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          username: username,
-          name: name,
-          password: password,
-        }),
-      });
-      let data = await response.json();
-      if (response.status === 201) {
-        router.push('/accounts/login');
-      } else {
-        setError(data);
-      }
-    }
-  };
+  }, [session]);
 
   let logoutUser = () => {
     setAuthTokens(null);
-    setTokenData(null);
     localStorage.removeItem('authTokens');
-    router.push('/welcome');
+    signOut();
   };
 
-  useEffect(() => {
-    if (authTokens) {
-      setTokenData(jwtDecode(authTokens.access));
-    }
-    setLoading(false);
-  }, [authTokens, loading]);
-
   let contextData: AuthContextProps = {
-    tokenData,
     authTokens,
-    error,
-    loginUser,
-    registerUser,
     logoutUser,
-    setTokenData,
     setAuthTokens,
     user,
   };
