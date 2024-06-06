@@ -1,6 +1,11 @@
 'use client';
 import CustomSelect from '@/components/home/CustomSelect';
 import SpeedDial from '@/components/home/SpeedDial';
+import AuthContext from '@/contexts/AuthContext';
+import { Task } from '@/helpers/props';
+import useAxios from '@/helpers/useAxios';
+import { useRouter } from 'next/navigation';
+import { useContext, useEffect, useState } from 'react';
 import EventWidget from '@/components/home/widgets/EventWidget';
 import TaskWidget from '@/components/home/widgets/TaskWidget';
 import AuthContext from '@/contexts/AuthContext';
@@ -15,6 +20,22 @@ const spaceOptions = [
 ];
 
 export default function Home() {
+  let api = useAxios();
+  const router = useRouter();
+  let { user } = useContext(AuthContext);
+  let [tasks, setTasks] = useState<Task[]>([]);
+
+  useEffect(() => {
+    const fetchTasks = async () => {
+      try {
+        const response = await api.get('/api/tasks');
+        setTasks(response.data);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+    fetchTasks();
+  }, []);
   let { user } = useContext(AuthContext);
 
   const handleSelect = (value: string) => {
@@ -32,6 +53,7 @@ export default function Home() {
             <div className='grid grid-cols-1 md:grid-cols-2 gap-8'>
               <div className='flex flex-col justify-center h-28'>
                 <span className='text-3xl font-extrabold text-neutral-900 dark:text-white md:text-5xl lg:text-6xl'>
+                  <span>Welcome, {user?.name}</span>
                   <span>Welcome, {user?.name}</span>
                 </span>
                 <p className='text-lg font-normal text-neutral-500 lg:text-xl dark:text-neutral-400'>
