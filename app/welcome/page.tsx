@@ -1,16 +1,18 @@
 'use client';
 import { Vortex } from '@/components/ui/vortex';
-import { signIn, useSession } from 'next-auth/react';
-import { redirect } from 'next/navigation';
-import { useEffect } from 'react';
+
+import { useEffect, useState } from 'react';
 
 const Page = () => {
-  const session = useSession();
+  const [authURL, setAuthURL] = useState<string | null>(null);
   useEffect(() => {
-    if (session.status == 'authenticated') {
-      redirect('/');
-    }
-  }, [session]);
+    const fetch_auth_url = async () => {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_HOST}/api/auth/google/auth_url/`);
+      const data = await response.json();
+      setAuthURL(data.url);
+    };
+    fetch_auth_url();
+  });
   return (
     <div className='flex flex-col items-center justify-center h-screen dark:text-white'>
       <Vortex
@@ -26,7 +28,9 @@ const Page = () => {
         <p className='text-xl text-center mb-8'>Unveil Your World, Connect Your Dreams - Where Privacy Meets Possibility.</p>
         <button
           className='flex items-center justify-center p-2 gap-1 bg-white rounded-lg text-black'
-          onClick={() => signIn('google')}
+          onClick={() => {
+            window.location.href = authURL as string;
+          }}
         >
           <img loading='lazy' height='24' width='24' id='provider-logo' src='https://authjs.dev/img/providers/google.svg'></img>
           <p className='font-sans font-normal'>Continue with Google</p>

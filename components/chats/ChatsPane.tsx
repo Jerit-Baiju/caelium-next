@@ -1,16 +1,16 @@
 'use client';
+import AuthContext from '@/contexts/AuthContext';
 import { Chat } from '@/helpers/props';
 import { getTime, truncate } from '@/helpers/support';
 import useAxios from '@/helpers/useAxios';
-import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 import { useContext, useEffect, useState } from 'react';
 
 const ChatsPane = () => {
+  let { authTokens } = useContext(AuthContext);
   let [chats, setChats] = useState([]);
   let [search_query, setSearch_query] = useState('');
   let api = useAxios();
-  let session = useSession()
 
   const searchChats = async (e: any) => {
     e.preventDefault();
@@ -33,7 +33,7 @@ const ChatsPane = () => {
 
   useEffect(() => {
     fetchChats();
-  }, [session.data?.accessToken]);
+  }, [authTokens?.access]);
 
   const handleKeyDown = (e: any) => {
     if (e.key === 'Enter' && e.target.value != '') {
