@@ -4,7 +4,7 @@ import AuthContext from '@/contexts/AuthContext';
 import { useSearchParams } from 'next/navigation';
 import { useContext, useEffect } from 'react';
 
-const page = () => {
+const Page = () => {
   const { loginUser } = useContext(AuthContext);
   const searchParams = useSearchParams();
   useEffect(() => {
@@ -29,4 +29,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default Page;
