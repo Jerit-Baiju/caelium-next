@@ -37,6 +37,7 @@ const Page = () => {
         console.log(response.data);
       } else {
         setAccessURL(response.data.url);
+        setLoading(false);
       }
     };
 
