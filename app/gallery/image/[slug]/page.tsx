@@ -31,7 +31,7 @@ const DetailedImage = ({ params }: { params: { slug: string } }) => {
           <i className='fa-solid fa-ellipsis-vertical'></i>
         </div>
       </nav>
-      <img className='h-full max-w-full rounded-lg m-4 object-cover' src={image?.url} alt='' />
+      <img className='md:h-full max-sm:w-full max-w-full rounded-lg m-4 object-cover' src={image?.url} alt='' />
       <button
         type='button'
         className='absolute top-0 start-0 z-30 flex items-center justify-center h-full px-4 cursor-pointer group focus:outline-none'

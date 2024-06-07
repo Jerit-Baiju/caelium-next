@@ -2,6 +2,7 @@
 import Loader from '@/components/Loader';
 import { useNavbar } from '@/contexts/NavContext';
 import { Image, NavLink } from '@/helpers/props';
+import { getDate } from '@/helpers/support';
 import useAxios from '@/helpers/useAxios';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
@@ -19,7 +20,7 @@ const Page = () => {
     setCtaButton({ name: 'Upload', url: 'gallery/upload' });
     const newLinks: NavLink[] = navLinks ? [...navLinks] : [];
     newLinks[0] = { name: 'Albums', url: '/gallery/albums' };
-    newLinks[1] = {name: 'Explore', url: '/gallery/explore'};
+    newLinks[1] = { name: 'Explore', url: '/gallery/explore' };
     setNavLinks(newLinks);
 
     const fetchImages = async () => {
@@ -73,7 +74,7 @@ const Page = () => {
         {havePermission ? (
           Object.entries(groupedImages).map(([date, images_of_date]) => (
             <div className='pb-4' key={date}>
-              <p className='text-3xl py-2'>{date}</p>
+              <p className='text-3xl py-2'>{getDate(date)}</p>
               <div className='grid grid-cols-1 max-sm:grid-cols-2 md:grid-cols-7 gap-4'>
                 {images_of_date.map((image: Image, i) => (
                   <Link key={i} href={`/gallery/image/${image.id}`}>
