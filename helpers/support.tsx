@@ -4,7 +4,7 @@ export const truncate = ({ chars, length }: { chars: string | null; length: numb
 
 export const getTime = (timestamp: string | null | undefined | Date): string => {
   if (!timestamp) return '';
-  const lastChatDate = new Date(timestamp);
+  const givenDate = new Date(timestamp);
 
   const formatTime = (date: Date): string => {
     const hours = date.getHours();
@@ -35,5 +35,27 @@ export const getTime = (timestamp: string | null | undefined | Date): string => 
     }
   };
 
-  return getLastChatTime(lastChatDate);
+  return getLastChatTime(givenDate);
+};
+
+export const getDate = (dateStr: string): string => {
+  const months = [
+    'January',
+    'February',
+    'March',
+    'April',
+    'May',
+    'June',
+    'July',
+    'August',
+    'September',
+    'October',
+    'November',
+    'December',
+  ];
+
+  const [day, month, year] = dateStr.split('/').map(Number);
+  const monthName = months[month - 1];
+
+  return `${monthName} ${day}, ${year}`;
 };
