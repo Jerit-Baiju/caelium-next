@@ -89,11 +89,8 @@ export interface Event {
   space: string;
 }
 export interface Image {
-  id: number;
-  file: string;
+  id: string;
+  url: string;
+  filename: string;
   timestamp: Date;
-  media_type: string;
-  owner: number;
-  album: any[];
 }
-

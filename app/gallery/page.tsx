@@ -1,20 +1,13 @@
 'use client';
 import Loader from '@/components/Loader';
 import { useNavbar } from '@/contexts/NavContext';
-import { NavLink } from '@/helpers/props';
+import { Image, NavLink } from '@/helpers/props';
 import useAxios from '@/helpers/useAxios';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import Wrapper from '../Wrapper';
 
 const Page = () => {
-  interface Image {
-    id: string;
-    url: string;
-    filename: string;
-    timestamp: Date;
-  }
-
   const api = useAxios();
   const [loading, setLoading] = useState<boolean>(true);
   const { setCtaButton, defaultCtaButton, navLinks, setNavLinks } = useNavbar();

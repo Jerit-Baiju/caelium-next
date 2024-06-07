@@ -1,26 +1,38 @@
-const DetailedImage = () => {
-  const images = [
-    'https://images.unsplash.com/photo-1715351190944-a32bc9a900ab?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxlZGl0b3JpYWwtZmVlZHw0fHx8ZW58MHx8fHx8',
-    'https://images.unsplash.com/photo-1715586041798-9583f0642747?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxlZGl0b3JpYWwtZmVlZHwyfHx8ZW58MHx8fHx8',
-    'https://images.unsplash.com/photo-1715624849529-3f99fafffee5?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxlZGl0b3JpYWwtZmVlZHw1NHx8fGVufDB8fHx8fA%3D%3D',
-    'https://images.unsplash.com/photo-1714572877812-7b416fbd4314?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxlZGl0b3JpYWwtZmVlZHw2Nnx8fGVufDB8fHx8fA%3D%3D',
-    'https://images.unsplash.com/photo-1714715362537-4aa538a6f0ab?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxlZGl0b3JpYWwtZmVlZHw3NXx8fGVufDB8fHx8fA%3D%3D',
-    'https://images.unsplash.com/photo-1715639732762-cf660da518c6?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHx0b3BpYy1mZWVkfDR8aG1lbnZRaFVteE18fGVufDB8fHx8fA%3D%3D',
-  ];
+'use client';
+import { Image } from '@/helpers/props';
+import useAxios from '@/helpers/useAxios';
+import Link from 'next/link';
+import { useEffect, useState } from 'react';
 
+const DetailedImage = ({ params }: { params: { slug: string } }) => {
+  const api = useAxios();
+  const [image, setImage] = useState<Image | null>();
+  useEffect(() => {
+    const fetchImage = async () => {
+      const response = await api.get(`/api/gallery/get/${params.slug}/`);
+      setImage(await response.data);
+    };
+    fetchImage();
+  }, []);
   return (
-      <div className='grid gap-4'>
-        <div className='flex items-center justify-center'>
-          <img className='h-screen max-w-full rounded-lg' src={images[0]} alt='' />
+    <div>
+      <div className='flex justify-between h-16 absolute z-50 top-0 start-0 w-full p-6'>
+        <div className='flex justify-start items-center'>
+          <Link href={'/gallery'}>
+          <span className='material-symbols-outlined'>arrow_back</span>
+          </Link>
         </div>
-        <div className='grid grid-cols-5 gap-4'>
-          {images.map((image, i) => (
-            <div>
-              <img className='w-full md:h-72 h-full sm:h-40 rounded-lg object-cover' key={i} src={image} />
-            </div>
-          ))}
+        <div className='flex justify-end items-center gap-6 text-3xl'>
+          <span className='material-symbols-outlined'>share</span>
+          <span className='material-symbols-outlined'>info</span>
+          <span className='material-symbols-outlined'>star</span>
         </div>
       </div>
+      <div className='h-screen w-full dark:bg-black bg-white  dark:bg-dot-white/[0.2] bg-dot-black/[0.2] relative flex items-center justify-center'>
+        <div className='absolute pointer-events-none inset-0 flex items-center justify-center dark:bg-black bg-white [mask-image:radial-gradient(ellipse_at_center,transparent_60%,black)]' />
+        <img className='h-full max-w-full rounded-lg' src={image?.url} alt='' />
+      </div>
+    </div>
   );
 };
 
