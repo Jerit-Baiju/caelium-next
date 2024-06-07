@@ -19,6 +19,7 @@ const Page = () => {
     setCtaButton({ name: 'Upload', url: 'gallery/upload' });
     const newLinks: NavLink[] = navLinks ? [...navLinks] : [];
     newLinks[0] = { name: 'Albums', url: '/gallery/albums' };
+    newLinks[1] = {name: 'Explore', url: '/gallery/explore'};
     setNavLinks(newLinks);
 
     const fetchImages = async () => {

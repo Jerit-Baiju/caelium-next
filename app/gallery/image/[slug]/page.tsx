@@ -15,23 +15,35 @@ const DetailedImage = ({ params }: { params: { slug: string } }) => {
     fetchImage();
   }, []);
   return (
-    <div>
-      <div className='flex justify-between h-16 absolute z-50 top-0 start-0 w-full p-6'>
-        <div className='flex justify-start items-center'>
+    <div className='h-screen w-full dark:bg-black bg-white dark:bg-dot-white/[0.3] bg-dot-black/[0.3] relative flex items-center justify-center'>
+      <div className='absolute pointer-events-none inset-0 flex items-center justify-center dark:bg-black bg-white [mask-image:radial-gradient(ellipse_at_center,transparent_20%,black)]' />
+      <nav className='flex justify-between h-16 fixed w-full z-40 top-0 start-0 p-6'>
+        <div className='flex justify-start items-center text-xl'>
           <Link href={'/gallery'}>
-          <span className='material-symbols-outlined'>arrow_back</span>
+            <span className='material-symbols-outlined'>arrow_back</span>
           </Link>
         </div>
-        <div className='flex justify-end items-center gap-6 text-3xl'>
+        <div className='flex justify-end items-center text-xl gap-6'>
           <span className='material-symbols-outlined'>share</span>
           <span className='material-symbols-outlined'>info</span>
-          <span className='material-symbols-outlined'>star</span>
+          <i className='fa-regular fa-star'></i>
+          <span className='material-symbols-outlined'>delete</span>
+          <i className='fa-solid fa-ellipsis-vertical'></i>
         </div>
-      </div>
-      <div className='h-screen w-full dark:bg-black bg-white  dark:bg-dot-white/[0.2] bg-dot-black/[0.2] relative flex items-center justify-center'>
-        <div className='absolute pointer-events-none inset-0 flex items-center justify-center dark:bg-black bg-white [mask-image:radial-gradient(ellipse_at_center,transparent_60%,black)]' />
-        <img className='h-full max-w-full rounded-lg' src={image?.url} alt='' />
-      </div>
+      </nav>
+      <img className='h-full max-w-full rounded-lg m-4 object-cover' src={image?.url} alt='' />
+      <button
+        type='button'
+        className='absolute top-0 start-0 z-30 flex items-center justify-center h-full px-4 cursor-pointer group focus:outline-none'
+      >
+        <span className='material-symbols-outlined text-neutral-600'>arrow_back_ios</span>
+      </button>
+      <button
+        type='button'
+        className='absolute top-0 end-0 z-30 flex items-center justify-center h-full px-4 cursor-pointer group focus:outline-none'
+      >
+        <span className='material-symbols-outlined text-neutral-600'>arrow_forward_ios</span>
+      </button>
     </div>
   );
 };
