@@ -53,20 +53,20 @@ const CreateAlbum = () => {
           </div>
         </div>
         <div className='flex items-center justify-center'>
-          <div className='flex w-1/2 justify-between mt-2'>
+          <div className='flex w-1/2 justify-between mt-2 px-2'>
             <p className='p-2'>{`selected images: ${selectedImages.length}`}</p>
             {selectedImages.length != 0 ? (
               <button
                 onClick={() => {
                   setSelectedImages([]);
                 }}
-                className='px-4 py-0.5 hover:bg-neutral-800 rounded-lg flex items-center justify-center'
+                className='px-4 py-1.5 bg-neutral-800 hover:border border-neutral-500 rounded-lg flex items-center justify-center'
               >
                 <span className='fa-solid fa-xmark mr-2'></span>
                 <span>Clear</span>
               </button>
             ) : null}
-          </div>{' '}
+          </div>
         </div>
       </div>
     </Wrapper>
