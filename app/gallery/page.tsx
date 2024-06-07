@@ -29,7 +29,6 @@ const Page = () => {
         setImages(response.data);
         setLoading(false);
         setHavePermission(true);
-        console.log(response.data);
       } else {
         setAccessURL(response.data.url);
         setLoading(false);
