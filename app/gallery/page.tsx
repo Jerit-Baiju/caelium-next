@@ -84,9 +84,11 @@ const Page = () => {
             </div>
           ))
         ) : (
-          <div className='flex flex-col items-center'>
-            <Link href={accessURL} className='bg-neutral-700 border-neutral-600 p-2 border rounded-lg'>
-              sync google photos
+          <div className='flex flex-col items-center h-[calc(100dvh-9rem)] justify-center'>
+            <img className='h-28 mb-6' src={'/google/photos.png'} />
+            <p className='mb-4 text-lg text-center text-balance'>Tap the button below to import your photos from Google.</p>
+            <Link href={accessURL} className='bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg'>
+              Sync Photos
             </Link>
           </div>
         )}
