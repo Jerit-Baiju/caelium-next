@@ -94,3 +94,10 @@ export interface Image {
   filename: string;
   timestamp: Date;
 }
+
+
+export interface Album {
+  id: string;
+  title: string;
+  images: Image[];
+}

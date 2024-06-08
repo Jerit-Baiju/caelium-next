@@ -27,6 +27,7 @@ const useAxios = () => {
       console.log('update auth token');
       return request;
     } catch (error) {
+      alert(error)
       logoutUser();
       throw error;
     }
