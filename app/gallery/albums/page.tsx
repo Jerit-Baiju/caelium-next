@@ -1,17 +1,34 @@
+'use client';
 import Wrapper from '@/app/Wrapper';
+import Loader from '@/components/Loader';
+import { Album } from '@/helpers/props';
+import useAxios from '@/helpers/useAxios';
 import Link from 'next/link';
+import { useEffect, useState } from 'react';
 
 const Albums = () => {
-  const images = [
-    'https://images.unsplash.com/photo-1715351190944-a32bc9a900ab?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxlZGl0b3JpYWwtZmVlZHw0fHx8ZW58MHx8fHx8',
-    'https://images.unsplash.com/photo-1715586041798-9583f0642747?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxlZGl0b3JpYWwtZmVlZHwyfHx8ZW58MHx8fHx8',
-    'https://images.unsplash.com/photo-1715624849529-3f99fafffee5?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxlZGl0b3JpYWwtZmVlZHw1NHx8fGVufDB8fHx8fA%3D%3D',
-    'https://images.unsplash.com/photo-1714572877812-7b416fbd4314?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxlZGl0b3JpYWwtZmVlZHw2Nnx8fGVufDB8fHx8fA%3D%3D',
-    'https://images.unsplash.com/photo-1714715362537-4aa538a6f0ab?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxlZGl0b3JpYWwtZmVlZHw3NXx8fGVufDB8fHx8fA%3D%3D',
-    'https://images.unsplash.com/photo-1715639732762-cf660da518c6?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHx0b3BpYy1mZWVkfDR8aG1lbnZRaFVteE18fGVufDB8fHx8fA%3D%3D',
-  ];
+  const api = useAxios();
+  const [loading, setLoading] = useState<boolean>(true);
+  const [albums, setAlbums] = useState<Album[] | null>(null);
 
-  return (
+  useEffect(() => {
+    const fetchImages = async () => {
+      const response = await api.get('/api/gallery/albums/');
+
+      setAlbums(response.data);
+      setLoading(false);
+    };
+
+    fetchImages();
+  }, []);
+
+  return loading ? (
+    <Wrapper>
+      <div className='flex items-center justify-center h-[calc(100dvh-9rem)]'>
+        <Loader />
+      </div>
+    </Wrapper>
+  ) : (
     <Wrapper>
       <div className='p-4'>
         <div className='flex justify-between border-b px-10'>
@@ -23,16 +40,24 @@ const Albums = () => {
           </div>
         </div>
         <div className='my-5'>
-          <div className='p-4 bg-neutral-900 rounded-3xl'>
-            <p className='text-3xl py-2'>Album 1</p>
-            <div className='grid grid-cols-1 max-sm:grid-cols-4 md:grid-cols-7 gap-4'>
-              {images.map((image, i) => (
-                <Link key={i} href={'/gallery/image'}>
-                  <img className='aspect-square rounded-lg object-cover' key={i} src={image} />
-                </Link>
-              ))}
+          {albums?.map((album) => (
+            <div className='p-4 my-4 bg-neutral-900 rounded-3xl'>
+              <div key={album.id} className='mb-8'>
+                <p className='text-3xl py-2'>{album.title}</p>
+                <div className='grid items-center w-full grid-cols-1 sm:grid-cols-4 md:grid-cols-7 gap-4'>
+                  {album.images?.map((image) => (
+                    <Link key={image.id} href={`/gallery/image/${image.id}`}>
+                      <img className='aspect-square rounded-lg object-cover' src={image.url} alt={image.filename} />
+                    </Link>
+                  ))}
+                  <div className='aspect-square bg-neutral-800 rounded-lg flex flex-col items-center justify-center'>
+                    <i className='fa-solid fa-arrow-up-right-from-square text-3xl p-4 text-center text-neutral-500' />
+                    <p className='text-neutral-400 text-xl'>view more</p>
+                  </div>
+                </div>
+              </div>
             </div>
-          </div>
+          ))}
         </div>
       </div>
     </Wrapper>
