@@ -32,6 +32,10 @@ const AuthContext = createContext<AuthContextProps>({
 
 export default AuthContext;
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
+  const router = useRouter();
+  let [loading, setLoading] = useState(true);
+  let [error, setError] = useState({});
+  let [user, setUser] = useState<User | null>(null);
   let [authTokens, setAuthTokens] = useState(() =>
     typeof window !== 'undefined' && localStorage.getItem('authTokens')
       ? JSON.parse(localStorage.getItem('authTokens') || '{}')
@@ -41,12 +45,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   let [tokenData, setTokenData] = useState(() =>
     typeof window !== 'undefined' && localStorage.getItem('authTokens') ? jwtDecode(localStorage.getItem('authTokens') || '{}') : null,
   );
-
-  let [loading, setLoading] = useState(true);
-  let [error, setError] = useState({});
-  let [user, setUser] = useState<User | null>(null);
-
-  const router = useRouter();
 
   useEffect(() => {
     if (!tokenData) {
@@ -63,11 +61,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         const userData = await response.json();
         setUser(userData);
       } catch (error) {
-        logoutUser()
         console.error(error);
       }
     };
-    fetchMe();
+    authTokens ? fetchMe() : null;
   }, [tokenData]);
 
   let loginUser = async (data: any) => {

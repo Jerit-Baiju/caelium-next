@@ -26,15 +26,17 @@ const Page = () => {
           Welcome to Caelium
         </h1>
         <p className='text-xl text-center mb-8'>Unveil Your World, Connect Your Dreams - Where Privacy Meets Possibility.</p>
-        <button
-          className='flex items-center justify-center p-2 gap-1 bg-white rounded-lg text-black'
-          onClick={() => {
-            window.location.href = authURL as string;
-          }}
-        >
-          <img loading='lazy' height='24' width='24' id='provider-logo' src='https://authjs.dev/img/providers/google.svg'></img>
-          <p className='font-sans font-normal'>Continue with Google</p>
-        </button>
+        {authURL && (
+          <button
+            className='flex items-center justify-center p-2 gap-1 bg-white rounded-lg text-black'
+            onClick={() => {
+              window.location.href = authURL as string;
+            }}
+          >
+            <img loading='lazy' height='24' width='24' id='provider-logo' src='https://authjs.dev/img/providers/google.svg'></img>
+            <p className='font-sans font-normal'>Continue with Google</p>
+          </button>
+        )}
       </Vortex>
     </div>
   );
