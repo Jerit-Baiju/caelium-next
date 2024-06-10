@@ -18,7 +18,7 @@ const useChatUtils = () => {
 
   const fetchNewChats = async () => {
     try {
-      const response = await api.get('/api/auth/accounts/');
+      const response = await api.get('/api/chats/users/');
       setNewChats(response.data);
     } catch (error) {
       console.error('Error fetching new chats:', error);
