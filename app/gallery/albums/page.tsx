@@ -40,13 +40,13 @@ const Albums = () => {
           </div>
         </div>
         <div className='my-5'>
-          {albums?.map((album) => (
-            <div className='p-4 my-4 bg-neutral-900 rounded-3xl'>
+          {albums?.map((album, index) => (
+            <div key={index} className='p-4 my-4 bg-neutral-900 rounded-3xl'>
               <div key={album.id} className='mb-8'>
                 <p className='text-3xl py-2'>{album.title}</p>
                 <div className='grid items-center w-full grid-cols-1 sm:grid-cols-4 md:grid-cols-7 gap-4'>
-                  {album.images?.map((image) => (
-                    <Link key={image.id} href={`/gallery/image/${image.id}`}>
+                  {album.images?.map((image, index) => (
+                    <Link key={index} href={`/gallery/image/${image.id}`}>
                       <img className='aspect-square rounded-lg object-cover' src={image.url} alt={image.filename} />
                     </Link>
                   ))}
