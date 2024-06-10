@@ -93,7 +93,7 @@ export const ChatProvider = ({ chatId, children }: childrenProps) => {
 
   const handleSubmit = async (e?: React.FormEvent<HTMLFormElement>) => {
     e?.preventDefault();
-    sendMessage('text', textInput);
+    textInput.trim() != '' ? sendMessage('text', textInput) : null;
     setTextInput('');
   };
 
