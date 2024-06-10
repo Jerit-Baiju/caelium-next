@@ -24,11 +24,11 @@ const useAxios = () => {
       setAuthTokens(response.data);
       setTokenData(jwtDecode(response.data.access));
       request.headers.Authorization = `Bearer ${response.data.access}`;
-      console.log('update auth token');
       return request;
-    } catch (error) {
-      alert(error)
-      logoutUser();
+    } catch (error: any) {
+      if (error.response?.status === 401 && error.response?.statusText === 'Unauthorized') {
+        logoutUser();
+      }
       throw error;
     }
   });
