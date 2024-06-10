@@ -85,8 +85,8 @@ const Page = () => {
                           <img className='w-12 h-12 rounded-full dark:bg-white object-cover' src={recipient.avatar} alt={recipient.name} />
                         </div>
                         <div className='flex-1 min-w-0'>
-                          <p className='text-sm font-semibold text-neutral-900 truncate dark:text-white'>{recipient.email}</p>
-                          <p className='text-sm text-neutral-500 truncate dark:text-neutral-400'>{recipient.name}</p>
+                          <p className='text-sm font-semibold text-neutral-900 truncate dark:text-white'>{recipient.name}</p>
+                          <p className='text-sm text-neutral-500 truncate dark:text-neutral-400'>{recipient.email}</p>
                         </div>
                       </div>
                     </li>
