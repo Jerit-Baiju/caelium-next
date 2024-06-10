@@ -1,13 +1,12 @@
 'use client';
 import { Image } from '@/helpers/props';
 import useAxios from '@/helpers/useAxios';
-import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
 const DetailedImage = ({ params }: { params: { slug: string } }) => {
   const api = useAxios();
-  const router  = useRouter()
+  const router = useRouter();
   const [image, setImage] = useState<Image | null>();
   useEffect(() => {
     const fetchImage = async () => {
@@ -21,7 +20,11 @@ const DetailedImage = ({ params }: { params: { slug: string } }) => {
       <div className='absolute pointer-events-none inset-0 flex items-center justify-center dark:bg-black bg-white [mask-image:radial-gradient(ellipse_at_center,transparent_20%,black)]' />
       <nav className='flex justify-between h-16 fixed w-full z-40 top-0 start-0 p-6'>
         <div className='flex justify-start items-center text-xl'>
-          <button onClick={()=>{router.back()}}>
+          <button
+            onClick={() => {
+              router.back();
+            }}
+          >
             <span className='material-symbols-outlined'>arrow_back</span>
           </button>
         </div>
