@@ -182,12 +182,12 @@ const Profile = () => {
                 </label>
               ) : (
                 <select
-                  value={field.value}
+                  value={field.value || 'Other'}
                   className='select select-bordered w-full mb-4'
                   disabled={!editable}
                   onChange={(e) => handleInputChange(field.fieldName, field.name, e.target.value)}
                 >
-                  <option disabled selected>
+                  <option disabled>
                     {field.name}
                   </option>
                   {field.options?.map((option, i) => <option key={i}>{option}</option>)}
