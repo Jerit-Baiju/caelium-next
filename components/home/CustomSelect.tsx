@@ -9,7 +9,7 @@ interface Option {
 interface CustomSelectProps {
   options: Option[];
   defaultOption?: string;
-  onSelect: (value: string) => void;
+  onSelect: (value: string|any) => void;
 }
 
 const CustomSelect: React.FC<CustomSelectProps> = ({ options, defaultOption, onSelect }) => {
