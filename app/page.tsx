@@ -15,10 +15,10 @@ const spaceOptions = [
 type SpaceType = 'personal' | 'partner' | 'family' | 'work';
 
 export default function Home() {
-   const [selectedSpace, setSelectedSpace] = useState<SpaceType>(() => {
-     const savedSpace = localStorage.getItem('selectedSpace');
-     return (savedSpace as SpaceType) || 'personal';
-   });
+  const [selectedSpace, setSelectedSpace] = useState<SpaceType>(() => {
+    const savedSpace = localStorage.getItem('selectedSpace');
+    return (savedSpace as SpaceType) || 'personal';
+  });
 
   const handleSelect = (value: SpaceType) => {
     console.log('Selected Version:', value);
@@ -32,7 +32,7 @@ export default function Home() {
   const renderContent = () => {
     switch (selectedSpace) {
       case 'personal':
-        return <Personal/>
+        return <Personal />;
       case 'partner':
         return <div>Partner Content</div>;
       case 'family':
