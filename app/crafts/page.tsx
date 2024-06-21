@@ -1,21 +1,20 @@
 'use client';
-import AuthContext from '@/contexts/AuthContext';
+import Loader from '@/components/Loader';
 import { useNavbar } from '@/contexts/NavContext';
 import { BaseError, Craft } from '@/helpers/props';
 import { getTime } from '@/helpers/support';
 import useAxios from '@/helpers/useAxios';
 import { AxiosError } from 'axios';
 import Link from 'next/link';
-import { useContext, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import Wrapper from '../Wrapper';
 
 const CraftsHome = () => {
-  const { authTokens } = useContext(AuthContext);
+  let api = useAxios();
   const { setCtaButton, defaultCtaButton } = useNavbar();
   let [crafts, setCrafts] = useState<Craft[]>([]);
   const [error, setError] = useState<BaseError | null>(null);
-  let api = useAxios();
-
+  const [loading, setLoading] = useState<boolean>(true);
   useEffect(() => {
     const fetchCrafts = async () => {
       try {
@@ -28,17 +27,21 @@ const CraftsHome = () => {
       }
     };
     fetchCrafts();
-  }, []);
-
-  useEffect(() => {
     setCtaButton({ name: 'Create Craft', url: '/crafts/create' });
+    setLoading(false);
     return () => setCtaButton(defaultCtaButton);
   }, []);
-  return (
+
+  return loading ? (
+    <Wrapper>
+      <div className='flex items-center justify-center h-[calc(100dvh-9rem)]'>
+        <Loader />
+      </div>
+    </Wrapper>
+  ) : (
     <Wrapper>
       <div className='flex-grow'>
         <h1 className='text-4xl text-center font-bold m-4'>Crafts</h1>
-        {crafts?.length === 0 && <div className='text-center text-neutral-400 text-5xl pt-64'>No Crafts for you</div>}
         <div className='mx-4 md:mb-24 max-sm:m-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6'>
           {crafts?.map((craft: Craft, index) => (
             <Link key={index} href={`/crafts/get/${craft.id}`}>
