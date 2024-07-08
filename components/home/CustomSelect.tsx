@@ -43,7 +43,7 @@ const CustomSelect: React.FC<CustomSelectProps> = ({ options, defaultOption, onS
     <div className='relative w-32' ref={dropdownRef}>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className='bg-neutral-300 dark:bg-neutral-800 dark:text-white font-semibold py-2 px-4 rounded inline-flex items-center w-full'
+        className='bg-neutral-200 dark:bg-neutral-800 dark:text-white font-semibold py-2 px-4 rounded inline-flex items-center w-full'
       >
         {selectedOption ? (
           <>
@@ -57,12 +57,12 @@ const CustomSelect: React.FC<CustomSelectProps> = ({ options, defaultOption, onS
       </button>
       {isOpen && (
         <div className='absolute top-full left-0 mt-1 w-full z-10'>
-          <ul className='bg-neutral-200 dark:bg-neutral-800 dark:text-white rounded shadow-md'>
+          <ul className='bg-neutral-300 dark:bg-neutral-800 dark:text-white rounded shadow-lg'>
             {filteredOptions.map((option) => (
               <li
                 key={option.value}
                 onClick={() => handleOptionClick(option.value)}
-                className='cursor-pointer py-2 px-4 hover:bg-neutral-700'
+                className='cursor-pointer py-2 px-4 dark:hover:bg-neutral-700 hover:bg-neutral-300'
               >
                 <i className={`fa-solid fa-${option.icon} mr-2`}></i>
                 {option.label}

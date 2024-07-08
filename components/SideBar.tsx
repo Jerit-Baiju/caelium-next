@@ -30,15 +30,12 @@ const SideBar = () => {
           aria-label='Sidebar'
         >
           <div className='h-full flex flex-col justify-start pt-20 w-full px-3 pb-4 overflow-y-auto'>
-            {/* <Link href='/' className='flex flex-col items-center justify-center'>
-              <Image className='mt-2 pointer-events-none' src={'/logos/written.png'} alt='caelium' width={200} height={0} />
-            </Link> */}
             <ul className='space-y-2 font-medium pt-3'>
               {options.map((option: Option, id) => (
                 <li key={id}>
                   <Link
                     href={option.url}
-                    className='flex items-center text-lg p-2 rounded-lg dark:text-white hover:dark:bg-neutral-900'
+                    className='flex items-center text-lg p-2 rounded-lg dark:text-white hover:dark:bg-neutral-900 hover:bg-neutral-200'
                   >
                     <i className={`fa-solid fa-${option.icon} m-1`}></i>
                     <span className='flex-1 ms-3 whitespace-nowrap'>{option.name}</span>
@@ -49,7 +46,7 @@ const SideBar = () => {
                 <a
                   data-modal-target='logout-modal'
                   data-modal-toggle='logout-modal'
-                  className='flex items-center p-2 text-lg rounded-lg dark:text-white hover:dark:bg-neutral-900'
+                  className='flex items-center p-2 text-lg rounded-lg dark:text-white hover:dark:bg-neutral-900 hover:bg-neutral-200'
                   type='button'
                 >
                   <i className={`fa-solid fa-right-from-bracket m-1`}></i>

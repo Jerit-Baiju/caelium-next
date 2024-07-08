@@ -36,7 +36,7 @@ const NavBar = () => {
             <i className='fa-solid fa-bars text-xl'></i>
           </button>
         </div>
-        <div className='items-center dark:bg-neutral-900 bg-neutral-100 shadow-lg max-sm:w-screen justify-center hidden w-full md:flex md:w-auto' id='navbar-sticky'>
+        <div className='items-center dark:bg-neutral-900 bg-neutral-100 max-sm:w-screen justify-center hidden w-full md:flex md:w-auto' id='navbar-sticky'>
           <ul className='flex flex-col p-4 md:p-0 mt-4 font-medium rounded-lg md:space-x-8 rtl:space-x-reverse md:flex-row md:mt-0 md:border-0'>
             {navLinks?.map((button, index) => (
               <li key={index}>
@@ -68,7 +68,7 @@ const NavBar = () => {
                       <li key={index}>
                         <a
                           href={option.url}
-                          className='block px-4 py-2 hover:bg-gray-100 dark:hover:bg-neutral-600 dark:hover:text-white'
+                          className='block px-4 py-2 hover:bg-neutral-300 dark:hover:bg-neutral-600 dark:hover:text-white'
                         >
                           {option.name}
                         </a>
