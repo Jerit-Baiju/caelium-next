@@ -14,7 +14,7 @@ const Page = () => {
     fetch_auth_url();
   });
   return (
-    <div className='flex flex-col items-center justify-center h-screen dark:text-white'>
+    <div className='flex flex-col items-center justify-center h-screen text-white'>
       <Vortex
         backgroundColor='black'
         rangeY={800}
