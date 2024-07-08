@@ -18,7 +18,7 @@ const Personal = () => {
               Unveil Your World, Connect Your Dreams - Where Privacy Meets Possibility.
             </p>
           </div>
-          <div className='bg-neutral-800 rounded-lg' />
+          <div className='dark:bg-neutral-800 bg-neutral-100 rounded-lg' />
         </div>
         <div className='grid grid-cols-1 md:grid-cols-4 gap-8 md:pt-8'>
           <TaskWidget />

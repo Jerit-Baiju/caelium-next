@@ -22,7 +22,7 @@ const EventWidget = () => {
 
   return (
     <div
-      className='dark:bg-neutral-800 h-72 rounded-lg cursor-pointer'
+      className='dark:bg-neutral-800 bg-neutral-100 h-72 rounded-lg cursor-pointer'
       onClick={() => {
         router.push('/calendar');
       }}
@@ -31,7 +31,10 @@ const EventWidget = () => {
       <div className='overflow-auto h-56'>
         {events.length != 0 ? (
           events.map((event: Event, i) => (
-            <div key={i} className='flex flex-grow justify-between items-center dark:bg-neutral-900 mb-4 mx-4 px-4 py-2 rounded-lg'>
+            <div
+              key={i}
+              className='flex flex-grow justify-between items-center dark:bg-neutral-900 bg-neutral-300 mb-4 mx-4 px-4 py-2 rounded-lg'
+            >
               {event.name}
             </div>
           ))
