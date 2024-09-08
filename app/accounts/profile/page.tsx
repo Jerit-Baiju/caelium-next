@@ -1,5 +1,6 @@
 'use client';
 import Wrapper from '@/app/Wrapper';
+import Loader from '@/components/Loader';
 import AuthContext from '@/contexts/AuthContext';
 import useAxios from '@/helpers/useAxios';
 import { useContext, useEffect, useRef, useState } from 'react';
@@ -111,7 +112,7 @@ const Profile = () => {
     }
   };
 
-  return (
+  return user ? (
     <Wrapper>
       {alert && (
         <div
@@ -187,9 +188,7 @@ const Profile = () => {
                   disabled={!editable}
                   onChange={(e) => handleInputChange(field.fieldName, field.name, e.target.value)}
                 >
-                  <option disabled>
-                    {field.name}
-                  </option>
+                  <option disabled>{field.name}</option>
                   {field.options?.map((option, i) => <option key={i}>{option}</option>)}
                 </select>
               )}
@@ -202,10 +201,19 @@ const Profile = () => {
           ))}
         </div>
         <div className='flex flex-grow w-full align-middle justify-center'>
-          <button onClick={logoutUser} className='dark:bg-red-700 bg-red-500 text-white p-1 rounded-lg max-sm:text-xl mx-14 max-sm:w-full w-44'>
+          <button
+            onClick={logoutUser}
+            className='dark:bg-red-700 bg-red-500 text-white p-1 rounded-lg max-sm:text-xl mx-14 max-sm:w-full w-44'
+          >
             <span id='default-message'>Logout</span>
           </button>
         </div>
+      </div>
+    </Wrapper>
+  ) : (
+    <Wrapper>
+      <div className='flex h-dvh items-center justify-center'>
+        <Loader />
       </div>
     </Wrapper>
   );
