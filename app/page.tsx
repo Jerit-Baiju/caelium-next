@@ -1,9 +1,9 @@
 'use client';
 import CustomSelect from '@/components/home/CustomSelect';
+import Personal from '@/components/home/spaces/personal';
 import SpeedDial from '@/components/home/SpeedDial';
 import { useEffect, useState } from 'react';
 import Wrapper from './Wrapper';
-import Personal from '@/components/home/spaces/personal';
 
 const spaceOptions = [
   { value: 'personal', label: 'Personal', icon: 'user' },
