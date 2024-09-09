@@ -30,7 +30,7 @@ const TaskWidget = () => {
   };
   return (
     <div
-      className='dark:bg-neutral-800 bg-neutral-100 h-72 rounded-lg cursor-pointer'
+      className='dark:bg-neutral-800 bg-white h-72 rounded-lg cursor-pointer'
       onClick={() => {
         router.push('/tasks');
       }}
@@ -39,12 +39,12 @@ const TaskWidget = () => {
       <div className='overflow-auto h-56'>
         {tasks.length != 0 ? (
           tasks.map((task: Task, i) => (
-            <div key={i} className='flex flex-grow justify-between items-center dark:bg-neutral-900 bg-neutral-300 mb-4 mx-4 px-4 py-2 rounded-lg'>
+            <div key={i} className='flex flex-grow justify-between items-center dark:bg-neutral-900 bg-neutral-200 mb-4 mx-4 px-4 py-2 rounded-lg'>
               {task.name}
               <div className='flex gap-4'>
                 <i
                   onClick={() => completeTask(task.id)}
-                  className='fa-solid fa-check text-green-500 text-lg dark:bg-neutral-800 bg-neutral-200 p-1 my-0.5 rounded-sm cursor-pointer'
+                  className='fa-solid fa-check text-green-500 text-lg dark:bg-neutral-800 bg-white p-1 my-0.5 rounded-sm cursor-pointer'
                 ></i>
               </div>
             </div>

@@ -43,17 +43,17 @@ const Page = () => {
   return (
     <Wrapper>
       <div className='flex flex-col flex-grow items-center justify-center md:h-[calc(100dvh-5rem)] h-[calc(100dvh-9rem)]'>
-        <div className='flex flex-col flex-grow md:my-10 justify-between max-sm:w-full md:w-1/3 bg-neutral-800 md:rounded-lg'>
+        <div className='flex flex-col flex-grow md:my-10 justify-between max-sm:w-full md:w-1/3 dark:bg-neutral-800 md:rounded-lg'>
           <p className='text-3xl text-center border-b mt-4 mx-4'>Tasks</p>
           <div className='flex-grow h-[calc(100dvh-20rem)] overflow-auto'>
             {tasks.length != 0 ? (
               tasks.map((task: Task, i) => (
-                <div key={i} className='flex flex-grow justify-between items-center dark:bg-neutral-900 m-4 p-4 rounded-lg'>
+                <div key={i} className='flex flex-grow justify-between items-center bg-neutral-200 dark:bg-neutral-900 m-4 p-4 rounded-lg'>
                   {task.name}
                   <div className='flex gap-4'>
                     <i
                       onClick={() => completeTask(task.id)}
-                      className='fa-solid fa-check text-green-500 text-xl bg-neutral-800 p-2 rounded-sm cursor-pointer'
+                      className='fa-solid fa-check text-green-500 text-xl dark:bg-neutral-800 bg-neutral-100 p-2 rounded-sm cursor-pointer'
                     ></i>
                   </div>
                 </div>
@@ -71,12 +71,12 @@ const Page = () => {
                   type='text'
                   value={newTask}
                   placeholder='Add Task'
-                  className='input input-bordered w-full border-none bg-neutral-700 focus:outline-none'
+                  className='input input-bordered w-full border-none bg-neutral-200 text-neutral-800 dark:bg-neutral-700 focus:outline-none'
                   autoFocus
                   onChange={(e) => setNewTask(e.target.value)}
                   required
                 />
-                <button type='submit' className='btn dark:bg-blue-700 w-12 h-12 border-none hover:dark:bg-blue-600'>
+                <button type='submit' className='btn dark:bg-blue-700 bg-blue-500 text-white w-12 h-12 border-none hover:dark:bg-blue-600'>
                   <i className='fa-solid fa-plus text-xl'></i>
                 </button>
               </div>

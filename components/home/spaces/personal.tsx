@@ -7,7 +7,7 @@ const Personal = () => {
   let { user } = useContext(AuthContext);
 
   return user?.name && (
-    <div className='max-sm:mx-4 mx-4 h-min flex rounded-xl p-8 max-sm:p-5 bg-neutral-200 dark:bg-neutral-900'>
+    <div className='max-sm:mx-4 mx-4 h-min flex rounded-xl p-8 max-sm:p-5 bg-neutral-100 dark:bg-neutral-900'>
       <div className='w-full'>
         <div className='grid grid-cols-1 md:grid-cols-2 gap-8'>
           <div className='flex flex-col justify-center h-28'>
