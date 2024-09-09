@@ -38,7 +38,7 @@ const CraftRead = ({ params }: { params: { slug: Number } }) => {
               <img src={craft?.banner} alt='Banner' className='w-auto mb-4 rounded-lg md:h-96 mx-auto' />
               <h2 className='text-2xl font-bold mb-2'>{craft?.title}</h2>
               <p className='dark:text-neutral-400 text-neutral-500 mb-4'>
-                {getTime(craft?.date)} • {craft?.time}
+                {getTime(craft?.created_at)} • {craft?.time}
               </p>
               {paragraphs?.map((paragraph, index) => (
                 <p key={index} className='leading-relaxed my-4 text-lg'>

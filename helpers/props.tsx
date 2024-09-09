@@ -32,7 +32,7 @@ export interface Craft {
   tag: string;
   banner: string;
   content: string;
-  date: Date;
+  created_at: Date;
   time: string;
   space: string;
   owner: User;
