@@ -62,7 +62,7 @@ const CraftsHome = () => {
                     </div>
                   </div>
                   <div className='flex w-full items-center text-neutral-500 dark:text-neutral-400'>
-                    <span>{getTime(craft?.date)}</span>
+                    <span>{getTime(craft?.created_at)}</span>
                     <span className='mx-2'>•</span>
                     <span>{craft.time}</span>
                     <div className='flex flex-grow justify-end text-end'>Author: {craft.owner.name}</div>
