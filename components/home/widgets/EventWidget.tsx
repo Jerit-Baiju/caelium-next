@@ -22,7 +22,7 @@ const EventWidget = () => {
 
   return (
     <div
-      className='dark:bg-neutral-800 bg-neutral-100 h-72 rounded-lg cursor-pointer'
+      className='dark:bg-neutral-800 bg-white h-72 rounded-lg cursor-pointer'
       onClick={() => {
         router.push('/calendar');
       }}

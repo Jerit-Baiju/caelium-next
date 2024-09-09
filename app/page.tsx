@@ -52,7 +52,7 @@ export default function Home() {
         </div>
         {renderContent()}
       </div>
-      <SpeedDial />
+      {/* <SpeedDial /> */}
     </Wrapper>
   );
 }
