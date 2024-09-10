@@ -19,6 +19,7 @@ interface ChatContextProps {
   recipient?: User;
   clearChat: () => void;
   sendFile: (file: File) => void;
+  isLoading: boolean;
 }
 
 const ChatContext = createContext<ChatContextProps>({
@@ -28,6 +29,7 @@ const ChatContext = createContext<ChatContextProps>({
   messages: [],
   clearChat: async () => {},
   sendFile: async () => {},
+  isLoading: true,
 });
 export default ChatContext;
 
@@ -37,6 +39,7 @@ export const ChatProvider = ({ chatId, children }: childrenProps) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [recipient, setRecipient] = useState<User>();
   const [error, setError] = useState<BaseError | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
   const socket = useRef<WebSocket | null>(null);
   const router = useRouter();
@@ -51,6 +54,8 @@ export const ChatProvider = ({ chatId, children }: childrenProps) => {
         if (error instanceof AxiosError && error.code === 'ERR_BAD_REQUEST')
           setError({ text: 'Failed to fetch messages', code: 'FETCH_MESSAGES_FAILED' });
         console.error('Error fetching data:', error);
+      } finally {
+        setIsLoading(false);
       }
     };
     const fetchParticipant = async () => {
@@ -63,8 +68,9 @@ export const ChatProvider = ({ chatId, children }: childrenProps) => {
         console.error('Error fetching data:', error);
       }
     };
-    fetchMessages();
+
     fetchParticipant();
+    fetchMessages();
 
     socket.current = new WebSocket(`${process.env.NEXT_PUBLIC_WS_HOST}/ws/chat/${chatId}/${authTokens?.access}/`);
     socket.current.onmessage = async function (e) {
@@ -72,7 +78,6 @@ export const ChatProvider = ({ chatId, children }: childrenProps) => {
       const message = await api.get(`/api/chats/messages/${chatId}/${data['message_id']}/`);
       setMessages((prevMessages) => [...prevMessages, message.data]);
     };
-
     return () => {
       if (socket.current) {
         socket.current.close();
@@ -118,8 +123,10 @@ export const ChatProvider = ({ chatId, children }: childrenProps) => {
   }
 
   return (
-    <ChatContext.Provider value={{ handleSubmit, textInput, setTextInput, messages, recipient, clearChat, sendFile }}>
+    <ChatContext.Provider value={{ handleSubmit, textInput, setTextInput, messages, recipient, clearChat, sendFile, isLoading }}>
       {children}
     </ChatContext.Provider>
   );
 };
+
+export const useChatContext = () => useContext(ChatContext);
