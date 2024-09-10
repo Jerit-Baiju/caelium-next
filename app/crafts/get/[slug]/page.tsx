@@ -1,5 +1,6 @@
 'use client';
 import Wrapper from '@/app/Wrapper';
+import Loader from '@/components/Loader';
 import { BaseError, Craft } from '@/helpers/props';
 import { getTime } from '@/helpers/support';
 import useAxios from '@/helpers/useAxios';
@@ -9,6 +10,8 @@ import { useEffect, useState } from 'react';
 const CraftRead = ({ params }: { params: { slug: Number } }) => {
   let [error, setError] = useState<BaseError | null>(null);
   let [craft, setCraft] = useState<Craft | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
+
   const api = useAxios();
 
   useEffect(() => {
@@ -20,12 +23,20 @@ const CraftRead = ({ params }: { params: { slug: Number } }) => {
         if (error instanceof AxiosError && error.code === 'ERR_BAD_REQUEST')
           setError({ text: 'Failed to fetch messages', code: 'FETCH_MESSAGES_FAILED' });
         console.error('Error fetching data:', error);
+      } finally {
+        setLoading(false);
       }
     };
     fetchCraft();
   }, []);
   const paragraphs = craft?.content.split('\n');
-  return (
+  return loading ? (
+    <Wrapper>
+      <div className='flex items-center justify-center h-[calc(100dvh-9rem)]'>
+        <Loader />
+      </div>
+    </Wrapper>
+  ) : (
     <Wrapper>
       <div className='min-h-screen m-4 md:mx-56 flex flex-grow flex-col'>
         <div className='py-8 text-center'>
