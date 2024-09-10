@@ -24,11 +24,12 @@ const CraftsHome = () => {
         if (error instanceof AxiosError && error.code === 'ERR_BAD_REQUEST')
           setError({ text: 'Failed to fetch messages', code: 'FETCH_MESSAGES_FAILED' });
         console.error('Error fetching data:', error);
+      } finally {
+        setLoading(false);
       }
     };
     fetchCrafts();
     setCtaButton({ name: 'Create Craft', url: '/crafts/create' });
-    setLoading(false);
     return () => setCtaButton(defaultCtaButton);
   }, []);
 
