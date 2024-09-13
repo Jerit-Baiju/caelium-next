@@ -58,6 +58,8 @@ export default function Home() {
       {/* <SpeedDial /> */}
     </Wrapper>
   ) : (
-    <Loader />
+    <div className='flex items-center justify-center h-screen'>
+      <Loader />
+    </div>
   );
 }
