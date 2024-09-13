@@ -1,9 +1,11 @@
 'use client';
 import CustomSelect from '@/components/home/CustomSelect';
 import Personal from '@/components/home/spaces/personal';
-import SpeedDial from '@/components/home/SpeedDial';
-import { useEffect, useState } from 'react';
+// import SpeedDial from '@/components/home/SpeedDial';
+import { useContext, useEffect, useState } from 'react';
 import Wrapper from './Wrapper';
+import AuthContext from '@/contexts/AuthContext';
+import Loader from '@/components/Loader';
 
 const spaceOptions = [
   { value: 'personal', label: 'Personal', icon: 'user' },
@@ -15,6 +17,7 @@ const spaceOptions = [
 type SpaceType = 'personal' | 'partner' | 'family' | 'work';
 
 export default function Home() {
+  const { user } = useContext(AuthContext);
   const [selectedSpace, setSelectedSpace] = useState<SpaceType>(() => {
     const savedSpace = localStorage.getItem('selectedSpace');
     return (savedSpace as SpaceType) || 'personal';
@@ -44,7 +47,7 @@ export default function Home() {
     }
   };
 
-  return (
+  return user ? (
     <Wrapper>
       <div className='w-full dark:text-white'>
         <div className='p-4'>
@@ -54,5 +57,7 @@ export default function Home() {
       </div>
       {/* <SpeedDial /> */}
     </Wrapper>
+  ) : (
+    <Loader />
   );
 }

@@ -30,7 +30,7 @@ const CraftRead = ({ params }: { params: { slug: Number } }) => {
     fetchCraft();
   }, []);
   const paragraphs = craft?.content.split('\n');
-  return loading ? (
+  return loading || !craft ? (
     <Wrapper>
       <div className='flex items-center justify-center h-[calc(100dvh-9rem)]'>
         <Loader />
