@@ -1,3 +1,4 @@
+import { ThemeProvider } from '@/components/theme-provider';
 import type { Metadata } from 'next';
 import Script from 'next/script';
 import { handleeFont } from './font';
@@ -33,13 +34,14 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           rel='stylesheet'
           href='https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0'
         />
-        <link href="https://fonts.googleapis.com/icon?family=Material+Icons"
-      rel="stylesheet"></link>
+        <link href='https://fonts.googleapis.com/icon?family=Material+Icons' rel='stylesheet'></link>
       </head>
       <body className={`${handleeFont.className} dark:bg-neutral-950 bg-white dark:text-neutral-200 text-neutral-800`}>
-        <ProvidersWrapper>{children}</ProvidersWrapper>
+        <ThemeProvider attribute='class' defaultTheme='system' enableSystem disableTransitionOnChange>
+          <ProvidersWrapper>{children}</ProvidersWrapper>
+        </ThemeProvider>
         <Script src='https://kit.fontawesome.com/c75f557ffd.js' crossOrigin='anonymous'></Script>
-        <script src="https://accounts.google.com/gsi/client" async></script>
+        <script src='https://accounts.google.com/gsi/client' async></script>
       </body>
     </html>
   );
