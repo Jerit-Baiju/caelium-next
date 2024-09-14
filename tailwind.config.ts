@@ -65,7 +65,7 @@ const config: Config = {
   daisyui: {
     themes: [],
   },
-  darkMode: ['media', 'class'],
+  darkMode: ['class'],
   plugins: [
     addVariablesForColors,
     function ({ matchUtilities, theme }: any) {
