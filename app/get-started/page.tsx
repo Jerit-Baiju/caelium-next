@@ -12,7 +12,7 @@ const StartExploringPage: React.FC = () => {
             <h2 className='text-xl font-semibold mb-4'>What You Can Do:</h2>
             <ul className='list-disc list-inside'>
               <li className='my-2'>
-                <span className='font-bold'>Personal Space:</span>{' '}
+                <span className='font-bold'>Personal Space:</span>
                 <span>
                   Keep track of your personal events, goals, and to-dos. Write private journal entries or share your thoughts with
                   others in your personal space.
