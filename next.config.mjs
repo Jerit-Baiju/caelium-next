@@ -16,7 +16,6 @@ const nextConfig = {
         port: '8000',
         pathname: '/**',
       },
-
       {
         protocol: 'https',
         hostname: 'images.unsplash.com',
@@ -24,8 +23,6 @@ const nextConfig = {
     ],
   },
 };
-
-
 
 const withPWA = nextPWA({
   dest: "public", // Destination directory for the PWA files
