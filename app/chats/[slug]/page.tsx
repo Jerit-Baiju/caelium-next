@@ -1,6 +1,6 @@
 'use client';
 import Wrapper from '@/app/Wrapper';
-import NotificationAlertDialog from '@/components/base/NotificationAlertDialog';
+import NotificationPrompt from '@/components/base/NotificationPrompt';
 import ChatsPane from '@/components/chats/ChatsPane';
 import ChatHeader from '@/components/chats/elements/ChatHeader';
 import ChatInput from '@/components/chats/elements/ChatInput';
@@ -39,12 +39,9 @@ const Page = ({ params }: { params: { slug: Number } }) => {
     }
   }, [isPermissionGranted]);
 
-  const handleClose = () => {
-    setShowAlertDialog(false);
-  };
   return (
     <Wrapper navSM={false}>
-      {showAlertDialog && <NotificationAlertDialog onClose={handleClose} />}
+      {showAlertDialog && <NotificationPrompt onClose={() => setShowAlertDialog(false)} />}
       <div className='flex flex-grow h-[calc(100dvh-5rem)] sm:divide-x divide-dashed divide-neutral-500 overflow-y-scroll'>
         <div className='max-sm:hidden flex flex-grow flex-none sm:w-1/4'>
           <ChatsPane />

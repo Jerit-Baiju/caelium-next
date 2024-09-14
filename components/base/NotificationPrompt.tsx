@@ -8,18 +8,21 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 
-interface NotificationAlertDialogProps {
+interface NotificationPromptProps {
   onClose: () => void;
 }
 
-const NotificationAlertDialog: React.FC<NotificationAlertDialogProps> = ({ onClose }) => {
+const NotificationPrompt: React.FC<NotificationPromptProps> = ({ onClose }) => {
   return (
     <AlertDialog open onOpenChange={onClose}>
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>Enable Notifications</AlertDialogTitle>
         </AlertDialogHeader>
-        <p>To stay updated with the latest messages and events, please enable notifications.</p>
+        <p>
+          Stay connected and never miss a message! By enabling notifications, you'll receive instant alerts whenever someone sends you
+          a message, even when you're not actively using the app.
+        </p>
         <AlertDialogFooter>
           <AlertDialogCancel onClick={onClose}>Cancel</AlertDialogCancel>
           <AlertDialogAction onClick={onClose}>Enable</AlertDialogAction>
@@ -29,4 +32,4 @@ const NotificationAlertDialog: React.FC<NotificationAlertDialogProps> = ({ onClo
   );
 };
 
-export default NotificationAlertDialog;
+export default NotificationPrompt;
