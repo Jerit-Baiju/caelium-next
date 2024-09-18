@@ -6,9 +6,8 @@ import ChatHeader from '@/components/chats/elements/ChatHeader';
 import ChatInput from '@/components/chats/elements/ChatInput';
 import ChatMain from '@/components/chats/elements/ChatMain';
 import Loader from '@/components/Loader';
-import { ChatProvider, useChatContext } from '@/contexts/ChatContext'; // Modified import
-import { useNotifications } from '@/helpers/useNotifications';
-import { useEffect, useState } from 'react';
+import { ChatProvider, useChatContext } from '@/contexts/ChatContext';
+import useNotifications from '@/hooks/useNotifications';
 
 const ChatPageContent = () => {
   const { isLoading } = useChatContext();
@@ -30,18 +29,11 @@ const ChatPageContent = () => {
 };
 
 const Page = ({ params }: { params: { slug: Number } }) => {
-  const { isPermissionGranted } = useNotifications();
-  const [showAlertDialog, setShowAlertDialog] = useState(false);
-
-  useEffect(() => {
-    if (!isPermissionGranted) {
-      setShowAlertDialog(true);
-    }
-  }, [isPermissionGranted]);
+  const { showAlertDialog, requestPermission, setShowAlertDialog } = useNotifications();
 
   return (
     <Wrapper navSM={false}>
-      {showAlertDialog && <NotificationPrompt onClose={() => setShowAlertDialog(false)} />}
+      {showAlertDialog && <NotificationPrompt onEnable={requestPermission} onClose={() => setShowAlertDialog(false)} />}
       <div className='flex flex-grow h-[calc(100dvh-5rem)] sm:divide-x divide-dashed divide-neutral-500 overflow-y-scroll'>
         <div className='max-sm:hidden flex flex-grow flex-none sm:w-1/4'>
           <ChatsPane />
