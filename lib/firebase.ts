@@ -2,13 +2,13 @@ import { getApp, getApps, initializeApp } from 'firebase/app';
 import { getMessaging, getToken, isSupported } from 'firebase/messaging';
 
 const firebaseConfig = {
-  apiKey: 'AIzaSyA4Ilj8CqJdPiux6gQEI2r6Q7jN7dCj3xE',
-  authDomain: 'caeliumpro.firebaseapp.com',
-  projectId: 'caeliumpro',
-  storageBucket: 'caeliumpro.appspot.com',
-  messagingSenderId: '657087635264',
-  appId: '1:657087635264:web:e92d428d146c167c59e4a5',
-  measurementId: 'G-1YN2GRP2P5',
+  apiKey: 'AIzaSyC1CvHaaP-BTOOIaUrSGql4uwW3cUVb8xo',
+  authDomain: 'caelium-cloud.firebaseapp.com',
+  projectId: 'caelium-cloud',
+  storageBucket: 'caelium-cloud.appspot.com',
+  messagingSenderId: '295249747539',
+  appId: '1:295249747539:web:26684734348a7073ab30a6',
+  measurementId: 'G-RN3WVJ9FLK',
 };
 
 const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
