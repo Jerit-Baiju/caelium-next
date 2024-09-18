@@ -24,8 +24,8 @@ export const useNavbar = () => {
 
 let defaultNavLinks: NavLink[] = [
   { name: 'Write', url: '/crafts/create' },
-  { name: 'Layout', url: '/layout' },
-  { name: 'Settings', url: '/settings' },
+  { name: 'Layout', url: '#' },
+  { name: 'Settings', url: '#' },
 ];
 
 let createDropdown: DropDown = {
