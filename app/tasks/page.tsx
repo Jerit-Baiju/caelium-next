@@ -1,7 +1,7 @@
 'use client';
 
 import { Task } from '@/helpers/props';
-import useAxios from '@/helpers/useAxios';
+import useAxios from '@/hooks/useAxios';
 import { FormEvent, useEffect, useState } from 'react';
 import Wrapper from '../Wrapper';
 

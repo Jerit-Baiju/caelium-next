@@ -1,4 +1,4 @@
-import useAxios from '@/helpers/useAxios';
+import useAxios from '@/hooks/useAxios';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
