@@ -3,7 +3,7 @@ import Loader from '@/components/Loader';
 import { useNavbar } from '@/contexts/NavContext';
 import { Image, NavLink } from '@/helpers/props';
 import { getDate } from '@/helpers/support';
-import useAxios from '@/helpers/useAxios';
+import useAxios from '@/hooks/useAxios';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import Wrapper from '../Wrapper';

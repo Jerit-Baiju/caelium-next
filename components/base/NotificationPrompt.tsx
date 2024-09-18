@@ -9,10 +9,11 @@ import {
 } from '@/components/ui/alert-dialog';
 
 interface NotificationPromptProps {
+  onEnable: () => void;
   onClose: () => void;
 }
 
-const NotificationPrompt: React.FC<NotificationPromptProps> = ({ onClose }) => {
+const NotificationPrompt: React.FC<NotificationPromptProps> = ({ onEnable, onClose }) => {
   return (
     <AlertDialog open onOpenChange={onClose}>
       <AlertDialogContent>
@@ -25,7 +26,7 @@ const NotificationPrompt: React.FC<NotificationPromptProps> = ({ onClose }) => {
         </p>
         <AlertDialogFooter>
           <AlertDialogCancel onClick={onClose}>Cancel</AlertDialogCancel>
-          <AlertDialogAction onClick={onClose}>Enable</AlertDialogAction>
+          <AlertDialogAction onClick={onEnable}>Enable</AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>

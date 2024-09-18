@@ -2,7 +2,7 @@
 import AuthContext from '@/contexts/AuthContext';
 import { Chat } from '@/helpers/props';
 import { getTime, truncate } from '@/helpers/support';
-import useAxios from '@/helpers/useAxios';
+import useAxios from '@/hooks/useAxios';
 import Link from 'next/link';
 import { useContext, useEffect, useState } from 'react';
 

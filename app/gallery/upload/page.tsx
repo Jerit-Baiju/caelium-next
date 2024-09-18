@@ -1,6 +1,6 @@
 'use client';
 import Wrapper from '@/app/Wrapper';
-import useAxios from '@/helpers/useAxios';
+import useAxios from '@/hooks/useAxios';
 import { ChangeEvent, useState } from 'react';
 
 const ImageUpload = () => {

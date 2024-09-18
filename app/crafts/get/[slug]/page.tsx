@@ -3,7 +3,7 @@ import Wrapper from '@/app/Wrapper';
 import Loader from '@/components/Loader';
 import { BaseError, Craft } from '@/helpers/props';
 import { getTime } from '@/helpers/support';
-import useAxios from '@/helpers/useAxios';
+import useAxios from '@/hooks/useAxios';
 import { AxiosError } from 'axios';
 import { useEffect, useState } from 'react';
 
