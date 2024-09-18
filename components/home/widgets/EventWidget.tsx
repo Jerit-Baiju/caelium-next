@@ -1,5 +1,5 @@
 import { Event } from '@/helpers/props';
-import useAxios from '@/helpers/useAxios';
+import useAxios from '@/hooks/useAxios';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 

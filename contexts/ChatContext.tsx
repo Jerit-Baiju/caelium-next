@@ -1,6 +1,6 @@
 'use client';
 import { BaseError, Message, User } from '@/helpers/props';
-import useAxios from '@/helpers/useAxios';
+import useAxios from '@/hooks/useAxios';
 import { AxiosError } from 'axios';
 import { useRouter } from 'next/navigation';
 import { ReactNode, createContext, useContext, useEffect, useRef, useState } from 'react';
