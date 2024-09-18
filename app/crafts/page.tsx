@@ -3,7 +3,7 @@ import Loader from '@/components/Loader';
 import { useNavbar } from '@/contexts/NavContext';
 import { BaseError, Craft } from '@/helpers/props';
 import { getTime } from '@/helpers/support';
-import useAxios from '@/helpers/useAxios';
+import useAxios from '@/hooks/useAxios';
 import { AxiosError } from 'axios';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';

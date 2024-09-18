@@ -2,7 +2,7 @@
 import Wrapper from '@/app/Wrapper';
 import Loader from '@/components/Loader';
 import { Album } from '@/helpers/props';
-import useAxios from '@/helpers/useAxios';
+import useAxios from '@/hooks/useAxios';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 
