@@ -1,0 +1,30 @@
+name: Sync with Organization Repo and Deploy to Vercel
+
+on:
+  schedule:
+    # Run this action every 5 minutes
+    - cron: '*/5 * * * *'
+  workflow_dispatch: # Allows you to manually trigger the workflow if needed
+
+jobs:
+  sync_and_deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Personal Repo
+        uses: actions/checkout@v2
+
+      - name: Configure Git
+        run: |
+          git config --global user.email "jeritalumkal@gmai.com"
+          git config --global user.name "Jerit Baiju"
+
+      - name: Add Organization Repo as a Remote
+        run: |
+          git remote add org-repo https://x-access-token:${{ secrets.GH_TOKEN }}@github.com/CaeliumHQ/caelium-next.git
+          git fetch org-repo
+          git merge org-repo/main --allow-unrelated-histories
+          git push origin main
+
+      - name: Deploy to Vercel
+        run: |
+          vercel --token ${{ secrets.VERCEL_TOKEN }} --prod
