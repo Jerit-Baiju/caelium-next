@@ -203,7 +203,7 @@ const Profile = () => {
         <div className='flex flex-grow w-full align-middle justify-center'>
           <button
             onClick={logoutUser}
-            className='dark:bg-red-700 bg-red-500 text-white p-1 rounded-lg max-sm:text-xl mx-14 max-sm:w-full w-44'
+            className='dark:bg-red-700 bg-red-500 h-12 text-white p-1 rounded-lg max-sm:text-xl mx-14 max-sm:w-full w-44'
           >
             <span id='default-message'>Logout</span>
           </button>
