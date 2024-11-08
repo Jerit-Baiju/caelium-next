@@ -20,10 +20,10 @@ const Page = () => {
   return (
     <Wrapper>
       <div className='flex flex-grow max-sm:h-min divide-x divide-dashed divide-neutral-500 overflow-y-scroll'>
-        <div className='flex flex-grow flex-none sm:w-1/4'>
+        <div className='flex flex-grow flex-none lg:w-1/4'>
           <ChatsPane />
         </div>
-        <div className='flex max-sm:hidden flex-none flex-grow sm:w-3/4'>
+        <div className='hidden lg:block flex-none flex-grow sm:w-3/4'>
           <div className='flex flex-col flex-grow items-center justify-center'>
             <div
               className={`mb-20 text-center font-bold text-transparent bg-clip-text bg-gradient-to-r to-emerald-600 from-sky-400  ${comforter.className}`}

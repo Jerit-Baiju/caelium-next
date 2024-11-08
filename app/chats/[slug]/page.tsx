@@ -34,8 +34,8 @@ const Page = ({ params }: { params: { slug: Number } }) => {
   return (
     <Wrapper navSM={false}>
       {showAlertDialog && <NotificationPrompt onEnable={requestPermission} onClose={() => setShowAlertDialog(false)} />}
-      <div className='flex flex-grow h-[calc(100dvh-5rem)] sm:divide-x divide-dashed divide-neutral-500 overflow-y-scroll'>
-        <div className='max-sm:hidden flex flex-grow flex-none sm:w-1/4'>
+      <div className='flex flex-grow h-[calc(100dvh-5rem)] lg:divide-x divide-dashed divide-neutral-500 overflow-y-scroll'>
+        <div className='hidden lg:block flex-grow flex-none sm:w-1/4'>
           <ChatsPane />
         </div>
         <ChatProvider chatId={params.slug}>
