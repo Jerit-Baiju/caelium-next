@@ -17,11 +17,11 @@ const Wrapper = ({ children, navSM = true }: WrapperProps) => {
   return (
     <main>
       <SideBar />
-      <div className={navSM ? '' : 'max-sm:hidden'}>
+      <div className={navSM ? '' : 'max-lg:hidden'}>
         <NavBar />
       </div>
-      <div className={`lg:ml-64 flex flex-col flex-grow ${navSM ? 'mt-20' : 'sm:mt-20 max-sm:h-screen'}`}>{children}</div>
-      <div className={navSM ? 'max-sm:mt-16' : 'max-sm:hidden'}>
+      <div className={`lg:ml-64 flex flex-col flex-grow ${navSM ? 'mt-20' : 'lg:mt-20 max-lg:h-screen'}`}>{children}</div>
+      <div className={navSM ? 'max-lg:mt-16' : 'max-lg:hidden'}>
         <BottomNav />
       </div>
     </main>
