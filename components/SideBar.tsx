@@ -26,7 +26,7 @@ const SideBar = () => {
       <>
         <aside
           id='logo-sidebar'
-          className='fixed top-20 left-0 z-40 w-64 border-r border-gray-200 dark:border-gray-600 h-screen max-sm:hidden transition-transform -translate-x-full sm:translate-x-0 '
+          className='fixed top-20 left-0 z-40 w-64 border-r border-gray-200 dark:border-gray-600 h-screen hidden lg:block transition-transform -translate-x-full sm:translate-x-0 '
           aria-label='Sidebar'
         >
           <div className='h-full flex flex-col justify-start pt-20 w-full px-3 pb-4 overflow-y-auto'>
