@@ -24,7 +24,7 @@ const Page = () => {
           <ChatsPane />
         </div>
         <div className='hidden lg:block flex-none flex-grow sm:w-3/4'>
-          <div className='flex flex-col flex-grow items-center justify-center'>
+          <div className='flex flex-col bg-green-200 min-h-[calc(100dvh-5rem)] flex-grow items-center justify-center'>
             <div
               className={`mb-20 text-center font-bold text-transparent bg-clip-text bg-gradient-to-r to-emerald-600 from-sky-400  ${comforter.className}`}
             >
@@ -82,7 +82,11 @@ const Page = () => {
                     >
                       <div className='flex items-center space-x-3 rtl:space-x-reverse'>
                         <div className='flex-shrink-0'>
-                          <img className='w-12 h-12 rounded-full dark:bg-white object-cover' src={recipient.avatar} alt={recipient.name} />
+                          <img
+                            className='w-12 h-12 rounded-full dark:bg-white object-cover'
+                            src={recipient.avatar}
+                            alt={recipient.name}
+                          />
                         </div>
                         <div className='flex-1 min-w-0'>
                           <p className='text-sm font-semibold text-neutral-900 truncate dark:text-white'>{recipient.name}</p>
