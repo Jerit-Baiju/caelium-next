@@ -24,7 +24,7 @@ const Page = () => {
           <ChatsPane />
         </div>
         <div className='hidden lg:block flex-none flex-grow sm:w-3/4'>
-          <div className='flex flex-col bg-green-200 min-h-[calc(100dvh-5rem)] flex-grow items-center justify-center'>
+          <div className='flex flex-col min-h-[calc(100dvh-5rem)] flex-grow items-center justify-center'>
             <div
               className={`mb-20 text-center font-bold text-transparent bg-clip-text bg-gradient-to-r to-emerald-600 from-sky-400  ${comforter.className}`}
             >
