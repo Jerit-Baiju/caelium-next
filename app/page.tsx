@@ -2,10 +2,11 @@
 import CustomSelect from '@/components/home/CustomSelect';
 import Personal from '@/components/home/spaces/personal';
 // import SpeedDial from '@/components/home/SpeedDial';
+import Loader from '@/components/Loader';
+import AuthContext from '@/contexts/AuthContext';
+import { useRouter } from 'next/navigation';
 import { useContext, useEffect, useState } from 'react';
 import Wrapper from './Wrapper';
-import AuthContext from '@/contexts/AuthContext';
-import Loader from '@/components/Loader';
 
 const spaceOptions = [
   { value: 'personal', label: 'Personal', icon: 'user' },
@@ -16,8 +17,16 @@ const spaceOptions = [
 
 type SpaceType = 'personal' | 'partner' | 'family' | 'work';
 
+/**
+ * Home component temporarily blocks the homepage and redirects to the '/chats' route.
+ * It manages the selected space state and persists it in localStorage.
+ * Depending on the selected space, it renders different content.
+ * If the user is not authenticated, it shows a loader.
+ */
+
 export default function Home() {
   const { user } = useContext(AuthContext);
+  const router = useRouter();
   const [selectedSpace, setSelectedSpace] = useState<SpaceType>(() => {
     const savedSpace = localStorage.getItem('selectedSpace');
     return (savedSpace as SpaceType) || 'personal';
@@ -27,6 +36,10 @@ export default function Home() {
     console.log('Selected Version:', value);
     setSelectedSpace(value);
   };
+
+  useEffect(() => {
+    router.push('/chats');
+  }, [router]);
 
   useEffect(() => {
     localStorage.setItem('selectedSpace', selectedSpace);
