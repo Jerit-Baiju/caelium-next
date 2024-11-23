@@ -12,7 +12,13 @@ const TextMessage = ({ message }: { message: Message }) => {
   if (message.side == 'right') {
     side = 'chat-end';
   }
-  const paragraphs = message?.content.split('\n');
+  
+  const paragraphs = message?.content
+    .split('\n\n')
+    .map((paragraph) =>
+      paragraph.split('\n').map((line, index, array) => (index < array.length - 1 ? [line, <br key={index} />] : line)),
+    );
+
   return (
     <div className={`chat ${side}`}>
       <div className='chat-image avatar'>
@@ -28,7 +34,7 @@ const TextMessage = ({ message }: { message: Message }) => {
         {message.sender.name}
         <time className='text-xs opacity-50 mx-2'>{formattedTime}</time>
       </div>
-      <div className='chat-bubble rounded-lg bg-neutral-500 dark:bg-neutral-700 text-white overscroll-none break-words'>
+      <div className='chat-bubble rounded-lg bg-neutral-500 dark:bg-neutral-700 text-white overscroll-none break-words space-y-3'>
         {paragraphs?.map((paragraph, index) => (
           <p key={index} className='leading-relaxed'>
             {paragraph || '\u00A0'}
