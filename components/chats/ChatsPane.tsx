@@ -28,9 +28,7 @@ const ChatsPane = () => {
     try {
       const response = await api.get('/api/chats/');
       setChats(response.data);
-      setTimeout(() => {
-        setIsLoading(false);
-      }, 1000);
+      setIsLoading(false);
     } catch (error) {
       console.error('Error fetching data:', error);
     }
