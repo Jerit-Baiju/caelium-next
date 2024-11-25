@@ -47,7 +47,7 @@ const ChatsPane = () => {
   };
 
   return (
-    <div className='flex flex-col h-[calc(100dvh-10rem)] w-full flex-grow overflow-hidden overflow-x-hidden'>
+    <div className='flex flex-col max-md:h-[calc(100dvh-10rem)] h-[calc(100dvh-5rem)] w-full flex-grow overflow-hidden overflow-x-hidden'>
       <div className='flex w-full sticky top-0 z-10 flex-col'>
         <form onSubmit={searchChats} className='m-3'>
           <label htmlFor='default-search' className='mb-2 text-sm font-medium text-neutral-900 sr-only dark:text-white'>
