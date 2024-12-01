@@ -66,7 +66,7 @@ export default function Home() {
         <div className='p-4'>
           <CustomSelect options={spaceOptions} onSelect={handleSelect} defaultOption={selectedSpace} />
         </div>
-        {renderContent()}
+        {/* {renderContent()} */}
       </div>
       {/* <SpeedDial /> */}
     </Wrapper>
