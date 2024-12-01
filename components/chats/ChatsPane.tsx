@@ -78,7 +78,7 @@ const ChatsPane = () => {
                 }}
                 className='absolute inset-y-0 end-0 flex items-center w-fit pe-3'
               >
-                <i className='fa-solid fa-xmark'></i>
+                <i className='fa-solid fa-times'></i>
               </button>
             )}
           </div>
@@ -109,7 +109,7 @@ const ChatsPane = () => {
                   </div>
                 </div>
                 {chat.updated_time && (
-                  <span className='inline-flex items-end bg-neutral-300 text-neutral-800 text-sm font-medium px-2.5 py-0.5 rounded-full dark:bg-neutral-900 dark:text-neutral-300'>
+                  <span className='inline-flex items-end bg-neutral-300 text-neutral-800 text-sm font-medium px-2.5 py-0.5 rounded-full dark:bg-neutral-900 dark:text-neutral-300 whitespace-nowrap'>
                     {getTime(chat.updated_time)}
                   </span>
                 )}
