@@ -101,7 +101,7 @@ const Page = () => {
           </div>
         </div>
       </div>
-      <div className='fixed end-6 bottom-20 group max-md:hidden'>
+      <div className='fixed end-6 bottom-20 group lg:hidden'>
         <Link
           href={'/chats/new-chat'}
           className='flex items-center justify-center text-white bg-neutral-500 rounded-lg w-14 h-14 hover:bg-neutral-600 dark:bg-neutral-800 dark:hover:bg-neutral-700 focus:ring-4 focus:ring-neutral-300 focus:outline-none dark:focus:ring-neutral-800'
