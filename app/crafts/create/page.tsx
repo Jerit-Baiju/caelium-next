@@ -110,7 +110,7 @@ const CraftCreate = () => {
                   required
                 />
               </div>
-              <div className='mb-4'>
+              {/* <div className='mb-4'>
                 <label htmlFor='privacy' className='block text-sm font-medium text-gray-700 dark:text-white'>
                   Space
                 </label>
@@ -127,7 +127,7 @@ const CraftCreate = () => {
                     </button>
                   ))}
                 </div>
-              </div>
+              </div> */}
               <div className='flex justify-center'>
                 <button
                   className='bg-blue-500 w-1/2 rounded-lg hover:bg-blue-600 text-white font-bold py-2 px-4 focus:outline-none focus:shadow-outline'
