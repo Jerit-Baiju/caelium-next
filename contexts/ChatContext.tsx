@@ -3,7 +3,7 @@ import { BaseError, Message, User } from '@/helpers/props';
 import useAxios from '@/hooks/useAxios';
 import { AxiosError } from 'axios';
 import { useRouter } from 'next/navigation';
-import { ReactNode, createContext, useContext, useEffect, useRef, useState } from 'react';
+import { ReactNode, createContext, useContext, useEffect, useState } from 'react';
 import AuthContext from './AuthContext';
 import { useWebSocket } from './SocketContext';
 
@@ -42,10 +42,18 @@ export const ChatProvider = ({ chatId, children }: childrenProps) => {
   const [error, setError] = useState<BaseError | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
+  const { socket } = useWebSocket();
   const router = useRouter();
   const api = useAxios();
 
-  const { send } = useWebSocket();
+  if (socket) {
+    socket.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+      if (data.message_type === 'text') {
+        console.log('text - > ' + data.message);
+      }
+    };
+  }
 
   useEffect(() => {
     const fetchMessages = async () => {
@@ -76,15 +84,16 @@ export const ChatProvider = ({ chatId, children }: childrenProps) => {
   }, [chatId, user]);
 
   const sendMessage = async (type: 'text' | 'image', content?: string, file?: File) => {
-    const formData = new FormData();
-    formData.append('type', type);
-    formData.append('content', content ? content : '');
-    formData.append('file', file ? file : '');
-
-    // socket?.send(JSON.stringify({ message: content, type: type }));
-    // const response = await api.post(`api/chats/messages/${chatId}/`, formData, { headers: { 'Content-Type': 'multipart/form-data' } });
-    // if (response.status === 201) {
-    // socket.current?.send(JSON.stringify({ message_id: response.data['id'] }));
+    socket?.send(JSON.stringify({ message: content, type, chat_id: chatId }));
+    if (type != 'text') {
+      const formData = new FormData();
+      formData.append('type', type);
+      formData.append('content', content ? content : '');
+      formData.append('file', file ? file : '');
+      await api.post(`api/chats/messages/${chatId}/`, formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+    }
     // }
   };
 
