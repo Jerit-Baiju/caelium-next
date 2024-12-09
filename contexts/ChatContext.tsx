@@ -46,14 +46,16 @@ export const ChatProvider = ({ chatId, children }: childrenProps) => {
   const router = useRouter();
   const api = useAxios();
 
+  useEffect(() => {
   if (socket) {
-    socket.onmessage = (event) => {
-      const data = JSON.parse(event.data);
-      if (data.message_type === 'text') {
-        console.log('text - > ' + data.message);
+    socket.onmessage = async function (e) {
+      let data = JSON.parse(e.data);
+      if (data.category === 'message' && data.chat_id === chatId) {
+        setMessages((prevMessages) => [...prevMessages, data]);
       }
     };
   }
+  }, [socket])
 
   useEffect(() => {
     const fetchMessages = async () => {
@@ -83,9 +85,13 @@ export const ChatProvider = ({ chatId, children }: childrenProps) => {
     fetchMessages();
   }, [chatId, user]);
 
-  const sendMessage = async (type: 'text' | 'image', content?: string, file?: File) => {
+  const sendMessage = async (type: 'txt' | 'img', content?: string, file?: File) => {
     socket?.send(JSON.stringify({ message: content, type, chat_id: chatId }));
-    if (type != 'text') {
+    setMessages((prevMessages) => [
+      ...prevMessages,
+      { id: Date.now(), content: content || '', type, sender: user, side: 'right', file_name: '', timestamp: new Date(), file: null },
+    ]);
+    if (type != 'txt') {
       const formData = new FormData();
       formData.append('type', type);
       formData.append('content', content ? content : '');
@@ -99,12 +105,12 @@ export const ChatProvider = ({ chatId, children }: childrenProps) => {
 
   const handleSubmit = async (e?: React.FormEvent<HTMLFormElement>) => {
     e?.preventDefault();
-    textInput.trim() != '' ? sendMessage('text', textInput) : null;
+    textInput.trim() != '' ? sendMessage('txt', textInput) : null;
     setTextInput('');
   };
 
   const sendFile = (file: File) => {
-    sendMessage('image', '', file);
+    sendMessage('img', '', file);
   };
 
   const clearChat = async () => {

@@ -29,16 +29,8 @@ export const WebSocketProvider: React.FC<{ children: React.ReactNode }> = ({ chi
       console.log('Received:', data);
     };
 
-    ws.onclose = () => {
-      console.log('Disconnected from WebSocket');
+    ws.onclose = (e) => {
       setIsConnected(false);
-
-      setTimeout(() => {
-        console.log('Attempting to reconnect to WebSocket');
-        setSocket(
-          new WebSocket(`${process.env.NEXT_PUBLIC_WS_HOST}/ws/base/${JSON.parse(localStorage.getItem('authTokens')!).access}/`),
-        );
-      }, 5000);
     };
 
     setSocket(ws);
