@@ -1,8 +1,10 @@
 import ChatContext from '@/contexts/ChatContext';
+import { useWebSocket } from '@/contexts/SocketContext';
 import { useContext, useRef } from 'react';
 
 const ChatInput = () => {
-  let { textInput, setTextInput, handleSubmit, sendFile } = useContext(ChatContext);
+  let { textInput, setTextInput, handleSubmit, sendFile, recipient } = useContext(ChatContext);
+  let {socket } = useWebSocket()
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setTextInput(e.target.value);
   };
@@ -26,8 +28,20 @@ const ChatInput = () => {
     file ? sendFile(file) : null;
   };
 
+  const sendMessage = async (e?: React.FormEvent<HTMLFormElement>) => {
+    e?.preventDefault()
+    if (socket && textInput && recipient?.id) {
+      const data = {
+        message: textInput,
+        receiver_id: recipient.id,
+      };
+      socket.send(JSON.stringify(data));
+      setTextInput('');
+    }
+  };
+
   return (
-    <form onSubmit={handleSubmit}>
+    <form onSubmit={sendMessage}>
       <label htmlFor='chat' className='sr-only'>
         Your message
       </label>
