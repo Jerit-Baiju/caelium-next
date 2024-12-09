@@ -5,6 +5,7 @@ import { AxiosError } from 'axios';
 import { useRouter } from 'next/navigation';
 import { ReactNode, createContext, useContext, useEffect, useRef, useState } from 'react';
 import AuthContext from './AuthContext';
+import { useWebSocket } from './SocketContext';
 
 interface childrenProps {
   chatId: Number;
@@ -34,16 +35,17 @@ const ChatContext = createContext<ChatContextProps>({
 export default ChatContext;
 
 export const ChatProvider = ({ chatId, children }: childrenProps) => {
-  const { authTokens, user } = useContext(AuthContext);
+  const { user } = useContext(AuthContext);
   const [textInput, setTextInput] = useState('');
   const [messages, setMessages] = useState<Message[]>([]);
   const [recipient, setRecipient] = useState<User>();
   const [error, setError] = useState<BaseError | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
-  const socket = useRef<WebSocket | null>(null);
   const router = useRouter();
   const api = useAxios();
+
+  const { send } = useWebSocket();
 
   useEffect(() => {
     const fetchMessages = async () => {
@@ -71,18 +73,6 @@ export const ChatProvider = ({ chatId, children }: childrenProps) => {
 
     fetchParticipant();
     fetchMessages();
-
-    socket.current = new WebSocket(`${process.env.NEXT_PUBLIC_WS_HOST}/ws/chat/${chatId}/${authTokens?.access}/`);
-    socket.current.onmessage = async function (e) {
-      let data = JSON.parse(e.data)['message'];
-      const message = await api.get(`/api/chats/messages/${chatId}/${data['message_id']}/`);
-      setMessages((prevMessages) => [...prevMessages, message.data]);
-    };
-    return () => {
-      if (socket.current) {
-        socket.current.close();
-      }
-    };
   }, [chatId, user]);
 
   const sendMessage = async (type: 'text' | 'image', content?: string, file?: File) => {
@@ -90,10 +80,12 @@ export const ChatProvider = ({ chatId, children }: childrenProps) => {
     formData.append('type', type);
     formData.append('content', content ? content : '');
     formData.append('file', file ? file : '');
-    const response = await api.post(`api/chats/messages/${chatId}/`, formData, { headers: { 'Content-Type': 'multipart/form-data' } });
-    if (response.status === 201) {
-      socket.current?.send(JSON.stringify({ message_id: response.data['id'] }));
-    }
+
+    // socket?.send(JSON.stringify({ message: content, type: type }));
+    // const response = await api.post(`api/chats/messages/${chatId}/`, formData, { headers: { 'Content-Type': 'multipart/form-data' } });
+    // if (response.status === 201) {
+    // socket.current?.send(JSON.stringify({ message_id: response.data['id'] }));
+    // }
   };
 
   const handleSubmit = async (e?: React.FormEvent<HTMLFormElement>) => {
