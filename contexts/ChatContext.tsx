@@ -50,7 +50,8 @@ export const ChatProvider = ({ chatId, children }: childrenProps) => {
     if (socket) {
       socket.onmessage = async function (e) {
         let data = JSON.parse(e.data);
-        if (data.category === 'message' && data.chat_id === chatId) {
+        console.log(data);
+        if (data.category === 'message' && data.chat_id == chatId) {
           setMessages((prevMessages) => [...prevMessages, data]);
         }
       };
