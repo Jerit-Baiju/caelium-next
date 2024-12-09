@@ -47,15 +47,15 @@ export const ChatProvider = ({ chatId, children }: childrenProps) => {
   const api = useAxios();
 
   useEffect(() => {
-  if (socket) {
-    socket.onmessage = async function (e) {
-      let data = JSON.parse(e.data);
-      if (data.category === 'message' && data.chat_id === chatId) {
-        setMessages((prevMessages) => [...prevMessages, data]);
-      }
-    };
-  }
-  }, [socket])
+    if (socket) {
+      socket.onmessage = async function (e) {
+        let data = JSON.parse(e.data);
+        if (data.category === 'message' && data.chat_id === chatId) {
+          setMessages((prevMessages) => [...prevMessages, data]);
+        }
+      };
+    }
+  }, [socket]);
 
   useEffect(() => {
     const fetchMessages = async () => {
