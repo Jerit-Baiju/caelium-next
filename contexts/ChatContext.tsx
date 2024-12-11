@@ -51,7 +51,7 @@ export const ChatProvider = ({ chatId, children }: childrenProps) => {
       socket.onmessage = async function (e) {
         let data = JSON.parse(e.data);
         console.log(data);
-        if (data.category === 'message' && data.chat_id == chatId) {
+        if (data.category === 'new_message' && data.chat_id == chatId) {
           setMessages((prevMessages) => [...prevMessages, data]);
         }
       };
@@ -86,22 +86,34 @@ export const ChatProvider = ({ chatId, children }: childrenProps) => {
     fetchMessages();
   }, [chatId, user]);
 
-  const sendMessage = async (type: 'txt' | 'img', content?: string, file?: File) => {
-    socket?.send(JSON.stringify({ message: content, type, chat_id: chatId }));
-    setMessages((prevMessages) => [
-      ...prevMessages,
-      { id: Date.now(), content: content || '', type, sender: user, side: 'right', file_name: '', timestamp: new Date(), file: null },
-    ]);
-    if (type != 'txt') {
+  const sendMessage = async (type: 'txt' | 'attachment', content?: string, file?: File) => {
+    if (type === 'txt') {
+      socket?.send(JSON.stringify({ category: 'text_message', message: content, type, chat_id: chatId }));
+      setMessages((prevMessages) => [
+        ...prevMessages,
+        {
+          id: Date.now(),
+          content: content || '',
+          type,
+          sender: user,
+          file_name: '',
+          timestamp: new Date(),
+          file: null,
+        },
+      ]);
+    } else {
       const formData = new FormData();
       formData.append('type', type);
       formData.append('content', content ? content : '');
       formData.append('file', file ? file : '');
-      await api.post(`api/chats/messages/${chatId}/`, formData, {
+      const response = await api.post(`api/chats/messages/${chatId}/`, formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
+      if (response.status == 201) {
+        socket?.send(JSON.stringify({ category: 'file_message', chat_id: chatId, message_id: response.data.id }));
+        setMessages((prevMessages) => [...prevMessages, { ...response.data, sender: user }]);
+      }
     }
-    // }
   };
 
   const handleSubmit = async (e?: React.FormEvent<HTMLFormElement>) => {
@@ -111,7 +123,7 @@ export const ChatProvider = ({ chatId, children }: childrenProps) => {
   };
 
   const sendFile = (file: File) => {
-    sendMessage('img', '', file);
+    sendMessage('attachment', '', file);
   };
 
   const clearChat = async () => {
