@@ -8,11 +8,9 @@ const TextMessage = ({ message }: { message: Message }) => {
   const formattedTime = date.toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true });
   const { recipient } = useContext(ChatContext);
   const { user } = useContext(AuthContext);
-  let side = 'chat-start';
-  if (message.side == 'right') {
-    side = 'chat-end';
-  }
-  
+
+  let isMe = message.sender.id == user.id;
+
   const paragraphs = message?.content
     .split('\n\n')
     .map((paragraph) =>
@@ -20,13 +18,13 @@ const TextMessage = ({ message }: { message: Message }) => {
     );
 
   return (
-    <div className={`chat ${side}`}>
+    <div className={`chat ${isMe ? 'chat-end' : 'chat-start'}`}>
       <div className='chat-image avatar'>
         <div className='w-10 rounded-full'>
           <img
             className='dark:bg-white border-1 border-neutral-200 dark:border-neutral-800'
             alt={message.sender.name}
-            src={message.side == 'left' ? recipient?.avatar : user.avatar}
+            src={isMe ? user.avatar : recipient?.avatar}
           />
         </div>
       </div>
