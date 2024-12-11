@@ -16,7 +16,6 @@ export interface Message {
   id: number;
   sender: User;
   chat?: Chat;
-  side: string;
   size?: null | string;
   extension?: null | string;
   file_name: string | null;

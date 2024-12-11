@@ -40,7 +40,7 @@ const ChatInput = () => {
           onClick={handleButtonClick}
           className='inline-flex justify-center p-2 text-neutral-600 rounded-lg cursor-pointer hover:text-neutral-900 hover:bg-neutral-100 dark:text-neutral-400 dark:hover:text-white dark:hover:bg-neutral-600'
         >
-          <i className='fa-solid fa-image text-xl p-1'></i>
+          <i className='fa-solid fa-paperclip text-xl p-1'></i>
           <span className='sr-only'>Upload image</span>
         </button>
         <input
