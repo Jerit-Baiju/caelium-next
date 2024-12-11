@@ -3,8 +3,9 @@ import { BaseError, Message, User } from '@/helpers/props';
 import useAxios from '@/hooks/useAxios';
 import { AxiosError } from 'axios';
 import { useRouter } from 'next/navigation';
-import { ReactNode, createContext, useContext, useEffect, useRef, useState } from 'react';
+import { ReactNode, createContext, useContext, useEffect, useState } from 'react';
 import AuthContext from './AuthContext';
+import { useWebSocket } from './SocketContext';
 
 interface childrenProps {
   chatId: Number;
@@ -34,16 +35,28 @@ const ChatContext = createContext<ChatContextProps>({
 export default ChatContext;
 
 export const ChatProvider = ({ chatId, children }: childrenProps) => {
-  const { authTokens, user } = useContext(AuthContext);
+  const { user } = useContext(AuthContext);
   const [textInput, setTextInput] = useState('');
   const [messages, setMessages] = useState<Message[]>([]);
   const [recipient, setRecipient] = useState<User>();
   const [error, setError] = useState<BaseError | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
-  const socket = useRef<WebSocket | null>(null);
+  const { socket } = useWebSocket();
   const router = useRouter();
   const api = useAxios();
+
+  useEffect(() => {
+    if (socket) {
+      socket.onmessage = async function (e) {
+        let data = JSON.parse(e.data);
+        console.log(data);
+        if (data.category === 'new_message' && data.chat_id == chatId) {
+          setMessages((prevMessages) => [...prevMessages, data]);
+        }
+      };
+    }
+  }, [socket]);
 
   useEffect(() => {
     const fetchMessages = async () => {
@@ -71,39 +84,46 @@ export const ChatProvider = ({ chatId, children }: childrenProps) => {
 
     fetchParticipant();
     fetchMessages();
-
-    socket.current = new WebSocket(`${process.env.NEXT_PUBLIC_WS_HOST}/ws/chat/${chatId}/${authTokens?.access}/`);
-    socket.current.onmessage = async function (e) {
-      let data = JSON.parse(e.data)['message'];
-      const message = await api.get(`/api/chats/messages/${chatId}/${data['message_id']}/`);
-      setMessages((prevMessages) => [...prevMessages, message.data]);
-    };
-    return () => {
-      if (socket.current) {
-        socket.current.close();
-      }
-    };
   }, [chatId, user]);
 
-  const sendMessage = async (type: 'text' | 'image', content?: string, file?: File) => {
-    const formData = new FormData();
-    formData.append('type', type);
-    formData.append('content', content ? content : '');
-    formData.append('file', file ? file : '');
-    const response = await api.post(`api/chats/messages/${chatId}/`, formData, { headers: { 'Content-Type': 'multipart/form-data' } });
-    if (response.status === 201) {
-      socket.current?.send(JSON.stringify({ message_id: response.data['id'] }));
+  const sendMessage = async (type: 'txt' | 'attachment', content?: string, file?: File) => {
+    if (type === 'txt') {
+      socket?.send(JSON.stringify({ category: 'text_message', message: content, type, chat_id: chatId }));
+      setMessages((prevMessages) => [
+        ...prevMessages,
+        {
+          id: Date.now(),
+          content: content || '',
+          type,
+          sender: user,
+          file_name: '',
+          timestamp: new Date(),
+          file: null,
+        },
+      ]);
+    } else {
+      const formData = new FormData();
+      formData.append('type', type);
+      formData.append('content', content ? content : '');
+      formData.append('file', file ? file : '');
+      const response = await api.post(`api/chats/messages/${chatId}/`, formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+      if (response.status == 201) {
+        socket?.send(JSON.stringify({ category: 'file_message', chat_id: chatId, message_id: response.data.id }));
+        setMessages((prevMessages) => [...prevMessages, { ...response.data, sender: user }]);
+      }
     }
   };
 
   const handleSubmit = async (e?: React.FormEvent<HTMLFormElement>) => {
     e?.preventDefault();
-    textInput.trim() != '' ? sendMessage('text', textInput) : null;
+    textInput.trim() != '' ? sendMessage('txt', textInput) : null;
     setTextInput('');
   };
 
   const sendFile = (file: File) => {
-    sendMessage('image', '', file);
+    sendMessage('attachment', '', file);
   };
 
   const clearChat = async () => {
