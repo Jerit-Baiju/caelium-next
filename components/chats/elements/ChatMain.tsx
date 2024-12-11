@@ -8,16 +8,17 @@ import { Separator } from './ChatBubbles/Separator';
 import TextMessage from './ChatBubbles/TextMessage';
 import VideoMessage from './ChatBubbles/VideoMessage';
 import VoiceMessage from './ChatBubbles/VoiceMessage';
+import UploadingMessage from './ChatBubbles/UploadingMessage';
 
 const ChatMain = () => {
-  let { messages } = useContext(ChatContext);
+  let { messages, isUploading } = useContext(ChatContext);
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (containerRef.current) {
       containerRef.current.scrollTop = containerRef.current.scrollHeight;
     }
-  }, [messages]);
+  }, [messages, isUploading]);
 
   const isSameDay = (date1: Date, date2: Date) => {
     return date1.getFullYear() === date2.getFullYear() && date1.getMonth() === date2.getMonth() && date1.getDate() === date2.getDate();
@@ -60,6 +61,7 @@ const ChatMain = () => {
           }
           return renderMessage(message);
         })}
+        {isUploading && <UploadingMessage />}
       </div>
     </div>
   );
