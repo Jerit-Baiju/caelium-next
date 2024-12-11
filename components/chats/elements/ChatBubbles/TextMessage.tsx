@@ -29,7 +29,7 @@ const TextMessage = ({ message }: { message: Message }) => {
         </div>
       </div>
       <div className='chat-header'>
-        {message.sender.name}
+        {recipient?.name}
         <time className='text-xs opacity-50 mx-2'>{formattedTime}</time>
       </div>
       <div className='chat-bubble rounded-lg bg-neutral-500 dark:bg-neutral-700 text-white overscroll-none break-words space-y-3'>
