@@ -8,18 +8,15 @@ const VideoMessage = ({ message }: { message: Message }) => {
   const formattedTime = date.toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true });
   const { recipient } = useContext(ChatContext);
   const { user } = useContext(AuthContext);
-  let side = 'chat-start';
-  if (message.side == 'right') {
-    side = 'chat-end';
-  }
+  let isMe = message.sender.id == user.id;
   return (
-    <div className={`chat ${side}`}>
+    <div className={`chat ${isMe ? 'chat-end' : 'chat-start'}`}>
       <div className='chat-image avatar'>
         <div className='w-10 rounded-full'>
           <img
             className='dark:bg-white border-1 border-neutral-200 dark:border-neutral-800'
             alt={message.sender.name}
-            src={message.side == 'left' ? recipient?.avatar : user.avatar}
+            src={isMe ? user.avatar : recipient?.avatar}
           />
         </div>
       </div>
@@ -29,7 +26,7 @@ const VideoMessage = ({ message }: { message: Message }) => {
       </div>
       <div className='chat-bubble rounded-lg bg-neutral-500 dark:bg-neutral-700 text-white overscroll-none break-words p-1'>
         <video className='h-64' controls>
-          <source src={message.file?message.file:''} type='video/mp4' />
+          <source src={message.file ? message.file : ''} type='video/mp4' />
           Your browser does not support the video tag.
         </video>
         {message.content && <p className='mt-1 ms-1'> {message.content}</p>}
