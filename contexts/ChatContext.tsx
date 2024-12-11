@@ -21,6 +21,7 @@ interface ChatContextProps {
   clearChat: () => void;
   sendFile: (file: File) => void;
   isLoading: boolean;
+  isUploading: boolean;
 }
 
 const ChatContext = createContext<ChatContextProps>({
@@ -31,6 +32,7 @@ const ChatContext = createContext<ChatContextProps>({
   clearChat: async () => {},
   sendFile: async () => {},
   isLoading: true,
+  isUploading: false,
 });
 export default ChatContext;
 
@@ -41,6 +43,7 @@ export const ChatProvider = ({ chatId, children }: childrenProps) => {
   const [recipient, setRecipient] = useState<User>();
   const [error, setError] = useState<BaseError | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [isUploading, setIsUploading] = useState<boolean>(false);
 
   const { socket } = useWebSocket();
   const router = useRouter();
@@ -102,6 +105,7 @@ export const ChatProvider = ({ chatId, children }: childrenProps) => {
         },
       ]);
     } else {
+      setIsUploading(true);
       const formData = new FormData();
       formData.append('type', type);
       formData.append('content', content ? content : '');
@@ -111,6 +115,7 @@ export const ChatProvider = ({ chatId, children }: childrenProps) => {
       });
       if (response.status == 201) {
         socket?.send(JSON.stringify({ category: 'file_message', chat_id: chatId, message_id: response.data.id }));
+        setIsUploading(false);
         setMessages((prevMessages) => [...prevMessages, { ...response.data, sender: user }]);
       }
     }
@@ -143,7 +148,7 @@ export const ChatProvider = ({ chatId, children }: childrenProps) => {
   }
 
   return (
-    <ChatContext.Provider value={{ handleSubmit, textInput, setTextInput, messages, recipient, clearChat, sendFile, isLoading }}>
+    <ChatContext.Provider value={{ handleSubmit, textInput, setTextInput, messages, recipient, clearChat, sendFile, isLoading, isUploading }}>
       {children}
     </ChatContext.Provider>
   );
