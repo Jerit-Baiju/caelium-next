@@ -20,6 +20,8 @@ interface ChatContextProps {
   recipient?: User;
   clearChat: () => void;
   sendFile: (file: File) => void;
+  typingMessage: string;
+  handleTyping: (text: string) => void;
   isLoading: boolean;
   isUploading: boolean;
 }
@@ -31,6 +33,8 @@ const ChatContext = createContext<ChatContextProps>({
   messages: [],
   clearChat: async () => {},
   sendFile: async () => {},
+  typingMessage: '',
+  handleTyping: async () => {},
   isLoading: true,
   isUploading: false,
 });
@@ -44,6 +48,7 @@ export const ChatProvider = ({ chatId, children }: childrenProps) => {
   const [error, setError] = useState<BaseError | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [isUploading, setIsUploading] = useState<boolean>(false);
+  const [typingMessage, setTypingMessage] = useState<string>('');
 
   const { socket } = useWebSocket();
   const router = useRouter();
@@ -53,13 +58,19 @@ export const ChatProvider = ({ chatId, children }: childrenProps) => {
     if (socket) {
       socket.onmessage = async function (e) {
         let data = JSON.parse(e.data);
-        console.log(data);
         if (data.category === 'new_message' && data.chat_id == chatId) {
           setMessages((prevMessages) => [...prevMessages, data]);
+        } else if (data.category === 'typing' && data.chat_id == chatId) {
+          setTypingMessage(data.typed);
         }
       };
     }
   }, [socket]);
+
+
+  useEffect(()=> {
+
+  }, [textInput])
 
   useEffect(() => {
     const fetchMessages = async () => {
@@ -121,6 +132,10 @@ export const ChatProvider = ({ chatId, children }: childrenProps) => {
     }
   };
 
+  const handleTyping = async (text: string) => {
+    socket?.send(JSON.stringify({ category: 'typing', chat_id: chatId, typed: text }));
+  };
+
   const handleSubmit = async (e?: React.FormEvent<HTMLFormElement>) => {
     e?.preventDefault();
     textInput.trim() != '' ? sendMessage('txt', textInput) : null;
@@ -148,7 +163,21 @@ export const ChatProvider = ({ chatId, children }: childrenProps) => {
   }
 
   return (
-    <ChatContext.Provider value={{ handleSubmit, textInput, setTextInput, messages, recipient, clearChat, sendFile, isLoading, isUploading }}>
+    <ChatContext.Provider
+      value={{
+        handleSubmit,
+        textInput,
+        setTextInput,
+        messages,
+        recipient,
+        clearChat,
+        sendFile,
+        handleTyping,
+        isLoading,
+        isUploading,
+        typingMessage,
+      }}
+    >
       {children}
     </ChatContext.Provider>
   );
