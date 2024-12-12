@@ -67,11 +67,6 @@ export const ChatProvider = ({ chatId, children }: childrenProps) => {
     }
   }, [socket]);
 
-
-  useEffect(()=> {
-
-  }, [textInput])
-
   useEffect(() => {
     const fetchMessages = async () => {
       try {
