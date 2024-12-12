@@ -1,8 +1,8 @@
 import ChatContext from '@/contexts/ChatContext';
-import { useContext, useRef } from 'react';
+import { use, useContext, useEffect, useRef } from 'react';
 
 const ChatInput = () => {
-  let { textInput, setTextInput, handleSubmit, sendFile } = useContext(ChatContext);
+  let { textInput, setTextInput, handleSubmit, sendFile, handleTyping } = useContext(ChatContext);
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setTextInput(e.target.value);
   };
@@ -25,6 +25,10 @@ const ChatInput = () => {
     const file = e.target.files?.[0];
     file ? sendFile(file) : null;
   };
+
+  useEffect(() => {
+    handleTyping(textInput);
+  }, [textInput]);
 
   return (
     <form onSubmit={handleSubmit}>
