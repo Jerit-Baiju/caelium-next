@@ -24,6 +24,9 @@ interface ChatContextProps {
   handleTyping: (text: string) => void;
   isLoading: boolean;
   isUploading: boolean;
+  isLoadingMore: boolean;
+  loadMoreMessages: () => void;
+  nextPage: string | null;
 }
 
 const ChatContext = createContext<ChatContextProps>({
@@ -37,6 +40,9 @@ const ChatContext = createContext<ChatContextProps>({
   handleTyping: async () => {},
   isLoading: true,
   isUploading: false,
+  isLoadingMore: false,
+  loadMoreMessages: async () => {},
+  nextPage: null,
 });
 export default ChatContext;
 
@@ -48,7 +54,9 @@ export const ChatProvider = ({ chatId, children }: childrenProps) => {
   const [error, setError] = useState<BaseError | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [isUploading, setIsUploading] = useState<boolean>(false);
+  const [isLoadingMore, setIsLoadingMore] = useState<boolean>(false);
   const [typingMessage, setTypingMessage] = useState<string>('');
+  const [nextPage, setNextPage] = useState<string | null>(null);
 
   const { socket } = useWebSocket();
   const router = useRouter();
@@ -68,32 +76,38 @@ export const ChatProvider = ({ chatId, children }: childrenProps) => {
   }, [socket]);
 
   useEffect(() => {
-    const fetchMessages = async () => {
+    const fetchInitialData = async () => {
       try {
         const response = await api.get(`/api/chats/messages/${chatId}/`);
-        setMessages(response.data);
+        setMessages(response.data.results.reverse()); // Reverse the array to display the latest messages first
+        setNextPage(response.data.next); // Set the next page URL
+        const participantResponse = await api.get(`/api/chats/${chatId}`);
+        setRecipient(participantResponse.data['other_participant']);
       } catch (error) {
-        if (error instanceof AxiosError && error.code === 'ERR_BAD_REQUEST')
-          setError({ text: 'Failed to fetch messages', code: 'FETCH_MESSAGES_FAILED' });
+        if (error instanceof AxiosError && error.code === 'ERR_BAD_REQUEST') {
+          setError({ text: 'Failed to fetch messages or chat not found', code: 'FETCH_FAILED' });
+        }
         console.error('Error fetching data:', error);
       } finally {
         setIsLoading(false);
       }
     };
-    const fetchParticipant = async () => {
-      try {
-        const response = await api.get(`/api/chats/${chatId}`);
-        setRecipient(response.data['other_participant']);
-      } catch (error) {
-        if (error instanceof AxiosError && error.code === 'ERR_BAD_REQUEST')
-          setError({ text: 'Chat not found', code: 'CHAT_NOT_FOUND' });
-        console.error('Error fetching data:', error);
-      }
-    };
-
-    fetchParticipant();
-    fetchMessages();
+    fetchInitialData();
   }, [chatId, user]);
+
+  const loadMoreMessages = async () => {
+    if (!nextPage || isLoadingMore) return; // Prevent fetching if already at the last page or currently loading
+    setIsLoadingMore(true);
+    try {
+      const response = await api.get(nextPage);
+      setMessages((prevMessages) => [...response.data.results, ...prevMessages]); // Prepend older messages
+      setNextPage(response.data.next); // Update next page URL
+    } catch (error) {
+      console.error('Error fetching older messages:', error);
+    } finally {
+      setIsLoadingMore(false);
+    }
+  };
 
   const sendMessage = async (type: 'txt' | 'attachment', content?: string, file?: File) => {
     if (type === 'txt') {
@@ -114,16 +128,16 @@ export const ChatProvider = ({ chatId, children }: childrenProps) => {
       setIsUploading(true);
       const formData = new FormData();
       formData.append('type', type);
-      formData.append('content', content ? content : '');
-      formData.append('file', file ? file : '');
+      formData.append('content', content || '');
+      formData.append('file', file || '');
       const response = await api.post(`api/chats/messages/${chatId}/`, formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
       if (response.status == 201) {
         socket?.send(JSON.stringify({ category: 'file_message', chat_id: chatId, message_id: response.data.id }));
-        setIsUploading(false);
         setMessages((prevMessages) => [...prevMessages, { ...response.data, sender: user }]);
       }
+      setIsUploading(false);
     }
   };
 
@@ -133,13 +147,11 @@ export const ChatProvider = ({ chatId, children }: childrenProps) => {
 
   const handleSubmit = async (e?: React.FormEvent<HTMLFormElement>) => {
     e?.preventDefault();
-    textInput.trim() != '' ? sendMessage('txt', textInput) : null;
+    textInput.trim() !== '' && sendMessage('txt', textInput);
     setTextInput('');
   };
 
-  const sendFile = (file: File) => {
-    sendMessage('attachment', '', file);
-  };
+  const sendFile = (file: File) => sendMessage('attachment', '', file);
 
   const clearChat = async () => {
     await api.delete(`/api/chats/${chatId}/`);
@@ -148,11 +160,8 @@ export const ChatProvider = ({ chatId, children }: childrenProps) => {
 
   if (error) {
     return (
-      <div className='flex max-sm:max-h-[calc(100dvh-5rem] flex-col flex-grow h-screen sm:w-3/4'>
-        <div className='flex flex-col items-center justify-center flex-grow'>
-          <h1 className='text-2xl font-bold'>{error.text}</h1>
-          {/* <p className="text-gray-500">{error.code}</p> */}
-        </div>
+      <div className='flex flex-col items-center justify-center h-screen'>
+        <h1 className='text-2xl font-bold'>{error.text}</h1>
       </div>
     );
   }
@@ -170,7 +179,10 @@ export const ChatProvider = ({ chatId, children }: childrenProps) => {
         handleTyping,
         isLoading,
         isUploading,
+        isLoadingMore,
         typingMessage,
+        loadMoreMessages,
+        nextPage
       }}
     >
       {children}

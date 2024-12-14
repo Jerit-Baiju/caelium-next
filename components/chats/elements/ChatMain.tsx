@@ -1,7 +1,7 @@
 'use client';
 import ChatContext from '@/contexts/ChatContext';
 import { Message } from '@/helpers/props';
-import React, { useContext, useEffect, useRef } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import DocMessage from './ChatBubbles/DocMessage';
 import ImageMessage from './ChatBubbles/ImageMessage';
 import { Separator } from './ChatBubbles/Separator';
@@ -12,14 +12,34 @@ import VoiceMessage from './ChatBubbles/VoiceMessage';
 import Typing from './states/Typing';
 
 const ChatMain = () => {
-  let { messages, isUploading, typingMessage } = useContext(ChatContext);
+  const { messages, isUploading, typingMessage, loadMoreMessages, nextPage } = useContext(ChatContext);
   const containerRef = useRef<HTMLDivElement>(null);
+  const [scrollOffset, setScrollOffset] = useState<number>(0); // To track the scroll offset
+  const [loading, setLoading] = useState<boolean>(false); // Track if older messages are being loaded
 
   useEffect(() => {
-    if (containerRef.current) {
+    if (containerRef.current && !loading) {
+      // Scroll to the bottom when new messages arrive (for sending or receiving messages)
       containerRef.current.scrollTop = containerRef.current.scrollHeight;
     }
-  }, [messages, isUploading, typingMessage]);
+  }, [messages, isUploading, typingMessage, loading]);
+
+  const handleScroll = () => {
+    if (containerRef.current) {
+      const { scrollTop, scrollHeight } = containerRef.current;
+      const isAtTop = scrollTop === 0;
+
+      if (isAtTop && !loading) {
+        // Save the current scroll position (offset)
+        setScrollOffset(scrollHeight);
+
+        // Load older messages when scrolled to the top
+        setLoading(true);
+        loadMoreMessages();
+        setLoading(false);
+      }
+    }
+  };
 
   const isSameDay = (date1: Date, date2: Date) => {
     return date1.getFullYear() === date2.getFullYear() && date1.getMonth() === date2.getMonth() && date1.getDate() === date2.getDate();
@@ -43,9 +63,17 @@ const ChatMain = () => {
     }
   };
 
+  useEffect(() => {
+    if (containerRef.current && scrollOffset && !loading) {
+      const newScrollHeight = containerRef.current.scrollHeight;
+      containerRef.current.scrollTop = newScrollHeight - scrollOffset;
+    }
+  }, [messages, scrollOffset, loading]);
+
   return (
-    <div ref={containerRef} className='flex flex-col overflow-auto h-full p-2'>
+    <div ref={containerRef} onScroll={handleScroll} className='flex flex-col overflow-auto h-full p-2'>
       <div className='flex-grow' />
+      {nextPage && <div className='text-center text-neutral-400 my-10'>Loading older messages...</div>}
       <div className='flex flex-col justify-end'>
         {messages.length === 0 && <div className='text-center text-neutral-400'>No messages yet</div>}
         {messages.map((message, index) => {
