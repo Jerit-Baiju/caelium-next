@@ -99,7 +99,8 @@ export const ChatProvider = ({ chatId, children }: childrenProps) => {
     if (!nextPage || isLoadingMore) return; // Prevent fetching if already at the last page or currently loading
     setIsLoadingMore(true);
     try {
-      const response = await api.get(nextPage);
+      const nextPageUrl = nextPage.includes('caelium.co') ? nextPage.replace('http://', 'https://') : nextPage;
+      const response = await api.get(nextPageUrl);
       setMessages((prevMessages) => [...response.data.results, ...prevMessages]); // Prepend older messages
       setNextPage(response.data.next); // Update next page URL
     } catch (error) {
@@ -182,7 +183,7 @@ export const ChatProvider = ({ chatId, children }: childrenProps) => {
         isLoadingMore,
         typingMessage,
         loadMoreMessages,
-        nextPage
+        nextPage,
       }}
     >
       {children}
