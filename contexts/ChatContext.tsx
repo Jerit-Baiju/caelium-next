@@ -101,7 +101,8 @@ export const ChatProvider = ({ chatId, children }: childrenProps) => {
     try {
       const nextPageUrl = nextPage.includes('caelium.co') ? nextPage.replace('http://', 'https://') : nextPage;
       const response = await api.get(nextPageUrl);
-      setMessages((prevMessages) => [...response.data.results, ...prevMessages]); // Prepend older messages
+      let olderMessages = response.data.results.reverse();
+      setMessages((prevMessages) => [...olderMessages, ...prevMessages]); // Prepend older messages
       setNextPage(response.data.next); // Update next page URL
     } catch (error) {
       console.error('Error fetching older messages:', error);
