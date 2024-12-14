@@ -23,7 +23,7 @@ const CraftsHome = () => {
         setCrafts(response.data);
       } catch (error) {
         if (error instanceof AxiosError && error.code === 'ERR_BAD_REQUEST')
-          setError({ text: 'Failed to fetch messages', code: 'FETCH_MESSAGES_FAILED' });
+          setError({ text: 'Failed to fetch messages', code: 'FETCH_FAILED' });
         console.error('Error fetching data:', error);
       } finally {
         setLoading(false);
