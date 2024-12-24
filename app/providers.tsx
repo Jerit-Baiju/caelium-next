@@ -7,13 +7,11 @@ import { ReactNode } from 'react';
 
 const ProvidersWrapper = ({ children }: { children: ReactNode }) => {
   return (
-    <main>
-      <AuthProvider>
-        <WebSocketProvider>
-          <NavbarProvider>{children}</NavbarProvider>
-        </WebSocketProvider>
-      </AuthProvider>
-    </main>
+    <AuthProvider>
+      <WebSocketProvider>
+        <NavbarProvider>{children}</NavbarProvider>
+      </WebSocketProvider>
+    </AuthProvider>
   );
 };
 
