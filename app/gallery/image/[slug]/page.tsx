@@ -2,9 +2,10 @@
 import { Image } from '@/helpers/props';
 import useAxios from '@/hooks/useAxios';
 import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, use } from 'react';
 
-const DetailedImage = ({ params }: { params: { slug: string } }) => {
+const DetailedImage = (props: { params: Promise<{ slug: string }> }) => {
+  const params = use(props.params);
   const api = useAxios();
   const router = useRouter();
   const [image, setImage] = useState<Image | null>();
