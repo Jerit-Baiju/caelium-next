@@ -1,4 +1,5 @@
-'use client';
+'use client';;
+import { use } from "react";
 import Wrapper from '@/app/Wrapper';
 // import NotificationPrompt from '@/components/base/NotificationPrompt';
 import ChatsPane from '@/components/chats/ChatsPane';
@@ -28,7 +29,8 @@ const ChatPageContent = () => {
   );
 };
 
-const Page = ({ params }: { params: { slug: Number } }) => {
+const Page = (props: { params: Promise<{ slug: Number }> }) => {
+  const params = use(props.params);
   // const { showAlertDialog, requestPermission, setShowAlertDialog } = useNotifications();
 
   return (
