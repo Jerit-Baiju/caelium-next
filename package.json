@@ -22,7 +22,7 @@
     "firebase": "^10.13.1",
     "flowbite": "^2.3.0",
     "flowbite-react": "^0.7.3",
-    "framer-motion": "^11.2.10",
+    "framer-motion": "^11.15.0",
     "jwt-decode": "^4.0.0",
     "lucide-react": "^0.441.0",
     "mini-svg-data-uri": "^1.4.4",
@@ -34,7 +34,7 @@
     "react": "19.0.0",
     "react-dom": "19.0.0",
     "sharp": "^0.33.2",
-    "simplex-noise": "^4.0.1",
+    "simplex-noise": "^4.0.3",
     "sonner": "^1.5.0",
     "tailwind-merge": "^2.5.2",
     "tailwindcss-animate": "^1.0.7"
