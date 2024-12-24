@@ -46,9 +46,7 @@ export const WebSocketProvider: React.FC<{ children: React.ReactNode }> = ({ chi
       };
 
       ws.onerror = (err) => {
-        console.error('WebSocket encountered error:', err);
-        // Remove ws.close() to prevent auto-closing the socket
-        // ws.close();
+        console.log('WebSocket encountered error:', err);
       };
 
       socketRef.current = ws;
