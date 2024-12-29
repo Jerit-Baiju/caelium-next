@@ -1,10 +1,11 @@
 import useAxios from '@/hooks/useAxios';
+import { User } from '@/helpers/props';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
 const useChatUtils = () => {
   const router = useRouter();
-  const [newChats, setNewChats] = useState([]);
+  const [newChats, setNewChats] = useState<User[]>([]);
   const api = useAxios();
 
   const createChat = async (recipient_id: number) => {
