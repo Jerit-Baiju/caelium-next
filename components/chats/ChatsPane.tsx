@@ -102,7 +102,7 @@ const ChatsPane = () => {
                     />
                   </div>
                   <div className='flex-1 min-w-0'>
-                    <p className='text-sm font-semibold text-neutral-900 truncate dark:text-white'>{chat.other_participant.name}</p>
+                    <p className='text-sm font-semibold text-neutral-900 truncate dark:text-white'>{chat.is_group ? chat.name : chat.other_participant.name}</p>
                     <span className='text-sm text-neutral-500 dark:text-neutral-400'>
                       {truncate({ chars: chat.last_message_content, length: 45 })}
                     </span>

@@ -3,6 +3,8 @@ export interface Chat {
   other_participant: User;
   last_message_content: null;
   updated_time: null;
+  is_group: boolean;
+  name: string;
 }
 
 export interface User {
