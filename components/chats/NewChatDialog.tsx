@@ -7,9 +7,10 @@ interface NewChatDialogProps {
 }
 
 const NewChatDialog = ({ onClose }: NewChatDialogProps) => {
-  const { createChat, fetchNewChats, newChats } = useChatUtils();
+  const { createChat, fetchNewChats, newChats, createGroup } = useChatUtils();
   const [isGroupMode, setIsGroupMode] = useState(false);
   const [selectedUsers, setSelectedUsers] = useState<User[]>([]);
+  const [groupName, setGroupName] = useState('');
 
   useEffect(() => {
     fetchNewChats();
@@ -33,8 +34,9 @@ const NewChatDialog = ({ onClose }: NewChatDialogProps) => {
   };
 
   const handleCreateGroup = () => {
-    console.log('Selected user IDs:', selectedUsers.map(user => user.id));
-    // Here you would implement the actual group creation logic
+    if (!groupName.trim()) return;
+    const participantIds = selectedUsers.map(user => user.id);
+    createGroup(groupName, participantIds);
     onClose?.();
   };
 
@@ -51,6 +53,20 @@ const NewChatDialog = ({ onClose }: NewChatDialogProps) => {
             required
           />
         </div>
+        
+        {isGroupMode && selectedUsers.length >= 2 && (
+          <div className="mb-4">
+            <input
+              type='text'
+              value={groupName}
+              onChange={(e) => setGroupName(e.target.value)}
+              className='bg-neutral-50 border border-neutral-300 text-neutral-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full mb-2 p-2.5 dark:bg-neutral-800 dark:border-neutral-500 dark:placeholder-neutral-400 dark:text-white'
+              placeholder='Enter group name'
+              required
+            />
+          </div>
+        )}
+
         <ul className='sm:max-h-[calc(100dvh-25rem)] overflow-y-scroll'>
           {!isGroupMode && (
             <li onClick={() => setIsGroupMode(true)} className='px-3 py-3 m-1 rounded-md hover:bg-neutral-800 cursor-pointer'>
@@ -111,7 +127,7 @@ const NewChatDialog = ({ onClose }: NewChatDialogProps) => {
             )
           ))}
         </ul>
-        {isGroupMode && selectedUsers.length >= 2 && (
+        {isGroupMode && selectedUsers.length >= 2 && groupName.trim() && (
           <button
             onClick={handleCreateGroup}
             className='w-full mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700'

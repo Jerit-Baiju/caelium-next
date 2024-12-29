@@ -26,7 +26,20 @@ const useChatUtils = () => {
     }
   };
 
-  return { createChat, fetchNewChats, newChats };
+  const createGroup = async (name: string, participants: number[]) => {
+    try {
+      const response = await api.post('/api/chats/create_group/', {
+        name,
+        participants,
+      });
+      console.log(response.data)
+      router.push(`/chats/${response.data.id}`);
+    } catch (error) {
+      console.error('Error creating group:', error);
+    }
+  };
+
+  return { createChat, fetchNewChats, newChats, createGroup };
 };
 
 export default useChatUtils;
