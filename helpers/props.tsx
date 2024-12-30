@@ -5,6 +5,8 @@ export interface Chat {
   updated_time: null;
   is_group: boolean;
   name: string;
+  participants: User[];
+  group_icon: string | null;
 }
 
 export interface User {
@@ -95,7 +97,6 @@ export interface Image {
   filename: string;
   timestamp: Date;
 }
-
 
 export interface Album {
   id: string;
