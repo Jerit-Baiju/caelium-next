@@ -1,12 +1,10 @@
 import AuthContext from '@/contexts/AuthContext';
-import ChatContext from '@/contexts/ChatContext';
 import { Message } from '@/helpers/props';
 import { useContext } from 'react';
 
 const VoiceMessage = ({ message }: { message: Message }) => {
   const date = new Date(message.timestamp);
   const formattedTime = date.toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true });
-  const { recipient } = useContext(ChatContext);
   const { user } = useContext(AuthContext);
   let isMe = message.sender.id == user.id;
   return (
@@ -16,7 +14,7 @@ const VoiceMessage = ({ message }: { message: Message }) => {
           <img
             className='dark:bg-white border-1 border-neutral-200 dark:border-neutral-800'
             alt={message.sender.name}
-            src={isMe ? user.avatar : recipient?.avatar}
+            src={isMe ? user.avatar : message.sender.avatar}
           />
         </div>
       </div>

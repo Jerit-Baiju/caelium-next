@@ -1,5 +1,5 @@
 'use client';
-import { BaseError, Message, User } from '@/helpers/props';
+import { BaseError, Chat, Message, User } from '@/helpers/props';
 import useAxios from '@/hooks/useAxios';
 import { AxiosError } from 'axios';
 import { useRouter } from 'next/navigation';
@@ -17,16 +17,17 @@ interface ChatContextProps {
   textInput: string;
   setTextInput: (e: string) => void;
   messages: Array<any>;
-  recipient?: User;
   clearChat: () => void;
   sendFile: (file: File) => void;
-  typingMessage: string;
+  typingMessage: { sender: number; typed: string } | null;
   handleTyping: (text: string) => void;
   isLoading: boolean;
   isUploading: boolean;
   isLoadingMore: boolean;
   loadMoreMessages: () => void;
   nextPage: string | null;
+  meta: Chat | null;
+  getParticipant: (id: number) => User | null;
 }
 
 const ChatContext = createContext<ChatContextProps>({
@@ -36,13 +37,15 @@ const ChatContext = createContext<ChatContextProps>({
   messages: [],
   clearChat: async () => {},
   sendFile: async () => {},
-  typingMessage: '',
+  typingMessage: null,
   handleTyping: async () => {},
   isLoading: true,
   isUploading: false,
   isLoadingMore: false,
   loadMoreMessages: async () => {},
   nextPage: null,
+  meta: null,
+  getParticipant: () => null,
 });
 export default ChatContext;
 
@@ -50,12 +53,12 @@ export const ChatProvider = ({ chatId, children }: childrenProps) => {
   const { user } = useContext(AuthContext);
   const [textInput, setTextInput] = useState('');
   const [messages, setMessages] = useState<Message[]>([]);
-  const [recipient, setRecipient] = useState<User>();
   const [error, setError] = useState<BaseError | null>(null);
+  const [meta, setMeta] = useState<Chat | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [isUploading, setIsUploading] = useState<boolean>(false);
   const [isLoadingMore, setIsLoadingMore] = useState<boolean>(false);
-  const [typingMessage, setTypingMessage] = useState<string>('');
+  const [typingMessage, setTypingMessage] = useState<{ typed: string; sender: number } | null>(null);
   const [nextPage, setNextPage] = useState<string | null>(null);
 
   const { socket } = useWebSocket();
@@ -69,7 +72,7 @@ export const ChatProvider = ({ chatId, children }: childrenProps) => {
         if (data.category === 'new_message' && data.chat_id == chatId) {
           setMessages((prevMessages) => [...prevMessages, data]);
         } else if (data.category === 'typing' && data.chat_id == chatId) {
-          setTypingMessage(data.typed);
+          setTypingMessage(data);
         }
       };
     }
@@ -79,10 +82,10 @@ export const ChatProvider = ({ chatId, children }: childrenProps) => {
     const fetchInitialData = async () => {
       try {
         const response = await api.get(`/api/chats/messages/${chatId}/`);
+        const metaResponse = await api.get(`/api/chats/${chatId}/`);
+        setMeta(metaResponse.data);
         setMessages(response.data.results.reverse()); // Reverse the array to display the latest messages first
         setNextPage(response.data.next); // Set the next page URL
-        const participantResponse = await api.get(`/api/chats/${chatId}`);
-        setRecipient(participantResponse.data['other_participant']);
       } catch (error) {
         if (error instanceof AxiosError && error.code === 'ERR_BAD_REQUEST') {
           setError({ text: 'Failed to fetch messages or chat not found', code: 'FETCH_FAILED' });
@@ -143,6 +146,10 @@ export const ChatProvider = ({ chatId, children }: childrenProps) => {
     }
   };
 
+  const getParticipant = (id: number) => {
+    return meta?.participants?.find((participant) => participant.id === id) || null;
+  };
+
   const handleTyping = async (text: string) => {
     socket?.send(JSON.stringify({ category: 'typing', chat_id: chatId, typed: text }));
   };
@@ -175,7 +182,6 @@ export const ChatProvider = ({ chatId, children }: childrenProps) => {
         textInput,
         setTextInput,
         messages,
-        recipient,
         clearChat,
         sendFile,
         handleTyping,
@@ -185,6 +191,8 @@ export const ChatProvider = ({ chatId, children }: childrenProps) => {
         typingMessage,
         loadMoreMessages,
         nextPage,
+        meta,
+        getParticipant,
       }}
     >
       {children}
