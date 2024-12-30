@@ -6,12 +6,14 @@ import useAxios from '@/hooks/useAxios';
 import Link from 'next/link';
 import { useContext, useEffect, useState } from 'react';
 import Loader from '../Loader';
+import { useWebSocket } from '@/contexts/SocketContext';
 
 const ChatsPane = () => {
-  const { authTokens } = useContext(AuthContext);
-  const [chats, setChats] = useState<Chat[]>([]);
-  const [search_query, setSearch_query] = useState('');
   const api = useAxios();
+  const [chats, setChats] = useState<Chat[]>([]);
+  const { authTokens, user } = useContext(AuthContext);
+  const [search_query, setSearch_query] = useState('');
+  const { socket } = useWebSocket();
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   const searchChats = async (e: any) => {
@@ -37,6 +39,17 @@ const ChatsPane = () => {
   useEffect(() => {
     fetchChats();
   }, [authTokens?.access]);
+
+  // useEffect(() => {
+  //   if (socket) {
+  //     socket.onmessage = async function (e) {
+  //       let data = JSON.parse(e.data);
+  //       if (data.category === 'new_message' && data.sender !== user.id) {
+  //         // logic to update chats
+  //       }
+  //     };
+  //   }
+  // }, [socket]);
 
   const handleKeyDown = (e: any) => {
     if (e.key === 'Enter' && e.target.value !== '') {
@@ -95,14 +108,30 @@ const ChatsPane = () => {
               <li className='flex items-center justify-between px-3 py-2 m-1 rounded-md hover:bg-neutral-200 dark:hover:bg-neutral-900'>
                 <div className='flex items-center space-x-3 rtl:space-x-reverse'>
                   <div className='flex-shrink-0 dark:bg-white rounded-full'>
-                    <img
-                      className='w-12 h-12 rounded-full border dark:border-neutral-500 border-neutral-200 object-cover'
-                      src={chat.other_participant.avatar}
-                      alt={chat.other_participant.name}
-                    />
+                    {!chat?.is_group ? (
+                      <img
+                        className='w-12 h-12 rounded-full border dark:border-neutral-500 border-neutral-200 object-cover'
+                        src={chat.participants.find((p) => p.id !== user.id)?.avatar || ''}
+                        alt={chat.participants.find((p) => p.id !== user.id)?.name}
+                      />
+                    ) : chat.group_icon ? (
+                      <img
+                        className='w-12 h-12 rounded-full border dark:border-neutral-500 border-neutral-200 object-cover'
+                        src={chat.group_icon || ''}
+                        alt='user photo'
+                        width={100}
+                        height={100}
+                      />
+                    ) : (
+                      <div className='flex items-center justify-center dark:text-black w-12 h-12 rounded-full border dark:border-neutral-500 border-neutral-200 object-cover'>
+                        <i className='fa-solid fa-people-group text-2xl'></i>
+                      </div>
+                    )}
                   </div>
                   <div className='flex-1 min-w-0'>
-                    <p className='text-sm font-semibold text-neutral-900 truncate dark:text-white'>{chat.other_participant.name}</p>
+                    <p className='text-sm font-semibold text-neutral-900 truncate dark:text-white'>
+                      {chat.is_group ? chat.name : chat.participants.find((p) => p.id !== user.id)?.name}
+                    </p>
                     <span className='text-sm text-neutral-500 dark:text-neutral-400'>
                       {truncate({ chars: chat.last_message_content, length: 45 })}
                     </span>

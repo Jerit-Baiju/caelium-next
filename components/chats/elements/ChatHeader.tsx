@@ -1,15 +1,34 @@
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import AuthContext from '@/contexts/AuthContext';
 import ChatContext from '@/contexts/ChatContext';
 import { NavLink } from '@/helpers/props';
 import Link from 'next/link';
-import { useContext } from 'react';
+import { useContext, useState } from 'react';
 
 const ChatHeader = () => {
-  let { recipient, clearChat } = useContext(ChatContext);
+  const [isAlertOpen, setIsAlertOpen] = useState(false);
+  let { getParticipant, clearChat, meta } = useContext(ChatContext);
+  let { user } = useContext(AuthContext);
 
   const options: NavLink[] = [
     { name: 'Dashboard', url: '/dashboard' },
     { name: 'Settings', url: '/dash' },
   ];
+
+  const handleClearChat = () => {
+    clearChat();
+    setIsAlertOpen(false);
+  };
 
   return (
     <>
@@ -18,90 +37,64 @@ const ChatHeader = () => {
           <i className='fa-solid fa-arrow-left'></i>
         </Link>
         <div className='flex items-center'>
-          <img
-            className='h-12 my-2 w-12 max-sm:h-12 max-sm:w-12 rounded-full dark:bg-white object-cover'
-            src={recipient?.avatar || ''}
-            alt='user photo'
-            width={100}
-            height={100}
-          />
-          <p className='text-2xl ps-2'>{recipient?.name}</p>
+          {!meta?.is_group ? (
+            <img
+              className='h-12 my-2 w-12 max-sm:h-12 max-sm:w-12 rounded-full dark:bg-white object-cover'
+              src={getParticipant(meta?.participants.find((participant) => participant.id !== user.id)?.id ?? 0)?.avatar}
+              alt='user photo'
+              width={100}
+              height={100}
+            />
+          ) : meta.group_icon ? (
+            <img
+              className='h-12 my-2 w-12 max-sm:h-12 max-sm:w-12 rounded-full dark:bg-white object-cover'
+              src={meta.group_icon || ''}
+              alt='user photo'
+              width={100}
+              height={100}
+            />
+          ) : (
+            <div className='flex items-center justify-center h-12 my-2 w-12 max-sm:h-12 max-sm:w-12 rounded-full dark:bg-white object-cover dark:text-black'>
+              <i className='fa-solid fa-people-group text-2xl'></i>
+            </div>
+          )}
+          <p className='text-2xl ps-2'>
+            {meta?.is_group
+              ? meta.name
+              : getParticipant(meta?.participants.find((participant) => participant.id !== user.id)?.id ?? 0)?.name}
+          </p>
         </div>
         <div className='flex items-center flex-grow justify-end'>
-          <button
-            type='button'
-            aria-expanded='false'
-            data-dropdown-toggle='dropdown-chat'
-            id='dropdownDefaultButton'
-            className='fa-solid fa-ellipsis-vertical p-3 me-4'
-          ></button>
+          <DropdownMenu>
+            <DropdownMenuTrigger className='outline-none'>
+              <i className='fa-solid fa-ellipsis-vertical p-3 me-4'></i>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              {options.map((option: NavLink, id) => (
+                <DropdownMenuItem key={id} asChild>
+                  <Link href={option.url}>{option.name}</Link>
+                </DropdownMenuItem>
+              ))}
+              <DropdownMenuItem onSelect={() => setIsAlertOpen(true)}>Clear Chat</DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
-      <div
-        className='z-50 hidden my-4 text-base list-none bg-white divide-y divide-neutral-100 rounded shadow dark:bg-neutral-700 dark:divide-neutral-600'
-        id='dropdown-chat'
-      >
-        <ul className='py-1' role='none'>
-          {options.map((option: NavLink, id) => (
-            <li key={id}>
-              <Link
-                href={option.url}
-                className='block px-4 py-2 text-sm text-neutral-700 hover:bg-neutral-100 dark:text-neutral-300 dark:hover:bg-neutral-600 dark:hover:text-white'
-                role='menuitem'
-              >
-                {option.name}
-              </Link>
-            </li>
-          ))}
-          <li>
-            <a
-              data-modal-target='clear-chat-modal'
-              data-modal-toggle='clear-chat-modal'
-              className='block px-4 py-2 text-sm text-neutral-700 hover:bg-neutral-100 dark:text-neutral-300 dark:hover:bg-neutral-600 dark:hover:text-white'
-              type='button'
-            >
+
+      <AlertDialog open={isAlertOpen} onOpenChange={setIsAlertOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+            <AlertDialogDescription>Are you sure you want to clear this chat? This action cannot be undone.</AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleClearChat} className='bg-red-500 hover:bg-red-600 dark:hover:bg-red-800 text-white'>
               Clear Chat
-            </a>
-          </li>
-        </ul>
-      </div>
-      <div
-        id='clear-chat-modal'
-        tabIndex={-1}
-        className='hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full'
-      >
-        <div className='relative p-4 w-full max-w-md max-h-full'>
-          <div className='relative dark:bg-neutral-700 bg-neutral-300 rounded-lg shadow'>
-            <button
-              type='button'
-              className='absolute top-3 end-2.5 bg-transparent rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center hover:bg-neutral-300'
-              data-modal-hide='clear-chat-modal'
-            >
-              <i className='fa-solid fa-xmark'></i>
-              <span className='sr-only'>Close modal</span>
-            </button>
-            <div className='p-4 md:p-5 text-center'>
-              <i className='fa-solid fa-circle-exclamation fa-fade text-yellow-500 dark:text-yellow-300 text-6xl my-4'></i>
-              <h3 className='mb-5 text-lg font-normal'>Are you sure you want to clear ?</h3>
-              <button
-                onClick={clearChat}
-                data-modal-hide='logout-modal'
-                type='button'
-                className='bg-red-500 text-white dark:hover:bg-red-800 hover:bg-red-600 font-medium rounded-lg text-sm inline-flex items-center px-5 py-2.5 text-center me-2'
-              >
-                Yes, I&apos;m sure
-              </button>
-              <button
-                data-modal-hide='logout-modal'
-                type='button'
-                className='dark:bg-neutral-800 bg-neutral-500 text-white rounded-lg font-medium px-5 py-2.5 hover:bg-neutral-700'
-              >
-                No, cancel
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </>
   );
 };
