@@ -17,9 +17,6 @@ const Page = () => {
           },
           body: JSON.stringify({ code: auth_code }),
         });
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
-        }
         const data = await response.json();
         loginUser(data);
       } catch (error) {

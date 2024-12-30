@@ -69,7 +69,7 @@ export const ChatProvider = ({ chatId, children }: childrenProps) => {
     if (socket) {
       socket.onmessage = async function (e) {
         let data = JSON.parse(e.data);
-        if (data.category === 'new_message' && data.chat_id == chatId) {
+        if (data.category === 'new_message' && data.chat_id == chatId && data.sender !== user.id) {
           setMessages((prevMessages) => [...prevMessages, data]);
         } else if (data.category === 'typing' && data.chat_id == chatId) {
           setTypingMessage(data);
@@ -147,7 +147,7 @@ export const ChatProvider = ({ chatId, children }: childrenProps) => {
   };
 
   const getParticipant = (id: number) => {
-    return meta?.participants?.find((participant) => participant.id === id) || null;
+    return meta?.participants?.find((participant) => participant.id == id) || null;
   };
 
   const handleTyping = async (text: string) => {
