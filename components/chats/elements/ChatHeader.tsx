@@ -1,10 +1,12 @@
+import AuthContext from '@/contexts/AuthContext';
 import ChatContext from '@/contexts/ChatContext';
 import { NavLink } from '@/helpers/props';
 import Link from 'next/link';
 import { useContext } from 'react';
 
 const ChatHeader = () => {
-  let { recipient, clearChat, meta } = useContext(ChatContext);
+  let { getParticipant, clearChat, meta } = useContext(ChatContext);
+  let { user } = useContext(AuthContext);
 
   const options: NavLink[] = [
     { name: 'Dashboard', url: '/dashboard' },
@@ -21,7 +23,7 @@ const ChatHeader = () => {
           {!meta?.is_group ? (
             <img
               className='h-12 my-2 w-12 max-sm:h-12 max-sm:w-12 rounded-full dark:bg-white object-cover'
-              src={recipient?.avatar || ''}
+              src={getParticipant(meta?.participants.find((participant) => participant.id !== user.id)?.id ?? 0)?.avatar}
               alt='user photo'
               width={100}
               height={100}
@@ -29,7 +31,7 @@ const ChatHeader = () => {
           ) : meta.group_icon ? (
             <img
               className='h-12 my-2 w-12 max-sm:h-12 max-sm:w-12 rounded-full dark:bg-white object-cover'
-              src={ meta.group_icon || ''}
+              src={meta.group_icon || ''}
               alt='user photo'
               width={100}
               height={100}
@@ -39,7 +41,11 @@ const ChatHeader = () => {
               <i className='fa-solid fa-people-group text-2xl'></i>
             </div>
           )}
-          <p className='text-2xl ps-2'>{meta?.is_group ? meta.name : recipient?.name}</p>
+          <p className='text-2xl ps-2'>
+            {meta?.is_group
+              ? meta.name
+              : getParticipant(meta?.participants.find((participant) => participant.id !== user.id)?.id ?? 0)?.name}
+          </p>
         </div>
         <div className='flex items-center flex-grow justify-end'>
           <button
