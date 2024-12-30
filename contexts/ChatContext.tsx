@@ -1,5 +1,5 @@
 'use client';
-import { BaseError, Message, User } from '@/helpers/props';
+import { BaseError, Chat, Message, User } from '@/helpers/props';
 import useAxios from '@/hooks/useAxios';
 import { AxiosError } from 'axios';
 import { useRouter } from 'next/navigation';
@@ -27,6 +27,7 @@ interface ChatContextProps {
   isLoadingMore: boolean;
   loadMoreMessages: () => void;
   nextPage: string | null;
+  meta: Chat | null;
 }
 
 const ChatContext = createContext<ChatContextProps>({
@@ -43,6 +44,7 @@ const ChatContext = createContext<ChatContextProps>({
   isLoadingMore: false,
   loadMoreMessages: async () => {},
   nextPage: null,
+  meta: null,
 });
 export default ChatContext;
 
@@ -52,6 +54,7 @@ export const ChatProvider = ({ chatId, children }: childrenProps) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [recipient, setRecipient] = useState<User>();
   const [error, setError] = useState<BaseError | null>(null);
+  const [meta, setMeta] = useState<Chat | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [isUploading, setIsUploading] = useState<boolean>(false);
   const [isLoadingMore, setIsLoadingMore] = useState<boolean>(false);
@@ -79,6 +82,8 @@ export const ChatProvider = ({ chatId, children }: childrenProps) => {
     const fetchInitialData = async () => {
       try {
         const response = await api.get(`/api/chats/messages/${chatId}/`);
+        const metaResponse = await api.get(`/api/chats/${chatId}/`);
+        setMeta(metaResponse.data);
         setMessages(response.data.results.reverse()); // Reverse the array to display the latest messages first
         setNextPage(response.data.next); // Set the next page URL
         const participantResponse = await api.get(`/api/chats/${chatId}`);
@@ -185,6 +190,7 @@ export const ChatProvider = ({ chatId, children }: childrenProps) => {
         typingMessage,
         loadMoreMessages,
         nextPage,
+        meta,
       }}
     >
       {children}

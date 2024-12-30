@@ -11,18 +11,27 @@ const NewChatDialog = ({ onClose }: NewChatDialogProps) => {
   const [isGroupMode, setIsGroupMode] = useState(false);
   const [selectedUsers, setSelectedUsers] = useState<User[]>([]);
   const [groupName, setGroupName] = useState('');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [inputBox, setInputBox] = useState<'search' | 'name'>('search');
 
   useEffect(() => {
-    fetchNewChats();
+    setIsLoading(true);
+    fetchNewChats().finally(() => setIsLoading(false));
   }, []);
+
+  const filteredChats = newChats.filter(
+    (chat) =>
+      chat.name.toLowerCase().includes(searchQuery.toLowerCase()) || chat.email.toLowerCase().includes(searchQuery.toLowerCase()),
+  );
 
   const handleCreateChat = (recipientId: number) => {
     if (isGroupMode) {
-      const isSelected = selectedUsers.find(user => user.id === recipientId);
+      const isSelected = selectedUsers.find((user) => user.id === recipientId);
       if (isSelected) {
-        setSelectedUsers(selectedUsers.filter(user => user.id !== recipientId));
+        setSelectedUsers(selectedUsers.filter((user) => user.id !== recipientId));
       } else {
-        const user = newChats.find(chat => chat.id === recipientId);
+        const user = newChats.find((chat) => chat.id === recipientId);
         if (user) {
           setSelectedUsers([...selectedUsers, user]);
         }
@@ -35,108 +44,121 @@ const NewChatDialog = ({ onClose }: NewChatDialogProps) => {
 
   const handleCreateGroup = () => {
     if (!groupName.trim()) return;
-    const participantIds = selectedUsers.map(user => user.id);
+    const participantIds = selectedUsers.map((user) => user.id);
     createGroup(groupName, participantIds);
     onClose?.();
   };
 
   return (
-    <>
-      <div className='p-4 md:p-5'>
-        <div>
-          <input
-            type='text'
-            name='name'
-            id='name'
-            className='bg-neutral-50 border border-neutral-300 text-neutral-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full mb-2 p-2.5 dark:bg-neutral-800 dark:border-neutral-500 dark:placeholder-neutral-400 dark:text-white'
-            placeholder='search'
-            required
-          />
+    <div className='flex flex-col h-full'>
+      <div className='border-b border-neutral-700 p-4'>
+        <div className='relative'>
+          {inputBox == 'search' ? (
+            <div className='flex items-center gap-2'>
+              <input
+                type='text'
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className='bg-neutral-800 border border-neutral-600 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5'
+                placeholder='Search by name or email'
+              />
+              {isGroupMode && (
+                <i onClick={() => setInputBox('name')} className='fa-solid fa-font p-3 bg-neutral-600 rounded-md h-10 w-10'></i>
+              )}
+            </div>
+          ) : (
+            <div className='flex items-center gap-2'>
+              <input
+                type='text'
+                value={groupName}
+                onChange={(e) => setGroupName(e.target.value)}
+                className='bg-neutral-800 border border-neutral-600 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5'
+                placeholder='Enter group name'
+                maxLength={30}
+              />
+              <i onClick={() => setInputBox('search')} className='fa-solid fa-search p-3 bg-neutral-600 rounded-md h-10 w-10'></i>
+            </div>
+          )}
         </div>
-        
-        {isGroupMode && selectedUsers.length >= 2 && (
-          <div className="mb-4">
-            <input
-              type='text'
-              value={groupName}
-              onChange={(e) => setGroupName(e.target.value)}
-              className='bg-neutral-50 border border-neutral-300 text-neutral-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full mb-2 p-2.5 dark:bg-neutral-800 dark:border-neutral-500 dark:placeholder-neutral-400 dark:text-white'
-              placeholder='Enter group name'
-              required
-            />
+      </div>
+
+      <div className='flex-1 overflow-hidden p-4'>
+        {isGroupMode && selectedUsers.length > 0 && (
+          <div className='mb-4 flex flex-wrap gap-2'>
+            {selectedUsers.map((user) => (
+              <div key={`chip-${user.id}`} className='flex items-center gap-2 bg-neutral-600 text-white px-2 py-1 rounded-full'>
+                <img src={user.avatar} alt={user.name} className='w-6 h-6 rounded-full' />
+                <span>{user.name}</span>
+                <button onClick={() => handleCreateChat(user.id)}>
+                  <i className='fa-solid fa-xmark hover:bg-neutral-700 rounded-full p-1'></i>
+                </button>
+              </div>
+            ))}
           </div>
         )}
 
-        <ul className='sm:max-h-[calc(100dvh-25rem)] overflow-y-scroll'>
-          {!isGroupMode && (
-            <li onClick={() => setIsGroupMode(true)} className='px-3 py-3 m-1 rounded-md hover:bg-neutral-800 cursor-pointer'>
-              <div className='flex items-center space-x-3 rtl:space-x-reverse'>
-                <div className='flex-shrink-0'>
-                  <div className='w-12 h-12 rounded-full bg-gradient-to-br from-sky-400 to-emerald-600 flex items-center justify-center'>
-                    <span className='material-symbols-outlined text-white'>group_add</span>
-                  </div>
-                </div>
-                <div className='flex-1 min-w-0'>
-                  <p className='text-sm font-semibold text-neutral-900 truncate dark:text-white'>Create Group</p>
-                  <p className='text-sm text-neutral-500 truncate dark:text-neutral-400'>Start a new group chat</p>
-                </div>
-              </div>
-            </li>
-          )}
-
-          {isGroupMode && selectedUsers.length > 0 && (
-            <div className='mb-4'>
-              <p className='text-sm text-neutral-400 mb-2'>Selected users:</p>
-              {selectedUsers.map((user) => (
+        <div className='overflow-y-auto max-h-[calc(100vh-280px)]'>
+          {isLoading ? (
+            <div className='flex justify-center items-center h-32'>
+              <div className='animate-spin rounded-full h-8 w-8 border-b-2 border-white'></div>
+            </div>
+          ) : (
+            <ul className='space-y-2'>
+              {!isGroupMode && (
                 <li
-                  key={`selected-${user.id}`}
-                  onClick={() => handleCreateChat(user.id)}
-                  className='px-3 py-3 m-1 rounded-md bg-neutral-700 hover:bg-neutral-600'
+                  onClick={() => {
+                    setIsGroupMode(true);
+                    setInputBox('name');
+                  }}
+                  className='p-3 rounded-lg hover:bg-neutral-700 transition-colors cursor-pointer'
                 >
-                  <div className='flex items-center space-x-3 rtl:space-x-reverse'>
-                    <div className='flex-shrink-0'>
-                      <img className='w-12 h-12 rounded-full dark:bg-white object-cover' src={user.avatar} alt={user.name} />
+                  <div className='flex items-center gap-3'>
+                    <div className='w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center'>
+                      <span className='material-symbols-outlined text-white'>group_add</span>
                     </div>
-                    <div className='flex-1 min-w-0'>
-                      <p className='text-sm font-semibold text-neutral-900 truncate dark:text-white'>{user.name}</p>
-                      <p className='text-sm text-neutral-500 truncate dark:text-neutral-400'>{user.email}</p>
+                    <div>
+                      <p className='font-semibold text-white'>Create Group</p>
+                      <p className='text-sm text-neutral-400'>Start a new group chat</p>
                     </div>
                   </div>
                 </li>
-              ))}
-            </div>
-          )}
+              )}
 
-          {newChats.map((recipient: User) => (
-            !selectedUsers.find(user => user.id === recipient.id) && (
-              <li
-                onClick={() => handleCreateChat(recipient.id)}
-                key={recipient.id}
-                className='px-3 py-3 m-1 rounded-md hover:bg-neutral-800 cursor-pointer'
-              >
-                <div className='flex items-center space-x-3 rtl:space-x-reverse'>
-                  <div className='flex-shrink-0'>
-                    <img className='w-12 h-12 rounded-full dark:bg-white object-cover' src={recipient.avatar} alt={recipient.name} />
-                  </div>
-                  <div className='flex-1 min-w-0'>
-                    <p className='text-sm font-semibold text-neutral-900 truncate dark:text-white'>{recipient.name}</p>
-                    <p className='text-sm text-neutral-500 truncate dark:text-neutral-400'>{recipient.email}</p>
-                  </div>
-                </div>
-              </li>
-            )
-          ))}
-        </ul>
-        {isGroupMode && selectedUsers.length >= 2 && groupName.trim() && (
+              {filteredChats.map(
+                (recipient: User) =>
+                  !selectedUsers.find((user) => user.id === recipient.id) && (
+                    <li
+                      key={recipient.id}
+                      onClick={() => handleCreateChat(recipient.id)}
+                      className='p-3 rounded-lg hover:bg-neutral-700 transition-colors cursor-pointer'
+                    >
+                      <div className='flex items-center gap-3'>
+                        <img className='w-12 h-12 rounded-full object-cover' src={recipient.avatar} alt={recipient.name} />
+                        <div>
+                          <p className='font-semibold text-white'>{recipient.name}</p>
+                          <p className='text-sm text-neutral-400'>{recipient.email}</p>
+                        </div>
+                      </div>
+                    </li>
+                  ),
+              )}
+            </ul>
+          )}
+        </div>
+      </div>
+
+      {isGroupMode && selectedUsers.length >= 2 && groupName.trim() && (
+        <div className='border-t border-neutral-700 p-4'>
           <button
             onClick={handleCreateGroup}
-            className='w-full mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700'
+            className='w-full py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center gap-2'
           >
+            <span className='material-symbols-outlined'>group_add</span>
             Create Group ({selectedUsers.length} members)
           </button>
-        )}
-      </div>
-    </>
+        </div>
+      )}
+    </div>
   );
 };
 

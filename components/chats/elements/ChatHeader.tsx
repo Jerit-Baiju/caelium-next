@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { useContext } from 'react';
 
 const ChatHeader = () => {
-  let { recipient, clearChat } = useContext(ChatContext);
+  let { recipient, clearChat, meta } = useContext(ChatContext);
 
   const options: NavLink[] = [
     { name: 'Dashboard', url: '/dashboard' },
@@ -18,14 +18,28 @@ const ChatHeader = () => {
           <i className='fa-solid fa-arrow-left'></i>
         </Link>
         <div className='flex items-center'>
-          <img
-            className='h-12 my-2 w-12 max-sm:h-12 max-sm:w-12 rounded-full dark:bg-white object-cover'
-            src={recipient?.avatar || ''}
-            alt='user photo'
-            width={100}
-            height={100}
-          />
-          <p className='text-2xl ps-2'>{recipient?.name}</p>
+          {!meta?.is_group ? (
+            <img
+              className='h-12 my-2 w-12 max-sm:h-12 max-sm:w-12 rounded-full dark:bg-white object-cover'
+              src={recipient?.avatar || ''}
+              alt='user photo'
+              width={100}
+              height={100}
+            />
+          ) : meta.group_icon ? (
+            <img
+              className='h-12 my-2 w-12 max-sm:h-12 max-sm:w-12 rounded-full dark:bg-white object-cover'
+              src={recipient?.avatar || ''}
+              alt='user photo'
+              width={100}
+              height={100}
+            />
+          ) : (
+            <div className='flex items-center justify-center h-12 my-2 w-12 max-sm:h-12 max-sm:w-12 rounded-full dark:bg-white object-cover dark:text-black'>
+              <i className='fa-solid fa-people-group text-2xl'></i>
+            </div>
+          )}
+          <p className='text-2xl ps-2'>{meta?.is_group ? meta.name : recipient?.name}</p>
         </div>
         <div className='flex items-center flex-grow justify-end'>
           <button
