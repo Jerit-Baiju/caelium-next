@@ -8,7 +8,7 @@ import { useContext, useEffect, useState } from 'react';
 import Loader from '../Loader';
 
 const ChatsPane = () => {
-  const { authTokens } = useContext(AuthContext);
+  const { authTokens, user } = useContext(AuthContext);
   const [chats, setChats] = useState<Chat[]>([]);
   const [search_query, setSearch_query] = useState('');
   const api = useAxios();
@@ -98,8 +98,8 @@ const ChatsPane = () => {
                     {!chat?.is_group ? (
                       <img
                         className='w-12 h-12 rounded-full border dark:border-neutral-500 border-neutral-200 object-cover'
-                        src={chat.other_participant.avatar}
-                        alt={chat.other_participant.name}
+                        src={chat.participants.find((p) => p.id !== user.id)?.avatar || ''}
+                        alt={chat.participants.find((p) => p.id !== user.id)?.name}
                       />
                     ) : chat.group_icon ? (
                       <img
@@ -117,7 +117,7 @@ const ChatsPane = () => {
                   </div>
                   <div className='flex-1 min-w-0'>
                     <p className='text-sm font-semibold text-neutral-900 truncate dark:text-white'>
-                      {chat.is_group ? chat.name : chat.other_participant.name}
+                      {chat.is_group ? chat.name : chat.participants.find((p) => p.id !== user.id)?.name}
                     </p>
                     <span className='text-sm text-neutral-500 dark:text-neutral-400'>
                       {truncate({ chars: chat.last_message_content, length: 45 })}

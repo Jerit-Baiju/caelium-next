@@ -1,12 +1,11 @@
 export interface Chat {
   id: number;
-  other_participant: User;
-  last_message_content: null;
-  updated_time: null;
-  is_group: boolean;
   name: string;
-  participants: User[];
   group_icon: string | null;
+  is_group: boolean;
+  participants: User[];
+  updated_time: Date;
+  last_message_content: string;
 }
 
 export interface User {
