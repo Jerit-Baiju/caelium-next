@@ -29,7 +29,7 @@ const ChatHeader = () => {
           ) : meta.group_icon ? (
             <img
               className='h-12 my-2 w-12 max-sm:h-12 max-sm:w-12 rounded-full dark:bg-white object-cover'
-              src={recipient?.avatar || ''}
+              src={ meta.group_icon || ''}
               alt='user photo'
               width={100}
               height={100}
