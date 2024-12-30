@@ -1,11 +1,8 @@
 import ChatContext from '@/contexts/ChatContext';
-import { useContext, useRef } from 'react';
+import { useContext, useEffect, useRef } from 'react';
 
 const ChatInput = () => {
-  let { textInput, setTextInput, handleSubmit, sendFile } = useContext(ChatContext);
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setTextInput(e.target.value);
-  };
+  let { textInput, setTextInput, handleSubmit, sendFile, handleTyping } = useContext(ChatContext);
 
   const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
@@ -25,6 +22,10 @@ const ChatInput = () => {
     const file = e.target.files?.[0];
     file ? sendFile(file) : null;
   };
+
+  useEffect(() => {
+    handleTyping(textInput);
+  }, [textInput]);
 
   return (
     <form onSubmit={handleSubmit}>
@@ -47,7 +48,9 @@ const ChatInput = () => {
           type='text'
           id='chat'
           value={textInput}
-          onChange={handleInputChange}
+          onChange={(e) => {
+            setTextInput(e.target.value);
+          }}
           autoComplete='off'
           autoFocus
           className='block mx-4 p-2.5 w-full text-sm text-neutral-900 bg-white rounded-lg border border-neutral-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-neutral-900 dark:border-neutral-600 dark:placeholder-neutral-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'

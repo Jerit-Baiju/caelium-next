@@ -1,8 +1,11 @@
 export interface Chat {
   id: number;
-  other_participant: User;
-  last_message_content: null;
-  updated_time: null;
+  name: string;
+  group_icon: string | null;
+  is_group: boolean;
+  participants: User[];
+  updated_time: Date;
+  last_message_content: string;
 }
 
 export interface User {
@@ -14,8 +17,8 @@ export interface User {
 
 export interface Message {
   id: number;
-  sender: User;
-  chat?: Chat;
+  sender: number;
+  chat?: number;
   size?: null | string;
   extension?: null | string;
   file_name: string | null;
@@ -39,7 +42,7 @@ export interface Craft {
 
 export interface BaseError {
   text: string;
-  code: 'CHAT_NOT_FOUND' | 'FETCH_MESSAGES_FAILED';
+  code: 'CHAT_NOT_FOUND' | 'FETCH_FAILED';
 }
 
 export interface NavLink {
@@ -93,7 +96,6 @@ export interface Image {
   filename: string;
   timestamp: Date;
 }
-
 
 export interface Album {
   id: string;

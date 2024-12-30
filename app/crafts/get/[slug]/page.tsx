@@ -5,9 +5,10 @@ import { BaseError, Craft } from '@/helpers/props';
 import { getTime } from '@/helpers/support';
 import useAxios from '@/hooks/useAxios';
 import { AxiosError } from 'axios';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, use } from 'react';
 
-const CraftRead = ({ params }: { params: { slug: Number } }) => {
+const CraftRead = (props: { params: Promise<{ slug: Number }> }) => {
+  const params = use(props.params);
   let [error, setError] = useState<BaseError | null>(null);
   let [craft, setCraft] = useState<Craft | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
@@ -21,7 +22,7 @@ const CraftRead = ({ params }: { params: { slug: Number } }) => {
         setCraft(response.data);
       } catch (error) {
         if (error instanceof AxiosError && error.code === 'ERR_BAD_REQUEST')
-          setError({ text: 'Failed to fetch messages', code: 'FETCH_MESSAGES_FAILED' });
+          setError({ text: 'Failed to fetch messages', code: 'FETCH_FAILED' });
         console.error('Error fetching data:', error);
       } finally {
         setLoading(false);
