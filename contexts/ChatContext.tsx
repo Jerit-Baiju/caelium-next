@@ -138,7 +138,6 @@ export const ChatProvider = ({ chatId, children }: childrenProps) => {
       const response = await api.post(`api/chats/messages/${chatId}/`, formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
-      console.log(response.data)
       if (response.status == 201) {
         socket?.send(JSON.stringify({ category: 'file_message', chat_id: chatId, message_id: response.data.id }));
         setMessages((prevMessages) => [...prevMessages, { ...response.data, sender: user.id }]);
