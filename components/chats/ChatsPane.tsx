@@ -6,12 +6,14 @@ import useAxios from '@/hooks/useAxios';
 import Link from 'next/link';
 import { useContext, useEffect, useState } from 'react';
 import Loader from '../Loader';
+import { useWebSocket } from '@/contexts/SocketContext';
 
 const ChatsPane = () => {
-  const { authTokens, user } = useContext(AuthContext);
-  const [chats, setChats] = useState<Chat[]>([]);
-  const [search_query, setSearch_query] = useState('');
   const api = useAxios();
+  const [chats, setChats] = useState<Chat[]>([]);
+  const { authTokens, user } = useContext(AuthContext);
+  const [search_query, setSearch_query] = useState('');
+  const { socket } = useWebSocket();
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   const searchChats = async (e: any) => {
@@ -37,6 +39,17 @@ const ChatsPane = () => {
   useEffect(() => {
     fetchChats();
   }, [authTokens?.access]);
+
+  // useEffect(() => {
+  //   if (socket) {
+  //     socket.onmessage = async function (e) {
+  //       let data = JSON.parse(e.data);
+  //       if (data.category === 'new_message' && data.sender !== user.id) {
+  //         // logic to update chats
+  //       }
+  //     };
+  //   }
+  // }, [socket]);
 
   const handleKeyDown = (e: any) => {
     if (e.key === 'Enter' && e.target.value !== '') {

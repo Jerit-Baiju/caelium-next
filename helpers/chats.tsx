@@ -32,7 +32,6 @@ const useChatUtils = () => {
         name,
         participants,
       });
-      console.log(response.data)
       router.push(`/chats/${response.data.id}`);
     } catch (error) {
       console.error('Error creating group:', error);
