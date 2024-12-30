@@ -18,7 +18,7 @@ export interface User {
 export interface Message {
   id: number;
   sender: number;
-  chat?: Chat;
+  chat?: number;
   size?: null | string;
   extension?: null | string;
   file_name: string | null;

@@ -69,7 +69,7 @@ export const ChatProvider = ({ chatId, children }: childrenProps) => {
     if (socket) {
       socket.onmessage = async function (e) {
         let data = JSON.parse(e.data);
-        if (data.category === 'new_message' && data.chat_id == chatId && data.sender.id !== user.id) {
+        if (data.category === 'new_message' && data.chat_id == chatId && data.sender !== user.id) {
           setMessages((prevMessages) => [...prevMessages, data]);
         } else if (data.category === 'typing' && data.chat_id == chatId) {
           setTypingMessage(data);
@@ -123,7 +123,7 @@ export const ChatProvider = ({ chatId, children }: childrenProps) => {
           id: Date.now(),
           content: content || '',
           type,
-          sender: user,
+          sender: user.id,
           file_name: '',
           timestamp: new Date(),
           file: null,
