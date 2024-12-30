@@ -6,7 +6,6 @@ const Typing = () => {
   const { typingMessage, getParticipant } = useChatContext();
   const [typist, setTypist] = useState<User | null>(null);
   useEffect(() => {
-
     setTypist(typingMessage?.sender ? getParticipant(typingMessage?.sender) : null);
   }, [typingMessage]);
   return (
