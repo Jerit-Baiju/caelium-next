@@ -1,12 +1,10 @@
 import AuthContext from '@/contexts/AuthContext';
-import ChatContext from '@/contexts/ChatContext';
 import { Message } from '@/helpers/props';
 import { useContext } from 'react';
 
 const TextMessage = ({ message }: { message: Message }) => {
   const date = new Date(message.timestamp);
   const formattedTime = date.toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true });
-  const { recipient } = useContext(ChatContext);
   const { user } = useContext(AuthContext);
 
   let isMe = message.sender.id == user.id;
@@ -29,7 +27,7 @@ const TextMessage = ({ message }: { message: Message }) => {
         </div>
       </div>
       <div className='chat-header'>
-        {isMe ? user.name : recipient?.name}
+        {isMe ? user.name : message.sender.name}
         <time className='text-xs opacity-50 mx-2'>{formattedTime}</time>
       </div>
       <div className='chat-bubble rounded-lg bg-neutral-500 dark:bg-neutral-700 text-white overscroll-none break-words space-y-3'>
