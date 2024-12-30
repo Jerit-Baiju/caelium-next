@@ -24,7 +24,7 @@ const TextMessage = ({ message }: { message: Message }) => {
           <img
             className='dark:bg-white border-1 border-neutral-200 dark:border-neutral-800'
             alt={message.sender.name}
-            src={isMe ? user.avatar : recipient?.avatar}
+            src={isMe ? user.avatar : message.sender.avatar}
           />
         </div>
       </div>
