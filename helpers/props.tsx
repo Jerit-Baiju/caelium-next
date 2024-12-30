@@ -1,11 +1,8 @@
 export interface Chat {
   id: number;
-  name: string;
-  group_icon: string | null;
-  is_group: boolean;
-  participants: User[];
-  updated_time: Date;
-  last_message_content: string;
+  other_participant: User;
+  last_message_content: null;
+  updated_time: null;
 }
 
 export interface User {
@@ -96,6 +93,7 @@ export interface Image {
   filename: string;
   timestamp: Date;
 }
+
 
 export interface Album {
   id: string;

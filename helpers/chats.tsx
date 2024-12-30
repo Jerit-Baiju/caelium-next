@@ -1,11 +1,10 @@
 import useAxios from '@/hooks/useAxios';
-import { User } from '@/helpers/props';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
 const useChatUtils = () => {
   const router = useRouter();
-  const [newChats, setNewChats] = useState<User[]>([]);
+  const [newChats, setNewChats] = useState([]);
   const api = useAxios();
 
   const createChat = async (recipient_id: number) => {
@@ -26,20 +25,7 @@ const useChatUtils = () => {
     }
   };
 
-  const createGroup = async (name: string, participants: number[]) => {
-    try {
-      const response = await api.post('/api/chats/create_group/', {
-        name,
-        participants,
-      });
-      console.log(response.data)
-      router.push(`/chats/${response.data.id}`);
-    } catch (error) {
-      console.error('Error creating group:', error);
-    }
-  };
-
-  return { createChat, fetchNewChats, newChats, createGroup };
+  return { createChat, fetchNewChats, newChats };
 };
 
 export default useChatUtils;
