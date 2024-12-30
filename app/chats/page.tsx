@@ -54,10 +54,14 @@ const Page = () => {
                 <span className='sr-only'>Close modal</span>
               </button>
             </div>
-            <NewChatDialog onClose={() => {
-              const modal = document.getElementById('new-chat-modal');
-              modal?.classList.add('hidden');
-            }} />
+            <div className='max-h-screen'>
+              <NewChatDialog
+                onClose={() => {
+                  const modal = document.getElementById('new-chat-modal');
+                  modal?.classList.add('hidden');
+                }}
+              />
+            </div>
           </div>
         </div>
       </div>
