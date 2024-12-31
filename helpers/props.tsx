@@ -5,7 +5,14 @@ export interface Chat {
   is_group: boolean;
   participants: User[];
   updated_time: Date;
-  last_message_content: string;
+  last_message: LastMessage;
+}
+
+export interface LastMessage {
+  content: string;
+  timestamp: Date;
+  sender: User;
+  type: string;
 }
 
 export interface User {
