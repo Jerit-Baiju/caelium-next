@@ -112,7 +112,11 @@ const ChatsPane = () => {
                     <span className='text-sm text-neutral-500 dark:text-neutral-400'>
                       {chat.last_message?.sender?.id === user.id ? 'You: ' : 
                        chat.last_message?.sender ? `${chat.last_message.sender.name}: ` : ''}
-                      {chat.last_message ? truncate({ chars: chat.last_message.content, length: 45 }) : ''}
+                      {chat.last_message ? 
+                        chat.last_message.type === 'txt' ? 
+                          truncate({ chars: chat.last_message.content, length: 45 }) :
+                          'sent an attachment' 
+                        : ''}
                     </span>
                   </div>
                 </div>
