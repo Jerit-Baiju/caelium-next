@@ -1,12 +1,14 @@
 'use client';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Button } from '@/components/ui/button';
 import { BaseError, Chat, Message, User } from '@/helpers/props';
 import useAxios from '@/hooks/useAxios';
 import { AxiosError } from 'axios';
 import { useRouter } from 'next/navigation';
 import { ReactNode, createContext, useContext, useEffect, useState } from 'react';
 import AuthContext from './AuthContext';
-import { useWebSocket } from './SocketContext';
 import { useChatsPaneContext } from './ChatsPaneContext';
+import { useWebSocket } from './SocketContext';
 
 interface childrenProps {
   chatId: number;
@@ -83,16 +85,22 @@ export const ChatProvider = ({ chatId, children }: childrenProps) => {
   useEffect(() => {
     const fetchInitialData = async () => {
       try {
-        const response = await api.get(`/api/chats/messages/${chatId}/`);
-        const metaResponse = await api.get(`/api/chats/${chatId}/`);
+        const [messagesResponse, metaResponse] = await Promise.all([
+          api.get(`/api/chats/messages/${chatId}/`),
+          api.get(`/api/chats/${chatId}/`),
+        ]);
+
         setMeta(metaResponse.data);
-        setMessages(response.data.results.reverse()); // Reverse the array to display the latest messages first
-        setNextPage(response.data.next); // Set the next page URL
+        setMessages(messagesResponse.data.results.reverse());
+        setNextPage(messagesResponse.data.next);
       } catch (error) {
-        if (error instanceof AxiosError && error.code === 'ERR_BAD_REQUEST') {
-          setError({ text: 'Failed to fetch messages or chat not found', code: 'FETCH_FAILED' });
+        if (error instanceof AxiosError) {
+          setError({
+            text:
+              error.response?.status === 404 ? "This chat doesn't exist or you don't have access to it" : 'Failed to fetch messages',
+            code: 'FETCH_FAILED',
+          });
         }
-        console.error('Error fetching data:', error);
       } finally {
         setIsLoading(false);
       }
@@ -167,14 +175,33 @@ export const ChatProvider = ({ chatId, children }: childrenProps) => {
   const sendFile = (file: File) => sendMessage('attachment', '', file);
 
   const clearChat = async () => {
-    await api.delete(`/api/chats/${chatId}/`);
-    router.push('/chats');
+    try {
+      await api.delete(`/api/chats/${chatId}/`);
+      router.push('/chats');
+    } catch (error) {
+      if (error instanceof AxiosError) {
+        setError({
+          text: error.response?.data?.detail || 'Failed to delete chat',
+          code: 'DELETE_FAILED',
+        });
+      } else {
+        setError({
+          text: 'An unexpected error occurred while deleting the chat',
+          code: 'DELETE_FAILED',
+        });
+      }
+    }
   };
 
   if (error) {
     return (
-      <div className='flex flex-col items-center justify-center h-screen'>
-        <h1 className='text-2xl font-bold'>{error.text}</h1>
+      <div className='flex flex-col flex-grow max-sm:h-screen sm:w-3/4'>
+        <div className='flex flex-col gap-4 flex-grow items-center justify-center'>
+          <p className='text-2xl text-balance text-center my-8'>{error.text}</p>
+          <Button className='px-6 py-5' variant='outline' onClick={() => router.push('/chats')}>
+            Go Back
+          </Button>
+        </div>
       </div>
     );
   }
