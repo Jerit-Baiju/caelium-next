@@ -1,55 +1,32 @@
 'use client';
 import AuthContext from '@/contexts/AuthContext';
+import { useChatsPaneContext } from '@/contexts/ChatsPaneContext';
+import { useWebSocket } from '@/contexts/SocketContext';
 import { Chat } from '@/helpers/props';
 import { getTime, truncate } from '@/helpers/support';
-import useAxios from '@/hooks/useAxios';
 import Link from 'next/link';
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect } from 'react';
 import Loader from '../Loader';
-import { useWebSocket } from '@/contexts/SocketContext';
 
 const ChatsPane = () => {
-  const api = useAxios();
-  const [chats, setChats] = useState<Chat[]>([]);
   const { authTokens, user } = useContext(AuthContext);
-  const [search_query, setSearch_query] = useState('');
   const { socket } = useWebSocket();
-  const [isLoading, setIsLoading] = useState<boolean>(true);
-
-  const searchChats = async (e: any) => {
-    e.preventDefault();
-    try {
-      const response = await api.get(`/api/chats/?search=${search_query}`);
-      setChats(response.data);
-    } catch (error) {
-      console.error('Error fetching data:', error);
-    }
-  };
-
-  const fetchChats = async () => {
-    try {
-      const response = await api.get('/api/chats/');
-      setChats(response.data);
-      setIsLoading(false);
-    } catch (error) {
-      console.error('Error fetching data:', error);
-    }
-  };
+  const { chats, isLoading, searchQuery, setSearchQuery, fetchChats, searchChats, updateChatOrder } = useChatsPaneContext();
 
   useEffect(() => {
     fetchChats();
   }, [authTokens?.access]);
 
-  // useEffect(() => {
-  //   if (socket) {
-  //     socket.onmessage = async function (e) {
-  //       let data = JSON.parse(e.data);
-  //       if (data.category === 'new_message' && data.sender !== user.id) {
-  //         // logic to update chats
-  //       }
-  //     };
-  //   }
-  // }, [socket]);
+  useEffect(() => {
+    if (socket) {
+      socket.onmessage = async function (e) {
+        let data = JSON.parse(e.data);
+        if (data.category === 'new_message' && data.sender !== user.id) {
+          updateChatOrder(data.chat_id, data.message);
+        }
+      };
+    }
+  }, [socket, updateChatOrder]);
 
   const handleKeyDown = (e: any) => {
     if (e.key === 'Enter' && e.target.value !== '') {
@@ -73,20 +50,20 @@ const ChatsPane = () => {
               id='chat-search'
               className='block w-full p-2 ps-10 pe-10 text-sm text-neutral-900 border border-neutral-300 rounded-lg bg-neutral-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-neutral-900 dark:border-neutral-600 dark:placeholder-neutral-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'
               placeholder='Search'
-              value={search_query}
+              value={searchQuery}
               onChange={(e) => {
-                setSearch_query(e.target.value);
+                setSearchQuery(e.target.value);
                 if (e.target.value === '') fetchChats(); // Fetch chats when search is cleared
               }}
               onKeyDown={handleKeyDown}
               autoComplete='off'
               required
             />
-            {search_query && (
+            {searchQuery && (
               <button
                 type='button'
                 onClick={() => {
-                  setSearch_query('');
+                  setSearchQuery('');
                   fetchChats();
                 }}
                 className='absolute inset-y-0 end-0 flex items-center w-fit pe-3'
