@@ -62,6 +62,8 @@ export const ChatProvider = ({ chatId, children }: childrenProps) => {
   const [isLoadingMore, setIsLoadingMore] = useState<boolean>(false);
   const [typingMessage, setTypingMessage] = useState<{ typed: string; sender: number } | null>(null);
   const [nextPage, setNextPage] = useState<string | null>(null);
+  const [isSocketReady, setIsSocketReady] = useState(false);
+  const [messageQueue, setMessageQueue] = useState<{type: 'txt' | 'attachment'; content?: string}[]>([]);
 
   const api = useAxios();
   const router = useRouter();
@@ -104,6 +106,19 @@ export const ChatProvider = ({ chatId, children }: childrenProps) => {
     fetchInitialData();
   }, [chatId, user]);
 
+  useEffect(() => {
+    if (socket?.readyState === WebSocket.OPEN) {
+      setIsSocketReady(true);
+      // Process any queued messages
+      messageQueue.forEach(msg => {
+        sendMessage(msg.type, msg.content);
+      });
+      setMessageQueue([]);
+    } else {
+      setIsSocketReady(false);
+    }
+  }, [socket?.readyState]);
+
   const loadMoreMessages = async () => {
     if (!nextPage || isLoadingMore) return; // Prevent fetching if already at the last page or currently loading
     setIsLoadingMore(true);
@@ -122,20 +137,38 @@ export const ChatProvider = ({ chatId, children }: childrenProps) => {
 
   const sendMessage = async (type: 'txt' | 'attachment', content?: string, file?: File) => {
     if (type === 'txt') {
-      socket?.send(JSON.stringify({ category: 'text_message', message: content, type, chat_id: chatId }));
-      setMessages((prevMessages) => [
-        ...prevMessages,
-        {
-          id: Date.now(),
-          content: content || '',
-          type,
-          sender: user.id,
-          file_name: '',
-          timestamp: new Date(),
-          file: null,
-        },
-      ]);
-      updateChatOrder(chatId, content || '');
+      if (!socket || socket.readyState !== WebSocket.OPEN) {
+        console.warn('Socket not ready, queueing message');
+        setMessageQueue(prev => [...prev, {type, content}]);
+        return;
+      }
+
+      try {
+        socket.send(JSON.stringify({ 
+          category: 'text_message', 
+          message: content, 
+          type, 
+          chat_id: chatId 
+        }));
+        
+        setMessages((prevMessages) => [
+          ...prevMessages,
+          {
+            id: Date.now(),
+            content: content || '',
+            type,
+            sender: user.id,
+            file_name: '',
+            timestamp: new Date(),
+            file: null,
+          },
+        ]);
+        updateChatOrder(chatId, content || '');
+      } catch (error) {
+        console.error('Failed to send message:', error);
+        // Optionally queue failed messages for retry
+        setMessageQueue(prev => [...prev, {type, content}]);
+      }
     } else {
       setIsUploading(true);
       const formData = new FormData();
