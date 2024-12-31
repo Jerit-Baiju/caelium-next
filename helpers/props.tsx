@@ -49,7 +49,7 @@ export interface Craft {
 
 export interface BaseError {
   text: string;
-  code: 'CHAT_NOT_FOUND' | 'FETCH_FAILED';
+  code: 'CHAT_NOT_FOUND' | 'FETCH_FAILED' | 'DELETE_FAILED';
 }
 
 export interface NavLink {
