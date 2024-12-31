@@ -2,6 +2,7 @@
 import { Chat } from '@/helpers/props';
 import useAxios from '@/hooks/useAxios';
 import { createContext, ReactNode, useContext, useState } from 'react';
+import AuthContext from './AuthContext';
 
 interface ChatsPaneContextType {
   chats: Chat[];
@@ -18,6 +19,7 @@ const ChatsPaneContext = createContext<ChatsPaneContextType | undefined>(undefin
 
 export function ChatsPaneProvider({ children }: { children: ReactNode }) {
   const api = useAxios();
+  const { user } = useContext(AuthContext);
   const [chats, setChats] = useState<Chat[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [searchQuery, setSearchQuery] = useState('');
@@ -52,6 +54,16 @@ export function ChatsPaneProvider({ children }: { children: ReactNode }) {
     if (chatIndex !== -1) {
       const updatedChats = [...chats];
       const chatToUpdate = { ...updatedChats[chatIndex] };
+
+      if (!chatToUpdate.last_message) {
+        chatToUpdate.last_message = {
+          content: '',
+          timestamp: new Date(),
+          sender: user,
+          type: 'text',
+        };
+      }
+
       chatToUpdate.last_message.content = lastMessage;
       chatToUpdate.updated_time = new Date();
       updatedChats[chatIndex] = chatToUpdate;
