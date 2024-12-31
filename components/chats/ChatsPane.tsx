@@ -35,7 +35,7 @@ const ChatsPane = () => {
   };
 
   return (
-    <div className='flex flex-col max-md:h-[calc(100dvh-10rem)] h-[calc(100dvh-5rem)] w-full flex-grow overflow-hidden overflow-x-hidden'>
+    <div className='flex flex-col max-md:h-[calc(100dvh-10rem)] h-[calc(100dvh-5rem)] w-full flex-grow overflow-hidden'>
       <div className='flex w-full sticky top-0 z-10 flex-col'>
         <form onSubmit={searchChats} className='m-3'>
           <label htmlFor='default-search' className='mb-2 text-sm font-medium text-neutral-900 sr-only dark:text-white'>
@@ -79,11 +79,11 @@ const ChatsPane = () => {
           <Loader />
         </div>
       ) : (
-        <ul role='list' className='flex flex-col overflow-y-auto'>
+        <ul role='list' className='flex flex-col overflow-y-auto overflow-x-hidden w-full'>
           {chats.map((chat: Chat) => (
-            <Link key={chat.id} href={`/chats/${chat.id}`}>
-              <li className='flex items-center justify-between px-3 py-2 m-1 rounded-md hover:bg-neutral-200 dark:hover:bg-neutral-900'>
-                <div className='flex items-center space-x-3 rtl:space-x-reverse'>
+            <Link key={chat.id} href={`/chats/${chat.id}`} className='block w-full'>
+              <li className='flex items-center px-3 py-2 m-1 rounded-md hover:bg-neutral-200 dark:hover:bg-neutral-900 w-full'>
+                <div className='flex items-center space-x-3 flex-1 min-w-0 w-0'>
                   <div className='flex-shrink-0 dark:bg-white rounded-full'>
                     {!chat?.is_group ? (
                       <img
@@ -109,7 +109,7 @@ const ChatsPane = () => {
                     <p className='text-sm font-semibold text-neutral-900 truncate dark:text-white'>
                       {chat.is_group ? chat.name : chat.participants.find((p) => p.id !== user.id)?.name}
                     </p>
-                    <span className='text-sm text-neutral-500 dark:text-neutral-400'>
+                    <span className='text-sm text-neutral-500 truncate dark:text-neutral-400'>
                       {chat.last_message?.sender?.id === user.id ? 'You: ' : 
                        chat.last_message?.sender ? `${chat.last_message.sender.name}: ` : ''}
                       {chat.last_message ? 
@@ -121,9 +121,11 @@ const ChatsPane = () => {
                   </div>
                 </div>
                 {chat.updated_time && (
-                  <span className='inline-flex items-end bg-neutral-300 text-neutral-800 text-sm font-medium px-2.5 py-0.5 rounded-full dark:bg-neutral-900 dark:text-neutral-300 whitespace-nowrap'>
-                    {getTime(chat.updated_time)}
-                  </span>
+                  <div className='flex-shrink-0 ml-2'>
+                    <span className='inline-block bg-neutral-300 text-neutral-800 text-sm font-medium px-2.5 py-0.5 rounded-full dark:bg-neutral-900 dark:text-neutral-300'>
+                      {getTime(chat.updated_time)}
+                    </span>
+                  </div>
                 )}
               </li>
             </Link>
