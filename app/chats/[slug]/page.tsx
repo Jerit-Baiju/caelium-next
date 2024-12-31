@@ -1,6 +1,6 @@
-'use client';;
-import { use } from "react";
+'use client';
 import Wrapper from '@/app/Wrapper';
+import { use } from 'react';
 // import NotificationPrompt from '@/components/base/NotificationPrompt';
 import ChatsPane from '@/components/chats/ChatsPane';
 import ChatHeader from '@/components/chats/elements/ChatHeader';
