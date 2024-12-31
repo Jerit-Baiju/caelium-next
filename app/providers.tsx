@@ -9,11 +9,11 @@ import { ReactNode } from 'react';
 const ProvidersWrapper = ({ children }: { children: ReactNode }) => {
   return (
     <AuthProvider>
-      <WebSocketProvider>
-        <ChatsPaneProvider>
+      <ChatsPaneProvider>
+        <WebSocketProvider>
           <NavbarProvider>{children}</NavbarProvider>
-        </ChatsPaneProvider>
-      </WebSocketProvider>
+        </WebSocketProvider>
+      </ChatsPaneProvider>
     </AuthProvider>
   );
 };
