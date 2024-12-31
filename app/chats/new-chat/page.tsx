@@ -4,10 +4,10 @@ import Link from 'next/link';
 
 const NewChat = () => {
   return (
-    <div className='flex-grow bg-opacity-50 overflow-y-auto overflow-x-hidden top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0'>
-      <div className='relative sm:p-4 w-full'>
-        <div className='relative bg-white rounded-lg shadow dark:bg-neutral-900 h-screen'>
-          <div className='flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-neutral-600'>
+    <div className='fixed inset-0 bg-neutral-900 z-50'>
+      <div className='h-full max-w-4xl mx-auto'>
+        <div className='h-full'>
+          <div className='flex items-center justify-between p-4 border-b border-neutral-600'>
             <h3 className='text-xl font-semibold text-neutral-900 dark:text-white'>New Chat</h3>
             <Link
               href={'/chats'}
