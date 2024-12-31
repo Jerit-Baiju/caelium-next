@@ -144,6 +144,7 @@ export const ChatProvider = ({ chatId, children }: childrenProps) => {
       if (response.status == 201) {
         socket?.send(JSON.stringify({ category: 'file_message', chat_id: chatId, message_id: response.data.id }));
         setMessages((prevMessages) => [...prevMessages, { ...response.data, sender: user.id }]);
+        updateChatOrder(chatId, 'Sent an attachment');
       }
       setIsUploading(false);
     }

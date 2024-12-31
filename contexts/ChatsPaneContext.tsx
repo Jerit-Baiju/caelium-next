@@ -44,31 +44,23 @@ export function ChatsPaneProvider({ children }: { children: ReactNode }) {
   };
 
   const updateChatOrder = (chatId: number, lastMessage: string) => {
-    console.log('Current chats:', chats);
-    console.log('Updating chat:', chatId, 'with message:', lastMessage);
-    
-    // Convert chatId to number if it's a string
+    console.log('Updating chat order:', chatId, lastMessage);
     const chatIdNum = Number(chatId);
     const chatIndex = chats.findIndex((chat) => chat.id === chatIdNum);
     console.log('Found chat at index:', chatIndex);
-    
+
     if (chatIndex !== -1) {
       const updatedChats = [...chats];
       const chatToUpdate = { ...updatedChats[chatIndex] };
       chatToUpdate.last_message.content = lastMessage;
+      chatToUpdate.updated_time = new Date();
       updatedChats[chatIndex] = chatToUpdate;
-      
       // Move to top
       const [movedChat] = updatedChats.splice(chatIndex, 1);
       updatedChats.unshift(movedChat);
-      
-      console.log('Updated chat:', chatToUpdate);
-      console.log('New chats array:', updatedChats);
-      
       setChats(updatedChats);
     } else {
       console.warn('Chat not found:', chatId, 'Type:', typeof chatId);
-      console.warn('Available chat IDs:', chats.map(chat => `${chat.id} (${typeof chat.id})`));
     }
   };
 

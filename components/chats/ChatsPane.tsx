@@ -22,7 +22,7 @@ const ChatsPane = () => {
       socket.onmessage = async function (e) {
         let data = JSON.parse(e.data);
         if (data.category === 'new_message' && data.sender !== user.id) {
-          updateChatOrder(data.chat_id, data.message);
+          updateChatOrder(data.chat, data.content);
         }
       };
     }
@@ -110,8 +110,9 @@ const ChatsPane = () => {
                       {chat.is_group ? chat.name : chat.participants.find((p) => p.id !== user.id)?.name}
                     </p>
                     <span className='text-sm text-neutral-500 dark:text-neutral-400'>
-                      {chat.last_message.sender.id === user.id ? 'You: ' : `${chat.last_message.sender.name}: `}
-                      {truncate({ chars: chat.last_message.content, length: 45 })}
+                      {chat.last_message?.sender?.id === user.id ? 'You: ' : 
+                       chat.last_message?.sender ? `${chat.last_message.sender.name}: ` : ''}
+                      {chat.last_message ? truncate({ chars: chat.last_message.content, length: 45 }) : ''}
                     </span>
                   </div>
                 </div>
