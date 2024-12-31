@@ -29,7 +29,7 @@ const ChatPageContent = () => {
   );
 };
 
-const Page = (props: { params: Promise<{ slug: Number }> }) => {
+const Page = (props: { params: Promise<{ slug: number }> }) => {
   const params = use(props.params);
   // const { showAlertDialog, requestPermission, setShowAlertDialog } = useNotifications();
 
