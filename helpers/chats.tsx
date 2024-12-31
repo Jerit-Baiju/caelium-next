@@ -10,7 +10,7 @@ const useChatUtils = () => {
 
   const createChat = async (recipient_id: number) => {
     try {
-      const response = await api.post('/api/chats/', { participant: recipient_id });
+      const response = await api.post('/api/chats/', { participant_ids: [recipient_id] });
       router.push(`/chats/${response.data.id}`);
     } catch (error) {
       console.error('Error creating chat:', error);
