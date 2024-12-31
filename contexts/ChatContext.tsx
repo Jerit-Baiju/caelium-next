@@ -1,5 +1,4 @@
 'use client';
-import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { BaseError, Chat, Message, User } from '@/helpers/props';
 import useAxios from '@/hooks/useAxios';
@@ -66,21 +65,18 @@ export const ChatProvider = ({ chatId, children }: childrenProps) => {
 
   const api = useAxios();
   const router = useRouter();
-  const { socket } = useWebSocket();
+  const { socket, socketData } = useWebSocket();
   const { updateChatOrder } = useChatsPaneContext();
 
   useEffect(() => {
-    if (socket) {
-      socket.onmessage = async function (e) {
-        const data = JSON.parse(e.data);
-        if (data.category === 'new_message' && data.chat == chatId && data.sender != user.id) {
-          setMessages((prevMessages) => [...prevMessages, data]);
-        } else if (data.category === 'typing' && data.chat_id == chatId) {
-          setTypingMessage(data);
-        }
-      };
+    const data = socketData;
+    if (!data) return;
+    if (data.category === 'new_message' && data.chat == chatId && data.sender != user.id) {
+      setMessages((prevMessages) => [...prevMessages, data]);
+    } else if (data.category === 'typing' && data.chat_id == chatId) {
+      setTypingMessage(data);
     }
-  }, [socket]);
+  }, [socketData]);
 
   useEffect(() => {
     const fetchInitialData = async () => {

@@ -4,12 +4,14 @@ interface WebSocketContextType {
   socket: WebSocket | null;
   isConnected: boolean;
   send: (data: any) => void;
+  socketData: any;
 }
 
 const WebSocketContext = createContext<WebSocketContextType | null>(null);
 
 export const WebSocketProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const socketRef = useRef<WebSocket | null>(null);
+  const [socketData, setSocketData] = useState();
   const [isConnected, setIsConnected] = useState(false);
 
   useEffect(() => {
@@ -37,6 +39,7 @@ export const WebSocketProvider: React.FC<{ children: React.ReactNode }> = ({ chi
       ws.onmessage = (event) => {
         const data = JSON.parse(event.data);
         console.log('Received:', data);
+        setSocketData(data);
       };
 
       ws.onclose = () => {
@@ -73,7 +76,11 @@ export const WebSocketProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     }
   };
 
-  return <WebSocketContext.Provider value={{ socket: socketRef.current, isConnected, send }}>{children}</WebSocketContext.Provider>;
+  return (
+    <WebSocketContext.Provider value={{ socket: socketRef.current, isConnected, send, socketData }}>
+      {children}
+    </WebSocketContext.Provider>
+  );
 };
 
 export const useWebSocket = () => {
