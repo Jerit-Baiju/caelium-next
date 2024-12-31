@@ -6,9 +6,10 @@ import { useRouter } from 'next/navigation';
 import { ReactNode, createContext, useContext, useEffect, useState } from 'react';
 import AuthContext from './AuthContext';
 import { useWebSocket } from './SocketContext';
+import { useChatsPaneContext } from './ChatsPaneContext';
 
 interface childrenProps {
-  chatId: Number;
+  chatId: number;
   children: ReactNode;
 }
 
@@ -61,16 +62,16 @@ export const ChatProvider = ({ chatId, children }: childrenProps) => {
   const [typingMessage, setTypingMessage] = useState<{ typed: string; sender: number } | null>(null);
   const [nextPage, setNextPage] = useState<string | null>(null);
 
-  const { socket } = useWebSocket();
-  const router = useRouter();
   const api = useAxios();
+  const router = useRouter();
+  const { socket } = useWebSocket();
+  const { updateChatOrder } = useChatsPaneContext();
 
   useEffect(() => {
     if (socket) {
       socket.onmessage = async function (e) {
         const data = JSON.parse(e.data);
         if (data.category === 'new_message' && data.chat == chatId && data.sender != user.id) {
-          console.log('New message:', data, 'updated');
           setMessages((prevMessages) => [...prevMessages, data]);
         } else if (data.category === 'typing' && data.chat_id == chatId) {
           setTypingMessage(data);
@@ -130,6 +131,7 @@ export const ChatProvider = ({ chatId, children }: childrenProps) => {
           file: null,
         },
       ]);
+      updateChatOrder(chatId, content || '');
     } else {
       setIsUploading(true);
       const formData = new FormData();

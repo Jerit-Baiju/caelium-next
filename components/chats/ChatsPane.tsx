@@ -110,7 +110,8 @@ const ChatsPane = () => {
                       {chat.is_group ? chat.name : chat.participants.find((p) => p.id !== user.id)?.name}
                     </p>
                     <span className='text-sm text-neutral-500 dark:text-neutral-400'>
-                      {truncate({ chars: chat.last_message_content, length: 45 })}
+                      {chat.last_message.sender.id === user.id ? 'You: ' : `${chat.last_message.sender.name}: `}
+                      {truncate({ chars: chat.last_message.content, length: 45 })}
                     </span>
                   </div>
                 </div>
