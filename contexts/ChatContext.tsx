@@ -68,8 +68,9 @@ export const ChatProvider = ({ chatId, children }: childrenProps) => {
   useEffect(() => {
     if (socket) {
       socket.onmessage = async function (e) {
-        let data = JSON.parse(e.data);
-        if (data.category === 'new_message' && data.chat_id == chatId && data.sender !== user.id) {
+        const data = JSON.parse(e.data);
+        if (data.category === 'new_message' && data.chat == chatId && data.sender != user.id) {
+          console.log('New message:', data, 'updated');
           setMessages((prevMessages) => [...prevMessages, data]);
         } else if (data.category === 'typing' && data.chat_id == chatId) {
           setTypingMessage(data);
