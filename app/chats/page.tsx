@@ -39,11 +39,11 @@ const Page = () => {
         id='new-chat-modal'
         tabIndex={-1}
         aria-hidden={true}
-        className='hidden flex-grow bg-black bg-opacity-50 overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0'
+        className='hidden fixed inset-0 z-50 bg-black/50 overflow-y-auto p-4'
       >
-        <div className='relative sm:p-4 w-full max-w-xl'>
-          <div className='relative bg-white rounded-lg shadow dark:bg-neutral-900'>
-            <div className='flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-neutral-600'>
+        <div className='relative min-h-full w-1/3 flex items-center justify-center'>
+          <div className='relative bg-neutral-900 rounded-lg shadow-xl w-full max-w-2xl lg:max-w-4xl'>
+            <div className='flex items-center justify-between p-4 border-b border-neutral-600'>
               <h3 className='text-xl font-semibold text-neutral-900 dark:text-white'>New Chat</h3>
               <button
                 type='button'
@@ -54,7 +54,7 @@ const Page = () => {
                 <span className='sr-only'>Close modal</span>
               </button>
             </div>
-            <div className='max-h-screen'>
+            <div>
               <NewChatDialog
                 onClose={() => {
                   const modal = document.getElementById('new-chat-modal');
