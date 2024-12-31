@@ -58,11 +58,24 @@ const ChatHeader = () => {
               <i className='fa-solid fa-people-group text-2xl'></i>
             </div>
           )}
-          <p className='text-2xl ps-2'>
-            {meta?.is_group
-              ? meta.name
-              : getParticipant(meta?.participants.find((participant) => participant.id !== user.id)?.id ?? 0)?.name}
-          </p>
+          <div className='flex flex-col ps-2'>
+            <p className='text-2xl'>
+              {meta?.is_group
+                ? meta.name
+                : getParticipant(meta?.participants.find((participant) => participant.id !== user.id)?.id ?? 0)?.name}
+            </p>
+            {meta?.is_group && (
+              <p className='text-sm text-neutral-600 dark:text-neutral-400 truncate max-w-[200px] sm:max-w-[300px] md:max-w-[400px] lg:max-w-[600px] xl:max-w-[800px]'>
+                {meta.participants
+                  .slice(0, window.innerWidth > 1024 ? 6 : 2)
+                  .map((p) => getParticipant(p.id)?.name)
+                  .filter(Boolean)
+                  .join(', ')}
+                {meta.participants.length > (window.innerWidth > 1024 ? 6 : 2) &&
+                  ` + ${meta.participants.length - (window.innerWidth > 1024 ? 6 : 2)} others`}
+              </p>
+            )}
+          </div>
         </div>
         <div className='flex items-center flex-grow justify-end'>
           <DropdownMenu>
