@@ -10,7 +10,10 @@ const useChatUtils = () => {
 
   const createChat = async (recipient_id: number) => {
     try {
-      const response = await api.post('/api/chats/', { participant_ids: [recipient_id] });
+      const response = await api.post('/api/chats/', { 
+        participant_ids: [recipient_id],
+        is_group: false 
+      });
       router.push(`/chats/${response.data.id}`);
     } catch (error) {
       console.error('Error creating chat:', error);
@@ -28,9 +31,10 @@ const useChatUtils = () => {
 
   const createGroup = async (name: string, participants: number[]) => {
     try {
-      const response = await api.post('/api/chats/create_group/', {
+      const response = await api.post('/api/chats/', {
+        participant_ids: participants,
         name,
-        participants,
+        is_group: true
       });
       router.push(`/chats/${response.data.id}`);
     } catch (error) {
