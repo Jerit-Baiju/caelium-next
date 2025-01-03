@@ -1,11 +1,13 @@
 import AuthContext from '@/contexts/AuthContext';
 import { useChatContext } from '@/contexts/ChatContext';
+import { useRouter } from 'next/navigation';
 import { useContext, useEffect } from 'react';
 import { FaPhone, FaVideo } from 'react-icons/fa';
-import { IoNotifications, IoPerson, IoPersonRemoveSharp } from 'react-icons/io5';
+import { IoArrowBack, IoNotifications, IoPerson, IoPersonRemoveSharp } from 'react-icons/io5';
 import { MdDelete } from 'react-icons/md';
 
 const ChatProfile = () => {
+  const router = useRouter();
   const { user } = useContext(AuthContext);
   const { meta, getParticipant } = useChatContext();
 
@@ -18,7 +20,13 @@ const ChatProfile = () => {
     <div className='flex flex-col flex-grow sm:w-3/4 bg-neutral-900'>
       {/* Fixed Profile Header */}
       <div className='flex-none border-b border-neutral-800'>
-        <div className='flex flex-col items-center p-8'>
+        <div className='flex flex-col items-center p-8 relative'>
+          <button
+            onClick={() => router.push(`/chats/${meta?.id}`)}
+            className='absolute left-2 top-2 p-2 hover:bg-neutral-800 rounded-full'
+          >
+            <IoArrowBack className='text-2xl' />
+          </button>
           <div className='relative'>
             <img src={recipient?.avatar} alt='Profile' className='w-40 h-40 rounded-full object-cover' />
             {/* <button className='absolute bottom-0 right-0 p-2 bg-blue-500 rounded-full'>
