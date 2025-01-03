@@ -12,6 +12,10 @@ const ChatProfile = () => {
   const { meta, getParticipant } = useChatContext();
 
   useEffect(() => {
+    alert('This page is under development');
+  }, []);
+
+  useEffect(() => {
     console.log(meta);
   }, [meta]);
 

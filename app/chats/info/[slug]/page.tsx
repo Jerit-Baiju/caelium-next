@@ -5,7 +5,7 @@ import ChatProfile from '@/components/chats/elements/ChatProfile';
 import { ChatProvider } from '@/contexts/ChatContext';
 import { use } from 'react';
 
-const page = (props: { params: Promise<{ slug: number }> }) => {
+const Page = (props: { params: Promise<{ slug: number }> }) => {
   const params = use(props.params);
 
   return (
@@ -22,4 +22,4 @@ const page = (props: { params: Promise<{ slug: number }> }) => {
   );
 };
 
-export default page;
+export default Page;
