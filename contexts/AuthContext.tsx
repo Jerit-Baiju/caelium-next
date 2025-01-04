@@ -1,5 +1,5 @@
 'use client';
-import { User } from '@/helpers/props';
+import { LastSeen, User } from '@/helpers/props';
 import { jwtDecode } from 'jwt-decode';
 import { useRouter } from 'next/navigation';
 import { ReactNode, Suspense, createContext, useEffect, useState } from 'react';
@@ -21,6 +21,8 @@ interface AuthContextProps {
   addActiveUser: (id: number) => void;
   removeActiveUser: (id: number) => void;
   setActiveUsers: (ids: number[]) => void;
+  lastSeenUsers: LastSeen[];
+  updateLastSeen: (userId: number) => void;
 }
 
 const AuthContext = createContext<AuthContextProps>({
@@ -36,6 +38,8 @@ const AuthContext = createContext<AuthContextProps>({
   addActiveUser: () => {},
   removeActiveUser: () => {},
   setActiveUsers: () => {},
+  lastSeenUsers: [],
+  updateLastSeen: () => {},
 });
 
 export default AuthContext;
@@ -45,6 +49,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   let [error, setError] = useState({});
   let [user, setUser] = useState<User | null>(null);
   const [activeUsers, setActiveUsers] = useState<number[]>([]);
+  const [lastSeenUsers, setLastSeenUsers] = useState<LastSeen[]>([]);
   let [authTokens, setAuthTokens] = useState(() =>
     typeof window !== 'undefined' && localStorage.getItem('authTokens')
       ? JSON.parse(localStorage.getItem('authTokens') || '{}')
@@ -84,6 +89,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setActiveUsers(activeUsers.filter((user) => user !== id));
   };
 
+  const updateLastSeen = (userId: number) => {
+    setLastSeenUsers((prev) => {
+      const filtered = prev.filter((user) => user.userId !== userId);
+      return [...filtered, { userId, timestamp: new Date() }];
+    });
+  };
+
   let loginUser = async (data: any) => {
     localStorage.setItem('authTokens', JSON.stringify(data));
     setAuthTokens(data);
@@ -117,7 +129,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     activeUsers,
     addActiveUser,
     removeActiveUser,
-    setActiveUsers
+    setActiveUsers,
+    lastSeenUsers,
+    updateLastSeen,
   };
 
   return <AuthContext.Provider value={contextData}>{loading ? <Suspense /> : children}</AuthContext.Provider>;

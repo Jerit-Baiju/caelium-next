@@ -15,11 +15,17 @@ export interface LastMessage {
   type: string;
 }
 
+export interface LastSeen {
+  userId: number;
+  timestamp: Date;
+}
+
 export interface User {
   id: number;
   email: string;
   name: string;
   avatar?: string;
+  last_seen: Date;
 }
 
 export interface Message {
