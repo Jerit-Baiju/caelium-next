@@ -13,7 +13,7 @@ import { ChatProvider, useChatContext } from '@/contexts/ChatContext';
 const ChatPageContent = () => {
   const { isLoading } = useChatContext();
   return (
-    <div className='flex flex-col flex-grow max-sm:h-screen sm:w-3/4'>
+    <div className='flex flex-col flex-grow max-sm:h-dvh sm:w-3/4'>
       {isLoading ? (
         <div className='flex flex-grow items-center justify-center'>
           <Loader />
