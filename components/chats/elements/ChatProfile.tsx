@@ -1,7 +1,7 @@
 import AuthContext from '@/contexts/AuthContext';
 import { useChatContext } from '@/contexts/ChatContext';
 import { useRouter } from 'next/navigation';
-import { useContext, useEffect } from 'react';
+import { useContext } from 'react';
 import { FaPhone, FaVideo } from 'react-icons/fa';
 import { IoArrowBack, IoNotifications, IoPerson, IoPersonRemoveSharp } from 'react-icons/io5';
 import { MdDelete } from 'react-icons/md';
@@ -9,15 +9,7 @@ import { MdDelete } from 'react-icons/md';
 const ChatProfile = () => {
   const router = useRouter();
   const { user } = useContext(AuthContext);
-  const { meta, getParticipant } = useChatContext();
-
-  useEffect(() => {
-    alert('This page is under development');
-  }, []);
-
-  useEffect(() => {
-    console.log(meta);
-  }, [meta]);
+  const { meta, getParticipant, getLastSeen } = useChatContext();
 
   const recipient = getParticipant(meta?.participants.find((p) => p.id !== user.id)?.id ?? 0);
   return (
@@ -32,13 +24,21 @@ const ChatProfile = () => {
             <IoArrowBack className='text-2xl' />
           </button>
           <div className='relative'>
-            <img src={recipient?.avatar} alt='Profile' className='w-40 h-40 rounded-full object-cover' />
+            {!meta?.is_group ? (
+              <img src={recipient?.avatar} alt='Profile' className='w-40 h-40 rounded-full object-cover bg-white' />
+            ) : meta?.group_icon ? (
+              <img src={meta?.group_icon} alt='Group Icon' className='w-40 h-40 rounded-full object-cover bg-white' />
+            ) : (
+              <div className='flex items-center justify-center w-40 h-40 dark:text-black rounded-full bg-white border dark:border-neutral-500 border-neutral-200 object-cover'>
+                <i className='fa-solid fa-people-group text-7xl'></i>
+              </div>
+            )}
             {/* <button className='absolute bottom-0 right-0 p-2 bg-blue-500 rounded-full'>
               <FaCamera className='text-white' />
             </button> */}
           </div>
-          <h1 className='text-2xl font-semibold mt-4'>{recipient?.name}</h1>
-          <p className='text-neutral-400'>Last seen today at 12:00 PM</p>
+          <h1 className='text-2xl font-semibold mt-4'>{meta?.is_group ? meta.name : recipient?.name}</h1>
+          {!meta?.is_group && getLastSeen(meta?.participants.find((participant) => participant.id !== user.id)?.id ?? 0)}
         </div>
       </div>
 

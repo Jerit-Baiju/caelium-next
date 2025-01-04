@@ -8,6 +8,7 @@ import { ReactNode, createContext, useContext, useEffect, useState } from 'react
 import AuthContext from './AuthContext';
 import { useChatsPaneContext } from './ChatsPaneContext';
 import { useWebSocket } from './SocketContext';
+import { formatTimeSince } from '@/utils/timeUtils';
 
 interface childrenProps {
   chatId: number;
@@ -30,6 +31,7 @@ interface ChatContextProps {
   nextPage: string | null;
   meta: Chat | null;
   getParticipant: (id: number) => User | null;
+  getLastSeen: (participantId: number) => ReactNode;
 }
 
 const ChatContext = createContext<ChatContextProps>({
@@ -48,11 +50,12 @@ const ChatContext = createContext<ChatContextProps>({
   nextPage: null,
   meta: null,
   getParticipant: () => null,
+  getLastSeen: () => null,
 });
 export default ChatContext;
 
 export const ChatProvider = ({ chatId, children }: childrenProps) => {
-  const { user } = useContext(AuthContext);
+  const { user, lastSeenUsers, activeUsers } = useContext(AuthContext);
   const [textInput, setTextInput] = useState('');
   const [messages, setMessages] = useState<Message[]>([]);
   const [error, setError] = useState<BaseError | null>(null);
@@ -192,6 +195,23 @@ export const ChatProvider = ({ chatId, children }: childrenProps) => {
     return meta?.participants?.find((participant) => participant.id == id) || null;
   };
 
+
+  const getLastSeen = (participantId: number) => {
+    const lastSeenUser = lastSeenUsers.find((user) => user.userId === participantId);
+    if (activeUsers.includes(participantId)) {
+      return <span className='text-green-500'>online</span>;
+    } else if (lastSeenUser) {
+      return <span className='text-gray-500'>last seen {formatTimeSince(lastSeenUser.timestamp)}</span>;
+    } else {
+      return (
+        <span className='text-gray-500'>
+          last seen {formatTimeSince(meta?.participants.find((participant) => participant.id === participantId)?.last_seen)}
+        </span>
+      );
+    }
+  };
+
+
   const handleTyping = async (text: string) => {
     if (socket?.readyState === WebSocket.OPEN) {
       try {
@@ -260,6 +280,7 @@ export const ChatProvider = ({ chatId, children }: childrenProps) => {
         nextPage,
         meta,
         getParticipant,
+        getLastSeen
       }}
     >
       {children}
