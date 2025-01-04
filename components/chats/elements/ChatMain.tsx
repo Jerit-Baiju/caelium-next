@@ -71,7 +71,7 @@ const ChatMain = () => {
   }, [messages, scrollOffset, loading]);
 
   return (
-    <div ref={containerRef} onScroll={handleScroll} className='flex flex-col overflow-auto h-max p-2'>
+    <div ref={containerRef} onScroll={handleScroll} className='flex flex-col overflow-auto h-full p-2'>
       <div className='flex-grow' />
       {nextPage && <div className='text-center text-neutral-400 my-10'>Loading older messages...</div>}
       <div className='flex flex-col justify-end'>
