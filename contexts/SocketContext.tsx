@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useEffect, useRef, useState } from 'react';
+import AuthContext from './AuthContext';
 
 interface WebSocketContextType {
   socket: WebSocket | null;
@@ -10,9 +11,20 @@ interface WebSocketContextType {
 const WebSocketContext = createContext<WebSocketContextType | null>(null);
 
 export const WebSocketProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const { setActiveUsers, addActiveUser, removeActiveUser } = useContext(AuthContext);
   const socketRef = useRef<WebSocket | null>(null);
-  const [socketData, setSocketData] = useState();
+  const [socketData, setSocketData] = useState<any>();
   const [isConnected, setIsConnected] = useState(false);
+
+  useEffect(() => {
+    if (!socketData) return;
+    console.log('Socket data:', socketData);
+    if (socketData.category === 'online_users') {
+      setActiveUsers(socketData.online_users);
+    } else if (socketData.category === 'status_update') {
+      socketData.is_online ? addActiveUser(socketData.user_id) : removeActiveUser(socketData.user_id);
+    }
+  }, [socketData]);
 
   useEffect(() => {
     const token = localStorage.getItem('authTokens');
@@ -38,7 +50,6 @@ export const WebSocketProvider: React.FC<{ children: React.ReactNode }> = ({ chi
 
       ws.onmessage = (event) => {
         const data = JSON.parse(event.data);
-        console.log('Received:', data);
         setSocketData(data);
       };
 

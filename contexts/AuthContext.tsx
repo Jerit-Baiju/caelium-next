@@ -17,6 +17,10 @@ interface AuthContextProps {
   setTokenData: (e: any) => void;
   setAuthTokens: (e: any) => void;
   user: any;
+  activeUsers: number[];
+  addActiveUser: (id: number) => void;
+  removeActiveUser: (id: number) => void;
+  setActiveUsers: (ids: number[]) => void;
 }
 
 const AuthContext = createContext<AuthContextProps>({
@@ -28,6 +32,10 @@ const AuthContext = createContext<AuthContextProps>({
   setTokenData: () => {},
   setAuthTokens: () => {},
   user: {},
+  activeUsers: [],
+  addActiveUser: () => {},
+  removeActiveUser: () => {},
+  setActiveUsers: () => {},
 });
 
 export default AuthContext;
@@ -36,6 +44,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   let [loading, setLoading] = useState(true);
   let [error, setError] = useState({});
   let [user, setUser] = useState<User | null>(null);
+  const [activeUsers, setActiveUsers] = useState<number[]>([]);
   let [authTokens, setAuthTokens] = useState(() =>
     typeof window !== 'undefined' && localStorage.getItem('authTokens')
       ? JSON.parse(localStorage.getItem('authTokens') || '{}')
@@ -67,6 +76,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     authTokens ? fetchMe() : null;
   }, [tokenData]);
 
+  const addActiveUser = (id: number) => {
+    setActiveUsers([...activeUsers, id]);
+  };
+
+  const removeActiveUser = (id: number) => {
+    setActiveUsers(activeUsers.filter((user) => user !== id));
+  };
+
   let loginUser = async (data: any) => {
     localStorage.setItem('authTokens', JSON.stringify(data));
     setAuthTokens(data);
@@ -97,6 +114,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setTokenData,
     setAuthTokens,
     user,
+    activeUsers,
+    addActiveUser,
+    removeActiveUser,
+    setActiveUsers
   };
 
   return <AuthContext.Provider value={contextData}>{loading ? <Suspense /> : children}</AuthContext.Provider>;
