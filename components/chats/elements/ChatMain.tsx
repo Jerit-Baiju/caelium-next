@@ -41,6 +41,27 @@ const ChatMain = ({ viewportHeight }: { viewportHeight: number }) => {
     }
   };
 
+  const preventWindowScroll = (e: TouchEvent) => {
+    if (containerRef.current) {
+      const { scrollTop, scrollHeight, clientHeight } = containerRef.current;
+      const isAtBottom = Math.abs(scrollHeight - clientHeight - scrollTop) < 1;
+      
+      if (isAtBottom) {
+        e.preventDefault();
+      }
+    }
+  };
+
+  useEffect(() => {
+    const container = containerRef.current;
+    if (container) {
+      container.addEventListener('touchmove', preventWindowScroll, { passive: false });
+      return () => {
+        container.removeEventListener('touchmove', preventWindowScroll);
+      };
+    }
+  }, []);
+
   const isSameDay = (date1: Date, date2: Date) => {
     return date1.getFullYear() === date2.getFullYear() && date1.getMonth() === date2.getMonth() && date1.getDate() === date2.getDate();
   };
@@ -71,7 +92,11 @@ const ChatMain = ({ viewportHeight }: { viewportHeight: number }) => {
   }, [messages, scrollOffset, loading]);
 
   return (
-    <div ref={containerRef} onScroll={handleScroll} className='flex flex-col overflow-y-auto flex-1 p-2'>
+    <div 
+      ref={containerRef} 
+      onScroll={handleScroll} 
+      className='flex flex-col overflow-y-auto flex-1 p-2 overscroll-none max-sm:touch-pan-y'
+    >
       <div className='flex-grow' />
       {nextPage && <div className='text-center text-neutral-400 my-10'>Loading older messages...</div>}
       <div className='flex flex-col justify-end'>
