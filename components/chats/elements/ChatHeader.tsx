@@ -14,11 +14,12 @@ import ChatContext from '@/contexts/ChatContext';
 import { NavLink } from '@/helpers/props';
 import Link from 'next/link';
 import { useContext, useState } from 'react';
+import { formatTimeSince } from '@/utils/timeUtils';
 
 const ChatHeader = () => {
   const [isAlertOpen, setIsAlertOpen] = useState(false);
   let { getParticipant, clearChat, meta } = useContext(ChatContext);
-  let { user, activeUsers } = useContext(AuthContext);
+  let { user, activeUsers, lastSeenUsers } = useContext(AuthContext);
 
   const options: NavLink[] = [
     { name: 'Dashboard', url: '/dashboard' },
@@ -28,6 +29,19 @@ const ChatHeader = () => {
   const handleClearChat = () => {
     clearChat();
     setIsAlertOpen(false);
+  };
+
+  const getLastSeen = (participantId: number) => {
+    const lastSeenUser = lastSeenUsers.find(user => user.userId === participantId);
+    if (activeUsers.includes(participantId)) {
+      return <span className='text-green-500'>online</span>;
+    } else if (lastSeenUser) {
+      return <span className='text-gray-500'>last seen {formatTimeSince(lastSeenUser.timestamp)}</span>;
+    } else {
+      return <span className='text-gray-500'>
+        last seen {formatTimeSince(meta?.participants.find((participant) => participant.id === participantId)?.last_seen)}
+      </span>;
+    }
   };
 
   return (
@@ -79,11 +93,7 @@ const ChatHeader = () => {
                 </p>
               ) : (
                 <span className='text-sm'>
-                  {activeUsers.includes(meta?.participants.find((participant) => participant.id !== user.id)?.id ?? 0) ? (
-                    <span className='text-green-500'>online</span>
-                  ) : (
-                    <span className='text-gray-500'>offline</span>
-                  )}
+                  {getLastSeen(meta?.participants.find((participant) => participant.id !== user.id)?.id ?? 0)}
                 </span>
               )}
             </div>

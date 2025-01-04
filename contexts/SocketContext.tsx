@@ -11,7 +11,7 @@ interface WebSocketContextType {
 const WebSocketContext = createContext<WebSocketContextType | null>(null);
 
 export const WebSocketProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const { setActiveUsers, addActiveUser, removeActiveUser } = useContext(AuthContext);
+  const { setActiveUsers, addActiveUser, removeActiveUser, updateLastSeen } = useContext(AuthContext);
   const socketRef = useRef<WebSocket | null>(null);
   const [socketData, setSocketData] = useState<any>();
   const [isConnected, setIsConnected] = useState(false);
@@ -22,7 +22,7 @@ export const WebSocketProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     if (socketData.category === 'online_users') {
       setActiveUsers(socketData.online_users);
     } else if (socketData.category === 'status_update') {
-      socketData.is_online ? addActiveUser(socketData.user_id) : removeActiveUser(socketData.user_id);
+      socketData.is_online ? addActiveUser(socketData.user_id) : removeActiveUser(socketData.user_id); updateLastSeen(socketData.user_id);
     }
   }, [socketData]);
 
