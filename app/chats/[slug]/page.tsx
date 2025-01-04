@@ -48,7 +48,7 @@ const ChatPageContent = () => {
       ) : (
         <>
           <ChatHeader />
-          <ChatMain />
+          <ChatMain viewportHeight={viewportHeight} />
           <ChatInput />
         </>
       )}
