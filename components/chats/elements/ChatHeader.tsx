@@ -18,7 +18,7 @@ import { useContext, useState } from 'react';
 const ChatHeader = () => {
   const [isAlertOpen, setIsAlertOpen] = useState(false);
   let { getParticipant, clearChat, meta } = useContext(ChatContext);
-  let { user } = useContext(AuthContext);
+  let { user, activeUsers } = useContext(AuthContext);
 
   const options: NavLink[] = [
     { name: 'Dashboard', url: '/dashboard' },
@@ -60,12 +60,14 @@ const ChatHeader = () => {
           )}
           <Link href={'/chats/info/' + meta?.id}>
             <div className='flex flex-col ps-2'>
-              <p className='text-2xl'>
-                {meta?.is_group
-                  ? meta.name
-                  : getParticipant(meta?.participants.find((participant) => participant.id !== user.id)?.id ?? 0)?.name}
-              </p>
-              {meta?.is_group && (
+              <div className='flex items-center gap-2'>
+                <p className='text-2xl'>
+                  {meta?.is_group
+                    ? meta.name
+                    : getParticipant(meta?.participants.find((participant) => participant.id !== user.id)?.id ?? 0)?.name}
+                </p>
+              </div>
+              {meta?.is_group ? (
                 <p className='text-sm text-neutral-600 dark:text-neutral-400 truncate max-w-[200px] sm:max-w-[300px] md:max-w-[400px] lg:max-w-[600px] xl:max-w-[800px]'>
                   {meta.participants
                     .slice(0, window.innerWidth > 1024 ? 6 : 2)
@@ -75,6 +77,14 @@ const ChatHeader = () => {
                   {meta.participants.length > (window.innerWidth > 1024 ? 6 : 2) &&
                     ` + ${meta.participants.length - (window.innerWidth > 1024 ? 6 : 2)} others`}
                 </p>
+              ) : (
+                <span className='text-sm'>
+                  {activeUsers.includes(meta?.participants.find((participant) => participant.id !== user.id)?.id ?? 0) ? (
+                    <span className='text-green-500'>online</span>
+                  ) : (
+                    <span className='text-gray-500'>offline</span>
+                  )}
+                </span>
               )}
             </div>
           </Link>
