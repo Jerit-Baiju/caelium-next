@@ -11,7 +11,7 @@ import VideoMessage from './ChatBubbles/VideoMessage';
 import VoiceMessage from './ChatBubbles/VoiceMessage';
 import Typing from './states/Typing';
 
-const ChatMain = () => {
+const ChatMain = ({ viewportHeight }: { viewportHeight: number }) => {
   const { messages, isUploading, typingMessage, loadMoreMessages, nextPage } = useContext(ChatContext);
   const containerRef = useRef<HTMLDivElement>(null);
   const [scrollOffset, setScrollOffset] = useState<number>(0); // To track the scroll offset
@@ -19,10 +19,10 @@ const ChatMain = () => {
 
   useEffect(() => {
     if (containerRef.current && !loading) {
-      // Scroll to the bottom when new messages arrive (for sending or receiving messages)
+      // Scroll to the bottom when new messages arrive or viewport height changes
       containerRef.current.scrollTop = containerRef.current.scrollHeight;
     }
-  }, [messages, isUploading, typingMessage, loading]);
+  }, [messages, isUploading, typingMessage, loading, viewportHeight]);
 
   const handleScroll = () => {
     if (containerRef.current) {
@@ -71,7 +71,7 @@ const ChatMain = () => {
   }, [messages, scrollOffset, loading]);
 
   return (
-    <div ref={containerRef} onScroll={handleScroll} className='flex flex-col overflow-auto h-full p-2'>
+    <div ref={containerRef} onScroll={handleScroll} className='flex flex-col overflow-y-auto flex-1 p-2'>
       <div className='flex-grow' />
       {nextPage && <div className='text-center text-neutral-400 my-10'>Loading older messages...</div>}
       <div className='flex flex-col justify-end'>
