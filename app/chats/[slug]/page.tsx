@@ -8,10 +8,12 @@ import ChatInput from '@/components/chats/elements/ChatInput';
 import ChatMain from '@/components/chats/elements/ChatMain';
 import Loader from '@/components/Loader';
 import { ChatProvider, useChatContext } from '@/contexts/ChatContext';
+import { useWebSocket } from '@/contexts/SocketContext';
 // import useNotifications from '@/hooks/useNotifications';
 
 const ChatPageContent = () => {
   const { isLoading } = useChatContext();
+  const { isConnected } = useWebSocket();
   const [viewportHeight, setViewportHeight] = useState<number>(window.innerHeight);
   const [isMobile, setIsMobile] = useState(false);
 
@@ -41,7 +43,7 @@ const ChatPageContent = () => {
 
   return (
     <div className='flex flex-col flex-grow max-sm:h-dvh sm:w-3/4' style={isMobile ? { height: `${viewportHeight}px` } : undefined}>
-      {isLoading ? (
+      {isLoading || !isConnected ? (
         <div className='flex flex-grow items-center justify-center'>
           <Loader />
         </div>
