@@ -9,7 +9,7 @@ import { useContext, useEffect } from 'react';
 import Loader from '../Loader';
 
 const ChatsPane = () => {
-  const { authTokens, user } = useContext(AuthContext);
+  const { authTokens, user, activeUsers } = useContext(AuthContext);
   const { socketData } = useWebSocket();
   const { chats, isLoading, searchQuery, setSearchQuery, fetchChats, searchChats, updateChatOrder } = useChatsPaneContext();
 
@@ -80,13 +80,20 @@ const ChatsPane = () => {
             <Link key={chat.id} href={`/chats/${chat.id}`} className='block w-full'>
               <li className='flex items-center px-3 py-2 m-1 rounded-md hover:bg-neutral-200 dark:hover:bg-neutral-900 w-full'>
                 <div className='flex items-center space-x-3 flex-1 min-w-0 w-0'>
-                  <div className='flex-shrink-0 dark:bg-white rounded-full'>
+                  <div className='flex-shrink-0 dark:bg-white rounded-full relative'>
                     {!chat?.is_group ? (
-                      <img
-                        className='w-12 h-12 rounded-full border dark:border-neutral-500 border-neutral-200 object-cover'
-                        src={chat.participants.find((p) => p.id !== user.id)?.avatar || ''}
-                        alt={chat.participants.find((p) => p.id !== user.id)?.name}
-                      />
+                      <>
+                        <img
+                          className='w-12 h-12 rounded-full border dark:border-neutral-500 border-neutral-200 object-cover'
+                          src={chat.participants.find((p) => p.id !== user.id)?.avatar || ''}
+                          alt={chat.participants.find((p) => p.id !== user.id)?.name}
+                        />
+                        <span className={`absolute bottom-0 right-0 w-3.5 h-3.5 border-2 border-white rounded-full ${
+                          activeUsers.includes(chat.participants.find((p) => p.id !== user.id)?.id || 0)
+                            ? 'bg-green-400'
+                            : 'bg-neutral-400'
+                        }`}></span>
+                      </>
                     ) : chat.group_icon ? (
                       <img
                         className='w-12 h-12 rounded-full border dark:border-neutral-500 border-neutral-200 object-cover'
