@@ -144,29 +144,30 @@ export const ChatProvider = ({ chatId, children }: childrenProps) => {
       }
 
       try {
-        socket.send(JSON.stringify({ 
-          category: 'text_message', 
-          message: content, 
-          type, 
-          chat_id: chatId 
-        }));
-        
-        setMessages((prevMessages) => [
-          ...prevMessages,
-          {
-            id: Date.now(),
-            content: content || '',
-            type,
-            sender: user.id,
-            file_name: '',
-            timestamp: new Date(),
-            file: null,
-          },
-        ]);
-        updateChatOrder(chatId, content || '');
+        if (socket.readyState === WebSocket.OPEN) {
+          socket.send(JSON.stringify({ 
+            category: 'text_message', 
+            message: content, 
+            type, 
+            chat_id: chatId 
+          }));
+          
+          setMessages((prevMessages) => [
+            ...prevMessages,
+            {
+              id: Date.now(),
+              content: content || '',
+              type,
+              sender: user.id,
+              file_name: '',
+              timestamp: new Date(),
+              file: null,
+            },
+          ]);
+          updateChatOrder(chatId, content || '');
+        }
       } catch (error) {
         console.error('Failed to send message:', error);
-        // Optionally queue failed messages for retry
         setMessageQueue(prev => [...prev, {type, content}]);
       }
     } else {
@@ -192,7 +193,13 @@ export const ChatProvider = ({ chatId, children }: childrenProps) => {
   };
 
   const handleTyping = async (text: string) => {
-    socket?.send(JSON.stringify({ category: 'typing', chat_id: chatId, typed: text }));
+    if (socket?.readyState === WebSocket.OPEN) {
+      try {
+        socket.send(JSON.stringify({ category: 'typing', chat_id: chatId, typed: text }));
+      } catch (error) {
+        console.error('Failed to send typing status:', error);
+      }
+    }
   };
 
   const handleSubmit = async (e?: React.FormEvent<HTMLFormElement>) => {
