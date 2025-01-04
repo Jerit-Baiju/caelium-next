@@ -31,7 +31,7 @@ export const WebSocketProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     if (!token) return;
 
     let reconnectTimeout: NodeJS.Timeout;
-    let reconnectInterval = 5000; // Reconnect every 5 seconds
+    let reconnectInterval = 1000; // Reconnect every 1 second
 
     const connectWebSocket = () => {
       console.log('Connecting to WebSocket');
