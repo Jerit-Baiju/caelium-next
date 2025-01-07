@@ -27,7 +27,7 @@ const page = () => {
         <ul className='list-disc list-inside space-y-2 text-gray-600'>
           <li>Harassment, abuse, or harm to others.</li>
           <li>Posting illegal, inappropriate, or offensive content.</li>
-          <li>Attempts to hack, exploit, or disrupt the app's functionality.</li>
+          <li>Attempts to hack, exploit, or disrupt the app&apos;s functionality.</li>
         </ul>
 
         <h2 className='text-2xl font-semibold text-gray-800 mt-4 mb-2'>3. Data Privacy</h2>
