@@ -71,41 +71,29 @@ const ChatMain = ({ viewportHeight }: { viewportHeight?: number }) => {
   }, [messages, scrollOffset, loading]);
 
   return (
-    <main
-      className='flex-1 overflow-y-auto relative'
-      style={{
-        height: 'calc(100% - 120px)', // Assuming header and input total height is around 120px
-        maxHeight: viewportHeight ? `calc(${viewportHeight}px - 120px)` : undefined,
-      }}
-    >
-      <div
-        ref={containerRef}
-        onScroll={handleScroll}
-        className='flex flex-col overflow-y-auto flex-1 p-2 overscroll-none max-sm:touch-pan-y'
-      >
-        <div className='flex-grow' />
-        {nextPage && <div className='text-center text-neutral-400 my-10'>Loading older messages...</div>}
-        <div className='flex flex-col justify-end'>
-          {messages.length === 0 && <div className='text-center text-neutral-400'>No messages yet</div>}
-          {messages.map((message, index) => {
-            const currentDate = new Date(message.timestamp);
-            const isNewDay = !prevDate || !isSameDay(prevDate, currentDate);
-            prevDate = currentDate;
-            if (isNewDay) {
-              return (
-                <React.Fragment key={`separator-${index}`}>
-                  <Separator timestamp={currentDate} />
-                  {renderMessage(message)}
-                </React.Fragment>
-              );
-            }
-            return renderMessage(message);
-          })}
-          {isUploading && <UploadingMessage />}
-          {typingMessage && <Typing />}
-        </div>
+    <div ref={containerRef} onScroll={handleScroll} className='flex flex-col overflow-auto h-full p-2'>
+      <div className='flex-grow' />
+      {nextPage && <div className='text-center text-neutral-400 my-10'>Loading older messages...</div>}
+      <div className='flex flex-col justify-end'>
+        {messages.length === 0 && <div className='text-center text-neutral-400'>No messages yet</div>}
+        {messages.map((message, index) => {
+          const currentDate = new Date(message.timestamp);
+          const isNewDay = !prevDate || !isSameDay(prevDate, currentDate);
+          prevDate = currentDate;
+          if (isNewDay) {
+            return (
+              <React.Fragment key={`separator-${index}`}>
+                <Separator timestamp={currentDate} />
+                {renderMessage(message)}
+              </React.Fragment>
+            );
+          }
+          return renderMessage(message);
+        })}
+        {isUploading && <UploadingMessage />}
+        {typingMessage && <Typing />}
       </div>
-    </main>
+    </div>
   );
 };
 
