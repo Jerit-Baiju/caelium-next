@@ -22,7 +22,7 @@ const page = () => {
         <h2 className='text-2xl font-semibold text-gray-800 mt-4 mb-2'>2. How We Use Your Data</h2>
         <p className='text-gray-600'>We use the collected data to:</p>
         <ul className='list-disc list-inside space-y-2 text-gray-600'>
-          <li>Provide and improve the app's functionality.</li>
+          <li>Provide and improve the app&apos;s functionality.</li>
           <li>Enhance your user experience within the app.</li>
         </ul>
 
