@@ -1,3 +1,4 @@
+import { useContext, useEffect, useRef, useState } from 'react';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -13,10 +14,10 @@ import AuthContext from '@/contexts/AuthContext';
 import ChatContext from '@/contexts/ChatContext';
 import { NavLink } from '@/helpers/props';
 import Link from 'next/link';
-import { useContext, useState } from 'react';
 
 const ChatHeader = () => {
   const [isAlertOpen, setIsAlertOpen] = useState(false);
+  const headerRef = useRef<HTMLDivElement>(null);
   let { getParticipant, clearChat, meta, getLastSeen } = useContext(ChatContext);
   let { user } = useContext(AuthContext);
 
@@ -30,9 +31,23 @@ const ChatHeader = () => {
     setIsAlertOpen(false);
   };
 
+  const preventDefault = (e: TouchEvent) => {
+    e.preventDefault();
+  };
+
+  useEffect(() => {
+    const headerElement = headerRef.current;
+    if (headerElement) {
+      headerElement.addEventListener('touchmove', preventDefault, { passive: false });
+      return () => {
+        headerElement.removeEventListener('touchmove', preventDefault);
+      };
+    }
+  }, []);
+
   return (
     <>
-      <div className='flex sticky top-0 z-10 flex-row h-16 bg-neutral-300 dark:bg-neutral-900 dark:text-white'>
+      <div ref={headerRef} className='flex sticky top-0 z-10 flex-row h-16 bg-neutral-300 dark:bg-neutral-900 dark:text-white'>
         <Link className='flex flex-col my-auto self-start p-3 h-min justify-center rounded-full' href='/chats'>
           <i className='fa-solid fa-arrow-left'></i>
         </Link>

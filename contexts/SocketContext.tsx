@@ -15,6 +15,7 @@ export const WebSocketProvider: React.FC<{ children: React.ReactNode }> = ({ chi
   const socketRef = useRef<WebSocket | null>(null);
   const [socketData, setSocketData] = useState<any>();
   const [isConnected, setIsConnected] = useState(false);
+  const retryCountRef = useRef(0);
 
   useEffect(() => {
     if (!socketData) return;
@@ -22,7 +23,8 @@ export const WebSocketProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     if (socketData.category === 'online_users') {
       setActiveUsers(socketData.online_users);
     } else if (socketData.category === 'status_update') {
-      socketData.is_online ? addActiveUser(socketData.user_id) : removeActiveUser(socketData.user_id); updateLastSeen(socketData.user_id);
+      socketData.is_online ? addActiveUser(socketData.user_id) : removeActiveUser(socketData.user_id);
+      updateLastSeen(socketData.user_id);
     }
   }, [socketData]);
 
@@ -46,6 +48,7 @@ export const WebSocketProvider: React.FC<{ children: React.ReactNode }> = ({ chi
       ws.onopen = () => {
         console.log('Connected to WebSocket');
         setIsConnected(true);
+        retryCountRef.current = 0; // Reset retry counter on successful connection
       };
 
       ws.onmessage = (event) => {
@@ -56,6 +59,14 @@ export const WebSocketProvider: React.FC<{ children: React.ReactNode }> = ({ chi
       ws.onclose = () => {
         console.log('WebSocket closed, attempting to reconnect...');
         setIsConnected(false);
+
+        retryCountRef.current += 1;
+        if (retryCountRef.current > 2) {
+          console.log('Maximum reconnection attempts reached. Reloading page...');
+          window.location.reload();
+          return;
+        }
+
         reconnectTimeout = setTimeout(connectWebSocket, reconnectInterval);
       };
 

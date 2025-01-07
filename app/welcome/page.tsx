@@ -37,6 +37,10 @@ const Page = () => {
             <p className='font-sans font-normal'>Continue with Google</p>
           </button>
         )}
+        <div className='mt-4'>
+          <a href='/privacy-policy' className='text-sm text-gray-400 hover:text-gray-200 mr-4'>Privacy Policy</a>
+          <a href='/terms-and-conditions' className='text-sm text-gray-400 hover:text-gray-200'>Terms and Conditions</a>
+        </div>
       </Vortex>
     </div>
   );
