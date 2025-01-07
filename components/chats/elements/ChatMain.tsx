@@ -11,7 +11,7 @@ import VideoMessage from './ChatBubbles/VideoMessage';
 import VoiceMessage from './ChatBubbles/VoiceMessage';
 import Typing from './states/Typing';
 
-const ChatMain = () => {
+const ChatMain = ({ viewportHeight }: { viewportHeight?: number }) => {
   const { messages, isUploading, typingMessage, loadMoreMessages, nextPage } = useContext(ChatContext);
   const containerRef = useRef<HTMLDivElement>(null);
   const [scrollOffset, setScrollOffset] = useState<number>(0); // To track the scroll offset
@@ -19,10 +19,10 @@ const ChatMain = () => {
 
   useEffect(() => {
     if (containerRef.current && !loading) {
-      // Scroll to the bottom when new messages arrive (for sending or receiving messages)
+      // Scroll to the bottom when new messages arrive or viewport height changes
       containerRef.current.scrollTop = containerRef.current.scrollHeight;
     }
-  }, [messages, isUploading, typingMessage, loading]);
+  }, [messages, isUploading, typingMessage, loading, viewportHeight]);
 
   const handleScroll = () => {
     if (containerRef.current) {
@@ -71,29 +71,41 @@ const ChatMain = () => {
   }, [messages, scrollOffset, loading]);
 
   return (
-    <div ref={containerRef} onScroll={handleScroll} className='flex flex-col overflow-auto h-max p-2'>
-      <div className='flex-grow' />
-      {nextPage && <div className='text-center text-neutral-400 my-10'>Loading older messages...</div>}
-      <div className='flex flex-col justify-end'>
-        {messages.length === 0 && <div className='text-center text-neutral-400'>No messages yet</div>}
-        {messages.map((message, index) => {
-          const currentDate = new Date(message.timestamp);
-          const isNewDay = !prevDate || !isSameDay(prevDate, currentDate);
-          prevDate = currentDate;
-          if (isNewDay) {
-            return (
-              <React.Fragment key={`separator-${index}`}>
-                <Separator timestamp={currentDate} />
-                {renderMessage(message)}
-              </React.Fragment>
-            );
-          }
-          return renderMessage(message);
-        })}
-        {isUploading && <UploadingMessage />}
-        {typingMessage && <Typing />}
+    <main
+      className='flex-1 overflow-y-auto relative'
+      style={{
+        height: 'calc(100% - 120px)', // Assuming header and input total height is around 120px
+        maxHeight: viewportHeight ? `calc(${viewportHeight}px - 120px)` : undefined,
+      }}
+    >
+      <div
+        ref={containerRef}
+        onScroll={handleScroll}
+        className='flex flex-col overflow-y-auto flex-1 p-2 overscroll-none max-sm:touch-pan-y'
+      >
+        <div className='flex-grow' />
+        {nextPage && <div className='text-center text-neutral-400 my-10'>Loading older messages...</div>}
+        <div className='flex flex-col justify-end'>
+          {messages.length === 0 && <div className='text-center text-neutral-400'>No messages yet</div>}
+          {messages.map((message, index) => {
+            const currentDate = new Date(message.timestamp);
+            const isNewDay = !prevDate || !isSameDay(prevDate, currentDate);
+            prevDate = currentDate;
+            if (isNewDay) {
+              return (
+                <React.Fragment key={`separator-${index}`}>
+                  <Separator timestamp={currentDate} />
+                  {renderMessage(message)}
+                </React.Fragment>
+              );
+            }
+            return renderMessage(message);
+          })}
+          {isUploading && <UploadingMessage />}
+          {typingMessage && <Typing />}
+        </div>
       </div>
-    </div>
+    </main>
   );
 };
 

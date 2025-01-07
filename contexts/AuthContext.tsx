@@ -62,7 +62,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     if (!tokenData) {
-      router.replace('/welcome');
+      const path = window.location.pathname;
+      if (path !== '/privacy-policy' && path !== '/terms-and-conditions') {
+        router.replace('/welcome');
+      }
     }
   }, [router, tokenData, loading]);
 
