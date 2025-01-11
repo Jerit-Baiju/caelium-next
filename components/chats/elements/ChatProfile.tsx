@@ -5,12 +5,12 @@ import { useContext } from 'react';
 import { FaPhone, FaVideo } from 'react-icons/fa';
 import { IoArrowBack, IoNotifications, IoPerson, IoPersonRemoveSharp } from 'react-icons/io5';
 import { MdDelete } from 'react-icons/md';
+import ChatMediaTabs from './ChatMediaTabs';
 
 const ChatProfile = () => {
   const router = useRouter();
   const { user } = useContext(AuthContext);
   const { meta, getParticipant, getLastSeen } = useChatContext();
-
   const recipient = getParticipant(meta?.participants.find((p) => p.id !== user.id)?.id ?? 0);
   return (
     <div className='flex flex-col flex-grow sm:w-3/4 bg-white dark:bg-neutral-900'>
@@ -86,11 +86,7 @@ const ChatProfile = () => {
         {/* Media Section */}
         <div className='p-4 border-t border-neutral-200 dark:border-neutral-800'>
           <h2 className='text-lg font-semibold mb-4 text-neutral-900 dark:text-white'>Media, links and documents</h2>
-          <div className='grid grid-cols-3 gap-2'>
-            {[1, 2, 3].map((item) => (
-              <div key={item} className='aspect-square bg-neutral-100 dark:bg-neutral-800 rounded-lg'></div>
-            ))}
-          </div>
+          <ChatMediaTabs chatId={meta?.id ?? 0} />
         </div>
       </div>
     </div>
