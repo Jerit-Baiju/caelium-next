@@ -14,37 +14,36 @@ const ChatProfile = () => {
   const recipient = getParticipant(meta?.participants.find((p) => p.id !== user.id)?.id ?? 0);
   return (
     <div className='flex flex-col flex-grow sm:w-3/4 bg-white dark:bg-neutral-900'>
-      {/* Fixed Profile Header */}
-      <div className='flex-none border-b border-neutral-200 dark:border-neutral-800'>
-        <div className='flex flex-col items-center p-8 relative'>
-          <button
-            onClick={() => router.push(`/chats/${meta?.id}`)}
-            className='absolute left-2 top-2 p-2 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded-full'
-          >
-            <IoArrowBack className='text-2xl text-neutral-800 dark:text-white' />
-          </button>
-          <div className='relative'>
-            {!meta?.is_group ? (
-              <img src={recipient?.avatar} alt='Profile' className='w-40 h-40 rounded-full object-cover bg-white' />
-            ) : meta?.group_icon ? (
-              <img src={meta?.group_icon} alt='Group Icon' className='w-40 h-40 rounded-full object-cover bg-white' />
-            ) : (
-              <div className='flex items-center justify-center w-40 h-40 dark:text-black rounded-full bg-white border dark:border-neutral-500 border-neutral-200 object-cover'>
-                <i className='fa-solid fa-people-group text-7xl'></i>
-              </div>
-            )}
-          </div>
-          <h1 className='text-2xl font-semibold mt-4 text-neutral-900 dark:text-white'>
-            {meta?.is_group ? meta.name : recipient?.name}
-          </h1>
-          <div className='text-neutral-600 dark:text-neutral-400'>
-            {!meta?.is_group && getLastSeen(meta?.participants.find((participant) => participant.id !== user.id)?.id ?? 0)}
+      <div className='flex-1 overflow-y-auto'>
+        {/* Profile Header */}
+        <div className='border-b border-neutral-200 dark:border-neutral-800'>
+          <div className='flex flex-col items-center p-8 relative'>
+            <button
+              onClick={() => router.push(`/chats/${meta?.id}`)}
+              className='absolute left-2 top-2 p-2 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded-full'
+            >
+              <IoArrowBack className='text-2xl text-neutral-800 dark:text-white' />
+            </button>
+            <div className='relative'>
+              {!meta?.is_group ? (
+                <img src={recipient?.avatar} alt='Profile' className='w-40 h-40 rounded-full object-cover bg-white' />
+              ) : meta?.group_icon ? (
+                <img src={meta?.group_icon} alt='Group Icon' className='w-40 h-40 rounded-full object-cover bg-white' />
+              ) : (
+                <div className='flex items-center justify-center w-40 h-40 dark:text-black rounded-full bg-white border dark:border-neutral-500 border-neutral-200 object-cover'>
+                  <i className='fa-solid fa-people-group text-7xl'></i>
+                </div>
+              )}
+            </div>
+            <h1 className='text-2xl font-semibold mt-4 text-neutral-900 dark:text-white'>
+              {meta?.is_group ? meta.name : recipient?.name}
+            </h1>
+            <div className='text-neutral-600 dark:text-neutral-400'>
+              {!meta?.is_group && getLastSeen(meta?.participants.find((participant) => participant.id !== user.id)?.id ?? 0)}
+            </div>
           </div>
         </div>
-      </div>
 
-      {/* Scrollable Content Area */}
-      <div className='flex-1 overflow-y-auto'>
         {/* Actions */}
         <div className='flex justify-around p-4 border-b border-neutral-200 dark:border-neutral-800'>
           <button className='flex flex-col items-center text-neutral-700 dark:text-white'>
