@@ -73,7 +73,7 @@ const ChatHeader = () => {
               <i className='fa-solid fa-people-group text-2xl'></i>
             </div>
           )}
-          <Link href={'/chats/info/' + meta?.id}>
+          <Link href={`/chats/${meta?.id}/info`}>
             <div className='flex flex-col ps-2'>
               <div className='flex items-center gap-2'>
                 <p className='text-2xl'>
