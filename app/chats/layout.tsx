@@ -13,7 +13,7 @@ export default function ChatsLayout({ children }: { children: React.ReactNode })
         <div className={`${showMobilePane ? 'block' : 'hidden'} lg:block w-full lg:w-1/4 border-neutral-800`}>
           <ChatsPane />
         </div>
-        <div className={`${showMobilePane ? 'hidden' : 'block'} flex-grow`}>{children}</div>
+       {children}
       </main>
     </ChatsPaneProvider>
   );
