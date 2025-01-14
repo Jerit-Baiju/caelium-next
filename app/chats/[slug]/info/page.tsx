@@ -10,7 +10,7 @@ const Page = (props: { params: Promise<{ slug: number }> }) => {
 
   return (
     <Wrapper navSM={false}>
-      <div className='flex flex-grow h-[calc(100dvh-5rem)] lg:divide-x divide-dashed divide-neutral-500'>
+      <div className='flex flex-grow p-6 gap-6 h-[calc(100dvh-5rem)] divide-neutral-500'>
         <div className='hidden lg:block flex-none sm:w-1/4'>
           <ChatsPane />
         </div>
