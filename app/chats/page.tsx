@@ -9,7 +9,7 @@ import Wrapper from '../Wrapper';
 const Page = () => {
   return (
     <Wrapper>
-      <div className='flex h-[calc(100dvh-5rem)] gap-6 p-6'>
+      <div className='flex h-[calc(100dvh-5rem)] gap-6 md:p-6'>
         {/* Chats List Section */}
         <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} className='w-full lg:w-1/3 xl:w-1/4'>
           <ChatsPane />
@@ -19,7 +19,7 @@ const Page = () => {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className='hidden lg:flex flex-col flex-1 items-center justify-center rounded-2xl bg-white dark:bg-neutral-800 shadow-sm'
+          className='hidden lg:flex flex-col flex-1 items-center justify-center md:rounded-2xl bg-white dark:bg-neutral-800 shadow-sm'
         >
           <div className='text-center items-center justify-center flex flex-col space-y-6'>
             <div className='h-24 w-24 rounded-full bg-gradient-to-br from-violet-500/10 to-purple-500/10 flex items-center justify-center mx-auto'>
