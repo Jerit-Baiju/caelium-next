@@ -7,8 +7,9 @@ import { AxiosError } from 'axios';
 import { useRouter } from 'next/navigation';
 import { ReactNode, createContext, useContext, useEffect, useState } from 'react';
 import AuthContext from './AuthContext';
-import { useChatsPaneContext } from './ChatsPaneContext';
 import { useWebSocket } from './SocketContext';
+import { useChatsPaneContext } from './ChatsPaneContext';
+
 
 interface childrenProps {
   chatId: number;

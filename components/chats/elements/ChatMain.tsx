@@ -1,8 +1,8 @@
 'use client';
-import { motion, AnimatePresence } from 'framer-motion';
 import ChatContext from '@/contexts/ChatContext';
 import { Message } from '@/helpers/props';
-import React, { useContext, useEffect, useRef, useState } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
+import { useContext, useEffect, useRef, useState } from 'react';
 import DocMessage from './ChatBubbles/DocMessage';
 import ImageMessage from './ChatBubbles/ImageMessage';
 import { Separator } from './ChatBubbles/Separator';
