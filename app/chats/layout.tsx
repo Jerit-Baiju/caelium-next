@@ -1,24 +1,19 @@
 'use client';
 import ChatsPane from '@/components/chats/ChatsPane';
 import { ChatsPaneProvider } from '@/contexts/ChatsPaneContext';
-import { useNavbar } from '@/contexts/NavContext';
-import { useEffect } from 'react';
+import { usePathname } from 'next/navigation';
 
 export default function ChatsLayout({ children }: { children: React.ReactNode }) {
-  const { setViewSM } = useNavbar();
-  useEffect(() => {
-    setViewSM(false);
-    return () => {
-      setViewSM(true);
-    };
-  }, [setViewSM]);
+  const pathname = usePathname();
+  const showMobilePane = pathname === '/chats';
+
   return (
     <ChatsPaneProvider>
-      <main className='flex flex-grow p-6 gap-6 h-[calc(100vh-5rem)]'>
-        <div className='hidden lg:block w-1/4 border-neutral-800'>
+      <main className='flex flex-grow md:p-6 md:gap-6 md:h-[calc(100vh-5rem)]'>
+        <div className={`${showMobilePane ? 'block' : 'hidden'} lg:block w-full lg:w-1/4 border-neutral-800`}>
           <ChatsPane />
         </div>
-        {children}
+        <div className={`${showMobilePane ? 'hidden' : 'block'} flex-grow`}>{children}</div>
       </main>
     </ChatsPaneProvider>
   );

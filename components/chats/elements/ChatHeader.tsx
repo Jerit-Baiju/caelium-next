@@ -1,4 +1,3 @@
-import { motion } from 'framer-motion';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -13,6 +12,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import AuthContext from '@/contexts/AuthContext';
 import ChatContext from '@/contexts/ChatContext';
 import { NavLink } from '@/helpers/props';
+import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { useContext, useEffect, useRef, useState } from 'react';
 
