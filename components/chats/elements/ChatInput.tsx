@@ -1,6 +1,6 @@
 import ChatContext from '@/contexts/ChatContext';
-import { useContext, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
+import { useContext, useEffect, useRef } from 'react';
 
 const ChatInput = () => {
   let { textInput, setTextInput, handleSubmit, sendFile, handleTyping } = useContext(ChatContext);
@@ -54,7 +54,7 @@ const ChatInput = () => {
       <label htmlFor='chat' className='sr-only'>
         Your message
       </label>
-      <div className='flex bottom-0 rounded-b-2xl items-center px-3 py-2 border-t border-dashed bg-gradient-to-r from-neutral-200/90 to-neutral-100/90 backdrop-blur-sm border-neutral-500 dark:from-neutral-900/90 dark:to-neutral-800/90'>
+      <div className='flex bottom-0 md:rounded-b-2xl items-center px-3 py-2 border-t border-dashed bg-gradient-to-r from-neutral-200/90 to-neutral-100/90 backdrop-blur-sm border-neutral-500 dark:from-neutral-900/90 dark:to-neutral-800/90'>
         <div>
           <input type='file' ref={fileInputRef} className='hidden' onChange={handleFileChange} />
         </div>

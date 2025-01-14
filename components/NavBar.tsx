@@ -5,8 +5,8 @@ import { motion } from 'framer-motion';
 const NavBar = () => {
   let { ctaButton, navLinks, dropDown } = useNavbar();
   return (
-    <motion.nav initial={{ y: -22, opacity: 0 }} animate={{ y: 0, opacity: 1 }} className='fixed w-full z-20 top-0 start-0 px-6 py-4'>
-      <div className='max-w-screen-xl mx-auto flex items-center justify-between bg-white dark:bg-neutral-900 rounded-2xl shadow-sm px-6 py-3'>
+    <motion.nav initial={{ y: -22, opacity: 0 }} animate={{ y: 0, opacity: 1 }} className='fixed w-full z-20 top-0 start-0 md:px-6 md:py-4'>
+      <div className='max-w-screen-xl mx-auto flex items-center justify-between bg-white dark:bg-neutral-900 md:rounded-2xl shadow-sm px-6 py-3'>
         <Link href='/' className='flex items-center space-x-3'>
           <img className='pointer-events-none dark:invert' src='/logos/written-dark.png' alt='caelium' width={120} height={0} />
         </Link>

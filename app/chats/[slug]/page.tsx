@@ -68,7 +68,7 @@ const Page = (props: { params: Promise<{ slug: number }> }) => {
   return (
     <Wrapper navSM={false}>
       {/* {showAlertDialog && <NotificationPrompt onEnable={requestPermission} onClose={() => setShowAlertDialog(false)} />} */}
-      <div className='flex flex-grow h-[calc(100dvh-5rem)] p-6 gap-6 divide-neutral-500 overflow-y-scroll'>
+      <div className='flex flex-grow h-[calc(100dvh-5rem)] md:p-6 gap-6 divide-neutral-500 overflow-y-scroll'>
         <div className='hidden lg:block flex-grow flex-none sm:w-1/4'>
           <ChatsPane />
         </div>

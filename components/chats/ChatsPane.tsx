@@ -36,7 +36,7 @@ const ChatsPane = () => {
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className='flex flex-col max-md:h-[calc(100dvh-10rem)] h-[calc(100dvh-8rem)] w-full bg-white dark:bg-neutral-900 rounded-2xl shadow-sm'
+      className='flex flex-col max-md:h-[calc(100dvh-8rem)] h-[calc(100dvh-8rem)] w-full bg-white dark:bg-neutral-900 md:rounded-2xl shadow-sm'
     >
       {/* Search Header */}
       <div className='sticky top-0 z-10 p-4 border-b dark:border-neutral-800'>
