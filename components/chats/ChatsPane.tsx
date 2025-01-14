@@ -91,7 +91,7 @@ const ChatsPane = () => {
                     <div className='relative'>
                       {!chat?.is_group ? (
                         <>
-                          <div className='w-12 h-12 rounded-xl overflow-hidden bg-gradient-to-br from-violet-500 to-purple-500 p-0.5'>
+                          <div className='w-12 h-12 rounded-xl overflow-hidden'>
                             <img
                               className='w-full h-full object-cover rounded-[10px]'
                               src={chat.participants.find((p) => p.id !== user.id)?.avatar}
@@ -103,7 +103,8 @@ const ChatsPane = () => {
                           )}
                         </>
                       ) : (
-                        <div className='w-12 h-12 rounded-xl overflow-hidden bg-gradient-to-br from-violet-500 to-purple-500 p-0.5'>
+                        // <div className='w-12 h-12 rounded-xl overflow-hidden bg-gradient-to-br from-violet-500 to-purple-500 p-0.5'>
+                        <div className='w-12 h-12 rounded-xl overflow-hidden'>
                           {chat.group_icon ? (
                             <img className='w-full h-full object-cover rounded-[10px]' src={chat.group_icon} alt='group' />
                           ) : (
