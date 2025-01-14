@@ -1,3 +1,4 @@
+import Loader from '@/components/Loader';
 import React, { createContext, useContext, useEffect, useRef, useState } from 'react';
 import AuthContext from './AuthContext';
 
@@ -112,7 +113,7 @@ export const WebSocketProvider: React.FC<{ children: React.ReactNode }> = ({ chi
 
   return (
     <WebSocketContext.Provider value={{ socket: socketRef.current, isConnected, send, socketData }}>
-      {children}
+      {socketRef.current ? children : <Loader fullScreen />}
     </WebSocketContext.Provider>
   );
 };
