@@ -1,6 +1,4 @@
 'use client';
-import Wrapper from '@/app/Wrapper';
-import ChatsPane from '@/components/chats/ChatsPane';
 import ChatProfile from '@/components/chats/elements/ChatProfile';
 import { ChatProvider } from '@/contexts/ChatContext';
 import { use } from 'react';
@@ -9,16 +7,9 @@ const Page = (props: { params: Promise<{ slug: number }> }) => {
   const params = use(props.params);
 
   return (
-    <Wrapper navSM={false}>
-      <div className='flex flex-grow md:p-6 gap-6 h-[calc(100dvh-5rem)] divide-neutral-500'>
-        <div className='hidden lg:block flex-none sm:w-1/4'>
-          <ChatsPane />
-        </div>
-        <ChatProvider chatId={params.slug}>
-          <ChatProfile />
-        </ChatProvider>
-      </div>
-    </Wrapper>
+    <ChatProvider chatId={params.slug}>
+      <ChatProfile />
+    </ChatProvider>
   );
 };
 

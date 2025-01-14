@@ -1,47 +1,42 @@
 'use client';
-import ChatsPane from '@/components/chats/ChatsPane';
 import NewChatDialog from '@/components/chats/NewChatDialog';
 import { motion } from 'framer-motion';
 import { FiMessageSquare, FiPlus } from 'react-icons/fi';
 import { handleeFont } from '../font';
-import Wrapper from '../Wrapper';
 
 const Page = () => {
   return (
-    <Wrapper>
-      <div className='flex h-[calc(100dvh-5rem)] gap-6 md:p-6'>
-        {/* Chats List Section */}
-        <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} className='w-full lg:w-1/3 xl:w-1/4'>
-          <ChatsPane />
-        </motion.div>
-
-        {/* Welcome Screen */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className='hidden lg:flex flex-col flex-1 items-center justify-center md:rounded-2xl bg-white dark:bg-neutral-800 shadow-sm'
-        >
-          <div className='text-center items-center justify-center flex flex-col space-y-6'>
-            <div className='h-24 w-24 rounded-full bg-gradient-to-br from-violet-500/10 to-purple-500/10 flex items-center justify-center mx-auto'>
-              <FiMessageSquare className='w-12 h-12 text-violet-500' />
-            </div>
-            <div>
-              <h1 className='text-6xl bg-gradient-to-br from-violet-500 to-purple-500 bg-clip-text text-transparent'>Caelium Chat</h1>
-              <p className='text-3xl text-neutral-500 dark:text-neutral-400 mt-2'>Start connecting with others</p>
-            </div>
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              type='button'
-              data-modal-target='new-chat-modal'
-              data-modal-toggle='new-chat-modal'
-              className={`${handleeFont.className} px-6 py-3 bg-gradient-to-br from-violet-500 to-purple-500 text-white rounded-xl flex items-center gap-2`}
-            >
-              <FiPlus className='w-5 h-5' />
-              New Conversation
-            </motion.button>
+    <>
+      {/* Welcome Screen */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className='hidden lg:flex flex-col flex-1 items-center justify-center rounded-2xl bg-white dark:bg-neutral-800 shadow-sm'
+      >
+        <div className='text-center items-center justify-center flex flex-col space-y-6'>
+          <div className='h-24 w-24 rounded-full bg-gradient-to-br from-violet-500/10 to-purple-500/10 flex items-center justify-center mx-auto'>
+            <FiMessageSquare className='w-12 h-12 text-violet-500' />
           </div>
-        </motion.div>
-      </div>
+          <div>
+            <h1 className='text-6xl bg-gradient-to-br from-violet-500 to-purple-500 bg-clip-text text-transparent'>
+              Caelium Chat
+            </h1>
+            <p className='text-3xl text-neutral-500 dark:text-neutral-400 mt-2'>
+              Start connecting with others
+            </p>
+          </div>
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            type='button'
+            data-modal-target='new-chat-modal'
+            data-modal-toggle='new-chat-modal'
+            className={`${handleeFont.className} px-6 py-3 bg-gradient-to-br from-violet-500 to-purple-500 text-white rounded-xl flex items-center gap-2`}
+          >
+            <FiPlus className='w-5 h-5' />
+            New Conversation
+          </motion.button>
+        </div>
+      </motion.div>
 
       {/* New Chat Modal */}
       <div id='new-chat-modal' tabIndex={-1} className='hidden fixed inset-0 z-50 bg-black/50'>
@@ -86,7 +81,7 @@ const Page = () => {
           <FiPlus className='w-6 h-6' />
         </motion.button>
       </motion.div>
-    </Wrapper>
+    </>
   );
 };
 
