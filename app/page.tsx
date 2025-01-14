@@ -4,7 +4,6 @@ import Personal from '@/components/home/spaces/personal';
 import Loader from '@/components/Loader';
 import AuthContext from '@/contexts/AuthContext';
 import { useContext } from 'react';
-import Wrapper from './Wrapper';
 
 /**
  * Home component temporarily blocks the homepage and redirects to the '/chats' route.
@@ -17,12 +16,9 @@ export default function Home() {
   const { user } = useContext(AuthContext);
 
   return user ? (
-    <Wrapper>
-      <div className='w-full dark:text-white'>
-        <Personal />
-      </div>
-      {/* <SpeedDial /> */}
-    </Wrapper>
+    <div className='w-full dark:text-white'>
+      <Personal />
+    </div>
   ) : (
     <div className='flex items-center justify-center h-screen'>
       <Loader />

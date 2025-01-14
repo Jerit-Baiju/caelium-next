@@ -21,7 +21,9 @@ const SideBar = () => {
   if (!['/accounts/login', '/accounts/register'].includes(route)) {
     return (
       <>
-        <aside
+        <motion.aside
+          initial={{ x: -15, opacity: 0 }}
+          animate={{ x: 0, opacity: 1 }}
           className='fixed top-20 left-0 z-40 w-72 h-screen hidden lg:block transition-transform 
           translate-x-0'
           aria-label='Sidebar'
@@ -79,14 +81,22 @@ const SideBar = () => {
               </motion.button>
             </div>
           </div>
-        </aside>
+        </motion.aside>
 
         {/* Logout Modal */}
-        <div id='logout-modal' tabIndex={-1} className='hidden fixed inset-0 z-50 items-center justify-center bg-black/50'>
+        <motion.div
+          id='logout-modal'
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.2 }}
+          tabIndex={-1}
+          className='hidden fixed inset-0 z-50 items-center justify-center bg-black/50'
+        >
           <div className='relative p-4 w-full max-w-md'>
             <motion.div
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
+              initial={{ y: 10, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ duration: 0.2, delay: 0.1 }}
               className='relative rounded-2xl bg-white dark:bg-neutral-800 shadow-lg p-8'
             >
               <div className='text-center space-y-4'>
@@ -115,7 +125,7 @@ const SideBar = () => {
               </div>
             </motion.div>
           </div>
-        </div>
+        </motion.div>
       </>
     );
   }
