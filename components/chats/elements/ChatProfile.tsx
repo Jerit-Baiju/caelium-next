@@ -1,8 +1,12 @@
+'use client';
+
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import AuthContext from '@/contexts/AuthContext';
 import { useChatContext } from '@/contexts/ChatContext';
+import { motion } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 import { useContext, useState } from 'react';
+import { IconType } from 'react-icons';
 import { FaPhone, FaVideo } from 'react-icons/fa';
 import { FaPeopleGroup } from 'react-icons/fa6';
 import { IoArrowBack, IoNotifications, IoPerson, IoPersonRemoveSharp } from 'react-icons/io5';
@@ -26,28 +30,39 @@ const ChatProfile = () => {
   const normalParticipants = filteredParticipants?.filter((p) => p.id !== meta?.creator) ?? [];
 
   return (
-    <div className='flex flex-col flex-grow sm:w-3/4 bg-white dark:bg-neutral-900'>
+    <motion.div
+      initial={{ opacity: 0, x: 20 }}
+      animate={{ opacity: 1, x: 0 }}
+      className='flex flex-col flex-grow sm:w-3/4 bg-white dark:bg-neutral-900 rounded-2xl shadow-sm'
+    >
       <div className='flex-1 overflow-y-auto'>
         {/* Profile Header */}
         <div className='border-b border-neutral-200 dark:border-neutral-800'>
-          <div className='flex flex-col items-center p-8 relative'>
-            <button
+          <motion.div initial={{ y: -20 }} animate={{ y: 0 }} className='flex flex-col items-center p-8 relative'>
+            <motion.button
+              whileHover={{ scale: 1.1 }}
               onClick={() => router.push(`/chats/${meta?.id}`)}
-              className='absolute left-2 top-2 p-2 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded-full'
+              className='absolute left-2 top-2 p-2 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded-full transition-colors'
             >
               <IoArrowBack className='text-2xl text-neutral-800 dark:text-white' />
-            </button>
-            <div className='relative'>
+            </motion.button>
+
+            <motion.div whileHover={{ scale: 1.05 }} className='relative'>
               {!meta?.is_group ? (
-                <img src={recipient?.avatar} alt='Profile' className='w-40 h-40 rounded-full object-cover bg-white' />
+                <div className='w-40 h-40 rounded-2xl overflow-hidden bg-gradient-to-br from-violet-500 to-purple-500 p-0.5'>
+                  <img src={recipient?.avatar} alt='Profile' className='w-full h-full rounded-xl object-cover' />
+                </div>
               ) : meta?.group_icon ? (
-                <img src={meta?.group_icon} alt='Group Icon' className='w-40 h-40 rounded-full object-cover bg-white' />
+                <div className='w-40 h-40 rounded-2xl overflow-hidden bg-gradient-to-br from-violet-500 to-purple-500 p-0.5'>
+                  <img src={meta?.group_icon} alt='Group Icon' className='w-full h-full rounded-xl object-cover' />
+                </div>
               ) : (
-                <div className='flex items-center justify-center w-40 h-40 dark:text-black rounded-full bg-white border dark:border-neutral-500 border-neutral-200 object-cover'>
-                  <i className='fa-solid fa-people-group text-7xl'></i>
+                <div className='w-40 h-40 rounded-2xl bg-gradient-to-br from-violet-500 to-purple-500 flex items-center justify-center'>
+                  <FaPeopleGroup className='text-7xl text-white' />
                 </div>
               )}
-            </div>
+            </motion.div>
+
             <h1 className='text-2xl font-semibold mt-4 text-neutral-900 dark:text-white'>
               {meta?.is_group ? meta.name : recipient?.name}
             </h1>
@@ -56,48 +71,55 @@ const ChatProfile = () => {
                 ? getLastSeen(meta?.participants.find((participant) => participant.id !== user.id)?.id ?? 0)
                 : `Group • ${meta.participants.length} Participants`}
             </div>
-          </div>
+          </motion.div>
         </div>
 
         {/* Actions */}
         <div className='flex justify-around p-4 border-b border-neutral-200 dark:border-neutral-800'>
-          <button className='flex flex-col items-center text-neutral-700 dark:text-white'>
-            <div className='p-3 bg-neutral-100 dark:bg-neutral-800 rounded-full mb-1'>
-              <FaVideo className='text-xl text-blue-500' />
-            </div>
-            <span className='text-sm'>Video</span>
-          </button>
-          <button onClick={() => setShowParticipants(true)} className='flex flex-col items-center text-neutral-700 dark:text-white'>
-            <div className='p-3 bg-neutral-100 dark:bg-neutral-800 rounded-full mb-1'>
-              {meta?.is_group ? <FaPeopleGroup className='text-xl text-blue-500' /> : <IoPerson className='text-xl text-blue-500' />}
-            </div>
-            <span className='text-sm'>{meta?.is_group ? 'Participants' : 'Profile'}</span>
-          </button>
-          <button className='flex flex-col items-center text-neutral-700 dark:text-white'>
-            <div className='p-3 bg-neutral-100 dark:bg-neutral-800 rounded-full mb-1'>
-              <FaPhone className='text-xl text-blue-500' />
-            </div>
-            <span className='text-sm'>Call</span>
-          </button>
+          {[
+            { icon: FaVideo, label: 'Video', color: 'blue' },
+            { icon: meta?.is_group ? FaPeopleGroup : IoPerson, label: meta?.is_group ? 'Participants' : 'Profile', color: 'violet' },
+            { icon: FaPhone, label: 'Call', color: 'green' },
+          ].map((action, index) => (
+            <motion.button
+              key={action.label}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: index * 0.1 }}
+              onClick={action.label === 'Participants' ? () => setShowParticipants(true) : undefined}
+              className='flex flex-col items-center text-neutral-700 dark:text-white'
+            >
+              <div className={`p-3 bg-${action.color}-500/10 rounded-xl mb-1`}>
+                <action.icon className={`text-xl text-${action.color}-500`} />
+              </div>
+              <span className='text-sm'>{action.label}</span>
+            </motion.button>
+          ))}
         </div>
 
         {/* Settings */}
-        <div className='flex flex-col p-4 space-y-4'>
-          <button className='flex items-center p-4 bg-neutral-100 dark:bg-neutral-800 rounded-lg text-neutral-700 dark:text-white'>
-            <IoNotifications className='text-xl mr-4 text-blue-500' />
-            <span>Mute notifications</span>
-          </button>
-          {!meta?.is_group && (
-            <button className='flex items-center p-4 bg-neutral-100 dark:bg-neutral-800 rounded-lg text-neutral-700 dark:text-white'>
-              <IoPersonRemoveSharp className='text-xl mr-4 text-red-500' />
-              <span>Block contact</span>
-            </button>
-          )}
-          <button className='flex items-center p-4 bg-neutral-100 dark:bg-neutral-800 rounded-lg text-neutral-700 dark:text-white'>
-            <MdDelete className='text-xl mr-4 text-red-500' />
-            <span>Delete chat</span>
-          </button>
-        </div>
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className='flex flex-col p-4 space-y-4'>
+          {[
+            { icon: IoNotifications, label: 'Mute notifications', color: 'blue' },
+            !meta?.is_group && { icon: IoPersonRemoveSharp, label: 'Block contact', color: 'red' },
+            { icon: MdDelete, label: 'Delete chat', color: 'red' },
+          ]
+            .filter((item): item is { icon: IconType; label: string; color: string } => Boolean(item))
+            .map((setting, index) => (
+              <motion.button
+                key={setting.label}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                transition={{ delay: index * 0.1 }}
+                className='flex items-center p-4 bg-neutral-100 dark:bg-neutral-800 rounded-xl text-neutral-700 dark:text-white'
+              >
+                <setting.icon className={`text-xl mr-4 text-${setting.color}-500`} />
+                <span>{setting.label}</span>
+              </motion.button>
+            ))}
+        </motion.div>
 
         {/* Participants Dialog */}
         <Dialog open={showParticipants} onOpenChange={setShowParticipants}>
@@ -219,7 +241,7 @@ const ChatProfile = () => {
           <ChatMediaTabs chatId={meta?.id ?? 0} />
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 };
 
