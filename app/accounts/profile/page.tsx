@@ -1,5 +1,4 @@
 'use client';
-import Wrapper from '@/app/Wrapper';
 import Loader from '@/components/Loader';
 import AuthContext from '@/contexts/AuthContext';
 import useAxios from '@/hooks/useAxios';

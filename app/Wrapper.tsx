@@ -12,11 +12,11 @@ interface WrapperProps {
 }
 
 const Wrapper = ({ children }: WrapperProps) => {
-  const {viewSM} = useNavbar();
+  const { viewSM, showNav } = useNavbar();
   useEffect(() => {
     initFlowbite();
   }, []);
-  return (
+  return showNav ? (
     <main>
       <SideBar />
       <div className={viewSM ? '' : 'max-lg:hidden'}>
@@ -27,6 +27,8 @@ const Wrapper = ({ children }: WrapperProps) => {
         <BottomNav />
       </div>
     </main>
+  ) : (
+    children
   );
 };
 
