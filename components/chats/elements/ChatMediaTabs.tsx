@@ -27,7 +27,7 @@ const ChatMediaTabs = ({ chatId }: ChatMediaTabsProps) => {
         console.log('Error fetching media:', error);
       }
     };
-    fetchMedia();
+    chatId && fetchMedia();
   }, [chatId]);
 
   if (!media) return null;
