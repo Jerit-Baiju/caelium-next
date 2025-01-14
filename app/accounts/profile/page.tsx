@@ -113,7 +113,7 @@ const Profile = () => {
   };
 
   return user ? (
-    <Wrapper>
+    <>
       {alert && (
         <div
           className='p-4 m-4 text-sm text-center text-green-800 rounded-lg bg-green-50 dark:bg-neutral-800 dark:text-green-400'
@@ -209,13 +209,13 @@ const Profile = () => {
           </button>
         </div>
       </div>
-    </Wrapper>
+    </>
   ) : (
-    <Wrapper>
+
       <div className='flex h-dvh items-center justify-center'>
         <Loader />
       </div>
-    </Wrapper>
+
   );
 };
 
