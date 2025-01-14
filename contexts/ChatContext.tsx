@@ -2,13 +2,13 @@
 import { Button } from '@/components/ui/button';
 import { BaseError, Chat, Message, User } from '@/helpers/props';
 import useAxios from '@/hooks/useAxios';
+import { formatTimeSince } from '@/utils/timeUtils';
 import { AxiosError } from 'axios';
 import { useRouter } from 'next/navigation';
 import { ReactNode, createContext, useContext, useEffect, useState } from 'react';
 import AuthContext from './AuthContext';
 import { useChatsPaneContext } from './ChatsPaneContext';
 import { useWebSocket } from './SocketContext';
-import { formatTimeSince } from '@/utils/timeUtils';
 
 interface childrenProps {
   chatId: number;
@@ -66,7 +66,7 @@ export const ChatProvider = ({ chatId, children }: childrenProps) => {
   const [typingMessage, setTypingMessage] = useState<{ typed: string; sender: number } | null>(null);
   const [nextPage, setNextPage] = useState<string | null>(null);
   const [isSocketReady, setIsSocketReady] = useState(false);
-  const [messageQueue, setMessageQueue] = useState<{type: 'txt' | 'attachment'; content?: string}[]>([]);
+  const [messageQueue, setMessageQueue] = useState<{ type: 'txt' | 'attachment'; content?: string }[]>([]);
 
   const api = useAxios();
   const router = useRouter();
@@ -113,7 +113,7 @@ export const ChatProvider = ({ chatId, children }: childrenProps) => {
     if (socket?.readyState === WebSocket.OPEN) {
       setIsSocketReady(true);
       // Process any queued messages
-      messageQueue.forEach(msg => {
+      messageQueue.forEach((msg) => {
         sendMessage(msg.type, msg.content);
       });
       setMessageQueue([]);
@@ -142,19 +142,21 @@ export const ChatProvider = ({ chatId, children }: childrenProps) => {
     if (type === 'txt') {
       if (!socket || socket.readyState !== WebSocket.OPEN) {
         console.warn('Socket not ready, queueing message');
-        setMessageQueue(prev => [...prev, {type, content}]);
+        setMessageQueue((prev) => [...prev, { type, content }]);
         return;
       }
 
       try {
         if (socket.readyState === WebSocket.OPEN) {
-          socket.send(JSON.stringify({ 
-            category: 'text_message', 
-            message: content, 
-            type, 
-            chat_id: chatId 
-          }));
-          
+          socket.send(
+            JSON.stringify({
+              category: 'text_message',
+              message: content,
+              type,
+              chat_id: chatId,
+            }),
+          );
+
           setMessages((prevMessages) => [
             ...prevMessages,
             {
@@ -171,7 +173,7 @@ export const ChatProvider = ({ chatId, children }: childrenProps) => {
         }
       } catch (error) {
         console.error('Failed to send message:', error);
-        setMessageQueue(prev => [...prev, {type, content}]);
+        setMessageQueue((prev) => [...prev, { type, content }]);
       }
     } else {
       setIsUploading(true);
@@ -195,7 +197,6 @@ export const ChatProvider = ({ chatId, children }: childrenProps) => {
     return meta?.participants?.find((participant) => participant.id == id) || null;
   };
 
-
   const getLastSeen = (participantId: number) => {
     const lastSeenUser = lastSeenUsers.find((user) => user.userId === participantId);
     if (activeUsers.includes(participantId)) {
@@ -210,7 +211,6 @@ export const ChatProvider = ({ chatId, children }: childrenProps) => {
       );
     }
   };
-
 
   const handleTyping = async (text: string) => {
     if (socket?.readyState === WebSocket.OPEN) {
@@ -280,7 +280,7 @@ export const ChatProvider = ({ chatId, children }: childrenProps) => {
         nextPage,
         meta,
         getParticipant,
-        getLastSeen
+        getLastSeen,
       }}
     >
       {children}
@@ -288,4 +288,10 @@ export const ChatProvider = ({ chatId, children }: childrenProps) => {
   );
 };
 
-export const useChatContext = () => useContext(ChatContext);
+export const useChatContext = () => {
+  const context = useContext(ChatContext);
+  if (context === undefined) {
+    console.error('useChatContext must be used within a ChatProvider');
+  }
+  return context;
+};
