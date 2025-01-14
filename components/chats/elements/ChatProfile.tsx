@@ -33,7 +33,7 @@ const ChatProfile = () => {
     <motion.div
       initial={{ opacity: 0, x: 20 }}
       animate={{ opacity: 1, x: 0 }}
-      className='flex flex-col flex-grow sm:w-3/4 bg-white dark:bg-neutral-900 rounded-2xl shadow-sm'
+      className='flex flex-col flex-grow sm:w-3/4 bg-white dark:bg-neutral-900 md:rounded-2xl shadow-sm'
     >
       <div className='flex-1 overflow-y-auto'>
         {/* Profile Header */}
