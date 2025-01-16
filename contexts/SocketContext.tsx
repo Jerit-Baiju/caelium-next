@@ -1,4 +1,3 @@
-import Loader from '@/components/Loader';
 import React, { createContext, useContext, useEffect, useRef, useState } from 'react';
 import AuthContext from './AuthContext';
 
@@ -12,18 +11,12 @@ interface WebSocketContextType {
 const WebSocketContext = createContext<WebSocketContextType | null>(null);
 
 export const WebSocketProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const { setActiveUsers, addActiveUser, removeActiveUser, updateLastSeen } = useContext(AuthContext);
   const socketRef = useRef<WebSocket | null>(null);
   const [socketData, setSocketData] = useState<any>();
   const [isConnected, setIsConnected] = useState(false);
   const retryCountRef = useRef(0);
   const mounted = useRef(false);
-  const [authToken, setAuthToken] = useState<string | null>(null);
-  const { setActiveUsers, addActiveUser, removeActiveUser, updateLastSeen } = useContext(AuthContext);
-
-  useEffect(() => {
-    const token = localStorage.getItem('authTokens');
-    setAuthToken(token);
-  }, []);
 
   useEffect(() => {
     if (!socketData) return;
@@ -41,7 +34,8 @@ export const WebSocketProvider: React.FC<{ children: React.ReactNode }> = ({ chi
 
   useEffect(() => {
     mounted.current = true;
-    if (!authToken) return;
+    const token = localStorage.getItem('authTokens');
+    if (!token) return;
 
     let reconnectTimeout: NodeJS.Timeout;
     const reconnectInterval = 500;
@@ -54,7 +48,7 @@ export const WebSocketProvider: React.FC<{ children: React.ReactNode }> = ({ chi
         socketRef.current.close();
       }
 
-      const ws = new WebSocket(`${process.env.NEXT_PUBLIC_WS_HOST}/ws/base/${JSON.parse(authToken).access}/`);
+      const ws = new WebSocket(`${process.env.NEXT_PUBLIC_WS_HOST}/ws/base/${JSON.parse(token).access}/`);
 
       ws.onopen = () => {
         console.log('Connected to WebSocket');
@@ -106,7 +100,7 @@ export const WebSocketProvider: React.FC<{ children: React.ReactNode }> = ({ chi
         clearTimeout(reconnectTimeout);
       }
     };
-  }, [authToken]);
+  }, []);
 
   const send = (data: any) => {
     if (socketRef.current?.readyState === WebSocket.OPEN) {
@@ -118,7 +112,7 @@ export const WebSocketProvider: React.FC<{ children: React.ReactNode }> = ({ chi
 
   return (
     <WebSocketContext.Provider value={{ socket: socketRef.current, isConnected, send, socketData }}>
-      {!authToken ? children : socketRef.current && isConnected ? children : <Loader fullScreen />}
+      {children}
     </WebSocketContext.Provider>
   );
 };
