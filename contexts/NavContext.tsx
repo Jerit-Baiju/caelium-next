@@ -36,7 +36,7 @@ let createDropdown: DropDown = {
   name: 'Create',
   options: [
     { name: 'Event', url: '/calendar/create' },
-    { name: 'ToDo', url: '/todo/create' },
+    { name: 'ToDo', url: '/todo' },
   ],
 };
 
