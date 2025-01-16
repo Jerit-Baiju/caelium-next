@@ -1,7 +1,7 @@
 'use client';
 import { Chat } from '@/helpers/props';
 import useAxios from '@/hooks/useAxios';
-import { createContext, ReactNode, useContext, useState } from 'react';
+import { createContext, ReactNode, useContext, useEffect, useState } from 'react';
 import AuthContext from './AuthContext';
 
 interface ChatsPaneContextType {
@@ -10,7 +10,6 @@ interface ChatsPaneContextType {
   isLoading: boolean;
   searchQuery: string;
   setSearchQuery: (query: string) => void;
-  fetchChats: () => Promise<void>;
   searchChats: (e: any) => Promise<void>;
   updateChatOrder: (chatId: number, lastMessage: string) => void;
 }
@@ -24,16 +23,19 @@ export function ChatsPaneProvider({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [searchQuery, setSearchQuery] = useState('');
 
-  const fetchChats = async () => {
-    try {
-      const response = await api.get('/api/chats/');
-      setChats(response.data);
-      setIsLoading(false);
-    } catch (error) {
-      console.error('Error fetching chats:', error);
-      setIsLoading(false);
-    }
-  };
+  useEffect(() => {
+    const fetchChats = async () => {
+      try {
+        const response = await api.get('/api/chats/');
+        setChats(response.data);
+        setIsLoading(false);
+      } catch (error) {
+        console.error('Error fetching chats:', error);
+        setIsLoading(false);
+      }
+    };
+    fetchChats();
+  }, []);
 
   const searchChats = async (e: any) => {
     e.preventDefault();
@@ -82,7 +84,6 @@ export function ChatsPaneProvider({ children }: { children: ReactNode }) {
     isLoading,
     searchQuery,
     setSearchQuery,
-    fetchChats,
     searchChats,
     updateChatOrder,
   };
