@@ -1,10 +1,12 @@
 'use client';
 import NewChatDialog from '@/components/chats/NewChatDialog';
 import { motion } from 'framer-motion';
+import { useRouter } from 'next/navigation';
 import { FiMessageSquare, FiPlus } from 'react-icons/fi';
 import { handleeFont } from '../font';
 
 const Page = () => {
+  const router = useRouter();
   return (
     <>
       {/* Welcome Screen */}
@@ -18,12 +20,8 @@ const Page = () => {
             <FiMessageSquare className='w-12 h-12 text-violet-500' />
           </div>
           <div>
-            <h1 className='text-6xl bg-gradient-to-br from-violet-500 to-purple-500 bg-clip-text text-transparent'>
-              Caelium Chat
-            </h1>
-            <p className='text-3xl text-neutral-500 dark:text-neutral-400 mt-2'>
-              Start connecting with others
-            </p>
+            <h1 className='text-6xl bg-gradient-to-br from-violet-500 to-purple-500 bg-clip-text text-transparent'>Caelium Chat</h1>
+            <p className='text-3xl text-neutral-500 dark:text-neutral-400 mt-2'>Start connecting with others</p>
           </div>
           <motion.button
             whileHover={{ scale: 1.05 }}
@@ -74,8 +72,9 @@ const Page = () => {
         <motion.button
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.9 }}
-          data-modal-target='new-chat-modal'
-          data-modal-toggle='new-chat-modal'
+          onClick={() => {
+            router.replace('/chats/new');
+          }}
           className='w-14 h-14 bg-gradient-to-br from-violet-500 to-purple-500 rounded-full flex items-center justify-center text-white shadow-lg'
         >
           <FiPlus className='w-6 h-6' />
