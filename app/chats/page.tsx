@@ -13,7 +13,7 @@ const Page = () => {
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className='hidden lg:flex flex-col flex-1 items-center justify-center rounded-2xl bg-white dark:bg-neutral-800 shadow-sm'
+        className='hidden lg:flex flex-col flex-1 items-center justify-center rounded-2xl shadow-sm'
       >
         <div className='text-center items-center justify-center flex flex-col space-y-6'>
           <div className='h-24 w-24 rounded-full bg-gradient-to-br from-violet-500/10 to-purple-500/10 flex items-center justify-center mx-auto'>
