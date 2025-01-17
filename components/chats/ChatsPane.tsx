@@ -85,8 +85,8 @@ const ChatsPane = () => {
                   <Link key={chat.id} href={`/chats/${chat.id}`}>
                     <motion.div
                       whileHover={{ scale: 1.01 }}
-                      className={`p-3 rounded-xl transition-all ${
-                        isActive ? 'bg-neutral-200 dark:bg-neutral-800' : 'hover:bg-neutral-100 dark:hover:bg-neutral-800'
+                      className={`px-3 py-2 rounded-xl transition-all ${
+                        isActive ? 'bg-neutral-200 dark:bg-neutral-800' : 'hover:bg-neutral-100 my-1 dark:hover:bg-neutral-800'
                       }`}
                     >
                       <div className='flex items-center gap-4'>
