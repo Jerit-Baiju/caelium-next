@@ -41,7 +41,7 @@ const ChatProfile = () => {
           <motion.div initial={{ y: -20 }} animate={{ y: 0 }} className='flex flex-col items-center p-8 relative'>
             <motion.button
               whileHover={{ scale: 1.1 }}
-              onClick={() => router.push(`/chats/${meta?.id}`)}
+              onClick={() => router.back()}
               className='absolute left-2 top-2 p-2 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded-full transition-colors'
             >
               <IoArrowBack className='text-2xl text-neutral-800 dark:text-white' />
