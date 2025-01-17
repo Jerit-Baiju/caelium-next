@@ -10,10 +10,13 @@ const useAxios = () => {
   const { authTokens, setTokenData, setAuthTokens, logoutUser } = useContext(AuthContext);
   const axiosInstance = axios.create({
     baseURL,
-    headers: { Authorization: `Bearer ${authTokens?.access}` },
+    headers: { Authorization: authTokens?.access ? `Bearer ${authTokens.access}` : '' },
   });
   axiosInstance.interceptors.request.use(async (request) => {
-    const user = jwtDecode(authTokens?.access);
+    if (!authTokens?.access) {
+      return request;
+    }
+    const user = jwtDecode(authTokens.access);
     const isExpired = dayjs.unix(Number(user.exp)).diff(dayjs()) < 1;
     if (!isExpired) return request;
     try {

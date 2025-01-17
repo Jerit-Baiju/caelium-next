@@ -34,7 +34,7 @@ export function ChatsPaneProvider({ children }: { children: ReactNode }) {
         setIsLoading(false);
       }
     };
-    fetchChats();
+    user && fetchChats();
   }, []);
 
   const searchChats = async (e: any) => {
