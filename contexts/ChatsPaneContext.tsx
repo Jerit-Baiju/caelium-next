@@ -35,7 +35,7 @@ export function ChatsPaneProvider({ children }: { children: ReactNode }) {
       }
     };
     user && fetchChats();
-  }, []);
+  }, [user]);
 
   const searchChats = async (e: any) => {
     e.preventDefault();

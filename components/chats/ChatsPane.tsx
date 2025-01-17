@@ -12,9 +12,9 @@ import { useWebSocket } from '@/contexts/SocketContext';
 import { Chat } from '@/helpers/props';
 import { getTime, truncate } from '@/helpers/support';
 import { motion } from 'framer-motion';
-import { Archive, BellOff, ChevronRight, Download, Eraser, Info, Mail, Pin, Trash2 } from 'lucide-react';
+import { Archive, BellOff, ChevronRight, Download, Info, Mail, Pin, Trash2 } from 'lucide-react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { useContext, useEffect } from 'react';
 import { FiSearch, FiX } from 'react-icons/fi';
 import Loader from '../Loader';
@@ -30,6 +30,7 @@ const ChatsPane = () => {
   const { socketData } = useWebSocket();
   const { chats, isLoading, searchQuery, setSearchQuery, searchChats, updateChatOrder } = useChatsPaneContext();
   const pathname = usePathname();
+  const router = useRouter();
 
   useEffect(() => {
     const data = socketData;
@@ -253,17 +254,14 @@ const ChatsPane = () => {
                           <MenuItem icon={Mail} label='Mark as Unread' onClick={() => handleMarkAsUnread(chat.id)} />
                           <MenuItem icon={Archive} label='Archive Chat' onClick={() => handleArchiveChat(chat.id)} />
                         </MenuGroup>
-                        <ContextMenuSeparator className='my-1.5 dark:border-neutral-800' />{' '}
+                        <ContextMenuSeparator className='my-1.5 dark:border-neutral-800' />
                         <MenuGroup label='Settings'>
-                          {' '}
-                          <MenuItem icon={BellOff} label='Mute Notifications' onClick={() => handleMuteOptions(chat.id)} />{' '}
-                          <MenuItem icon={Info} label='View Contact Info' onClick={() => handleContactInfo(chat.id)} />{' '}
-                        </MenuGroup>{' '}
-                        <ContextMenuSeparator className='my-1.5 dark:border-neutral-800' />{' '}
+                          <MenuItem icon={BellOff} label='Mute Notifications' onClick={() => handleMuteOptions(chat.id)} />
+                          <MenuItem icon={Info} label='View Contact Info' onClick={() => router.push(`/chats/${chat.id}/info`)} />
+                        </MenuGroup>
+                        <ContextMenuSeparator className='my-1.5 dark:border-neutral-800' />
                         <MenuGroup label='Management'>
-                          {' '}
-                          <MenuItem icon={Download} label='Export Chat History' onClick={() => handleExportChat(chat.id)} />{' '}
-                          <MenuItem icon={Eraser} label='Clear Messages' onClick={() => handleClearChat(chat.id)} variant='warning' />{' '}
+                          <MenuItem icon={Download} label='Export Chat History' onClick={() => handleExportChat(chat.id)} />
                           <MenuItem
                             icon={Trash2}
                             label='Delete Conversation'
