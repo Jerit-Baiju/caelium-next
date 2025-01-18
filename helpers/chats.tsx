@@ -1,5 +1,5 @@
 import useAxios from '@/hooks/useAxios';
-import { User } from '@/helpers/props';
+import { User, Chat } from '@/helpers/props';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
@@ -42,7 +42,16 @@ const useChatUtils = () => {
     }
   };
 
-  return { createChat, fetchNewChats, newChats, createGroup };
+  const sortChats = (chats: Chat[]): Chat[] => {
+    return [...chats].sort((a, b) => {
+      if (a.is_pinned !== b.is_pinned) {
+        return a.is_pinned ? -1 : 1;
+      }
+      return new Date(b.updated_time).getTime() - new Date(a.updated_time).getTime();
+    });
+  };
+
+  return { createChat, fetchNewChats, newChats, createGroup, sortChats };
 };
 
 export default useChatUtils;
