@@ -6,6 +6,7 @@ import {
   ContextMenuSeparator,
   ContextMenuTrigger,
 } from '@/components/ui/context-menu';
+import { Toaster } from '@/components/ui/toaster';
 import AuthContext from '@/contexts/AuthContext';
 import { useChatsPaneContext } from '@/contexts/ChatsPaneContext';
 import { useWebSocket } from '@/contexts/SocketContext';
@@ -18,7 +19,6 @@ import { usePathname, useRouter } from 'next/navigation';
 import { useContext, useEffect } from 'react';
 import { FiSearch, FiX } from 'react-icons/fi';
 import Loader from '../Loader';
-import { Toaster } from '@/components/ui/toaster';
 
 const menuItemVariants = {
   hidden: { opacity: 0, x: -4 },
@@ -217,7 +217,9 @@ const ChatsPane = () => {
                                     {chat.is_pinned && <Pin className='w-3 h-3 text-violet-500' />}
                                   </div>
                                   {chat.updated_time && (
-                                    <span className='text-xs text-neutral-500 dark:text-neutral-400'>{getTime(chat.updated_time)}</span>
+                                    <span className='text-xs text-neutral-500 dark:text-neutral-400'>
+                                      {getTime(chat.updated_time)}
+                                    </span>
                                   )}
                                 </div>
                                 <p className='text-sm text-neutral-500 dark:text-neutral-400 truncate'>
@@ -261,7 +263,7 @@ const ChatsPane = () => {
                           <ContextMenuSeparator className='my-1.5 dark:border-neutral-800' />
                           <MenuGroup label='Settings'>
                             <MenuItem icon={BellOff} label='Mute Notifications' onClick={() => handleMuteOptions(chat.id)} />
-                            <MenuItem icon={Info} label='View Contact Info' onClick={() => router.push(`/chats/${chat.id}/info`)} />
+                            <MenuItem icon={Info} label='View Info' onClick={() => router.push(`/chats/${chat.id}/info`)} />
                           </MenuGroup>
                           <ContextMenuSeparator className='my-1.5 dark:border-neutral-800' />
                           <MenuGroup label='Management'>
