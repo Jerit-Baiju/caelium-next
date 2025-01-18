@@ -100,10 +100,10 @@ const ChatsPane = () => {
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        className='flex flex-col max-md:h-[calc(100dvh-8rem)] h-[calc(100dvh-8rem)] w-full bg-white dark:bg-neutral-900 md:rounded-2xl shadow-sm'
+        className='flex flex-col max-md:h-[calc(100dvh-8rem)] h-[calc(100dvh-8rem)] w-full lg:bg-white lg:dark:bg-neutral-900 md:rounded-2xl shadow-sm'
       >
         {/* Search Header */}
-        <div className='sticky top-0 z-10 p-4 border-b dark:border-neutral-800'>
+        <div className='sticky top-0 z-10 p-4 lg:border-b lg:dark:border-neutral-800'>
           <form onSubmit={(e) => e.preventDefault()} className='relative'>
             <div className='relative'>
               <FiSearch className='absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400 w-5 h-5' />
