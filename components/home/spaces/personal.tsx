@@ -33,7 +33,7 @@ const Personal = () => {
             <div className='rounded-2xl bg-white dark:bg-neutral-800 p-6 shadow-sm'>
               <div className='space-y-4'>
                 <div className='h-20 w-20 rounded-full bg-gradient-to-br from-violet-500 to-purple-500 flex items-center justify-center'>
-                  <img className='rounded-full' src={user.avatar} alt='' />
+                  <img className='rounded-full w-full h-full object-cover' src={user.avatar} alt='' />
                 </div>
                 <div>
                   <h2 className='text-xl font-semibold text-neutral-900 dark:text-white'>
