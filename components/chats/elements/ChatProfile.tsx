@@ -6,9 +6,9 @@ import { useChatContext } from '@/contexts/ChatContext';
 import { motion } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 import { useContext, useState } from 'react';
-import { IconType } from 'react-icons';
 import { FaPhone, FaVideo } from 'react-icons/fa';
 import { FaPeopleGroup } from 'react-icons/fa6';
+import { FiDownload } from 'react-icons/fi';
 import { IoArrowBack, IoNotifications, IoPerson, IoPersonRemoveSharp } from 'react-icons/io5';
 import { MdDelete } from 'react-icons/md';
 import ChatMediaTabs from './ChatMediaTabs';
@@ -74,11 +74,11 @@ const ChatProfile = () => {
           </motion.div>
         </div>
 
-        {/* Actions */}
-        <div className='flex justify-around p-4 border-b border-neutral-200 dark:border-neutral-800'>
+        <div className='grid grid-cols-4 gap-2 p-4 border-b border-neutral-200 dark:border-neutral-800'>
           {[
-            { icon: FaVideo, label: 'Video', color: 'blue' },
             { icon: meta?.is_group ? FaPeopleGroup : IoPerson, label: meta?.is_group ? 'Participants' : 'Profile', color: 'violet' },
+            { icon: IoNotifications, label: 'Mute', color: 'yellow' },
+            { icon: FaVideo, label: 'Video', color: 'blue' },
             { icon: FaPhone, label: 'Call', color: 'green' },
           ].map((action, index) => (
             <motion.button
@@ -99,26 +99,38 @@ const ChatProfile = () => {
           ))}
         </div>
 
-        {/* Settings */}
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className='flex flex-col p-4 space-y-4'>
-          {[
-            { icon: IoNotifications, label: 'Mute notifications', color: 'blue' },
-            !meta?.is_group && { icon: IoPersonRemoveSharp, label: 'Block contact', color: 'red' },
-            { icon: MdDelete, label: 'Delete chat', color: 'red' },
-          ]
-            .filter((item): item is { icon: IconType; label: string; color: string } => Boolean(item))
-            .map((setting, index) => (
+        {/* Chat Options */}
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className='flex flex-col p-4 space-y-2'>
+          <div className='grid grid-cols-1 gap-2'>
+            <motion.button
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              className='flex items-center p-4 bg-neutral-100 dark:bg-neutral-800 rounded-xl'
+            >
+              <FiDownload className='text-xl mr-4 text-green-500' />
+              <span>Export chat</span>
+            </motion.button>
+
+            {!meta?.is_group && (
               <motion.button
-                key={setting.label}
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
-                transition={{ delay: index * 0.1 }}
-                className='flex items-center p-4 bg-neutral-100 dark:bg-neutral-800 rounded-xl text-neutral-700 dark:text-white'
+                className='flex items-center p-4 bg-neutral-100 dark:bg-neutral-800 rounded-xl'
               >
-                <setting.icon className={`text-xl mr-4 text-${setting.color}-500`} />
-                <span>{setting.label}</span>
+                <IoPersonRemoveSharp className='text-xl mr-4 text-red-500' />
+                <span>Block contact</span>
               </motion.button>
-            ))}
+            )}
+
+            <motion.button
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              className='flex items-center p-4 bg-neutral-100 dark:bg-neutral-800 rounded-xl'
+            >
+              <MdDelete className='text-xl mr-4 text-red-500' />
+              <span>Delete chat</span>
+            </motion.button>
+          </div>
         </motion.div>
 
         {/* Participants Dialog */}
