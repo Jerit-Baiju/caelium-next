@@ -7,11 +7,12 @@ import {
   ContextMenuTrigger,
 } from '@/components/ui/context-menu';
 import { Toaster } from '@/components/ui/toaster';
+import { useAppContext } from '@/contexts/AppContext';
 import AuthContext from '@/contexts/AuthContext';
 import { useChatsPaneContext } from '@/contexts/ChatsPaneContext';
 import { useWebSocket } from '@/contexts/SocketContext';
 import { Chat } from '@/helpers/props';
-import { getTime, truncate } from '@/helpers/support';
+import { getTime, truncate } from '@/helpers/utils';
 import { motion } from 'framer-motion';
 import { Archive, BellOff, ChevronRight, Download, Info, Mail, Pin, PinOff, Trash2 } from 'lucide-react';
 import Link from 'next/link';
@@ -30,55 +31,26 @@ const ChatsPane = () => {
   const { socketData } = useWebSocket();
   const { user, activeUsers } = useContext(AuthContext);
   const { chats, isLoading, searchQuery, setSearchQuery, searchChats, updateChatOrder, togglePinChat } = useChatsPaneContext();
+  const { refreshChats, lastFetched } = useAppContext();
   const pathname = usePathname();
   const router = useRouter();
 
   useEffect(() => {
-    const data = socketData;
-    if (data && data.category === 'new_message' && data.sender !== user.id) {
-      updateChatOrder(data.chat, data.content);
+    if (lastFetched && new Date().getTime() - lastFetched.getTime() > 5 * 60 * 1000) {
+      refreshChats();
     }
-  }, [socketData]);
+  }, [pathname, lastFetched, refreshChats]);
 
-  const handleKeyDown = (e: any) => {
-    if (e.key === 'Enter' && e.target.value !== '') {
+  useEffect(() => {
+    if (socketData?.category === 'new_message' && socketData.sender !== user.id) {
+      updateChatOrder(socketData.chat, socketData.content);
+    }
+  }, [socketData, updateChatOrder]);
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && searchQuery) {
       searchChats(e);
     }
-  };
-
-  const handleArchiveChat = (chatId: number) => {
-    // Implement archive chat functionality
-    console.log('Archive chat:', chatId);
-  };
-
-  const handleMarkAsUnread = (chatId: number) => {
-    // Implement mark as unread functionality
-    console.log('Mark as unread:', chatId);
-  };
-
-  const handleMuteOptions = (chatId: number) => {
-    // Implement mute options functionality
-    console.log('Mute options:', chatId);
-  };
-
-  const handleExportChat = (chatId: number) => {
-    // Implement export chat functionality
-    console.log('Export chat:', chatId);
-  };
-
-  const handleClearChat = (chatId: number) => {
-    // Implement clear chat functionality
-    console.log('Clear chat:', chatId);
-  };
-
-  const handleDeleteChat = (chatId: number) => {
-    // Implement delete chat functionality
-    console.log('Delete chat:', chatId);
-  };
-
-  const handleContactInfo = (chatId: number) => {
-    // Implement contact info functionality
-    console.log('Contact info:', chatId);
   };
 
   const filteredChats = chats.filter((chat: Chat) => {
@@ -257,21 +229,21 @@ const ChatsPane = () => {
                               label={chat.is_pinned ? 'Unpin Conversation' : 'Pin Conversation'}
                               onClick={() => togglePinChat(chat.id)}
                             />
-                            <MenuItem icon={Mail} label='Mark as Unread' onClick={() => handleMarkAsUnread(chat.id)} />
-                            <MenuItem icon={Archive} label='Archive Chat' onClick={() => handleArchiveChat(chat.id)} />
+                            <MenuItem icon={Mail} label='Mark as Unread' onClick={() => console.log('marked as unread')} />
+                            <MenuItem icon={Archive} label='Archive Chat' onClick={() => console.log('archived chat')} />
                           </MenuGroup>
                           <ContextMenuSeparator className='my-1.5 dark:border-neutral-800' />
                           <MenuGroup label='Settings'>
-                            <MenuItem icon={BellOff} label='Mute Notifications' onClick={() => handleMuteOptions(chat.id)} />
+                            <MenuItem icon={BellOff} label='Mute Notifications' onClick={() => console.log('muted chat')} />
                             <MenuItem icon={Info} label='View Info' onClick={() => router.push(`/chats/${chat.id}/info`)} />
                           </MenuGroup>
                           <ContextMenuSeparator className='my-1.5 dark:border-neutral-800' />
                           <MenuGroup label='Management'>
-                            <MenuItem icon={Download} label='Export Chat History' onClick={() => handleExportChat(chat.id)} />
+                            <MenuItem icon={Download} label='Export Chat History' onClick={() => console.log('exported chat')} />
                             <MenuItem
                               icon={Trash2}
                               label='Delete Conversation'
-                              onClick={() => handleDeleteChat(chat.id)}
+                              onClick={() => console.log('deleted chat')}
                               variant='danger'
                             />
                           </MenuGroup>

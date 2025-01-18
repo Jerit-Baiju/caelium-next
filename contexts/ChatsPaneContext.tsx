@@ -1,8 +1,10 @@
 'use client';
+import useChatUtils from '@/helpers/chats';
 import { Chat } from '@/helpers/props';
 import { toast } from '@/hooks/use-toast';
 import useAxios from '@/hooks/useAxios';
-import { createContext, ReactNode, useCallback, useContext, useEffect, useState } from 'react';
+import { createContext, ReactNode, useCallback, useContext, useState } from 'react';
+import { useAppContext } from './AppContext';
 import AuthContext from './AuthContext';
 
 interface ChatsPaneContextType {
@@ -19,68 +21,36 @@ interface ChatsPaneContextType {
 
 const ChatsPaneContext = createContext<ChatsPaneContextType | undefined>(undefined);
 
-const sortChats = (chats: Chat[]): Chat[] => {
-  return [...chats].sort((a: Chat, b: Chat) => {
-    if (a.is_pinned !== b.is_pinned) return b.is_pinned ? 1 : -1;
-    return new Date(b.updated_time).getTime() - new Date(a.updated_time).getTime();
-  });
-};
-
 export function ChatsPaneProvider({ children }: { children: ReactNode }) {
   const api = useAxios();
   const { user } = useContext(AuthContext);
-  const [chats, setChats] = useState<Chat[]>([]);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const { sortChats } = useChatUtils();
   const [searchQuery, setSearchQuery] = useState('');
-  const [error, setError] = useState<string | null>(null);
+  const { chats: appChats, setChats: setAppChats, isLoading: appLoading } = useAppContext();
 
-  // Fetch chats only once on mount when user is available
-  useEffect(() => {
-    let mounted = true;
-
-    const fetchChats = async () => {
-      if (!user) return;
-
+  const clearChat = useCallback(
+    async (chatId: number) => {
       try {
-        const { data } = await api.get('/api/chats/');
-        if (!mounted) return;
-
-        setChats(sortChats(data)); // Use sortChats here instead of inline sort
-      } catch (error) {
-        console.error('Error fetching chats:', error);
-        setError(error instanceof Error ? error.message : 'Failed to fetch chats');
-      } finally {
-        if (mounted) setIsLoading(false);
+        await api.delete(`/api/chats/${chatId}/messages`);
+        setAppChats((prevChats) => prevChats.map((chat) => (chat.id === chatId ? { ...chat, messages: [] } : chat)));
+      } catch (err) {
+        toast({
+          variant: 'destructive',
+          title: 'Error',
+          description: 'Failed to clear chat',
+        });
       }
-    };
-
-    fetchChats();
-    return () => {
-      mounted = false;
-    };
-  }, [user]);
-
-  const clearChat = useCallback(async (chatId: number) => {
-    try {
-      setIsLoading(true);
-      await api.delete(`/api/chats/${chatId}/messages`);
-      setChats((prevChats) => prevChats.map((chat) => (chat.id === chatId ? { ...chat, messages: [] } : chat)));
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to clear chat');
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
+    },
+    [api, setAppChats],
+  );
 
   const togglePinChat = useCallback(
     async (chatId: number) => {
       try {
-        setIsLoading(true);
-        const chatToUpdate = chats.find((chat) => chat.id === chatId);
+        const chatToUpdate = appChats.find((chat) => chat.id === chatId);
         if (!chatToUpdate) return;
 
-        // If trying to pin and already have 5 pinned chats
-        if (!chatToUpdate.is_pinned && chats.filter((chat) => chat.is_pinned).length >= 5) {
+        if (!chatToUpdate.is_pinned && appChats.filter((chat) => chat.is_pinned).length >= 5) {
           toast({
             variant: 'destructive',
             title: 'Pin limit reached',
@@ -89,80 +59,75 @@ export function ChatsPaneProvider({ children }: { children: ReactNode }) {
           return;
         }
 
-        const { data } = await api.patch(`/api/chats/${chatId}/pin/`, {
-          isPinned: !chatToUpdate.is_pinned,
-        });
-
-        setChats((prevChats) => {
-          const updatedChats = prevChats.map((chat) => (chat.id === chatId ? { ...chat, is_pinned: data.isPinned } : chat));
+        // Update state with proper typing
+        setAppChats((prevChats: Chat[]) => {
+          const updatedChats = prevChats.map((chat) => (chat.id === chatId ? { ...chat, is_pinned: !chat.is_pinned } : chat));
           return sortChats(updatedChats);
         });
+
+        await api.patch(`/api/chats/${chatId}/pin/`, {
+          isPinned: !chatToUpdate.is_pinned,
+        });
       } catch (err) {
+        // Revert changes with proper typing
+        setAppChats((prevChats: Chat[]) => {
+          const currentChat = prevChats.find((chat) => chat.id === chatId);
+          if (!currentChat) return prevChats;
+
+          const updatedChats = prevChats.map((chat) => (chat.id === chatId ? { ...chat, is_pinned: !chat.is_pinned } : chat));
+          return sortChats(updatedChats);
+        });
+
         toast({
           variant: 'destructive',
           title: 'Error',
           description: 'Failed to pin/unpin chat. Please try again.',
         });
-      } finally {
-        setIsLoading(false);
       }
     },
-    [chats],
+    [appChats, api, setAppChats],
   );
 
   const searchChats = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
       const response = await api.get(`/api/chats/?search=${searchQuery}`);
-      setChats(response.data);
+      setAppChats(response.data);
     } catch (error) {
       console.error('Error searching chats:', error);
     }
   };
 
   const updateChatOrder = (chatId: number, lastMessage: string) => {
-    console.log('Updating chat order:', chatId, lastMessage);
-    const chatIdNum = Number(chatId);
-    const chatIndex = chats.findIndex((chat) => chat.id === chatIdNum);
-    console.log('Found chat at index:', chatIndex);
+    setAppChats((prevChats: Chat[]) => {
+      const chatIndex = prevChats.findIndex((chat) => chat.id === Number(chatId));
+      if (chatIndex === -1) return prevChats;
 
-    if (chatIndex !== -1) {
-      const updatedChats = [...chats];
+      const updatedChats = [...prevChats];
       const chatToUpdate = { ...updatedChats[chatIndex] };
 
-      if (!chatToUpdate.last_message) {
-        chatToUpdate.last_message = {
-          content: '',
-          timestamp: new Date(),
-          sender: user,
-          type: 'text',
-        };
-      }
-
-      chatToUpdate.last_message.content = lastMessage;
+      // Update the chat
+      chatToUpdate.last_message = {
+        content: lastMessage,
+        timestamp: new Date(),
+        sender: user,
+        type: 'text',
+      };
       chatToUpdate.updated_time = new Date();
-      updatedChats[chatIndex] = chatToUpdate;
-      // Sort considering pinned status
+
+      // Remove old chat and add updated one
       updatedChats.splice(chatIndex, 1);
-      const pinnedChats = updatedChats.filter((chat) => chat.is_pinned);
-      const unpinnedChats = updatedChats.filter((chat) => !chat.is_pinned);
+      updatedChats.push(chatToUpdate);
 
-      if (chatToUpdate.is_pinned) {
-        pinnedChats.unshift(chatToUpdate);
-      } else {
-        unpinnedChats.unshift(chatToUpdate);
-      }
-
-      setChats([...pinnedChats, ...unpinnedChats]);
-    } else {
-      console.warn('Chat not found:', chatId, 'Type:', typeof chatId);
-    }
+      // Sort the entire array
+      return sortChats(updatedChats);
+    });
   };
 
   const value = {
-    chats,
-    setChats,
-    isLoading,
+    chats: appChats,
+    setChats: setAppChats,
+    isLoading: appLoading,
     searchQuery,
     setSearchQuery,
     searchChats,

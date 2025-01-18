@@ -2,13 +2,13 @@
 import { Button } from '@/components/ui/button';
 import { BaseError, Chat, Message, User } from '@/helpers/props';
 import useAxios from '@/hooks/useAxios';
-import { formatTimeSince } from '@/utils/timeUtils';
 import { AxiosError } from 'axios';
 import { useRouter } from 'next/navigation';
 import { ReactNode, createContext, useContext, useEffect, useState } from 'react';
 import AuthContext from './AuthContext';
 import { useWebSocket } from './SocketContext';
 import { useChatsPaneContext } from './ChatsPaneContext';
+import { formatTimeSince } from '@/helpers/utils';
 
 
 interface childrenProps {
