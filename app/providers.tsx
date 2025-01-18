@@ -1,5 +1,6 @@
 'use client';
 
+import { AppProvider } from '@/contexts/AppContext';
 import { AuthProvider } from '@/contexts/AuthContext';
 import { ChatsPaneProvider } from '@/contexts/ChatsPaneContext';
 import { NavbarProvider } from '@/contexts/NavContext';
@@ -9,11 +10,13 @@ import { ReactNode } from 'react';
 const ProvidersWrapper = ({ children }: { children: ReactNode }) => {
   return (
     <AuthProvider>
-      <ChatsPaneProvider>
-        <WebSocketProvider>
-          <NavbarProvider>{children}</NavbarProvider>
-        </WebSocketProvider>
-      </ChatsPaneProvider>
+      <AppProvider>
+        <ChatsPaneProvider>
+          <WebSocketProvider>
+            <NavbarProvider>{children}</NavbarProvider>
+          </WebSocketProvider>
+        </ChatsPaneProvider>
+      </AppProvider>
     </AuthProvider>
   );
 };
