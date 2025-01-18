@@ -3,7 +3,7 @@ import Loader from '@/components/Loader';
 import { Button } from '@/components/ui/button';
 import { useNavbar } from '@/contexts/NavContext';
 import { BaseError, Craft } from '@/helpers/props';
-import { getTime } from '@/helpers/support';
+import { getTime } from '@/helpers/utils';
 import useAxios from '@/hooks/useAxios';
 import { AxiosError } from 'axios';
 import Link from 'next/link';
