@@ -1,5 +1,6 @@
 'use client';
 import { Chat } from '@/helpers/props';
+import { toast } from '@/hooks/use-toast';
 import useAxios from '@/hooks/useAxios';
 import { createContext, ReactNode, useCallback, useContext, useEffect, useState } from 'react';
 import AuthContext from './AuthContext';
@@ -77,15 +78,31 @@ export function ChatsPaneProvider({ children }: { children: ReactNode }) {
         setIsLoading(true);
         const chatToUpdate = chats.find((chat) => chat.id === chatId);
         if (!chatToUpdate) return;
+
+        // If trying to pin and already have 5 pinned chats
+        if (!chatToUpdate.is_pinned && chats.filter((chat) => chat.is_pinned).length >= 5) {
+          toast({
+            variant: 'destructive',
+            title: 'Pin limit reached',
+            description: 'You can only pin up to 5 chats. Please unpin a chat before pinning a new one.',
+          });
+          return;
+        }
+
         const { data } = await api.patch(`/api/chats/${chatId}/pin/`, {
           isPinned: !chatToUpdate.is_pinned,
         });
+
         setChats((prevChats) => {
           const updatedChats = prevChats.map((chat) => (chat.id === chatId ? { ...chat, is_pinned: data.isPinned } : chat));
           return sortChats(updatedChats);
         });
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'Failed to pin/unpin chat');
+        toast({
+          variant: 'destructive',
+          title: 'Error',
+          description: 'Failed to pin/unpin chat. Please try again.',
+        });
       } finally {
         setIsLoading(false);
       }
