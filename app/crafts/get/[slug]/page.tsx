@@ -1,7 +1,7 @@
 'use client';
 import Loader from '@/components/Loader';
 import { BaseError, Craft } from '@/helpers/props';
-import { getTime } from '@/helpers/support';
+import { getTime } from '@/helpers/utils';
 import useAxios from '@/hooks/useAxios';
 import { AxiosError } from 'axios';
 import { use, useEffect, useState } from 'react';

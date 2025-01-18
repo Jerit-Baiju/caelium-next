@@ -2,7 +2,7 @@
 import Loader from '@/components/Loader';
 import { useNavbar } from '@/contexts/NavContext';
 import { Image, NavLink } from '@/helpers/props';
-import { getDate } from '@/helpers/support';
+import { getDate } from '@/helpers/utils';
 import useAxios from '@/hooks/useAxios';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
