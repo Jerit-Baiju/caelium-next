@@ -1,7 +1,7 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Message } from '@/helpers/props';
+import { getURL } from '@/helpers/utils';
 import useAxios from '@/hooks/useAxios';
-import getURL from '@/utils/getURL';
 import { useEffect, useState } from 'react';
 import { BsFileEarmark } from 'react-icons/bs';
 
