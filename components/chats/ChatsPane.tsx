@@ -12,7 +12,7 @@ import { useWebSocket } from '@/contexts/SocketContext';
 import { Chat } from '@/helpers/props';
 import { getTime, truncate } from '@/helpers/support';
 import { motion } from 'framer-motion';
-import { Archive, BellOff, ChevronRight, Download, Info, Mail, Pin, Trash2 } from 'lucide-react';
+import { Archive, BellOff, ChevronRight, Download, Info, Mail, Pin, PinOff, Trash2 } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useContext, useEffect } from 'react';
@@ -26,9 +26,9 @@ const menuItemVariants = {
 };
 
 const ChatsPane = () => {
-  const { user, activeUsers } = useContext(AuthContext);
   const { socketData } = useWebSocket();
-  const { chats, isLoading, searchQuery, setSearchQuery, searchChats, updateChatOrder } = useChatsPaneContext();
+  const { user, activeUsers } = useContext(AuthContext);
+  const { chats, isLoading, searchQuery, setSearchQuery, searchChats, updateChatOrder, togglePinChat } = useChatsPaneContext();
   const pathname = usePathname();
   const router = useRouter();
 
@@ -43,11 +43,6 @@ const ChatsPane = () => {
     if (e.key === 'Enter' && e.target.value !== '') {
       searchChats(e);
     }
-  };
-
-  const handlePinChat = (chatId: number) => {
-    // Implement pin chat functionality
-    console.log('Pin chat:', chatId);
   };
 
   const handleArchiveChat = (chatId: number) => {
@@ -213,9 +208,12 @@ const ChatsPane = () => {
 
                             <div className='flex-1 min-w-0'>
                               <div className='flex items-center justify-between'>
-                                <h3 className='font-medium dark:text-white truncate'>
-                                  {chat.is_group ? chat.name : chat.participants.find((p) => p.id !== user.id)?.name}
-                                </h3>
+                                <div className='flex items-center gap-2'>
+                                  <h3 className='font-medium dark:text-white truncate'>
+                                    {chat.is_group ? chat.name : chat.participants.find((p) => p.id !== user.id)?.name}
+                                  </h3>
+                                  {chat.is_pinned && <Pin className='w-3 h-3 text-violet-500' />}
+                                </div>
                                 {chat.updated_time && (
                                   <span className='text-xs text-neutral-500 dark:text-neutral-400'>{getTime(chat.updated_time)}</span>
                                 )}
@@ -250,7 +248,11 @@ const ChatsPane = () => {
                         }}
                       >
                         <MenuGroup label='Quick Actions'>
-                          <MenuItem icon={Pin} label='Pin Conversation' onClick={() => handlePinChat(chat.id)} />
+                          <MenuItem
+                            icon={chat.is_pinned ? PinOff : Pin}
+                            label={chat.is_pinned ? 'Unpin Conversation' : 'Pin Conversation'}
+                            onClick={() => togglePinChat(chat.id)}
+                          />
                           <MenuItem icon={Mail} label='Mark as Unread' onClick={() => handleMarkAsUnread(chat.id)} />
                           <MenuItem icon={Archive} label='Archive Chat' onClick={() => handleArchiveChat(chat.id)} />
                         </MenuGroup>

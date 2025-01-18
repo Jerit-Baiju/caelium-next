@@ -7,6 +7,7 @@ export interface Chat {
   updated_time: Date;
   last_message: LastMessage;
   creator: number;
+  is_pinned: boolean;
 }
 
 export interface LastMessage {
