@@ -45,7 +45,7 @@ const ChatsPane = () => {
     if (socketData?.category === 'new_message' && socketData.sender !== user.id) {
       updateChatOrder(socketData.chat, socketData.content);
     }
-  }, [socketData, updateChatOrder]);
+  }, [socketData]);
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && searchQuery) {
