@@ -2,11 +2,14 @@
 import NewChatDialog from '@/components/chats/NewChatDialog';
 import { motion } from 'framer-motion';
 import { useRouter } from 'next/navigation';
+import { useState } from 'react';
 import { FiMessageSquare, FiPlus } from 'react-icons/fi';
 import { handleeFont } from '../font';
 
 const Page = () => {
   const router = useRouter();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
   return (
     <>
       {/* Welcome Screen */}
@@ -25,9 +28,7 @@ const Page = () => {
           </div>
           <motion.button
             whileHover={{ scale: 1.05 }}
-            type='button'
-            data-modal-target='new-chat-modal'
-            data-modal-toggle='new-chat-modal'
+            onClick={() => setIsModalOpen(true)}
             className={`${handleeFont.className} px-6 py-3 bg-gradient-to-br from-violet-500 to-purple-500 text-white rounded-xl flex items-center gap-2`}
           >
             <FiPlus className='w-5 h-5' />
@@ -37,31 +38,29 @@ const Page = () => {
       </motion.div>
 
       {/* New Chat Modal */}
-      <div id='new-chat-modal' tabIndex={-1} className='hidden fixed inset-0 z-50 bg-black/50'>
-        <motion.div
-          initial={{ scale: 0.9, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          className='relative min-h-full w-full flex items-center justify-center p-4'
-        >
-          <div className='relative w-3/4 max-w-2xl bg-white dark:bg-neutral-800 rounded-2xl shadow-lg overflow-hidden'>
-            <div className='flex items-center justify-between p-6 border-b dark:border-neutral-700'>
-              <h3 className='text-xl font-semibold dark:text-white'>New Conversation</h3>
-              <button
-                type='button'
-                className='text-neutral-500 hover:text-neutral-700 dark:text-neutral-400 dark:hover:text-white rounded-lg p-2'
-                data-modal-hide='new-chat-modal'
-              >
-                <FiPlus className='w-6 h-6 rotate-45' />
-              </button>
+      {isModalOpen && (
+        <div className='fixed inset-0 z-50 bg-black/50'>
+          <motion.div
+            initial={{ scale: 0.9, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            className='relative min-h-full w-full flex items-center justify-center p-4'
+          >
+            <div className='relative w-3/4 max-w-2xl bg-white dark:bg-neutral-800 rounded-2xl shadow-lg overflow-hidden'>
+              <div className='flex items-center justify-between p-6 border-b dark:border-neutral-700'>
+                <h3 className='text-xl font-semibold dark:text-white'>New Conversation</h3>
+                <button
+                  type='button'
+                  className='text-neutral-500 hover:text-neutral-700 dark:text-neutral-400 dark:hover:text-white rounded-lg p-2'
+                  onClick={() => setIsModalOpen(false)}
+                >
+                  <FiPlus className='w-6 h-6 rotate-45' />
+                </button>
+              </div>
+              <NewChatDialog onClose={() => setIsModalOpen(false)} />
             </div>
-            <NewChatDialog
-              onClose={() => {
-                document.getElementById('new-chat-modal')?.classList.add('hidden');
-              }}
-            />
-          </div>
-        </motion.div>
-      </div>
+          </motion.div>
+        </div>
+      )}
 
       {/* Mobile New Chat Button */}
       <motion.div
