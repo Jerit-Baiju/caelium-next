@@ -1,5 +1,15 @@
 'use client';
 import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
+import {
   ContextMenu,
   ContextMenuContent,
   ContextMenuItem,
@@ -13,13 +23,15 @@ import { useChatsPaneContext } from '@/contexts/ChatsPaneContext';
 import { useWebSocket } from '@/contexts/SocketContext';
 import { Chat } from '@/helpers/props';
 import { getTime, truncate } from '@/helpers/utils';
+import useChatUtils from '@/hooks/useChat';
 import { motion } from 'framer-motion';
 import { Archive, BellOff, ChevronRight, Download, Info, Mail, Pin, PinOff, Trash2 } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { useContext, useEffect } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { FiSearch, FiX } from 'react-icons/fi';
 import Loader from '../Loader';
+import { DeleteChatDialog } from './dialogs/DeleteChatDialog';
 
 const menuItemVariants = {
   hidden: { opacity: 0, x: -4 },
@@ -30,10 +42,12 @@ const menuItemVariants = {
 const ChatsPane = () => {
   const { socketData } = useWebSocket();
   const { user, activeUsers } = useContext(AuthContext);
+  const { deleteChat } = useChatUtils();
   const { chats, isLoading, searchQuery, setSearchQuery, searchChats, updateChatOrder, togglePinChat } = useChatsPaneContext();
   const { refreshChats, lastFetched } = useAppContext();
   const pathname = usePathname();
   const router = useRouter();
+  const [chatToDelete, setChatToDelete] = useState<Chat | null>(null);
 
   useEffect(() => {
     if (lastFetched && new Date().getTime() - lastFetched.getTime() > 5 * 60 * 1000) {
@@ -50,6 +64,13 @@ const ChatsPane = () => {
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && searchQuery) {
       searchChats(e);
+    }
+  };
+
+  const handleDeleteChat = async (chat: Chat) => {
+    if (chat.id) {
+      await deleteChat(chat.id);
+      setChatToDelete(null);
     }
   };
 
@@ -243,7 +264,7 @@ const ChatsPane = () => {
                             <MenuItem
                               icon={Trash2}
                               label='Delete Conversation'
-                              onClick={() => console.log('deleted chat')}
+                              onClick={() => setChatToDelete(chat)}
                               variant='danger'
                             />
                           </MenuGroup>
@@ -261,6 +282,12 @@ const ChatsPane = () => {
           </motion.div>
         )}
       </motion.div>
+      <DeleteChatDialog
+        chat={chatToDelete}
+        isOpen={!!chatToDelete}
+        onClose={() => setChatToDelete(null)}
+        onDelete={handleDeleteChat}
+      />
       <Toaster />
     </>
   );

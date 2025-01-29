@@ -1,5 +1,5 @@
-import useChatUtils from '@/helpers/chats';
 import { User } from '@/helpers/props';
+import useChatUtils from '@/hooks/useChat';
 import { useEffect, useState } from 'react';
 
 interface NewChatDialogProps {

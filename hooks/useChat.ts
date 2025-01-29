@@ -1,5 +1,5 @@
+import { Chat, User } from '@/helpers/props';
 import useAxios from '@/hooks/useAxios';
-import { User, Chat } from '@/helpers/props';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
@@ -10,9 +10,9 @@ const useChatUtils = () => {
 
   const createChat = async (recipient_id: number) => {
     try {
-      const response = await api.post('/api/chats/', { 
+      const response = await api.post('/api/chats/', {
         participant_ids: [recipient_id],
-        is_group: false 
+        is_group: false,
       });
       router.push(`/chats/${response.data.id}`);
     } catch (error) {
@@ -34,7 +34,7 @@ const useChatUtils = () => {
       const response = await api.post('/api/chats/', {
         participant_ids: participants,
         name,
-        is_group: true
+        is_group: true,
       });
       router.push(`/chats/${response.data.id}`);
     } catch (error) {
@@ -51,7 +51,16 @@ const useChatUtils = () => {
     });
   };
 
-  return { createChat, fetchNewChats, newChats, createGroup, sortChats };
+  const deleteChat = async (chatId: number) => {
+    try {
+      await api.delete(`/api/chats/${chatId}/`);
+      router.push('/chats');
+    } catch (error) {
+      console.error('Error deleting chat:', error);
+    }
+  };
+
+  return { createChat, fetchNewChats, newChats, createGroup, sortChats, deleteChat };
 };
 
 export default useChatUtils;
