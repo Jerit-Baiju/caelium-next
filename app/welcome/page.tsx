@@ -24,7 +24,7 @@ const Page = () => {
   }, []);
   return !isLoading ? (
     <div className='flex flex-col items-center justify-center h-screen text-white'>
-      <Vortex
+       <Vortex
         backgroundColor='black'
         rangeY={800}
         particleCount={100}

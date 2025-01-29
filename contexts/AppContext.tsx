@@ -1,9 +1,9 @@
 'use client';
 import { Chat } from '@/helpers/props';
 import useAxios from '@/hooks/useAxios';
+import useChatUtils from '@/hooks/useChat';
 import { createContext, ReactNode, useContext, useEffect, useState } from 'react';
 import AuthContext from './AuthContext';
-import useChatUtils from '@/helpers/chats';
 
 interface AppContextType {
   chats: Chat[];

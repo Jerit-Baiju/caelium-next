@@ -1,8 +1,8 @@
 'use client';
-import useChatUtils from '@/helpers/chats';
 import { Chat } from '@/helpers/props';
 import { toast } from '@/hooks/use-toast';
 import useAxios from '@/hooks/useAxios';
+import useChatUtils from '@/hooks/useChat';
 import { createContext, ReactNode, useCallback, useContext, useState } from 'react';
 import { useAppContext } from './AppContext';
 import AuthContext from './AuthContext';

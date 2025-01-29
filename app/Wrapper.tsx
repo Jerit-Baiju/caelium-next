@@ -3,8 +3,7 @@ import BottomNav from '@/components/BottomNav';
 import NavBar from '@/components/NavBar';
 import SideBar from '@/components/SideBar';
 import { useNavbar } from '@/contexts/NavContext';
-import { initFlowbite } from 'flowbite';
-import { ReactNode, useEffect } from 'react';
+import { ReactNode } from 'react';
 
 interface WrapperProps {
   children: ReactNode;
@@ -13,9 +12,6 @@ interface WrapperProps {
 
 const Wrapper = ({ children }: WrapperProps) => {
   const { viewSM, showNav } = useNavbar();
-  useEffect(() => {
-    initFlowbite();
-  }, []);
   return showNav ? (
     <main>
       <SideBar />
