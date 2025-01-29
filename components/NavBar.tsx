@@ -1,11 +1,22 @@
 import { useNavbar } from '@/contexts/NavContext';
-import Link from 'next/link';
 import { motion } from 'framer-motion';
+import Link from 'next/link';
+import { useState } from 'react';
 
 const NavBar = () => {
   let { ctaButton, navLinks, dropDown } = useNavbar();
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  const toggleMobileMenu = () => {
+    setIsMobileMenuOpen(!isMobileMenuOpen);
+  };
+
   return (
-    <motion.nav initial={{ y: -22, opacity: 0 }} animate={{ y: 0, opacity: 1 }} className='fixed w-full z-20 top-0 start-0 md:px-6 md:py-4'>
+    <motion.nav
+      initial={{ y: -22, opacity: 0 }}
+      animate={{ y: 0, opacity: 1 }}
+      className='fixed w-full z-20 top-0 start-0 md:px-6 md:py-4'
+    >
       <div className='max-w-screen-xl mx-auto flex items-center justify-between bg-white dark:bg-neutral-900 md:rounded-2xl shadow-sm px-6 py-3'>
         <Link href='/' className='flex items-center space-x-3'>
           <img className='pointer-events-none dark:invert' src='/logos/written-dark.png' alt='caelium' width={120} height={0} />
@@ -69,11 +80,11 @@ const NavBar = () => {
           )}
 
           <button
-            data-collapse-toggle='navbar-sticky'
+            onClick={toggleMobileMenu}
             type='button'
             className='md:hidden p-2 text-neutral-500 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-white'
             aria-controls='navbar-sticky'
-            aria-expanded='false'
+            aria-expanded={isMobileMenuOpen}
           >
             <span className='sr-only'>Open main menu</span>
             <i className='fa-solid fa-bars text-xl'></i>
@@ -82,7 +93,9 @@ const NavBar = () => {
 
         {/* Mobile Menu */}
         <div
-          className='hidden absolute top-full left-0 right-0 mt-4 mx-6 bg-white dark:bg-neutral-900 rounded-2xl shadow-lg md:hidden'
+          className={`${
+            isMobileMenuOpen ? 'block' : 'hidden'
+          } absolute top-full left-0 right-0 mt-4 mx-6 bg-white dark:bg-neutral-900 rounded-2xl shadow-lg md:hidden`}
           id='navbar-sticky'
         >
           <ul className='py-4'>

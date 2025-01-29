@@ -17,7 +17,7 @@ export default function Home() {
 
   return user ? (
     <div className='w-full dark:text-white'>
-      <Personal />
+      {/* <Personal /> */}
     </div>
   ) : (
     <div className='flex items-center justify-center h-screen'>
