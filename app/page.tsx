@@ -13,6 +13,7 @@ export default function Home() {
 
   useEffect(() => {
     setShowNav(false);
+    return () => setShowNav(true);
   }, []);
 
   return user ? (

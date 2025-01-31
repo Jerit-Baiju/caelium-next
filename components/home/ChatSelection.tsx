@@ -1,5 +1,6 @@
 'use client';
 import { AnimatePresence, motion } from 'framer-motion';
+import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { BsLightningChargeFill } from 'react-icons/bs';
 import { FaUsers } from 'react-icons/fa';
@@ -7,6 +8,7 @@ import { FiMessageSquare, FiVideo, FiX } from 'react-icons/fi';
 
 export const ChatSelection = () => {
   const [showModal, setShowModal] = useState(false);
+  const router = useRouter();
 
   const buttonVariants = {
     hover: { scale: 1.05, transition: { duration: 0.2 } },
@@ -82,6 +84,9 @@ export const ChatSelection = () => {
             variants={cardVariants}
             whileHover='hover'
             whileTap={{ scale: 0.98 }}
+            onClick={() => {
+              router.push('/chats/anon/text');
+            }}
             className='group relative flex flex-col items-center gap-4 p-8 rounded-2xl bg-gradient-to-br from-purple-600/20 to-purple-700/20 border border-purple-500/30 hover:border-purple-500/50 text-white transition-all duration-300'
           >
             <div className='p-4 rounded-full bg-purple-500/20 group-hover:bg-purple-500/30 transition-colors'>
