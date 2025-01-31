@@ -1,4 +1,5 @@
 'use client';
+import { ChatSelection } from '@/components/home/ChatSelection';
 // import Personal from '@/components/home/spaces/personal';
 // import SpeedDial from '@/components/home/SpeedDial';
 import Loader from '@/components/Loader';
@@ -15,7 +16,9 @@ export default function Home() {
   }, []);
 
   return user ? (
-    <div className='w-full dark:text-white'>{/* <Personal /> */}</div>
+    <div className='w-full dark:text-white'>
+      <ChatSelection />
+    </div>
   ) : (
     <div className='flex items-center justify-center h-screen'>
       <Loader />

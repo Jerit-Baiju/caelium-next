@@ -1,4 +1,12 @@
+'use client';
+import { useNavbar } from '@/contexts/NavContext';
+import { useEffect } from 'react';
+
 const page = () => {
+  const { setShowNav } = useNavbar();
+  useEffect(() => {
+    setShowNav(false);
+  }, []);
   return (
     <div className='bg-gradient-to-r from-blue-50 to-gray-200 text-gray-800 min-h-screen p-8'>
       <div className='flex justify-center mb-8'>

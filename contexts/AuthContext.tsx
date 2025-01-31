@@ -111,7 +111,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setAuthTokens(null);
     setTokenData(null);
     localStorage.removeItem('authTokens');
-    router.push('/welcome');
+    router.push('/landing');
   };
 
   useEffect(() => {
