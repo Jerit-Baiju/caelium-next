@@ -2,7 +2,7 @@
 import { useNavbar } from '@/contexts/NavContext';
 import { useEffect } from 'react';
 
-const page = () => {
+const PrivacyPolicy = () => {
   const { setShowNav } = useNavbar();
   useEffect(() => {
     setShowNav(false);
@@ -90,4 +90,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default PrivacyPolicy;
