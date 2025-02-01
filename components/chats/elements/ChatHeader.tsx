@@ -55,7 +55,7 @@ const ChatHeader = () => {
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.3 }}
         ref={headerRef}
-        className='flex sticky top-0 z-10 flex-row h-16 bg-gradient-to-r md:rounded-t-2xl from-neutral-300/90 to-neutral-200/90 backdrop-blur-sm dark:from-neutral-900/90 dark:to-neutral-800/90 dark:text-white'
+        className='flex sticky top-0 z-10 flex-row h-16 bg-linear-to-r md:rounded-t-2xl from-neutral-300/90 to-neutral-200/90 backdrop-blur-xs dark:from-neutral-900/90 dark:to-neutral-800/90 dark:text-white'
       >
         <motion.div className='flex justify-center' whileHover={{ scale: 1.05 }}>
           <div
@@ -67,7 +67,7 @@ const ChatHeader = () => {
             <i className='fa-solid fa-arrow-left ms-2'></i>
           </div>
         </motion.div>
-        <Link href={`/chats/${meta?.id}/info`} className='flex flex-grow items-center cursor-default'>
+        <Link href={`/chats/${meta?.id}/info`} className='flex grow items-center cursor-default'>
           {!meta?.is_group ? (
             <img
               className='h-12 my-2 w-12 max-sm:h-12 max-sm:w-12 rounded-full dark:bg-white object-cover'
@@ -116,7 +116,7 @@ const ChatHeader = () => {
         </Link>
         <div className='flex items-center justify-end'>
           <DropdownMenu>
-            <DropdownMenuTrigger className='outline-none'>
+            <DropdownMenuTrigger className='outline-hidden'>
               <i className='fa-solid fa-ellipsis-vertical p-3 me-4'></i>
             </DropdownMenuTrigger>
             <DropdownMenuContent>

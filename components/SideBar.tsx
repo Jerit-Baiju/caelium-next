@@ -30,9 +30,9 @@ const SideBar = () => {
         <div className='h-full flex flex-col px-4 py-8 overflow-y-auto'>
           {/* User Profile Section */}
           <div className='mb-8'>
-            <motion.div className='p-4 rounded-2xl bg-gradient-to-br from-violet-500/10 to-purple-500/10' whileHover={{ scale: 1.02 }}>
+            <motion.div className='p-4 rounded-2xl bg-linear-to-br from-violet-500/10 to-purple-500/10' whileHover={{ scale: 1.02 }}>
               <div className='flex items-center gap-4'>
-                <div className='w-12 h-12 rounded-xl overflow-hidden bg-gradient-to-br from-violet-500 to-purple-500 p-0.5'>
+                <div className='w-12 h-12 rounded-xl overflow-hidden bg-linear-to-br from-violet-500 to-purple-500 p-0.5'>
                   <img src={user?.avatar} alt='Profile' className='w-full h-full object-cover rounded-[10px]' />
                 </div>
                 <div>
@@ -53,7 +53,7 @@ const SideBar = () => {
                   className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all
                     ${
                       route === option.url || route?.startsWith(option.url + '/')
-                        ? 'bg-gradient-to-br from-violet-500 to-purple-500 text-white'
+                        ? 'bg-linear-to-br from-violet-500 to-purple-500 text-white'
                         : 'hover:bg-white/10 dark:text-white dark:hover:bg-neutral-800'
                     }`}
                 >
@@ -106,7 +106,7 @@ const SideBar = () => {
                   whileHover={{ scale: 1.05 }}
                   onClick={logoutUser}
                   data-modal-hide='logout-modal'
-                  className='bg-gradient-to-br from-violet-500 to-purple-500 text-white font-medium rounded-xl px-6 py-2.5'
+                  className='bg-linear-to-br from-violet-500 to-purple-500 text-white font-medium rounded-xl px-6 py-2.5'
                 >
                   Yes, logout
                 </motion.button>

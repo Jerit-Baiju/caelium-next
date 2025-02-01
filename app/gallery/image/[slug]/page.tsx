@@ -40,13 +40,13 @@ const DetailedImage = (props: { params: Promise<{ slug: string }> }) => {
       <img className='md:h-full max-sm:w-full max-w-full rounded-lg m-4 object-cover' src={image?.url} alt='' />
       <button
         type='button'
-        className='absolute top-0 start-0 z-30 flex items-center justify-center h-full px-4 cursor-pointer group focus:outline-none'
+        className='absolute top-0 start-0 z-30 flex items-center justify-center h-full px-4 cursor-pointer group focus:outline-hidden'
       >
         <span className='material-symbols-outlined text-neutral-600'>arrow_back_ios</span>
       </button>
       <button
         type='button'
-        className='absolute top-0 end-0 z-30 flex items-center justify-center h-full px-4 cursor-pointer group focus:outline-none'
+        className='absolute top-0 end-0 z-30 flex items-center justify-center h-full px-4 cursor-pointer group focus:outline-hidden'
       >
         <span className='material-symbols-outlined text-neutral-600'>arrow_forward_ios</span>
       </button>

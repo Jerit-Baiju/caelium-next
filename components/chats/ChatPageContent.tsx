@@ -37,9 +37,9 @@ const ChatPageContent = () => {
   }, []);
 
   return (
-    <div className='flex flex-col flex-grow max-sm:h-dvh sm:w-3/4' style={isMobile ? { height: `${viewportHeight}px` } : undefined}>
+    <div className='flex flex-col grow max-sm:h-dvh sm:w-3/4' style={isMobile ? { height: `${viewportHeight}px` } : undefined}>
       {isLoading || !isConnected ? (
-        <div className='flex flex-grow items-center justify-center'>
+        <div className='flex grow items-center justify-center'>
           <Loader />
         </div>
       ) : (

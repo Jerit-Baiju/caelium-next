@@ -26,7 +26,7 @@ const CreateAlbum = () => {
   return (
     <div className='p-4'>
       <div className='flex justify-center items-center'>
-        <input type={'text'} placeholder='Title' className='border-b bg-neutral-950 outline-none text-6xl w-4/5 font-bold mb-4 p-1' />
+        <input type={'text'} placeholder='Title' className='border-b bg-neutral-950 outline-hidden text-6xl w-4/5 font-bold mb-4 p-1' />
         <button type='submit' className='bg-blue-600 mx-10 w-20 rounded-lg text-center h-10'>
           Save
         </button>

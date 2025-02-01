@@ -33,7 +33,7 @@ const ChatProfile = () => {
     <motion.div
       initial={{ opacity: 0, x: 20 }}
       animate={{ opacity: 1, x: 0 }}
-      className='flex flex-col flex-grow sm:w-3/4 bg-white dark:bg-neutral-900 md:rounded-2xl shadow-sm'
+      className='flex flex-col grow sm:w-3/4 bg-white dark:bg-neutral-900 md:rounded-2xl shadow-xs'
     >
       <div className='flex-1 overflow-y-auto'>
         {/* Profile Header */}
@@ -49,15 +49,15 @@ const ChatProfile = () => {
 
             <motion.div whileHover={{ scale: 1.05 }} className='relative'>
               {!meta?.is_group ? (
-                <div className='w-40 h-40 rounded-2xl overflow-hidden bg-gradient-to-br from-violet-500 to-purple-500 p-0.5'>
+                <div className='w-40 h-40 rounded-2xl overflow-hidden bg-linear-to-br from-violet-500 to-purple-500 p-0.5'>
                   <img src={recipient?.avatar} alt='Profile' className='w-full h-full rounded-xl object-cover' />
                 </div>
               ) : meta?.group_icon ? (
-                <div className='w-40 h-40 rounded-2xl overflow-hidden bg-gradient-to-br from-violet-500 to-purple-500 p-0.5'>
+                <div className='w-40 h-40 rounded-2xl overflow-hidden bg-linear-to-br from-violet-500 to-purple-500 p-0.5'>
                   <img src={meta?.group_icon} alt='Group Icon' className='w-full h-full rounded-xl object-cover' />
                 </div>
               ) : (
-                <div className='w-40 h-40 rounded-2xl bg-gradient-to-br from-violet-500 to-purple-500 flex items-center justify-center'>
+                <div className='w-40 h-40 rounded-2xl bg-linear-to-br from-violet-500 to-purple-500 flex items-center justify-center'>
                   <FaPeopleGroup className='text-7xl text-white' />
                 </div>
               )}
@@ -143,7 +143,7 @@ const ChatProfile = () => {
                   <input
                     type='text'
                     placeholder='Search participants'
-                    className='w-full py-2 px-4 pl-10 bg-neutral-100 dark:bg-neutral-800 rounded-lg text-sm focus:outline-none'
+                    className='w-full py-2 px-4 pl-10 bg-neutral-100 dark:bg-neutral-800 rounded-lg text-sm focus:outline-hidden'
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                   />

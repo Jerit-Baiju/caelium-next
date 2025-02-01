@@ -50,7 +50,7 @@ const CraftCreate = () => {
   };
 
   return (
-    <div className='flex flex-col flex-grow items-center justify-center md:p-4 max-sm:min-h-[calc(100dvh-9rem)]'>
+    <div className='flex flex-col grow items-center justify-center md:p-4 max-sm:min-h-[calc(100dvh-9rem)]'>
       <div className='flex justify-center flex-col items-center sm:w-1/2'>
         <div className='h-full p-8 rounded-lg shadow-md w-full max-sm:w-screen'>
           <form onSubmit={handleSubmit}>
@@ -100,7 +100,7 @@ const CraftCreate = () => {
               </label>
               <input
                 type='date'
-                className='mt-1 p-2 w-fit border rounded-md focus:outline-none focus:ring focus:border-blue-300 resize-none dark:bg-neutral-800 dark:border-neutral-700 dark:[color-scheme:dark]'
+                className='mt-1 p-2 w-fit border rounded-md focus:outline-hidden focus:ring-3 focus:border-blue-300 resize-none dark:bg-neutral-800 dark:border-neutral-700 dark:[color-scheme:dark]'
                 placeholder='Select date'
                 name='date'
                 value={selectedDate}
@@ -116,7 +116,7 @@ const CraftCreate = () => {
                   {privacyOptions.map((option) => (
                     <button
                       key={option}
-                      className={`p-2 rounded-md focus:outline-none ${
+                      className={`p-2 rounded-md focus:outline-hidden ${
                         space === option ? 'bg-blue-500 text-white' : 'bg-gray-200 dark:bg-neutral-700 text-gray-800 dark:text-white'
                       }`}
                       onClick={() => handleSpaceChange(option)}
@@ -128,7 +128,7 @@ const CraftCreate = () => {
               </div> */}
             <div className='flex justify-center'>
               <button
-                className='bg-blue-500 w-1/2 rounded-lg hover:bg-blue-600 text-white font-bold py-2 px-4 focus:outline-none focus:shadow-outline'
+                className='bg-blue-500 w-1/2 rounded-lg hover:bg-blue-600 text-white font-bold py-2 px-4 focus:outline-hidden focus:shadow-outline'
                 type='submit'
               >
                 Publish <i className='fa-solid fa-upload ms-1'></i>

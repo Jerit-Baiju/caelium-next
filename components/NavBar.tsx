@@ -17,7 +17,7 @@ const NavBar = () => {
       animate={{ y: 0, opacity: 1 }}
       className='fixed w-full z-20 top-0 start-0 md:px-6 md:py-4'
     >
-      <div className='max-w-screen-xl mx-auto flex items-center justify-between bg-white dark:bg-neutral-900 md:rounded-2xl shadow-sm px-6 py-3'>
+      <div className='max-w-(--breakpoint-xl) mx-auto flex items-center justify-between bg-white dark:bg-neutral-900 md:rounded-2xl shadow-xs px-6 py-3'>
         <Link href='/' className='flex items-center space-x-3'>
           <img className='pointer-events-none dark:invert' src='/logos/written-dark.png' alt='caelium' width={120} height={0} />
         </Link>
@@ -72,7 +72,7 @@ const NavBar = () => {
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
               <Link
                 href={ctaButton?.url}
-                className='bg-gradient-to-br from-violet-500 to-purple-500 text-white px-4 py-2 rounded-xl text-sm font-medium'
+                className='bg-linear-to-br from-violet-500 to-purple-500 text-white px-4 py-2 rounded-xl text-sm font-medium'
               >
                 {ctaButton.name}
               </Link>

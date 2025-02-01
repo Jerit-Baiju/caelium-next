@@ -6,7 +6,7 @@ const SpeedDial = () => {
           type='button'
           data-tooltip-target='tooltip-download'
           data-tooltip-placement='left'
-          className='flex justify-center items-center w-[52px] h-[52px] text-neutral-500 hover:text-neutral-900 bg-white rounded-lg border border-neutral-200 dark:border-neutral-600 shadow-sm dark:hover:text-white dark:text-neutral-400 hover:bg-neutral-50 dark:bg-neutral-700 dark:hover:bg-neutral-600 focus:ring-4 focus:ring-neutral-300 focus:outline-none dark:focus:ring-neutral-400'
+          className='flex justify-center items-center w-[52px] h-[52px] text-neutral-500 hover:text-neutral-900 bg-white rounded-lg border border-neutral-200 dark:border-neutral-600 shadow-xs dark:hover:text-white dark:text-neutral-400 hover:bg-neutral-50 dark:bg-neutral-700 dark:hover:bg-neutral-600 focus:ring-4 focus:ring-neutral-300 focus:outline-hidden dark:focus:ring-neutral-400'
         >
           <i className='fa-solid fa-download'></i>
           <span className='sr-only'>Download</span>
@@ -14,7 +14,7 @@ const SpeedDial = () => {
         <div
           id='tooltip-download'
           role='tooltip'
-          className='absolute z-10 invisible inline-block w-auto px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-neutral-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-neutral-700'
+          className='absolute z-10 invisible inline-block w-auto px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-neutral-900 rounded-lg shadow-xs opacity-0 tooltip dark:bg-neutral-700'
         >
           Download
           <div className='tooltip-arrow' data-popper-arrow></div>
@@ -23,7 +23,7 @@ const SpeedDial = () => {
           type='button'
           data-tooltip-target='tooltip-copy'
           data-tooltip-placement='left'
-          className='flex justify-center items-center w-[52px] h-[52px] text-neutral-500 hover:text-neutral-900 bg-white rounded-lg border border-neutral-200 dark:border-neutral-600 dark:hover:text-white shadow-sm dark:text-neutral-400 hover:bg-neutral-50 dark:bg-neutral-700 dark:hover:bg-neutral-600 focus:ring-4 focus:ring-neutral-300 focus:outline-none dark:focus:ring-neutral-400'
+          className='flex justify-center items-center w-[52px] h-[52px] text-neutral-500 hover:text-neutral-900 bg-white rounded-lg border border-neutral-200 dark:border-neutral-600 dark:hover:text-white shadow-xs dark:text-neutral-400 hover:bg-neutral-50 dark:bg-neutral-700 dark:hover:bg-neutral-600 focus:ring-4 focus:ring-neutral-300 focus:outline-hidden dark:focus:ring-neutral-400'
         >
           <i className='fa-solid fa-copy'></i>
           <span className='sr-only'>Copy</span>
@@ -31,7 +31,7 @@ const SpeedDial = () => {
         <div
           id='tooltip-copy'
           role='tooltip'
-          className='absolute z-10 invisible inline-block w-auto px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-neutral-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-neutral-700'
+          className='absolute z-10 invisible inline-block w-auto px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-neutral-900 rounded-lg shadow-xs opacity-0 tooltip dark:bg-neutral-700'
         >
           Copy
           <div className='tooltip-arrow' data-popper-arrow></div>
@@ -42,7 +42,7 @@ const SpeedDial = () => {
         data-dial-toggle='speed-dial-menu-square'
         aria-controls='speed-dial-menu-square'
         aria-expanded='false'
-        className='flex items-center justify-center text-white bg-neutral-500 rounded-lg w-14 h-14 hover:bg-neutral-600 dark:bg-neutral-800 dark:hover:bg-neutral-700 focus:ring-4 focus:ring-neutral-300 focus:outline-none dark:focus:ring-neutral-800'
+        className='flex items-center justify-center text-white bg-neutral-500 rounded-lg w-14 h-14 hover:bg-neutral-600 dark:bg-neutral-800 dark:hover:bg-neutral-700 focus:ring-4 focus:ring-neutral-300 focus:outline-hidden dark:focus:ring-neutral-800'
       >
         <i className='fa-solid fa-plus text-xl'></i>
         <span className='sr-only'>Open actions menu</span>

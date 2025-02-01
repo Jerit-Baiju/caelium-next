@@ -15,20 +15,20 @@ const Page = () => {
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className='hidden lg:flex flex-col flex-1 items-center justify-center rounded-2xl shadow-sm'
+        className='hidden lg:flex flex-col flex-1 items-center justify-center rounded-2xl shadow-xs'
       >
         <div className='text-center items-center justify-center flex flex-col space-y-6'>
-          <div className='h-24 w-24 rounded-full bg-gradient-to-br from-violet-500/10 to-purple-500/10 flex items-center justify-center mx-auto'>
+          <div className='h-24 w-24 rounded-full bg-linear-to-br from-violet-500/10 to-purple-500/10 flex items-center justify-center mx-auto'>
             <FiMessageSquare className='w-12 h-12 text-violet-500' />
           </div>
           <div>
-            <h1 className='text-6xl bg-gradient-to-br from-violet-500 to-purple-500 bg-clip-text text-transparent'>Caelium Chat</h1>
+            <h1 className='text-6xl bg-linear-to-br from-violet-500 to-purple-500 bg-clip-text text-transparent'>Caelium Chat</h1>
             <p className='text-3xl text-neutral-500 dark:text-neutral-400 mt-2'>Start connecting with others</p>
           </div>
           <motion.button
             whileHover={{ scale: 1.05 }}
             onClick={() => setIsModalOpen(true)}
-            className={`px-6 py-3 bg-gradient-to-br from-violet-500 to-purple-500 text-white rounded-xl flex items-center gap-2`}
+            className={`px-6 py-3 bg-linear-to-br from-violet-500 to-purple-500 text-white rounded-xl flex items-center gap-2`}
           >
             <FiPlus className='w-5 h-5' />
             New Conversation
@@ -73,7 +73,7 @@ const Page = () => {
           onClick={() => {
             router.replace('/chats/new');
           }}
-          className='w-14 h-14 bg-gradient-to-br from-violet-500 to-purple-500 rounded-full flex items-center justify-center text-white shadow-lg'
+          className='w-14 h-14 bg-linear-to-br from-violet-500 to-purple-500 rounded-full flex items-center justify-center text-white shadow-lg'
         >
           <FiPlus className='w-6 h-6' />
         </motion.button>

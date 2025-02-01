@@ -18,7 +18,7 @@ const Wrapper = ({ children }: WrapperProps) => {
       <div className={viewSM ? '' : 'max-lg:hidden'}>
         <NavBar />
       </div>
-      <div className={`lg:ml-72 flex flex-col flex-grow ${viewSM ? 'mt-20 max-lg:mt-16' : 'lg:mt-20 max-lg:h-dvh'}`}>{children}</div>
+      <div className={`lg:ml-72 flex flex-col grow ${viewSM ? 'mt-20 max-lg:mt-16' : 'lg:mt-20 max-lg:h-dvh'}`}>{children}</div>
       <div className={viewSM ? 'max-lg:mt-16' : 'max-lg:hidden'}>
         <BottomNav />
       </div>

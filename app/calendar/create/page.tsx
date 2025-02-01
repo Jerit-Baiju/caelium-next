@@ -11,14 +11,14 @@ const CreateEvent = () => {
     e.preventDefault();
   };
   return (
-      <div className='flex flex-col flex-grow items-center justify-center md:h-[calc(100dvh-5rem)] h-[calc(100dvh-9rem)]'>
+      <div className='flex flex-col grow items-center justify-center md:h-[calc(100dvh-5rem)] h-[calc(100dvh-9rem)]'>
         <div className='w-4/5 bg-neutral-900 p-8 rounded-md shadow-md'>
           <form onSubmit={handleSubmit}>
             <div className='flex justify-between'>
               <input
                 type={'text'}
                 placeholder='Title'
-                className='border-b bg-neutral-900 outline-none text-2xl w-1/2 font-bold mb-4 p-1'
+                className='border-b bg-neutral-900 outline-hidden text-2xl w-1/2 font-bold mb-4 p-1'
               />
               <button type='submit' className='bg-blue-600 w-20 rounded-lg text-center h-10'>
                 Save
@@ -26,12 +26,12 @@ const CreateEvent = () => {
             </div>
             <div className='flex items-center mb-4'>
               <input
-                className='p-2 rounded-md focus:outline-none dark:bg-neutral-800  dark:[color-scheme:dark]'
+                className='p-2 rounded-md focus:outline-hidden dark:bg-neutral-800  dark:[color-scheme:dark]'
                 type={'datetime-local'}
               />
               <p className='px-2'>to</p>
               <input
-                className='p-2 rounded-md focus:outline-none dark:bg-neutral-800  dark:[color-scheme:dark]'
+                className='p-2 rounded-md focus:outline-hidden dark:bg-neutral-800  dark:[color-scheme:dark]'
                 type={'datetime-local'}
               />
             </div>
@@ -49,12 +49,12 @@ const CreateEvent = () => {
               <input
                 type={'text'}
                 placeholder='Add location'
-                className='border-b bg-neutral-900 outline-none text-xl w-1/2 font-bold mb-4 p-1'
+                className='border-b bg-neutral-900 outline-hidden text-xl w-1/2 font-bold mb-4 p-1'
               />
             </div>
             <div>
               <textarea
-                className='bg-neutral-800 focus:outline-none rounded-lg w-1/2 p-4'
+                className='bg-neutral-800 focus:outline-hidden rounded-lg w-1/2 p-4'
                 rows={6}
                 placeholder='Add description'
                 name=''
@@ -69,7 +69,7 @@ const CreateEvent = () => {
                 {privacyOptions.map((option) => (
                   <button
                     key={option}
-                    className={`p-2 rounded-md focus:outline-none ${
+                    className={`p-2 rounded-md focus:outline-hidden ${
                       space === option ? 'bg-blue-500 text-white' : 'bg-gray-200 dark:bg-neutral-700 text-gray-800 dark:text-white'
                     }`}
                     onClick={() => handleSpaceChange(option)}

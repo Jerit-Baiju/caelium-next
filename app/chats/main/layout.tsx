@@ -9,7 +9,7 @@ export default function ChatsLayout({ children }: { children: React.ReactNode })
 
   return (
     <ChatsPaneProvider>
-      <main className='flex flex-grow md:p-6 md:gap-6 md:h-[calc(100vh-5rem)]'>
+      <main className='flex grow md:p-6 md:gap-6 md:h-[calc(100vh-5rem)]'>
         <div className={`${showMobilePane ? 'block' : 'hidden'} lg:block w-full lg:w-1/4 border-neutral-800`}>
           <ChatsPane />
         </div>
