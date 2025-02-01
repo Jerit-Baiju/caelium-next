@@ -11,7 +11,7 @@ interface WebSocketContextType {
 const WebSocketContext = createContext<WebSocketContextType | null>(null);
 
 export const WebSocketProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const { setActiveUsers, addActiveUser, removeActiveUser, updateLastSeen } = useContext(AuthContext);
+  const { setActiveUsers, addActiveUser, removeActiveUser, updateLastSeen, logoutUser } = useContext(AuthContext);
   const socketRef = useRef<WebSocket | null>(null);
   const [socketData, setSocketData] = useState<any>();
   const [isConnected, setIsConnected] = useState(false);
@@ -73,8 +73,7 @@ export const WebSocketProvider: React.FC<{ children: React.ReactNode }> = ({ chi
 
         retryCountRef.current += 1;
         if (retryCountRef.current > 2) {
-          console.log('Maximum reconnection attempts reached. Reloading page...');
-          window.location.reload();
+          logoutUser();
           return;
         }
 
