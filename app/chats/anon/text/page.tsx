@@ -14,7 +14,7 @@ const Page = () => {
   }, []);
 
   return (
-    <main className='flex flex-grow md:p-6 md:gap-6 md:h-dvh md:mx-96'>
+    <main className='flex grow md:p-6 md:gap-6 md:h-dvh md:mx-96'>
       <ChatProvider chatId={139}>
         <ChatPageContent />
       </ChatProvider>

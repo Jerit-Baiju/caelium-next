@@ -51,7 +51,7 @@ const NewChatDialog = ({ onClose }: NewChatDialogProps) => {
 
   return (
     <div className='flex flex-col h-[calc(100vh-6rem)] sm:h-[600px] bg-white dark:bg-neutral-900'>
-      <div className='border-b border-neutral-200 dark:border-neutral-700 p-4 flex-shrink-0'>
+      <div className='border-b border-neutral-200 dark:border-neutral-700 p-4 shrink-0'>
         <div className='relative'>
           {inputBox == 'search' ? (
             <div className='flex items-center gap-2'>
@@ -113,7 +113,7 @@ const NewChatDialog = ({ onClose }: NewChatDialogProps) => {
                   className='p-3 rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-700 transition-colors cursor-pointer'
                 >
                   <div className='flex items-center gap-3'>
-                    <div className='w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center'>
+                    <div className='w-12 h-12 rounded-full bg-linear-to-br from-blue-500 to-purple-600 flex items-center justify-center'>
                       <span className='material-symbols-outlined text-white'>group_add</span>
                     </div>
                     <div>
@@ -148,7 +148,7 @@ const NewChatDialog = ({ onClose }: NewChatDialogProps) => {
       </div>
 
       {isGroupMode && selectedUsers.length >= 2 && groupName.trim() && (
-        <div className='border-t border-neutral-200 dark:border-neutral-700 p-4 flex-shrink-0'>
+        <div className='border-t border-neutral-200 dark:border-neutral-700 p-4 shrink-0'>
           <button
             onClick={handleCreateGroup}
             className='w-full py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center gap-2'

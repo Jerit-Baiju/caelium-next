@@ -39,7 +39,7 @@ const TaskWidget = () => {
       <div className='overflow-auto h-56'>
         {tasks.length != 0 ? (
           tasks.map((task: Task, i) => (
-            <div key={i} className='flex flex-grow justify-between items-center dark:bg-neutral-900 bg-neutral-200 mb-4 mx-4 px-4 py-2 rounded-lg'>
+            <div key={i} className='flex grow justify-between items-center dark:bg-neutral-900 bg-neutral-200 mb-4 mx-4 px-4 py-2 rounded-lg'>
               {task.name}
               <div className='flex gap-4'>
                 <i

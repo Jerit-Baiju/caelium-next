@@ -15,7 +15,7 @@ const MusicController = () => {
             <button
               data-tooltip-target='tooltip-shuffle'
               type='button'
-              className='p-2.5 group rounded-full hover:bg-neutral-100 me-1 focus:outline-none focus:ring-4 focus:ring-neutral-200 dark:focus:ring-neutral-600 dark:hover:bg-neutral-600'
+              className='p-2.5 group rounded-full hover:bg-neutral-100 me-1 focus:outline-hidden focus:ring-4 focus:ring-neutral-200 dark:focus:ring-neutral-600 dark:hover:bg-neutral-600'
             >
               <svg
                 className=' w-4 h-4 text-neutral-500 dark:text-neutral-300 group-hover:text-neutral-900 dark:group-hover:text-white'
@@ -37,7 +37,7 @@ const MusicController = () => {
             <div
               id='tooltip-shuffle'
               role='tooltip'
-              className='absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-neutral-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-neutral-700'
+              className='absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-neutral-900 rounded-lg shadow-xs opacity-0 tooltip dark:bg-neutral-700'
             >
               Shuffle video
               <div className='tooltip-arrow' data-popper-arrow></div>
@@ -45,7 +45,7 @@ const MusicController = () => {
             <button
               data-tooltip-target='tooltip-previous'
               type='button'
-              className='p-2.5 group rounded-full hover:bg-neutral-100 focus:outline-none focus:ring-4 focus:ring-neutral-200 dark:focus:ring-neutral-600 dark:hover:bg-neutral-600'
+              className='p-2.5 group rounded-full hover:bg-neutral-100 focus:outline-hidden focus:ring-4 focus:ring-neutral-200 dark:focus:ring-neutral-600 dark:hover:bg-neutral-600'
             >
               <svg
                 className='rtl:rotate-180 w-4 h-4 text-neutral-500 dark:text-neutral-300 group-hover:text-neutral-900 dark:group-hover:text-white'
@@ -61,7 +61,7 @@ const MusicController = () => {
             <div
               id='tooltip-previous'
               role='tooltip'
-              className='absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-neutral-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-neutral-700'
+              className='absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-neutral-900 rounded-lg shadow-xs opacity-0 tooltip dark:bg-neutral-700'
             >
               Previous video
               <div className='tooltip-arrow' data-popper-arrow></div>
@@ -69,7 +69,7 @@ const MusicController = () => {
             <button
               data-tooltip-target='tooltip-pause'
               type='button'
-              className='inline-flex items-center justify-center p-2.5 mx-2 font-medium bg-blue-600 rounded-full hover:bg-blue-700 group focus:ring-4 focus:ring-blue-300 focus:outline-none dark:focus:ring-blue-800'
+              className='inline-flex items-center justify-center p-2.5 mx-2 font-medium bg-blue-600 rounded-full hover:bg-blue-700 group focus:ring-4 focus:ring-blue-300 focus:outline-hidden dark:focus:ring-blue-800'
             >
               <svg
                 className='w-3 h-3 text-white'
@@ -89,7 +89,7 @@ const MusicController = () => {
             <div
               id='tooltip-pause'
               role='tooltip'
-              className='absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-neutral-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-neutral-700'
+              className='absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-neutral-900 rounded-lg shadow-xs opacity-0 tooltip dark:bg-neutral-700'
             >
               Pause video
               <div className='tooltip-arrow' data-popper-arrow></div>
@@ -97,7 +97,7 @@ const MusicController = () => {
             <button
               data-tooltip-target='tooltip-next'
               type='button'
-              className='p-2.5 group rounded-full hover:bg-neutral-100 me-1 focus:outline-none focus:ring-4 focus:ring-neutral-200 dark:focus:ring-neutral-600 dark:hover:bg-neutral-600'
+              className='p-2.5 group rounded-full hover:bg-neutral-100 me-1 focus:outline-hidden focus:ring-4 focus:ring-neutral-200 dark:focus:ring-neutral-600 dark:hover:bg-neutral-600'
             >
               <svg
                 className='rtl:rotate-180 w-4 h-4 text-neutral-500 dark:text-neutral-300 group-hover:text-neutral-900 dark:group-hover:text-white'
@@ -113,7 +113,7 @@ const MusicController = () => {
             <div
               id='tooltip-next'
               role='tooltip'
-              className='absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-neutral-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-neutral-700'
+              className='absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-neutral-900 rounded-lg shadow-xs opacity-0 tooltip dark:bg-neutral-700'
             >
               Next video
               <div className='tooltip-arrow' data-popper-arrow></div>
@@ -121,7 +121,7 @@ const MusicController = () => {
             <button
               data-tooltip-target='tooltip-restart'
               type='button'
-              className='p-2.5 group rounded-full hover:bg-neutral-100 me-1 focus:outline-none focus:ring-4 focus:ring-neutral-200 dark:focus:ring-neutral-600 dark:hover:bg-neutral-600'
+              className='p-2.5 group rounded-full hover:bg-neutral-100 me-1 focus:outline-hidden focus:ring-4 focus:ring-neutral-200 dark:focus:ring-neutral-600 dark:hover:bg-neutral-600'
             >
               <svg
                 className='w-4 h-4 text-neutral-500 dark:text-neutral-300 group-hover:text-neutral-900 dark:group-hover:text-white'
@@ -143,7 +143,7 @@ const MusicController = () => {
             <div
               id='tooltip-restart'
               role='tooltip'
-              className='absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-neutral-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-neutral-700'
+              className='absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-neutral-900 rounded-lg shadow-xs opacity-0 tooltip dark:bg-neutral-700'
             >
               Restart video
               <div className='tooltip-arrow' data-popper-arrow></div>
@@ -162,7 +162,7 @@ const MusicController = () => {
         <button
           data-tooltip-target='tooltip-playlist'
           type='button'
-          className='p-2.5 group rounded-full hover:bg-neutral-100 me-1 focus:outline-none focus:ring-4 focus:ring-neutral-200 dark:focus:ring-neutral-600 dark:hover:bg-neutral-600'
+          className='p-2.5 group rounded-full hover:bg-neutral-100 me-1 focus:outline-hidden focus:ring-4 focus:ring-neutral-200 dark:focus:ring-neutral-600 dark:hover:bg-neutral-600'
         >
           <svg
             className='w-4 h-4 text-neutral-500 dark:text-neutral-300 group-hover:text-neutral-900 dark:group-hover:text-white'
@@ -179,7 +179,7 @@ const MusicController = () => {
         <div
           id='tooltip-playlist'
           role='tooltip'
-          className='absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-neutral-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-neutral-700'
+          className='absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-neutral-900 rounded-lg shadow-xs opacity-0 tooltip dark:bg-neutral-700'
         >
           View playlist
           <div className='tooltip-arrow' data-popper-arrow></div>
@@ -187,7 +187,7 @@ const MusicController = () => {
         {/* <button
           data-tooltip-target='tooltip-captions'
           type='button'
-          className='p-2.5 group rounded-full hover:bg-neutral-100 me-1 focus:outline-none focus:ring-4 focus:ring-neutral-200 dark:focus:ring-neutral-600 dark:hover:bg-neutral-600'>
+          className='p-2.5 group rounded-full hover:bg-neutral-100 me-1 focus:outline-hidden focus:ring-4 focus:ring-neutral-200 dark:focus:ring-neutral-600 dark:hover:bg-neutral-600'>
           <svg
             className='w-4 h-4 text-neutral-500 dark:text-neutral-300 group-hover:text-neutral-900 dark:group-hover:text-white'
             aria-hidden='true'
@@ -201,7 +201,7 @@ const MusicController = () => {
         <div
           id='tooltip-captions'
           role='tooltip'
-          className='absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-neutral-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-neutral-700'
+          className='absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-neutral-900 rounded-lg shadow-xs opacity-0 tooltip dark:bg-neutral-700'
         >
           Toggle captions
           <div className='tooltip-arrow' data-popper-arrow></div>
@@ -209,7 +209,7 @@ const MusicController = () => {
         <button
           data-tooltip-target='tooltip-expand'
           type='button'
-          className='p-2.5 group rounded-full hover:bg-neutral-100 me-1 focus:outline-none focus:ring-4 focus:ring-neutral-200 dark:focus:ring-neutral-600 dark:hover:bg-neutral-600'
+          className='p-2.5 group rounded-full hover:bg-neutral-100 me-1 focus:outline-hidden focus:ring-4 focus:ring-neutral-200 dark:focus:ring-neutral-600 dark:hover:bg-neutral-600'
         >
           <svg
             className='w-4 h-4 text-neutral-500 dark:text-neutral-300 group-hover:text-neutral-900 dark:group-hover:text-white'
@@ -225,7 +225,7 @@ const MusicController = () => {
         <div
           id='tooltip-expand'
           role='tooltip'
-          className='absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-neutral-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-neutral-700'
+          className='absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-neutral-900 rounded-lg shadow-xs opacity-0 tooltip dark:bg-neutral-700'
         >
           Full screen
           <div className='tooltip-arrow' data-popper-arrow></div>
@@ -233,7 +233,7 @@ const MusicController = () => {
         <button
           data-tooltip-target='tooltip-volume'
           type='button'
-          className='p-2.5 group rounded-full hover:bg-neutral-100 focus:outline-none focus:ring-4 focus:ring-neutral-200 dark:focus:ring-neutral-600 dark:hover:bg-neutral-600'
+          className='p-2.5 group rounded-full hover:bg-neutral-100 focus:outline-hidden focus:ring-4 focus:ring-neutral-200 dark:focus:ring-neutral-600 dark:hover:bg-neutral-600'
         >
           <svg
             className='w-4 h-4 text-neutral-500 dark:text-neutral-300 group-hover:text-neutral-900 dark:group-hover:text-white'
@@ -249,7 +249,7 @@ const MusicController = () => {
         <div
           id='tooltip-volume'
           role='tooltip'
-          className='absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-neutral-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-neutral-700'
+          className='absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-neutral-900 rounded-lg shadow-xs opacity-0 tooltip dark:bg-neutral-700'
         >
           Adjust volume
           <div className='tooltip-arrow' data-popper-arrow></div>

@@ -30,9 +30,9 @@ const Personal = () => {
         <div className='flex flex-col lg:flex-row gap-6 p-6 lg:p-8'>
           {/* Sidebar */}
           <motion.div initial={{ x: -20 }} animate={{ x: 0 }} className='lg:w-80 space-y-6'>
-            <div className='rounded-2xl bg-white dark:bg-neutral-800 p-6 shadow-sm'>
+            <div className='rounded-2xl bg-white dark:bg-neutral-800 p-6 shadow-xs'>
               <div className='space-y-4'>
-                <div className='h-20 w-20 rounded-full bg-gradient-to-br from-violet-500 to-purple-500 flex items-center justify-center'>
+                <div className='h-20 w-20 rounded-full bg-linear-to-br from-violet-500 to-purple-500 flex items-center justify-center'>
                   <img className='rounded-full w-full h-full object-cover' src={user.avatar} alt='' />
                 </div>
                 <div>
@@ -44,7 +44,7 @@ const Personal = () => {
               </div>
             </div>
 
-            <div className='rounded-2xl bg-white dark:bg-neutral-800 p-6 shadow-sm'>
+            <div className='rounded-2xl bg-white dark:bg-neutral-800 p-6 shadow-xs'>
               <h3 className='font-medium mb-4 flex items-center gap-2'>
                 <FiBell className='w-4 h-4' />
                 Quick Actions
@@ -66,7 +66,7 @@ const Personal = () => {
           {/* Main Content */}
           <motion.div initial={{ y: 20 }} animate={{ y: 0 }} className='flex-1 space-y-6'>
             <div className='grid gap-6 lg:grid-cols-3'>
-              <div className='col-span-2 rounded-2xl bg-gradient-to-br from-violet-500 to-purple-500 p-6 text-white'>
+              <div className='col-span-2 rounded-2xl bg-linear-to-br from-violet-500 to-purple-500 p-6 text-white'>
                 <h3 className='text-lg font-medium mb-2 flex items-center gap-2'>
                   <FiCheckCircle className='w-5 h-5' />
                   Progress Summary
@@ -86,17 +86,17 @@ const Personal = () => {
                   </div>
                 </div>
               </div>
-              <div className='rounded-2xl bg-white dark:bg-neutral-800 p-6 shadow-sm'>
+              <div className='rounded-2xl bg-white dark:bg-neutral-800 p-6 shadow-xs'>
                 <h3 className='font-medium mb-4'>Activity</h3>
                 {/* Add activity content here */}
               </div>
             </div>
 
             <div className='grid gap-6 lg:grid-cols-2'>
-              <div className='rounded-2xl bg-white dark:bg-neutral-800 p-6 shadow-sm'>
+              <div className='rounded-2xl bg-white dark:bg-neutral-800 p-6 shadow-xs'>
                 <TaskWidget />
               </div>
-              <div className='rounded-2xl bg-white dark:bg-neutral-800 p-6 shadow-sm'>
+              <div className='rounded-2xl bg-white dark:bg-neutral-800 p-6 shadow-xs'>
                 <EventWidget />
               </div>
             </div>

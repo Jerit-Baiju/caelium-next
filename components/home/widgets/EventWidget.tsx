@@ -33,7 +33,7 @@ const EventWidget = () => {
           events.map((event: Event, i) => (
             <div
               key={i}
-              className='flex flex-grow justify-between items-center dark:bg-neutral-900 bg-neutral-300 mb-4 mx-4 px-4 py-2 rounded-lg'
+              className='flex grow justify-between items-center dark:bg-neutral-900 bg-neutral-300 mb-4 mx-4 px-4 py-2 rounded-lg'
             >
               {event.name}
             </div>

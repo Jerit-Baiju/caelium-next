@@ -38,7 +38,7 @@ const CraftsHome = () => {
       <Loader />
     </div>
   ) : (
-    <div className='flex-grow'>
+    <div className='grow'>
       {crafts.length === 0 ? (
         <div className='flex flex-col items-center justify-center h-[calc(100dvh-15rem)]'>
           <h1 className='text-3xl'>It&apos;s quiet here… Why not add your voice?</h1>
@@ -61,7 +61,7 @@ const CraftsHome = () => {
                         {craft.tag}
                       </p>
                       <h2 className='text-2xl font-bold mask-half-2 line-clamp-2 mb-1'>{craft.title}</h2>
-                      <div className='flex flex-grow h-max'>
+                      <div className='flex grow h-max'>
                         <p
                           className={`text-neutral-600 dark:text-neutral-300 h-max mb-4 ${craft.title.length > 30 ? 'line-clamp-2' : 'line-clamp-4'}`}
                         >
@@ -73,7 +73,7 @@ const CraftsHome = () => {
                       <span>{getTime(craft?.created_at)}</span>
                       <span className='mx-2'>•</span>
                       <span>{craft.time}</span>
-                      <div className='flex flex-grow justify-end text-end'>Author: {craft.owner.name}</div>
+                      <div className='flex grow justify-end text-end'>Author: {craft.owner.name}</div>
                     </div>
                   </div>
                 </div>

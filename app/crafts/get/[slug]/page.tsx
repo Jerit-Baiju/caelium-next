@@ -35,7 +35,7 @@ const CraftRead = (props: { params: Promise<{ slug: Number }> }) => {
       <Loader />
     </div>
   ) : (
-    <div className='min-h-screen m-4 md:mx-56 flex flex-grow flex-col'>
+    <div className='min-h-screen m-4 md:mx-56 flex grow flex-col'>
       <div className='py-8 text-center'>
         <h1 className='text-4xl font-bold'>{craft?.title}</h1>
         <p className='text-lg'>{craft?.tag}</p>

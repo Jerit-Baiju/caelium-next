@@ -21,7 +21,7 @@ const Loader: React.FC<ILoaderProps> = ({ fullScreen, size = 'md' }) => {
         className='relative'
       >
         {/* Background gradient circle */}
-        <div className={`${sizeClasses[size]} rounded-full bg-gradient-to-br from-violet-500 to-purple-500 opacity-20 animate-ping`} />
+        <div className={`${sizeClasses[size]} rounded-full bg-linear-to-br from-violet-500 to-purple-500 opacity-20 animate-ping`} />
         
         {/* Spinning loader */}
         <div className='absolute inset-0'>

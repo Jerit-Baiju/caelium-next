@@ -130,13 +130,13 @@ const Profile = () => {
         </motion.div>
       )}
 
-      <div className='max-w-4xl mx-auto bg-white dark:bg-neutral-800 rounded-2xl shadow-sm p-8'>
+      <div className='max-w-4xl mx-auto bg-white dark:bg-neutral-800 rounded-2xl shadow-xs p-8'>
         <div className='relative flex flex-col items-center mb-8'>
           <div className='relative'>
             {avatarSrc ? (
               <img className='h-32 w-32 rounded-full border object-cover' src={avatarSrc} alt={user.name} />
             ) : (
-              <div className='h-32 w-32 rounded-full bg-gradient-to-br from-violet-500/10 to-purple-500/10 flex items-center justify-center'>
+              <div className='h-32 w-32 rounded-full bg-linear-to-br from-violet-500/10 to-purple-500/10 flex items-center justify-center'>
                 <FiUser className='w-16 h-16 text-violet-500' />
               </div>
             )}
@@ -163,7 +163,7 @@ const Profile = () => {
               }}
               className={`px-6 py-2 rounded-xl flex items-center gap-2 ${
                 editable 
-                  ? 'bg-gradient-to-br from-violet-500 to-purple-500 text-white' 
+                  ? 'bg-linear-to-br from-violet-500 to-purple-500 text-white' 
                   : 'bg-neutral-100 dark:bg-neutral-700 text-neutral-700 dark:text-white'
               }`}
             >

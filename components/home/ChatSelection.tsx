@@ -49,24 +49,24 @@ export const ChatSelection = () => {
         initial='initial'
         animate='animate'
         variants={decorativeCircleVariants}
-        className='absolute top-20 -right-20 w-96 h-96 rounded-full bg-gradient-to-r from-purple-500 to-indigo-500 blur-3xl'
+        className='absolute top-20 -right-20 w-96 h-96 rounded-full bg-linear-to-r from-purple-500 to-indigo-500 blur-3xl'
       />
       <motion.div
         initial='initial'
         animate='animate'
         variants={decorativeCircleVariants}
-        className='absolute -bottom-20 -left-20 w-96 h-96 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 blur-3xl'
+        className='absolute -bottom-20 -left-20 w-96 h-96 rounded-full bg-linear-to-r from-indigo-500 to-purple-500 blur-3xl'
       />
 
       <motion.div
         initial='hidden'
         animate='visible'
         variants={containerVariants}
-        className='relative z-10 min-h-dvh w-full p-6 sm:p-8 lg:p-12 rounded-2xl sm:rounded-3xl bg-gradient-to-br from-slate-800/80 to-slate-900/80 backdrop-blur-xl border border-slate-700/30 shadow-2xl flex flex-col items-center justify-center gap-8'
+        className='relative z-10 min-h-dvh w-full p-6 sm:p-8 lg:p-12 rounded-2xl sm:rounded-3xl bg-linear-to-br from-slate-800/80 to-slate-900/80 backdrop-blur-xl border border-slate-700/30 shadow-2xl flex flex-col items-center justify-center gap-8'
       >
         {/* Header Section */}
         <motion.div variants={cardVariants} className='text-center flex flex-col items-center justify-center'>
-          <h2 className='text-3xl sm:text-4xl lg:text-5xl font-bold mb-4 bg-gradient-to-r from-purple-400 via-indigo-400 to-purple-400 bg-clip-text text-transparent'>
+          <h2 className='text-3xl sm:text-4xl lg:text-5xl font-bold mb-4 bg-linear-to-r from-purple-400 via-indigo-400 to-purple-400 bg-clip-text text-transparent'>
             Connect with Your Tribe
           </h2>
           <p className='text-sm sm:text-base text-slate-400 max-w-2xl mx-auto'>
@@ -87,7 +87,7 @@ export const ChatSelection = () => {
             onClick={() => {
               router.push('/chats/anon/text');
             }}
-            className='group relative flex flex-col items-center gap-4 p-8 rounded-2xl bg-gradient-to-br from-purple-600/20 to-purple-700/20 border border-purple-500/30 hover:border-purple-500/50 text-white transition-all duration-300'
+            className='group relative flex flex-col items-center gap-4 p-8 rounded-2xl bg-linear-to-br from-purple-600/20 to-purple-700/20 border border-purple-500/30 hover:border-purple-500/50 text-white transition-all duration-300'
           >
             <div className='p-4 rounded-full bg-purple-500/20 group-hover:bg-purple-500/30 transition-colors'>
               <FiMessageSquare className='text-3xl sm:text-4xl text-purple-400' />
@@ -100,7 +100,7 @@ export const ChatSelection = () => {
             variants={cardVariants}
             whileHover='hover'
             whileTap={{ scale: 0.98 }}
-            className='group relative flex flex-col items-center gap-4 p-8 rounded-2xl bg-gradient-to-br from-indigo-600/20 to-indigo-700/20 border border-indigo-500/30 hover:border-indigo-500/50 text-white transition-all duration-300'
+            className='group relative flex flex-col items-center gap-4 p-8 rounded-2xl bg-linear-to-br from-indigo-600/20 to-indigo-700/20 border border-indigo-500/30 hover:border-indigo-500/50 text-white transition-all duration-300'
           >
             <div className='absolute top-4 right-4'>
               <BsLightningChargeFill className='text-yellow-400 animate-pulse' />
@@ -135,13 +135,13 @@ export const ChatSelection = () => {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className='fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4'
+              className='fixed inset-0 bg-black/70 backdrop-blur-xs flex items-center justify-center z-50 p-4'
             >
               <motion.div
                 initial={{ scale: 0.9, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
                 exit={{ scale: 0.9, opacity: 0 }}
-                className='bg-gradient-to-br from-slate-800 to-slate-900 p-6 rounded-2xl w-full max-w-md border border-slate-700/50'
+                className='bg-linear-to-br from-slate-800 to-slate-900 p-6 rounded-2xl w-full max-w-md border border-slate-700/50'
               >
                 <div className='flex justify-between items-center mb-4 sm:mb-6'>
                   <h3 className='text-lg sm:text-xl font-semibold text-white'>Filter Preferences</h3>

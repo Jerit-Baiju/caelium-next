@@ -120,7 +120,7 @@ const ChatsPane = () => {
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        className='flex flex-col max-md:h-[calc(100dvh-8rem)] h-[calc(100dvh-8rem)] w-full lg:bg-white lg:dark:bg-neutral-900 md:rounded-2xl shadow-sm'
+        className='flex flex-col max-md:h-[calc(100dvh-8rem)] h-[calc(100dvh-8rem)] w-full lg:bg-white lg:dark:bg-neutral-900 md:rounded-2xl shadow-xs'
       >
         {/* Search Header */}
         <div className='sticky top-0 z-10 p-4 lg:border-b lg:dark:border-neutral-800'>
@@ -153,7 +153,7 @@ const ChatsPane = () => {
 
         {/* Chat List */}
         {isLoading ? (
-          <div className='flex flex-grow items-center justify-center'>
+          <div className='flex grow items-center justify-center'>
             <Loader />
           </div>
         ) : (
@@ -235,7 +235,7 @@ const ChatsPane = () => {
                             </div>
                           </motion.div>
                       </ContextMenuTrigger>
-                      <ContextMenuContent className='w-72 p-1.5 bg-white/95 dark:bg-neutral-900/95 backdrop-blur-sm border dark:border-neutral-800 rounded-xl shadow-lg'>
+                      <ContextMenuContent className='w-72 p-1.5 bg-white/95 dark:bg-neutral-900/95 backdrop-blur-xs border dark:border-neutral-800 rounded-xl shadow-lg'>
                         <motion.div
                           initial='hidden'
                           animate='visible'

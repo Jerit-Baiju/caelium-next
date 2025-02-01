@@ -84,7 +84,7 @@ const ChatMain = ({ viewportHeight }: { viewportHeight?: number }) => {
 
   return (
     <div ref={containerRef} onScroll={handleScroll} className='flex flex-col overflow-auto h-full p-2'>
-      <div className='flex-grow' />
+      <div className='grow' />
       {nextPage && (
         <motion.div
           initial={{ opacity: 0 }}

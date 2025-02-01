@@ -18,7 +18,7 @@ export default function NotFound() {
     };
   }, []);
   return !loading ? (
-    <div className='min-h-screen flex items-center justify-center bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800'>
+    <div className='min-h-screen flex items-center justify-center bg-linear-to-b from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800'>
       <div className='text-center px-4'>
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
           <h1 className='text-9xl font-bold text-gray-800 dark:text-gray-100'>

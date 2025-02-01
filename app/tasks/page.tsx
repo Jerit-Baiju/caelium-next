@@ -55,7 +55,7 @@ const Page = () => {
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            className='bg-white dark:bg-neutral-800 p-6 rounded-2xl shadow-sm'
+            className='bg-white dark:bg-neutral-800 p-6 rounded-2xl shadow-xs'
           >
             <div className='flex items-center gap-4'>
               <div className='h-12 w-12 rounded-xl bg-blue-500/10 flex items-center justify-center'>
@@ -72,7 +72,7 @@ const Page = () => {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className='bg-white dark:bg-neutral-800 p-6 rounded-2xl shadow-sm'
+            className='bg-white dark:bg-neutral-800 p-6 rounded-2xl shadow-xs'
           >
             <div className='flex items-center gap-4'>
               <div className='h-12 w-12 rounded-xl bg-green-500/10 flex items-center justify-center'>
@@ -89,7 +89,7 @@ const Page = () => {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className='bg-white dark:bg-neutral-800 p-6 rounded-2xl shadow-sm'
+            className='bg-white dark:bg-neutral-800 p-6 rounded-2xl shadow-xs'
           >
             <div className='flex items-center gap-4'>
               <div className='h-12 w-12 rounded-xl bg-yellow-500/10 flex items-center justify-center'>
@@ -104,7 +104,7 @@ const Page = () => {
         </div>
 
         {/* Main Task Area */}
-        <div className='bg-white dark:bg-neutral-800 rounded-2xl shadow-sm overflow-hidden'>
+        <div className='bg-white dark:bg-neutral-800 rounded-2xl shadow-xs overflow-hidden'>
           <div className='p-6 border-b border-neutral-200 dark:border-neutral-700'>
             <div className='flex flex-col sm:flex-row sm:items-center justify-between gap-4'>
               <h2 className='text-xl font-semibold text-neutral-900 dark:text-white'>My Tasks</h2>
@@ -181,13 +181,13 @@ const Page = () => {
                 className='flex-1 px-4 py-3 rounded-xl border border-neutral-200 dark:border-neutral-600
                     bg-white dark:bg-neutral-800 text-neutral-900 dark:text-white
                     placeholder-neutral-400 dark:placeholder-neutral-500
-                    focus:outline-none focus:ring-2 focus:ring-violet-500/50 dark:focus:ring-violet-500/30
+                    focus:outline-hidden focus:ring-2 focus:ring-violet-500/50 dark:focus:ring-violet-500/30
                     transition-all'
                 required
               />
               <button
                 type='submit'
-                className='px-6 py-3 bg-gradient-to-r from-violet-500 to-purple-500 hover:from-violet-600 hover:to-purple-600
+                className='px-6 py-3 bg-linear-to-r from-violet-500 to-purple-500 hover:from-violet-600 hover:to-purple-600
                     text-white rounded-xl transition-all flex items-center gap-2 font-medium'
               >
                 <i className='fa-solid fa-plus'></i>
