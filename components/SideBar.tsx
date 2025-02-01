@@ -9,7 +9,7 @@ import { FiFeather, FiHome, FiImage, FiLogOut, FiMessageCircle, FiUser } from 'r
 export const options = [
   { name: 'Home', url: '/', icon: FiHome },
   { name: 'Gallery', url: '/gallery', icon: FiImage },
-  { name: 'Chats', url: '/chats', icon: FiMessageCircle },
+  { name: 'Chats', url: '/chats/main', icon: FiMessageCircle },
   { name: 'Crafts', url: '/crafts', icon: FiFeather },
   { name: 'Profile', url: '/accounts/profile', icon: FiUser },
 ];

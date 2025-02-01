@@ -26,7 +26,6 @@ import { getTime, truncate } from '@/helpers/utils';
 import useChatUtils from '@/hooks/useChat';
 import { motion } from 'framer-motion';
 import { Archive, BellOff, ChevronRight, Download, Info, Mail, Pin, PinOff, Trash2 } from 'lucide-react';
-import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useContext, useEffect, useState } from 'react';
 import { FiSearch, FiX } from 'react-icons/fi';
@@ -166,8 +165,13 @@ const ChatsPane = () => {
                   return (
                     <ContextMenu key={chat.id}>
                       <ContextMenuTrigger>
-                        <Link href={`/chats/${chat.id}`}>
-                          <motion.div
+                          <motion.div onClick={
+                            () => router.push(`/chats/main/${chat.id}`)
+                          }
+                            initial={{ opacity: 0, scale: 0.9 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            whileTap={{ scale: 0.95 }
+                          }
                             whileHover={{ scale: 1.01 }}
                             className={`px-3 py-2 rounded-xl transition-all ${
                               isActive ? 'bg-neutral-200 dark:bg-neutral-800' : 'hover:bg-neutral-100 my-1 dark:hover:bg-neutral-800'
@@ -230,7 +234,6 @@ const ChatsPane = () => {
                               </div>
                             </div>
                           </motion.div>
-                        </Link>
                       </ContextMenuTrigger>
                       <ContextMenuContent className='w-72 p-1.5 bg-white/95 dark:bg-neutral-900/95 backdrop-blur-sm border dark:border-neutral-800 rounded-xl shadow-lg'>
                         <motion.div
