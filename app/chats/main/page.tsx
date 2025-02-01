@@ -4,7 +4,6 @@ import { motion } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { FiMessageSquare, FiPlus } from 'react-icons/fi';
-import { handleeFont } from '../font';
 
 const Page = () => {
   const router = useRouter();
@@ -29,7 +28,7 @@ const Page = () => {
           <motion.button
             whileHover={{ scale: 1.05 }}
             onClick={() => setIsModalOpen(true)}
-            className={`${handleeFont.className} px-6 py-3 bg-gradient-to-br from-violet-500 to-purple-500 text-white rounded-xl flex items-center gap-2`}
+            className={`px-6 py-3 bg-gradient-to-br from-violet-500 to-purple-500 text-white rounded-xl flex items-center gap-2`}
           >
             <FiPlus className='w-5 h-5' />
             New Conversation

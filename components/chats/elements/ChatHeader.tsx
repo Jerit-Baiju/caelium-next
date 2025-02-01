@@ -14,13 +14,15 @@ import ChatContext from '@/contexts/ChatContext';
 import { NavLink } from '@/helpers/props';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useContext, useEffect, useRef, useState } from 'react';
 
 const ChatHeader = () => {
+  let { user } = useContext(AuthContext);
+  const router = useRouter();
   const [isAlertOpen, setIsAlertOpen] = useState(false);
   const headerRef = useRef<HTMLDivElement>(null);
   let { getParticipant, clearChat, meta, getLastSeen } = useContext(ChatContext);
-  let { user } = useContext(AuthContext);
 
   const options: NavLink[] = [
     { name: 'Dashboard', url: '/dashboard' },
@@ -56,9 +58,14 @@ const ChatHeader = () => {
         className='flex sticky top-0 z-10 flex-row h-16 bg-gradient-to-r md:rounded-t-2xl from-neutral-300/90 to-neutral-200/90 backdrop-blur-sm dark:from-neutral-900/90 dark:to-neutral-800/90 dark:text-white'
       >
         <motion.div className='flex justify-center' whileHover={{ scale: 1.05 }}>
-          <Link className='flex flex-col my-auto self-start p-3 h-min justify-center rounded-full' href='/chats'>
+          <div
+            onClick={() => {
+              router.back();
+            }}
+            className='flex flex-col my-auto self-start p-3 h-min justify-center rounded-full'
+          >
             <i className='fa-solid fa-arrow-left ms-2'></i>
-          </Link>
+          </div>
         </motion.div>
         <Link href={`/chats/${meta?.id}/info`} className='flex flex-grow items-center cursor-default'>
           {!meta?.is_group ? (
