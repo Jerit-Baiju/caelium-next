@@ -2,7 +2,7 @@
 import { useNavbar } from '@/contexts/NavContext';
 import { useEffect } from 'react';
 
-const page = () => {
+const TermsAndConditions = () => {
   const { setShowNav } = useNavbar();
   useEffect(() => {
     setShowNav(false);
@@ -101,4 +101,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default TermsAndConditions;
