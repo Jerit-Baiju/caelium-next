@@ -1,7 +1,7 @@
 import { useChatContext } from '@/contexts/ChatContext';
 import { useWebSocket } from '@/contexts/SocketContext';
-import { Loader } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import Loader from '../Loader';
 import ChatHeader from './elements/ChatHeader';
 import ChatInput from './elements/ChatInput';
 import ChatMain from './elements/ChatMain';
