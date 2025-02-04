@@ -1,12 +1,16 @@
 'use client';
 import Loader from '@/components/Loader';
 import AuthContext from '@/contexts/AuthContext';
-import { useSearchParams } from 'next/navigation';
+import { useToast } from '@/hooks/use-toast';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useContext, useEffect } from 'react';
 
 const Page = () => {
   const { loginUser } = useContext(AuthContext);
   const searchParams = useSearchParams();
+  const router = useRouter();
+  const { toast } = useToast();
+
   useEffect(() => {
     const fetch_tokens = async (auth_code: any) => {
       try {
@@ -19,12 +23,16 @@ const Page = () => {
         });
 
         if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
-        const contentType = response.headers.get('content-type');
-        if (!contentType || !contentType.includes('application/json')) {
-          throw new TypeError('Received non-JSON response');
+          const errorData = await response.json();
+          if (response.status === 403) {
+            toast({
+              variant: 'destructive',
+              title: 'Authentication Failed',
+              description: errorData.error || 'Only @mariancollege.org email addresses are allowed.',
+            });
+            return;
+          }
+          throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
         }
 
         const data = await response.json();
@@ -34,11 +42,17 @@ const Page = () => {
           error,
           message: error instanceof Error ? error.message : 'Unknown error',
         });
+        toast({
+          variant: 'destructive',
+          title: 'Authentication Error',
+          description: 'An unexpected error occurred. Please try again.',
+        });
       }
     };
     const auth_code = searchParams.get('code');
     auth_code && fetch_tokens(auth_code);
-  }, [searchParams]);
+  }, [searchParams, toast, router, loginUser]);
+
   return (
     <div className='flex h-dvh items-center justify-center'>
       <Loader />

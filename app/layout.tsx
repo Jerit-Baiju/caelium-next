@@ -1,4 +1,5 @@
 import { ThemeProvider } from '@/components/theme-provider';
+import { Toaster } from '@/components/ui/toaster';
 import type { Metadata } from 'next';
 import Script from 'next/script';
 import { handleeFont } from './font';
@@ -44,6 +45,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <Wrapper>{children}</Wrapper>
           </ProvidersWrapper>
         </ThemeProvider>
+        <Toaster />
         <Script src='https://kit.fontawesome.com/c75f557ffd.js' crossOrigin='anonymous'></Script>
         <script src='https://accounts.google.com/gsi/client' async></script>
       </body>
