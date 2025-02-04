@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react';
 
 const Page = () => {
   const { setShowNav } = useNavbar();
-  const [currentTipIndex, setCurrentTipIndex] = useState(0);
+  const [currentTipIndex, setCurrentTipIndex] = useState(Math.floor(Math.random() * 5));
   const [isVisible, setIsVisible] = useState(true);
 
   const tips = [
@@ -27,7 +27,14 @@ const Page = () => {
     const timer = setInterval(() => {
       setIsVisible(false); // Start fade out
       setTimeout(() => {
-        setCurrentTipIndex((prev) => (prev + 1) % tips.length);
+        // Ensure we don't show the same tip twice in a row
+        setCurrentTipIndex((prev) => {
+          let next = Math.floor(Math.random() * tips.length);
+          while (next === prev) {
+            next = Math.floor(Math.random() * tips.length);
+          }
+          return next;
+        });
         setIsVisible(true); // Start fade in
       }, 200); // Wait for fade out to complete
     }, 2000);
