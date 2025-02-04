@@ -21,18 +21,14 @@ const Page = () => {
           },
           body: JSON.stringify({ code: auth_code }),
         });
-
-        if (!response.ok) {
+        if (response.status === 403) {
           const errorData = await response.json();
-          if (response.status === 403) {
-            toast({
-              variant: 'destructive',
-              title: 'Authentication Failed',
-              description: errorData.error || 'Only @mariancollege.org email addresses are allowed.',
-            });
-            return;
-          }
-          throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
+          toast({
+            variant: 'destructive',
+            title: 'Authentication Failed',
+            description: errorData.error || 'Only @mariancollege.org email addresses are allowed.',
+          });
+          return;
         }
 
         const data = await response.json();
