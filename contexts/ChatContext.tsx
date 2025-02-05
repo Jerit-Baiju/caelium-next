@@ -1,18 +1,18 @@
 'use client';
 import { Button } from '@/components/ui/button';
 import { BaseError, Chat, Message, User } from '@/helpers/props';
+import { formatTimeSince } from '@/helpers/utils';
 import useAxios from '@/hooks/useAxios';
 import { AxiosError } from 'axios';
 import { useRouter } from 'next/navigation';
 import { ReactNode, createContext, useContext, useEffect, useState } from 'react';
 import AuthContext from './AuthContext';
-import { useWebSocket } from './SocketContext';
 import { useChatsPaneContext } from './ChatsPaneContext';
-import { formatTimeSince } from '@/helpers/utils';
-
+import { useWebSocket } from './SocketContext';
 
 interface childrenProps {
   chatId: number;
+  is_anon?: boolean;
   children: ReactNode;
 }
 
@@ -33,6 +33,7 @@ interface ChatContextProps {
   meta: Chat | null;
   getParticipant: (id: number) => User | null;
   getLastSeen: (participantId: number) => ReactNode;
+  is_anon: boolean;
 }
 
 const ChatContext = createContext<ChatContextProps>({
@@ -52,10 +53,11 @@ const ChatContext = createContext<ChatContextProps>({
   meta: null,
   getParticipant: () => null,
   getLastSeen: () => null,
+  is_anon: false,
 });
 export default ChatContext;
 
-export const ChatProvider = ({ chatId, children }: childrenProps) => {
+export const ChatProvider = ({ chatId, is_anon = false, children }: childrenProps) => {
   const { user, lastSeenUsers, activeUsers } = useContext(AuthContext);
   const [textInput, setTextInput] = useState('');
   const [messages, setMessages] = useState<Message[]>([]);
@@ -66,7 +68,7 @@ export const ChatProvider = ({ chatId, children }: childrenProps) => {
   const [isLoadingMore, setIsLoadingMore] = useState<boolean>(false);
   const [typingMessage, setTypingMessage] = useState<{ typed: string; sender: number } | null>(null);
   const [nextPage, setNextPage] = useState<string | null>(null);
-  const [isSocketReady, setIsSocketReady] = useState(false);
+  const [_, setIsSocketReady] = useState(false);
   const [messageQueue, setMessageQueue] = useState<{ type: 'txt' | 'attachment'; content?: string }[]>([]);
 
   const api = useAxios();
@@ -282,6 +284,7 @@ export const ChatProvider = ({ chatId, children }: childrenProps) => {
         meta,
         getParticipant,
         getLastSeen,
+        is_anon,
       }}
     >
       {children}

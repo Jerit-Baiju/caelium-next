@@ -1,12 +1,20 @@
 'use client';
+import ChatPageContent from '@/components/chats/ChatPageContent';
 import Loader from '@/components/Loader';
+import { ChatProvider } from '@/contexts/ChatContext';
 import { useNavbar } from '@/contexts/NavContext';
+import { useWebSocket } from '@/contexts/SocketContext';
+import { User } from '@/helpers/props';
 import { useEffect, useState } from 'react';
 
 const Page = () => {
   const { setShowNav } = useNavbar();
+  const { socket, isConnected, socketData } = useWebSocket();
   const [currentTipIndex, setCurrentTipIndex] = useState(Math.floor(Math.random() * 5));
   const [isVisible, setIsVisible] = useState(true);
+  const [isMatched, setIsMatched] = useState(false);
+  const [matchedUser, setMatchedUser] = useState<User | null>(null);
+  const [chatId, setChatId] = useState<number | null>(null);
 
   const tips = [
     'Be respectful and kind to others',
@@ -24,22 +32,58 @@ const Page = () => {
   }, []);
 
   useEffect(() => {
-    const timer = setInterval(() => {
-      setIsVisible(false); // Start fade out
-      setTimeout(() => {
-        // Ensure we don't show the same tip twice in a row
-        setCurrentTipIndex((prev) => {
-          let next = Math.floor(Math.random() * tips.length);
-          while (next === prev) {
-            next = Math.floor(Math.random() * tips.length);
-          }
-          return next;
-        });
-        setIsVisible(true); // Start fade in
-      }, 200); // Wait for fade out to complete
-    }, 2000);
-    return () => clearInterval(timer);
-  }, []);
+    if (isConnected) {
+      console.log('Sending random chat request');
+      socket?.send(JSON.stringify({ category: 'random_chat_request' }));
+
+      const handleMessage = (event: MessageEvent) => {
+        const data = JSON.parse(event.data);
+        console.log('Received message:', data);
+
+        if (data.category === 'random_chat_matched' && data.matched_user) {
+          console.log('Matched with:', data.matched_user);
+          setIsMatched(true);
+          setMatchedUser(data.matched_user);
+          setChatId(data.chat_id);
+        } else if (data.category === 'random_chat_queued') {
+          console.log('Added to queue');
+        }
+      };
+
+      socket?.addEventListener('message', handleMessage);
+      return () => socket?.removeEventListener('message', handleMessage);
+    }
+  }, [isConnected, socket]);
+
+  // Tips rotation effect
+  useEffect(() => {
+    if (!isMatched) {
+      const timer = setInterval(() => {
+        setIsVisible(false);
+        setTimeout(() => {
+          setCurrentTipIndex((prev) => {
+            let next = Math.floor(Math.random() * tips.length);
+            while (next === prev) {
+              next = Math.floor(Math.random() * tips.length);
+            }
+            return next;
+          });
+          setIsVisible(true);
+        }, 200);
+      }, 2000);
+      return () => clearInterval(timer);
+    }
+  }, [isMatched]);
+
+  if (isMatched && chatId && matchedUser) {
+    return (
+      <main className='flex grow md:p-6 md:gap-6 h-dvh md:mx-96'>
+        <ChatProvider is_anon={true} chatId={chatId}>
+          <ChatPageContent />
+        </ChatProvider>
+      </main>
+    );
+  }
 
   return (
     <main className='flex grow md:p-6 md:gap-6 h-dvh md:mx-96'>
