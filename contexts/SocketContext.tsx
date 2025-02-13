@@ -16,6 +16,8 @@ export const WebSocketProvider: React.FC<{ children: React.ReactNode }> = ({ chi
   const [socketData, setSocketData] = useState<any>();
   const [isConnected, setIsConnected] = useState(false);
   const retryCountRef = useRef(0);
+  const maxRetries = 10; // Increased from 2 to 10
+  const stableConnectionTimer = useRef<NodeJS.Timeout | null>(null);
   const mounted = useRef(false);
 
   useEffect(() => {
@@ -38,13 +40,17 @@ export const WebSocketProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     if (!token) return;
 
     let reconnectTimeout: NodeJS.Timeout;
-    const reconnectInterval = 500;
+
+    const getReconnectDelay = () => {
+      // Exponential backoff: 500ms, 1000ms, 2000ms, 4000ms, etc.
+      return Math.min(500 * Math.pow(2, retryCountRef.current), 10000);
+    };
 
     const connectWebSocket = () => {
-      console.log('Connecting to WebSocket');
+      console.log('Connecting to WebSocket', retryCountRef.current);
 
       if (socketRef.current) {
-        socketRef.current.onclose = null; // Remove previous onclose to prevent duplicate connections
+        socketRef.current.onclose = null;
         socketRef.current.close();
       }
 
@@ -53,7 +59,11 @@ export const WebSocketProvider: React.FC<{ children: React.ReactNode }> = ({ chi
       ws.onopen = () => {
         console.log('Connected to WebSocket');
         setIsConnected(true);
-        retryCountRef.current = 0; // Reset retry counter on successful connection
+        
+        // Reset retry counter after 30 seconds of stable connection
+        stableConnectionTimer.current = setTimeout(() => {
+          retryCountRef.current = 0;
+        }, 30000);
       };
 
       ws.onmessage = (event) => {
@@ -68,16 +78,23 @@ export const WebSocketProvider: React.FC<{ children: React.ReactNode }> = ({ chi
       };
 
       ws.onclose = () => {
-        console.log('WebSocket closed, attempting to reconnect...');
         setIsConnected(false);
+        if (stableConnectionTimer.current) {
+          clearTimeout(stableConnectionTimer.current);
+        }
 
         retryCountRef.current += 1;
-        if (retryCountRef.current > 2) {
+        console.log(`WebSocket closed, attempt ${retryCountRef.current} of ${maxRetries}`);
+
+        if (retryCountRef.current >= maxRetries) {
+          console.log('Max retries reached, logging out');
           logoutUser();
           return;
         }
 
-        reconnectTimeout = setTimeout(connectWebSocket, reconnectInterval);
+        const delay = getReconnectDelay();
+        console.log(`Reconnecting in ${delay}ms...`);
+        reconnectTimeout = setTimeout(connectWebSocket, delay);
       };
 
       ws.onerror = (err) => {
@@ -91,6 +108,9 @@ export const WebSocketProvider: React.FC<{ children: React.ReactNode }> = ({ chi
 
     return () => {
       mounted.current = false;
+      if (stableConnectionTimer.current) {
+        clearTimeout(stableConnectionTimer.current);
+      }
       if (socketRef.current) {
         socketRef.current.onclose = null; // Prevent reconnect on component unmount
         socketRef.current.close();
