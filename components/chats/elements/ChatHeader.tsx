@@ -16,14 +16,13 @@ import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useContext, useEffect, useRef, useState } from 'react';
-import multiavatar from '@multiavatar/multiavatar';
 
 const ChatHeader = () => {
   let { user } = useContext(AuthContext);
   const router = useRouter();
   const [isAlertOpen, setIsAlertOpen] = useState(false);
   const headerRef = useRef<HTMLDivElement>(null);
-  let { getParticipant, clearChat, meta, getLastSeen, is_anon } = useContext(ChatContext);
+  let { getParticipant, clearChat, meta, getLastSeen, is_anon, anonAvatar, anonName } = useContext(ChatContext);
 
   const options: NavLink[] = [
     { name: 'Dashboard', url: '/dashboard' },
@@ -48,11 +47,6 @@ const ChatHeader = () => {
       };
     }
   }, []);
-
-  const getAnonAvatar = () => {
-    const svgCode = multiavatar(String(meta?.id ?? '0'));
-    return `data:image/svg+xml;base64,${btoa(svgCode)}`;
-  };
 
   return (
     <>
@@ -79,7 +73,7 @@ const ChatHeader = () => {
               className='h-12 my-2 w-12 max-sm:h-12 max-sm:w-12 rounded-full dark:bg-white object-cover'
               src={
                 is_anon
-                  ? getAnonAvatar()
+                  ? anonAvatar
                   : getParticipant(meta?.participants.find((participant) => participant.id !== user.id)?.id ?? 0)?.avatar
               }
               alt='user photo'
@@ -105,7 +99,7 @@ const ChatHeader = () => {
                 {meta?.is_group
                   ? meta.name
                   : is_anon
-                    ? 'Anonymous User'
+                    ? anonName
                     : getParticipant(meta?.participants.find((participant) => participant.id !== user.id)?.id ?? 0)?.name}
               </p>
             </div>
