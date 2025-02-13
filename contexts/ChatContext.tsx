@@ -1,6 +1,8 @@
 'use client';
 import { Button } from '@/components/ui/button';
 import { BaseError, Chat, Message, User } from '@/helpers/props';
+import multiavatar from '@multiavatar/multiavatar';
+
 import { formatTimeSince } from '@/helpers/utils';
 import useAxios from '@/hooks/useAxios';
 import { AxiosError } from 'axios';
@@ -34,7 +36,21 @@ interface ChatContextProps {
   getParticipant: (id: number) => User | null;
   getLastSeen: (participantId: number) => ReactNode;
   is_anon: boolean;
+  anonAvatar: string;
+  anonName: string;
 }
+
+const fancyFirstNames = [
+  'Celestial', 'Mystic', 'Aurora', 'Phoenix', 'Nebula', 
+  'Quantum', 'Cosmic', 'Solar', 'Luna', 'Astral',
+  'Crystal', 'Nova', 'Storm', 'Echo', 'Shadow'
+];
+
+const fancyLastNames = [
+  'Voyager', 'Starweaver', 'Dreamwalker', 'Lightbringer', 'Nightweaver',
+  'Stormchaser', 'Moonwhisper', 'Starseeker', 'Dawnkeeper', 'Skydancer',
+  'Frostweaver', 'Sunseeker', 'Cloudweaver', 'Windwalker', 'Starshaper'
+];
 
 const ChatContext = createContext<ChatContextProps>({
   handleSubmit: async () => {},
@@ -54,6 +70,8 @@ const ChatContext = createContext<ChatContextProps>({
   getParticipant: () => null,
   getLastSeen: () => null,
   is_anon: false,
+  anonAvatar: '',
+  anonName: '',
 });
 export default ChatContext;
 
@@ -75,6 +93,14 @@ export const ChatProvider = ({ chatId, is_anon = false, children }: childrenProp
   const router = useRouter();
   const { socket, socketData } = useWebSocket();
   const { updateChatOrder } = useChatsPaneContext();
+
+  const getRandomFancyName = () => {
+    const firstName = fancyFirstNames[Math.floor(Math.random() * fancyFirstNames.length)];
+    const lastName = fancyLastNames[Math.floor(Math.random() * fancyLastNames.length)];
+    return `${firstName} ${lastName}`;
+  };
+
+  const [anonName] = useState(getRandomFancyName());
 
   useEffect(() => {
     const data = socketData;
@@ -252,6 +278,11 @@ export const ChatProvider = ({ chatId, is_anon = false, children }: childrenProp
     }
   };
 
+  const getAnonAvatar = () => {
+    const svgCode = multiavatar(String(meta?.id ?? '0'));
+    return `data:image/svg+xml;base64,${btoa(svgCode)}`;
+  };
+
   if (error) {
     return (
       <div className='flex flex-col flex-grow max-sm:h-screen sm:w-3/4'>
@@ -285,6 +316,8 @@ export const ChatProvider = ({ chatId, is_anon = false, children }: childrenProp
         getParticipant,
         getLastSeen,
         is_anon,
+        anonAvatar: getAnonAvatar(),
+        anonName,
       }}
     >
       {children}
