@@ -9,7 +9,7 @@ import { useEffect, useState } from 'react';
 
 const Page = () => {
   const { setShowNav } = useNavbar();
-  const { socket, isConnected, socketData } = useWebSocket();
+  const { socket, isConnected } = useWebSocket();
   const [currentTipIndex, setCurrentTipIndex] = useState(Math.floor(Math.random() * 5));
   const [isVisible, setIsVisible] = useState(true);
   const [isMatched, setIsMatched] = useState(false);

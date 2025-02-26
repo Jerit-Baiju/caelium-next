@@ -48,6 +48,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <Toaster />
         <Script src='https://kit.fontawesome.com/c75f557ffd.js' crossOrigin='anonymous'></Script>
         <script src='https://accounts.google.com/gsi/client' async></script>
+        <script
+          async
+          src='https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8007113895720249'
+          crossOrigin='anonymous'
+        ></script>
       </body>
     </html>
   );
