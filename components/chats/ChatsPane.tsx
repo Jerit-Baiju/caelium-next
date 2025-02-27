@@ -1,15 +1,5 @@
 'use client';
 import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
-import {
   ContextMenu,
   ContextMenuContent,
   ContextMenuItem,
@@ -165,75 +155,71 @@ const ChatsPane = () => {
                   return (
                     <ContextMenu key={chat.id}>
                       <ContextMenuTrigger>
-                          <motion.div onClick={
-                            () => router.push(`/chats/main/${chat.id}`)
-                          }
-                            initial={{ opacity: 0, scale: 0.9 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            whileTap={{ scale: 0.95 }
-                          }
-                            whileHover={{ scale: 1.01 }}
-                            className={`px-3 py-2 rounded-xl transition-all ${
-                              isActive ? 'bg-neutral-200 dark:bg-neutral-800' : 'hover:bg-neutral-100 my-1 dark:hover:bg-neutral-800'
-                            }`}
-                          >
-                            <div className='flex items-center gap-4'>
-                              <div className='relative'>
-                                {!chat?.is_group ? (
-                                  <>
-                                    <div className='w-12 h-12 rounded-xl overflow-hidden'>
-                                      <img
-                                        className='w-full h-full object-cover rounded-[10px]'
-                                        src={chat.participants.find((p) => p.id !== user.id)?.avatar}
-                                        alt='avatar'
-                                      />
-                                    </div>
-                                    {activeUsers.includes(chat.participants.find((p) => p.id !== user.id)?.id || 0) && (
-                                      <div className='absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full ring-2 ring-white dark:ring-neutral-900'></div>
-                                    )}
-                                  </>
-                                ) : (
+                        <motion.div
+                          onClick={() => router.push(`/chats/main/${chat.id}`)}
+                          initial={{ opacity: 0, scale: 0.9 }}
+                          animate={{ opacity: 1, scale: 1 }}
+                          whileTap={{ scale: 0.95 }}
+                          whileHover={{ scale: 1.01 }}
+                          className={`px-3 py-2 rounded-xl transition-all ${
+                            isActive ? 'bg-neutral-200 dark:bg-neutral-800' : 'hover:bg-neutral-100 my-1 dark:hover:bg-neutral-800'
+                          }`}
+                        >
+                          <div className='flex items-center gap-4'>
+                            <div className='relative'>
+                              {!chat?.is_group ? (
+                                <>
                                   <div className='w-12 h-12 rounded-xl overflow-hidden'>
-                                    {chat.group_icon ? (
-                                      <img className='w-full h-full object-cover rounded-[10px] src={chat.group_icon}' alt='group' />
-                                    ) : (
-                                      <div className='w-full h-full rounded-[10px] bg-white dark:bg-neutral-800 flex items-center justify-center'>
-                                        <i className='fa-solid fa-people-group text-xl text-violet-500'></i>
-                                      </div>
-                                    )}
+                                    <img
+                                      className='w-full h-full object-cover rounded-[10px]'
+                                      src={chat.participants.find((p) => p.id !== user.id)?.avatar}
+                                      alt='avatar'
+                                    />
                                   </div>
-                                )}
-                              </div>
-
-                              <div className='flex-1 min-w-0'>
-                                <div className='flex items-center justify-between'>
-                                  <div className='flex items-center gap-2'>
-                                    <h3 className='font-medium dark:text-white truncate'>
-                                      {chat.is_group ? chat.name : chat.participants.find((p) => p.id !== user.id)?.name}
-                                    </h3>
-                                    {chat.is_pinned && <Pin className='w-3 h-3 text-violet-500' />}
-                                  </div>
-                                  {chat.updated_time && (
-                                    <span className='text-xs text-neutral-500 dark:text-neutral-400'>
-                                      {getTime(chat.updated_time)}
-                                    </span>
+                                  {activeUsers.includes(chat.participants.find((p) => p.id !== user.id)?.id || 0) && (
+                                    <div className='absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full ring-2 ring-white dark:ring-neutral-900'></div>
+                                  )}
+                                </>
+                              ) : (
+                                <div className='w-12 h-12 rounded-xl overflow-hidden'>
+                                  {chat.group_icon ? (
+                                    <img className='w-full h-full object-cover rounded-[10px] src={chat.group_icon}' alt='group' />
+                                  ) : (
+                                    <div className='w-full h-full rounded-[10px] bg-white dark:bg-neutral-800 flex items-center justify-center'>
+                                      <i className='fa-solid fa-people-group text-xl text-violet-500'></i>
+                                    </div>
                                   )}
                                 </div>
-                                <p className='text-sm text-neutral-500 dark:text-neutral-400 truncate'>
-                                  {chat.last_message?.sender?.id === user.id
-                                    ? 'You: '
-                                    : chat.last_message?.sender
-                                      ? `${chat.last_message.sender.name}: `
-                                      : ''}
-                                  {chat.last_message
-                                    ? chat.last_message.type === 'txt'
-                                      ? truncate({ chars: chat.last_message.content, length: 45 })
-                                      : 'sent an attachment'
-                                    : ''}
-                                </p>
-                              </div>
+                              )}
                             </div>
-                          </motion.div>
+
+                            <div className='flex-1 min-w-0'>
+                              <div className='flex items-center justify-between'>
+                                <div className='flex items-center gap-2'>
+                                  <h3 className='font-medium dark:text-white truncate'>
+                                    {chat.is_group ? chat.name : chat.participants.find((p) => p.id !== user.id)?.name}
+                                  </h3>
+                                  {chat.is_pinned && <Pin className='w-3 h-3 text-violet-500' />}
+                                </div>
+                                {chat.updated_time && (
+                                  <span className='text-xs text-neutral-500 dark:text-neutral-400'>{getTime(chat.updated_time)}</span>
+                                )}
+                              </div>
+                              <p className='text-sm text-neutral-500 dark:text-neutral-400 truncate'>
+                                {chat.last_message?.sender?.id === user.id
+                                  ? 'You: '
+                                  : chat.last_message?.sender
+                                    ? `${chat.last_message.sender.name}: `
+                                    : ''}
+                                {chat.last_message
+                                  ? chat.last_message.type === 'txt'
+                                    ? truncate({ chars: chat.last_message.content, length: 45 })
+                                    : 'sent an attachment'
+                                  : ''}
+                              </p>
+                            </div>
+                          </div>
+                        </motion.div>
                       </ContextMenuTrigger>
                       <ContextMenuContent className='w-72 p-1.5 bg-white/95 dark:bg-neutral-900/95 backdrop-blur-xs border dark:border-neutral-800 rounded-xl shadow-lg'>
                         <motion.div
