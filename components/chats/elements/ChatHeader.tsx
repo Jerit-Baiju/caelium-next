@@ -1,12 +1,12 @@
 import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import AuthContext from '@/contexts/AuthContext';
@@ -95,7 +95,7 @@ const ChatHeader = () => {
           )}
           <div className='flex flex-col ps-2'>
             <div className='flex items-center gap-2'>
-              <p className='text-2xl'>
+              <p className='text-xl'>
                 {meta?.is_group
                   ? meta.name
                   : is_anon
