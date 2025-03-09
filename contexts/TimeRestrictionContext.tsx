@@ -1,7 +1,7 @@
 'use client';
 
 import { formatTimeRemaining, getTimeRemaining, isWithinAllowedTime } from '@/utils/timeUtils';
-import { createContext, useContext, useEffect, useState } from 'react';
+import { createContext, useContext, useEffect, useRef, useState } from 'react';
 
 interface TimeRestrictionContextType {
   isTimeAllowed: boolean;
@@ -26,39 +26,87 @@ export const TimeRestrictionProvider = ({
   const [timeRemainingFormatted, setTimeRemainingFormatted] = useState<string>('00:00');
   const [isUntilSessionEnd, setIsUntilSessionEnd] = useState<boolean>(false);
   
+  // Use refs to track state between renders
+  const hasInitializedRef = useRef(false);
+  const lastStatusChangeTimeRef = useRef(0);
+  const reloadScheduledRef = useRef(false);
+  const lastStatusRef = useRef(false);
+  
   useEffect(() => {
-    // Check initial state
-    const allowed = isWithinAllowedTime();
-    setIsTimeAllowed(allowed);
+    // Initialize on mount only
+    if (!hasInitializedRef.current) {
+      const currentStatus = isWithinAllowedTime();
+      setIsTimeAllowed(currentStatus);
+      lastStatusRef.current = currentStatus;
+      hasInitializedRef.current = true;
+    }
     
-    // Update timer
     const updateTimer = () => {
-      const { hours, minutes, seconds, isUntilSessionEnd: untilEnd } = getTimeRemaining();
-      setTimeRemainingFormatted(formatTimeRemaining(hours, minutes, seconds));
-      setIsUntilSessionEnd(untilEnd);
-      
-      // Also check if time allowed status has changed
-      const currentAllowed = isWithinAllowedTime();
-      if (currentAllowed !== isTimeAllowed) {
-        setIsTimeAllowed(currentAllowed);
-        // If status changed, you might want to reload or take some action
-        if (currentAllowed) {
-          // Session just started - reload the page to show available content
-          window.location.reload();
-        } else {
-          // Session just ended - reload to show unavailable message
-          window.location.reload();
+      try {
+        const { hours, minutes, seconds, isUntilSessionEnd: untilEnd } = getTimeRemaining();
+        setTimeRemainingFormatted(formatTimeRemaining(hours, minutes, seconds));
+        setIsUntilSessionEnd(untilEnd);
+        
+        // Check if status changed
+        const currentStatus = isWithinAllowedTime();
+        
+        // Only take action if status genuinely changed from last check
+        if (currentStatus !== lastStatusRef.current) {
+          console.log(`Time status changed: ${lastStatusRef.current} -> ${currentStatus}`);
+          
+          // Update state
+          setIsTimeAllowed(currentStatus);
+          lastStatusRef.current = currentStatus;
+          
+          // Rate limit reloads (at most once every 10 seconds)
+          const now = Date.now();
+          if (!reloadScheduledRef.current && now - lastStatusChangeTimeRef.current > 10000) {
+            reloadScheduledRef.current = true;
+            lastStatusChangeTimeRef.current = now;
+            
+            // Schedule reload with delay to avoid race conditions
+            console.log("Scheduling page reload in 2 seconds");
+            setTimeout(() => {
+              if (document.visibilityState === 'visible') {
+                console.log("Executing scheduled reload");
+                // Store a flag in sessionStorage to prevent infinite loops
+                if (!sessionStorage.getItem('reloading')) {
+                  sessionStorage.setItem('reloading', 'true');
+                  window.location.reload();
+                } else {
+                  console.log("Prevented reload loop - page was recently reloaded");
+                  // Clear the flag after a delay
+                  setTimeout(() => {
+                    sessionStorage.removeItem('reloading');
+                  }, 5000);
+                }
+              } else {
+                console.log("Skipping reload - page not visible");
+              }
+              reloadScheduledRef.current = false;
+            }, 2000);
+          }
         }
+      } catch (error) {
+        console.error("Error in time restriction timer:", error);
       }
     };
     
-    // Update immediately then set interval
+    // Update timer now and set interval
     updateTimer();
-    const intervalId = setInterval(updateTimer, 1000);
+    const interval = setInterval(updateTimer, 1000);
     
-    // Clean up interval on unmount
-    return () => clearInterval(intervalId);
-  }, [isTimeAllowed]);
+    // Clear the reloading flag when the component mounts
+    if (typeof window !== 'undefined') {
+      setTimeout(() => {
+        sessionStorage.removeItem('reloading');
+      }, 1000);
+    }
+    
+    return () => {
+      clearInterval(interval);
+    };
+  }, []);  // Empty dependency array - run only on mount
   
   return (
     <TimeRestrictionContext.Provider value={{ 

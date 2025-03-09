@@ -1,4 +1,38 @@
 /**
+ * Get session time configurations from environment variables with fallbacks
+ */
+const getSessionTimeConfig = () => {
+  const startHour = parseInt(process.env.NEXT_PUBLIC_SESSION_START_HOUR || '10');
+  const startMinute = parseInt(process.env.NEXT_PUBLIC_SESSION_START_MINUTE || '20');
+  const endHour = parseInt(process.env.NEXT_PUBLIC_SESSION_END_HOUR || '10');
+  const endMinute = parseInt(process.env.NEXT_PUBLIC_SESSION_END_MINUTE || '40');
+  
+  // Calculate minutes since midnight for comparison
+  const startTimeInMinutes = startHour * 60 + startMinute;
+  const endTimeInMinutes = endHour * 60 + endMinute;
+  
+  // Format for display (e.g., "10:20 AM - 10:40 AM")
+  const formatTime = (hour: number, minute: number) => {
+    const period = hour >= 12 ? 'PM' : 'AM';
+    const displayHour = hour > 12 ? hour - 12 : hour === 0 ? 12 : hour;
+    const displayMinute = minute.toString().padStart(2, '0');
+    return `${displayHour}:${displayMinute} ${period}`;
+  };
+  
+  const timeWindowDisplay = `${formatTime(startHour, startMinute)} - ${formatTime(endHour, endMinute)}`;
+  
+  return {
+    startHour,
+    startMinute,
+    endHour,
+    endMinute,
+    startTimeInMinutes,
+    endTimeInMinutes,
+    timeWindowDisplay
+  };
+};
+
+/**
  * Checks if the current time is within the allowed time window
  * @returns boolean indicating whether the current time is within the allowed range
  */
@@ -10,11 +44,7 @@ export const isWithinAllowedTime = (): boolean => {
   // Convert current time to minutes since midnight for easier comparison
   const currentTimeInMinutes = hours * 60 + minutes;
   
-  // 10:20 AM = 10 hours and 20 minutes = 620 minutes since midnight
-  const startTimeInMinutes = 10 * 60 + 20;
-  
-  // 10:40 AM = 10 hours and 40 minutes = 640 minutes since midnight
-  const endTimeInMinutes = 10 * 60 + 40;
+  const { startTimeInMinutes, endTimeInMinutes } = getSessionTimeConfig();
   
   return currentTimeInMinutes >= startTimeInMinutes && currentTimeInMinutes <= endTimeInMinutes;
 };
@@ -24,7 +54,7 @@ export const isWithinAllowedTime = (): boolean => {
  * @returns string with the next available time window
  */
 export const getNextAvailableTime = (): string => {
-  return "10:20 AM - 10:40 AM";
+  return getSessionTimeConfig().timeWindowDisplay;
 };
 
 /**
@@ -43,8 +73,7 @@ export const getTimeRemaining = (): {
   const currentMinute = now.getMinutes();
   const currentTimeInMinutes = currentHour * 60 + currentMinute;
   
-  const startTimeInMinutes = 10 * 60 + 20; // 10:20 AM
-  const endTimeInMinutes = 10 * 60 + 40;   // 10:40 AM
+  const { startHour, startMinute, endHour, endMinute, startTimeInMinutes, endTimeInMinutes } = getSessionTimeConfig();
   
   let timeRemainingMs: number;
   let isUntilSessionEnd: boolean;
@@ -55,7 +84,7 @@ export const getTimeRemaining = (): {
     
     // Calculate end time today
     const endTime = new Date(now);
-    endTime.setHours(10, 40, 0, 0); // Set to 10:40:00.000
+    endTime.setHours(endHour, endMinute, 0, 0);
     
     timeRemainingMs = endTime.getTime() - now.getTime();
   } else {
@@ -68,7 +97,7 @@ export const getTimeRemaining = (): {
       // If it's past the end time today, set for tomorrow
       startTime.setDate(startTime.getDate() + 1);
     }
-    startTime.setHours(10, 20, 0, 0); // Set to 10:20:00.000
+    startTime.setHours(startHour, startMinute, 0, 0);
     
     timeRemainingMs = startTime.getTime() - now.getTime();
   }

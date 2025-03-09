@@ -5,8 +5,8 @@ import { useNavbar } from '@/contexts/NavContext';
 import { useTimeRestriction } from '@/contexts/TimeRestrictionContext';
 import { getNextAvailableTime } from '@/utils/timeUtils';
 import { motion } from 'framer-motion';
-import { useEffect, useState } from 'react';
-import { FiAlertCircle, FiBell, FiCalendar, FiClock, FiMessageSquare, FiShield, FiUsers } from 'react-icons/fi';
+import { useEffect, useRef, useState } from 'react';
+import { FiCalendar, FiClock, FiMessageSquare, FiShield, FiUsers } from 'react-icons/fi';
 
 interface FeatureCardProps {
   icon: React.ReactNode;
@@ -19,31 +19,37 @@ const Page: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const { isTimeAllowed, timeRemainingFormatted, isUntilSessionEnd } = useTimeRestriction();
   const { setShowNav } = useNavbar();
-  
+
+  // Ref to prevent duplicate API calls
+  const hasCalledApiRef = useRef(false);
+
+  // Manage navbar visibility
   useEffect(() => {
     setShowNav(false);
-    
-    // Only fetch auth URL if time is allowed
-    if (isTimeAllowed) {
+    return () => setShowNav(true);
+  }, []);
+
+  // Fetch auth URL when component mounts or time becomes allowed
+  useEffect(() => {
+    if (isTimeAllowed && !hasCalledApiRef.current) {
+      hasCalledApiRef.current = true;
+
       const fetch_auth_url = async () => {
         try {
           const response = await fetch(`${process.env.NEXT_PUBLIC_API_HOST}/api/auth/google/auth_url/`);
           const data = await response.json();
           setAuthURL(data.url);
         } catch (error) {
-          console.error("Failed to fetch auth URL:", error);
+          console.error('Failed to fetch auth URL:', error);
         } finally {
           setIsLoading(false);
         }
       };
+
       fetch_auth_url();
-    } else {
+    } else if (!isTimeAllowed) {
       setIsLoading(false);
     }
-    
-    return () => {
-      setShowNav(true);
-    };
   }, [isTimeAllowed]);
 
   const containerVariants = {
@@ -83,16 +89,16 @@ const Page: React.FC = () => {
         >
           {/* Hero Section */}
           <motion.div variants={itemVariants} className='flex flex-col items-center text-center mb-10 w-full'>
-            <div className="flex flex-col items-center mb-5">
+            <div className='flex flex-col items-center mb-5'>
               <h1 className='text-4xl md:text-5xl lg:text-6xl font-bold bg-linear-to-r from-purple-400 via-indigo-400 to-purple-400 bg-clip-text text-transparent drop-shadow-[0_0_10px_rgba(139,92,246,0.25)]'>
                 Welcome to Caelium
               </h1>
             </div>
-            
+
             {isTimeAllowed ? (
               <>
                 <p className='text-lg text-slate-200 mb-6 max-w-lg mx-auto'>
-                  <span className="font-medium text-indigo-300">Right now</span>, hundreds of Marianites are connecting.
+                  <span className='font-medium text-indigo-300'>Right now</span>, hundreds of Marianites are connecting.
                 </p>
 
                 {authURL && (
@@ -113,85 +119,63 @@ const Page: React.FC = () => {
                       src='https://authjs.dev/img/providers/google.svg'
                       className='filter brightness-0 invert'
                     />
-                    <span className='font-medium'>Sign in Now</span>
+                    <span className='font-medium'>Sign in with College Email</span>
                   </motion.button>
                 )}
-                
-                {/* Simplified Timer badge */}
-                <div className="mt-6 bg-gradient-to-r from-indigo-600/30 to-purple-600/30 py-2.5 px-5 rounded-lg inline-flex items-center gap-2.5 
-                                border border-indigo-400/30 shadow-[0_0_15px_rgba(99,102,241,0.3)]">
-                  <FiAlertCircle className="text-indigo-300 animate-pulse-slow" />
-                  <div>
-                    <span className="text-indigo-200 text-sm">
-                      Limited time: <span className="font-bold countdown-text text-white">{timeRemainingFormatted}</span>
-                    </span>
-                    
-                    {/* Minimal progress bar */}
-                    <div className="w-full bg-indigo-900/50 rounded-full h-1 mt-1.5">
-                      <div className="bg-gradient-to-r from-indigo-400 to-purple-400 h-1 rounded-full" style={{ width: '65%' }}></div>
-                    </div>
-                  </div>
-                </div>
-                
-                {/* Cleaner social proof */}
-                <div className="mt-4 flex items-center gap-2 opacity-80">
-                  <div className="flex -space-x-2">
-                    {[1, 2, 3].map((i) => (
-                      <div key={i} className="w-7 h-7 rounded-full bg-indigo-500/30 border border-indigo-400"></div>
-                    ))}
-                  </div>
-                  <span className="text-slate-300 text-xs"><span className="text-indigo-300">37</span> joined this hour</span>
-                </div>
               </>
             ) : (
-              <motion.div variants={itemVariants} className="max-w-md w-full px-4 sm:px-0">
+              <motion.div variants={itemVariants} className='max-w-md w-full px-4 sm:px-0'>
                 {/* Streamlined timer section */}
-                <div className="mb-6 px-5 py-3 rounded-lg bg-gradient-to-r from-indigo-600/20 to-purple-600/20 backdrop-blur-sm border border-indigo-500/30 
-                               shadow-[0_0_15px_rgba(99,102,241,0.2)] mx-auto inline-flex items-center gap-3">
-                  <div className="relative">
-                    <FiClock className="text-indigo-300 text-xl animate-pulse-slow" />
+                <div
+                  className='mb-6 px-5 py-3 rounded-lg bg-gradient-to-r from-indigo-600/20 to-purple-600/20 backdrop-blur-sm border border-indigo-500/30 
+                               shadow-[0_0_15px_rgba(99,102,241,0.2)] mx-auto inline-flex items-center gap-3'
+                >
+                  <div className='relative'>
+                    <FiClock className='text-indigo-300 text-xl animate-pulse-slow' />
                   </div>
-                  <div className="flex flex-col items-start">
-                    <span className="text-xs text-indigo-300 font-medium">{isUntilSessionEnd ? 'SESSION CLOSING IN' : 'NEXT SESSION STARTS IN'}</span>
-                    <span className="font-bold text-white text-lg leading-tight countdown-text">{timeRemainingFormatted}</span>
-                    
+                  <div className='flex flex-col items-start'>
+                    <span className='text-xs text-indigo-300 font-medium'>
+                      {isUntilSessionEnd ? 'SESSION CLOSING IN' : 'NEXT SESSION STARTS IN'}
+                    </span>
+                    <span className='font-bold text-white text-lg leading-tight countdown-text'>{timeRemainingFormatted}</span>
+
                     {/* Simpler progress bar */}
-                    <div className="w-full bg-indigo-900/50 rounded-full h-1 mt-1.5">
-                      <div className="bg-gradient-to-r from-indigo-400 to-purple-400 h-1 rounded-full" style={{ width: '35%' }}></div>
+                    <div className='w-full bg-indigo-900/50 rounded-full h-1 mt-1.5'>
+                      <div className='bg-gradient-to-r from-indigo-400 to-purple-400 h-1 rounded-full' style={{ width: '35%' }}></div>
                     </div>
                   </div>
                 </div>
 
                 {/* Simplified "Why We Have Set Hours" section */}
-                <div className="p-6 rounded-xl bg-gradient-to-br from-indigo-600/10 to-purple-600/10 border border-indigo-500/20 shadow-md mb-6">
-                  <p className="text-slate-200 text-sm mb-4 text-center">
+                <div className='p-6 rounded-xl bg-gradient-to-br from-indigo-600/10 to-purple-600/10 border border-indigo-500/20 shadow-md mb-6'>
+                  <p className='text-slate-200 text-sm mb-4 text-center'>
                     Caelium thrives when we connect together! Scheduled sessions create:
                   </p>
-                  
-                  <div className="grid grid-cols-3 gap-2 text-slate-200">
-                    <div className="flex flex-col items-center p-3 rounded-lg bg-indigo-600/10 border border-transparent hover:border-indigo-500/30 group">
-                      <FiUsers className="text-indigo-300 text-lg mb-2" />
-                      <span className="text-center text-xs font-medium text-white">More Users</span>
+
+                  <div className='grid grid-cols-3 gap-2 text-slate-200'>
+                    <div className='flex flex-col items-center p-3 rounded-lg bg-indigo-600/10 border border-transparent hover:border-indigo-500/30 group'>
+                      <FiUsers className='text-indigo-300 text-lg mb-2' />
+                      <span className='text-center text-xs font-medium text-white'>More Users</span>
                     </div>
-                    <div className="flex flex-col items-center p-3 rounded-lg bg-indigo-600/10 border border-transparent hover:border-indigo-500/30 group">
-                      <FiMessageSquare className="text-indigo-300 text-lg mb-2" />
-                      <span className="text-center text-xs font-medium text-white">Better Matches</span>
+                    <div className='flex flex-col items-center p-3 rounded-lg bg-indigo-600/10 border border-transparent hover:border-indigo-500/30 group'>
+                      <FiMessageSquare className='text-indigo-300 text-lg mb-2' />
+                      <span className='text-center text-xs font-medium text-white'>Better Matches</span>
                     </div>
-                    <div className="flex flex-col items-center p-3 rounded-lg bg-indigo-600/10 border border-transparent hover:border-indigo-500/30 group">
-                      <FiShield className="text-indigo-300 text-lg mb-2" />
-                      <span className="text-center text-xs font-medium text-white">Safer Space</span>
+                    <div className='flex flex-col items-center p-3 rounded-lg bg-indigo-600/10 border border-transparent hover:border-indigo-500/30 group'>
+                      <FiShield className='text-indigo-300 text-lg mb-2' />
+                      <span className='text-center text-xs font-medium text-white'>Safer Space</span>
                     </div>
                   </div>
                 </div>
-                
-                <div className="flex flex-col items-center gap-4">
-                  <div className="flex items-center gap-2 text-slate-200 text-sm">
-                    <FiCalendar className="text-indigo-300" />
+
+                <div className='flex flex-col items-center gap-4'>
+                  <div className='flex items-center gap-2 text-slate-200 text-sm'>
+                    <FiCalendar className='text-indigo-300' />
                     <p>
-                      Available: <span className="font-semibold text-white">{getNextAvailableTime()}</span>
+                      Available: <span className='font-semibold text-white'>{getNextAvailableTime()}</span>
                     </p>
                   </div>
-                  
+
                   {/* Simplified reminder button */}
                   {/* <motion.button
                     whileHover={{ scale: 1.03 }}
@@ -228,7 +212,10 @@ const Page: React.FC = () => {
           )}
 
           {/* Simplified Footer Links */}
-          <motion.div variants={itemVariants} className='flex flex-col items-center gap-3 mt-auto pt-6 border-t border-indigo-500/10 w-full'>
+          <motion.div
+            variants={itemVariants}
+            className='flex flex-col items-center gap-3 mt-auto pt-6 border-t border-indigo-500/10 w-full'
+          >
             <p className='text-sm bg-linear-to-r from-purple-400 to-indigo-400 bg-clip-text text-transparent font-medium'>
               Made by Marianites, for Marianites ✨
             </p>
