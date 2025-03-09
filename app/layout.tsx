@@ -1,5 +1,6 @@
 import { ThemeProvider } from '@/components/theme-provider';
 import { Toaster } from '@/components/ui/toaster';
+import { TimeRestrictionProvider } from '@/contexts/TimeRestrictionContext';
 import type { Metadata } from 'next';
 import Script from 'next/script';
 import { handleeFont } from './font';
@@ -42,7 +43,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className={`${handleeFont.className} dark:bg-neutral-950 bg-white dark:text-neutral-200 text-neutral-800`}>
         <ThemeProvider attribute='class' defaultTheme='system' enableSystem disableTransitionOnChange>
           <ProvidersWrapper>
-            <Wrapper>{children}</Wrapper>
+            <TimeRestrictionProvider>
+              <Wrapper>{children}</Wrapper>
+            </TimeRestrictionProvider>
           </ProvidersWrapper>
         </ThemeProvider>
         <Toaster />
