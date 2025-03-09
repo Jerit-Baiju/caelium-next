@@ -67,12 +67,11 @@ const Page: React.FC = () => {
         >
           {/* Hero Section */}
           <motion.div variants={itemVariants} className='flex flex-col items-center text-center mb-12'>
-            <h1 className='text-5xl md:text-7xl font-bold mb-6 bg-linear-to-r from-purple-400 via-indigo-400 to-purple-400 bg-clip-text text-transparent'>
+            <h1 className='text-4xl md:text-7xl font-bold mb-6 bg-linear-to-r from-purple-400 via-indigo-400 to-purple-400 bg-clip-text text-transparent'>
               Welcome to Caelium
             </h1>
             <p className='text-xl md:text-2xl text-slate-300 mb-8 max-w-2xl'>
-              Tired of the same old faces? Let serendipity take the wheel. One click connects you with another Marianite – no
-              complications, just conversations.
+              Meet new people from your college with just one click. Simple, fun, and made for Marianites.
             </p>
 
             {authURL && (
@@ -93,7 +92,7 @@ const Page: React.FC = () => {
                   src='https://authjs.dev/img/providers/google.svg'
                   className='filter brightness-0 invert'
                 />
-                <span className='font-medium'>Continue with College Email</span>
+                <span className='font-medium'>Sign in with College Email</span>
               </motion.button>
             )}
           </motion.div>
@@ -102,25 +101,25 @@ const Page: React.FC = () => {
           <motion.div variants={itemVariants} className='grid md:grid-cols-3 max-md:hidden gap-6 mb-12 w-full'>
             <FeatureCard
               icon={<FiUsers className='w-6 h-6' />}
-              title='Just Marianites'
-              description='Your college, your crowd. Meet people who get your inside jokes.'
+              title='College Only'
+              description='Chat with students from your own college.'
             />
             <FeatureCard
               icon={<FiMessageSquare className='w-6 h-6' />}
-              title='Random Magic'
-              description='Who will you meet next? Let fate decide. Every chat is a new adventure.'
+              title='Random Chats'
+              description='Connect with someone new each time.'
             />
             <FeatureCard
               icon={<FiShield className='w-6 h-6' />}
-              title='Zero Pressure'
-              description='No profiles to maintain, no social scores. Just genuine conversations.'
+              title='No Pressure'
+              description='No profiles to set up. Just chat and have fun.'
             />
           </motion.div>
 
           {/* Footer Links */}
           <motion.div variants={itemVariants} className='flex flex-col items-center gap-6'>
             <p className='text-sm bg-linear-to-r from-purple-400 to-indigo-400 bg-clip-text text-transparent font-medium'>
-              Built by Marianites, for Marianites ✨
+              Made by Marianites, for Marianites ✨
             </p>
             <div className='flex gap-6'>
               <a href='/privacy-policy' className='text-sm text-slate-400 hover:text-slate-200 transition-colors'>
