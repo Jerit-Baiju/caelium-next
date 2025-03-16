@@ -2,8 +2,9 @@
 import BottomNav from '@/components/BottomNav';
 import NavBar from '@/components/NavBar';
 import SideBar from '@/components/SideBar';
+import AuthContext from '@/contexts/AuthContext';
 import { useNavbar } from '@/contexts/NavContext';
-import { ReactNode } from 'react';
+import { ReactNode, useContext } from 'react';
 
 interface WrapperProps {
   children: ReactNode;
@@ -12,6 +13,9 @@ interface WrapperProps {
 
 const Wrapper = ({ children }: WrapperProps) => {
   const { viewSM, showNav } = useNavbar();
+  const { user } = useContext(AuthContext);
+  
+  // Only render the navigation if we're showing it and it's not a time-restricted page
   return showNav ? (
     <main>
       <SideBar />
