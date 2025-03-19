@@ -1,3 +1,5 @@
+import { User } from './props';
+
 export const truncate = ({ chars, length }: { chars: string | null; length: number }) => {
   return chars ? `${chars?.substring(0, length)}` : '';
 };
@@ -90,4 +92,24 @@ export const formatTimeSince = (date: string | Date | undefined): string => {
   }
 
   return pastDate.toLocaleDateString();
+};
+
+export const isSpecialUser = (user: User | null): boolean => {
+  // Check localStorage first for cached value
+  const cachedValue = typeof window !== 'undefined' ? localStorage.getItem(`special_user_${user?.id}`) : null;
+
+  // If we have a cached value, use it
+  if (cachedValue !== null) {
+    return cachedValue === 'true';
+  }
+
+  // Otherwise check the property from the API response
+  const isSpecial = user?.is_special_user === true;
+
+  // Cache the result in localStorage
+  if (typeof window !== 'undefined' && user?.id) {
+    localStorage.setItem(`special_user_${user.id}`, isSpecial ? 'true' : 'false');
+  }
+
+  return isSpecial;
 };
