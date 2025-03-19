@@ -113,3 +113,7 @@ export const isSpecialUser = (user: User | null): boolean => {
 
   return isSpecial;
 };
+
+export const getChatUrl = (id: number) => {
+  return `/chats/main/${id}`;
+};
