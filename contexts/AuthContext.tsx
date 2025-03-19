@@ -62,11 +62,17 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   );
 
   useEffect(() => {
-    if (!tokenData) {
-      const path = window.location.pathname;
-      if (path !== '/privacy-policy' && path !== '/terms-and-conditions') {
-        router.replace('/welcome');
-      }
+    if (loading) return;
+    
+    const path = window.location.pathname;
+    
+    // Don't redirect if we have tokens or we're on certain public pages
+    if (!tokenData && 
+        path !== '/welcome' && 
+        path !== '/privacy-policy' && 
+        path !== '/terms-and-conditions' && 
+        !path.startsWith('/api/auth/callback')) {
+      router.replace('/welcome');
     }
   }, [router, tokenData, loading]);
 
@@ -104,7 +110,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     localStorage.setItem('authTokens', JSON.stringify(data));
     setAuthTokens(data);
     setTokenData(jwtDecode(data?.access));
-    router.push('/');
   };
 
   let logoutUser = () => {
