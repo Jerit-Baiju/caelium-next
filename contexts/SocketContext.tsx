@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useEffect, useRef, useState } from 'react';
+import { useAppContext } from './AppContext';
 import AuthContext from './AuthContext';
 
 interface WebSocketContextType {
@@ -11,7 +12,8 @@ interface WebSocketContextType {
 const WebSocketContext = createContext<WebSocketContextType | null>(null);
 
 export const WebSocketProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const { setActiveUsers, addActiveUser, removeActiveUser, updateLastSeen, logoutUser } = useContext(AuthContext);
+  const { logoutUser } = useContext(AuthContext);
+  const { setActiveUsers, addActiveUser, removeActiveUser, updateLastSeen } = useAppContext();
   const socketRef = useRef<WebSocket | null>(null);
   const [socketData, setSocketData] = useState<any>();
   const [isConnected, setIsConnected] = useState(false);
@@ -59,7 +61,7 @@ export const WebSocketProvider: React.FC<{ children: React.ReactNode }> = ({ chi
       ws.onopen = () => {
         console.log('Connected to WebSocket');
         setIsConnected(true);
-        
+
         // Reset retry counter after 30 seconds of stable connection
         stableConnectionTimer.current = setTimeout(() => {
           retryCountRef.current = 0;

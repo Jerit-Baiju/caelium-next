@@ -30,7 +30,8 @@ const menuItemVariants = {
 
 const ChatsPane = () => {
   const { socketData } = useWebSocket();
-  const { user, activeUsers } = useContext(AuthContext);
+  const { user } = useContext(AuthContext);
+  const {activeUsers} = useAppContext()
   const { deleteChat } = useChatUtils();
   const { chats, isLoading, searchQuery, setSearchQuery, searchChats, updateChatOrder, togglePinChat } = useChatsPaneContext();
   const { refreshChats, lastFetched } = useAppContext();
