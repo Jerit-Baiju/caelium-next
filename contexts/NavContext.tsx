@@ -14,6 +14,8 @@ interface NavbarContextData {
   setViewSM: Dispatch<SetStateAction<boolean>>;
   showNav: boolean;
   setShowNav: Dispatch<SetStateAction<boolean>>;
+  resetToDefaultNav: () => void;
+  setCloudNav: () => void;
 }
 
 const NavbarContext = createContext<NavbarContextData | undefined>(undefined);
@@ -27,10 +29,26 @@ export const useNavbar = () => {
 };
 
 let defaultNavLinks: NavLink[] = [
+  { name: 'Cloud', url: '/cloud' },
   { name: 'Write', url: '/crafts/create' },
-  { name: 'Layout', url: '#' },
   { name: 'Settings', url: '#' },
 ];
+
+let cloudNavLinks: NavLink[] = [
+  { name: 'Files', url: '/cloud/files' },
+  { name: 'Photos', url: '/cloud/photos' },
+  { name: 'Recent', url: '/cloud/recent' },
+  { name: 'Shared', url: '/cloud/shared' },
+];
+
+let cloudDropdown: DropDown = {
+  name: 'New',
+  options: [
+    { name: 'Upload File', url: '/cloud/upload' },
+    { name: 'Create Folder', url: '/cloud/create-folder' },
+    { name: 'Import', url: '/cloud/import' },
+  ],
+};
 
 let createDropdown: DropDown = {
   name: 'Create',
@@ -41,6 +59,7 @@ let createDropdown: DropDown = {
 };
 
 let defaultCtaButton: NavLink = { name: 'Get Started', url: '/get-started' };
+let cloudCtaButton: NavLink = { name: 'Upgrade Storage', url: '/cloud/upgrade' };
 
 export const NavbarProvider: React.FC<React.PropsWithChildren<{}>> = ({ children }) => {
   const [ctaButton, setCtaButton] = useState<NavLink | null>(defaultCtaButton);
@@ -48,6 +67,19 @@ export const NavbarProvider: React.FC<React.PropsWithChildren<{}>> = ({ children
   const [dropDown, setDropDown] = useState<DropDown | null>(createDropdown);
   const [viewSM, setViewSM] = useState<boolean>(true);
   const [showNav, setShowNav] = useState<boolean>(true);
+  
+  const resetToDefaultNav = () => {
+    setNavLinks(defaultNavLinks);
+    setDropDown(createDropdown);
+    setCtaButton(defaultCtaButton);
+  };
+  
+  const setCloudNav = () => {
+    setNavLinks(cloudNavLinks);
+    setDropDown(cloudDropdown);
+    setCtaButton(cloudCtaButton);
+  };
+  
   return (
     <NavbarContext.Provider
       value={{
@@ -62,6 +94,8 @@ export const NavbarProvider: React.FC<React.PropsWithChildren<{}>> = ({ children
         setViewSM,
         showNav,
         setShowNav,
+        resetToDefaultNav,
+        setCloudNav,
       }}
     >
       {children}
