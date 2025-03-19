@@ -1,4 +1,5 @@
 import { Chat, User } from '@/helpers/props';
+import { getChatUrl } from '@/helpers/utils';
 import useAxios from '@/hooks/useAxios';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
@@ -14,7 +15,7 @@ const useChatUtils = () => {
         participant_ids: [recipient_id],
         is_group: false,
       });
-      router.push(`/chats/${response.data.id}`);
+      router.push(getChatUrl(response.data.id));
     } catch (error) {
       console.error('Error creating chat:', error);
     }
@@ -36,7 +37,7 @@ const useChatUtils = () => {
         name,
         is_group: true,
       });
-      router.push(`/chats/${response.data.id}`);
+      router.push(getChatUrl(response.data.id));
     } catch (error) {
       console.error('Error creating group:', error);
     }
