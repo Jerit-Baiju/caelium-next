@@ -1,5 +1,5 @@
 'use client';
-import { Chat } from '@/helpers/props';
+import { Chat, LastSeen } from '@/helpers/props';
 import useAxios from '@/hooks/useAxios';
 import useChatUtils from '@/hooks/useChat';
 import { createContext, ReactNode, useContext, useEffect, useState } from 'react';
@@ -12,6 +12,12 @@ interface AppContextType {
   setIsLoading: (isLoading: boolean) => void;
   lastFetched: Date | null;
   refreshChats: () => Promise<void>;
+  activeUsers: number[];
+  addActiveUser: (id: number) => void;
+  removeActiveUser: (id: number) => void;
+  setActiveUsers: (ids: number[]) => void;
+  lastSeenUsers: LastSeen[];
+  updateLastSeen: (userId: number) => void;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -23,6 +29,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [chats, setChats] = useState<Chat[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [lastFetched, setLastFetched] = useState<Date | null>(null);
+  const [activeUsers, setActiveUsers] = useState<number[]>([]);
+  const [lastSeenUsers, setLastSeenUsers] = useState<LastSeen[]>([]);
 
   const refreshChats = async () => {
     if (!user) return;
@@ -39,10 +47,25 @@ export function AppProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  const addActiveUser = (id: number) => {
+    setActiveUsers(prev => [...prev, id]);
+  };
+
+  const removeActiveUser = (id: number) => {
+    setActiveUsers(prev => prev.filter(user => user !== id));
+  };
+
+  const updateLastSeen = (userId: number) => {
+    setLastSeenUsers(prev => {
+      const filtered = prev.filter(user => user.userId !== userId);
+      return [...filtered, { userId, timestamp: new Date() }];
+    });
+  };
+
   useEffect(() => {
     if (!user || lastFetched) return;
     refreshChats();
-  }, [user, lastFetched, refreshChats]);
+  }, [user, lastFetched]);
 
   const value = {
     chats,
@@ -51,6 +74,12 @@ export function AppProvider({ children }: { children: ReactNode }) {
     setIsLoading,
     lastFetched,
     refreshChats,
+    activeUsers,
+    addActiveUser,
+    removeActiveUser,
+    setActiveUsers,
+    lastSeenUsers,
+    updateLastSeen,
   };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;

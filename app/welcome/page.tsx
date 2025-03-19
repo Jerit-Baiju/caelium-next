@@ -142,7 +142,7 @@ const Page: React.FC = () => {
             className='flex flex-col items-center gap-3 mt-auto pt-6 border-t border-indigo-500/10 w-full'
           >
             <p className='text-sm bg-linear-to-r from-purple-400 to-indigo-400 bg-clip-text text-transparent font-medium'>
-              Building tomorrow's digital universe today ✨
+              Building tomorrow&apos;s digital universe today ✨
             </p>
             <div className='flex gap-6'>
               <a href='/privacy-policy' className='text-xs text-slate-400 hover:text-slate-200 transition-colors'>

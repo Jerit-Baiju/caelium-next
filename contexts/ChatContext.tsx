@@ -11,6 +11,7 @@ import { ReactNode, createContext, useContext, useEffect, useState } from 'react
 import AuthContext from './AuthContext';
 import { useChatsPaneContext } from './ChatsPaneContext';
 import { useWebSocket } from './SocketContext';
+import { useAppContext } from './AppContext';
 
 interface childrenProps {
   chatId: number;
@@ -76,7 +77,8 @@ const ChatContext = createContext<ChatContextProps>({
 export default ChatContext;
 
 export const ChatProvider = ({ chatId, is_anon = false, children }: childrenProps) => {
-  const { user, lastSeenUsers, activeUsers } = useContext(AuthContext);
+  const { user } = useContext(AuthContext);
+  const {activeUsers, lastSeenUsers} = useAppContext()
   const [textInput, setTextInput] = useState('');
   const [messages, setMessages] = useState<Message[]>([]);
   const [error, setError] = useState<BaseError | null>(null);
