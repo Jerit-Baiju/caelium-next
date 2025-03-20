@@ -1,12 +1,27 @@
 'use client';
 import AuthContext from '@/contexts/AuthContext';
+import { useNavbar } from '@/contexts/NavContext';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useContext } from 'react';
+import { IconType } from 'react-icons';
 import { FiFeather, FiHome, FiImage, FiLogOut, FiMessageCircle, FiUser } from 'react-icons/fi';
 
-export const options = [
+// Define interfaces to match those in NavContext
+interface SidebarOption {
+  name: string;
+  url: string;
+  icon: IconType;
+}
+
+interface SidebarSection {
+  section: string;
+  items: SidebarOption[];
+}
+
+// Default fallback options if context isn't available
+export const options: SidebarOption[] = [
   { name: 'Home', url: '/', icon: FiHome },
   { name: 'Gallery', url: '/gallery', icon: FiImage },
   { name: 'Chats', url: '/chats/main', icon: FiMessageCircle },
@@ -17,6 +32,16 @@ export const options = [
 const SideBar = () => {
   const route = usePathname();
   const { logoutUser, user } = useContext(AuthContext);
+  const { sidebarOptions } = useNavbar();
+
+  // Type guard function to check if we have sections or simple options
+  const hasSections = (options: any[]): options is SidebarSection[] => {
+    return options.length > 0 && 'section' in options[0] && 'items' in options[0];
+  };
+  
+  // Determine which options to use based on the route
+  const isCloudRoute = route?.startsWith('/cloud');
+  const navigationOptions = isCloudRoute ? sidebarOptions : options;
 
   return (
     <>
@@ -44,25 +69,74 @@ const SideBar = () => {
           </div>
 
           {/* Navigation */}
-          <nav className='flex-1 space-y-2'>
-            <div className='mb-2 text-sm font-medium text-neutral-500 dark:text-neutral-400 px-4'>MENU</div>
-            {options.map((option, id) => (
-              <motion.div key={id} whileHover={{ scale: 1.02 }} className='mb-1'>
-                <Link
-                  href={option.url}
-                  className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all
-                    ${
-                      route === option.url || route?.startsWith(option.url + '/')
-                        ? 'bg-linear-to-br from-violet-500 to-purple-500 text-white'
-                        : 'hover:bg-white/10 dark:text-white dark:hover:bg-neutral-800'
-                    }`}
-                >
-                  <option.icon className='w-5 h-5' />
-                  <span>{option.name}</span>
-                </Link>
-              </motion.div>
-            ))}
+          <nav className='flex-1 space-y-6'>
+            {isCloudRoute && hasSections(navigationOptions) ? (
+              // Render sectioned sidebar for cloud pages
+              (navigationOptions as SidebarSection[]).map((section, sectionIndex) => (
+                <div key={sectionIndex} className="space-y-2">
+                  <div className='mb-2 text-sm font-medium text-neutral-500 dark:text-neutral-400 px-4'>
+                    {section.section}
+                  </div>
+                  {section.items.map((option, id) => (
+                    <motion.div key={id} whileHover={{ scale: 1.02 }} className='mb-1'>
+                      <Link
+                        href={option.url}
+                        className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all
+                          ${
+                            route === option.url || route?.startsWith(option.url + '/')
+                              ? 'bg-linear-to-br from-violet-500 to-purple-500 text-white'
+                              : 'hover:bg-white/10 dark:text-white dark:hover:bg-neutral-800'
+                          }`}
+                      >
+                        <option.icon className='w-5 h-5' />
+                        <span>{option.name}</span>
+                      </Link>
+                    </motion.div>
+                  ))}
+                </div>
+              ))
+            ) : (
+              // Render standard sidebar for other pages
+              <>
+                <div className='mb-2 text-sm font-medium text-neutral-500 dark:text-neutral-400 px-4'>MENU</div>
+                {(navigationOptions as SidebarOption[]).map((option, id) => (
+                  <motion.div key={id} whileHover={{ scale: 1.02 }} className='mb-1'>
+                    <Link
+                      href={option.url}
+                      className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all
+                        ${
+                          route === option.url || route?.startsWith(option.url + '/')
+                            ? 'bg-linear-to-br from-violet-500 to-purple-500 text-white'
+                            : 'hover:bg-white/10 dark:text-white dark:hover:bg-neutral-800'
+                        }`}
+                    >
+                      <option.icon className='w-5 h-5' />
+                      <span>{option.name}</span>
+                    </Link>
+                  </motion.div>
+                ))}
+              </>
+            )}
           </nav>
+
+          {/* Storage progress - show only in cloud section */}
+          {isCloudRoute && (
+            <div className="mb-6 space-y-3 bg-white dark:bg-neutral-800/50 p-4 rounded-xl">
+              <div className="flex justify-between items-center text-sm text-neutral-600 dark:text-neutral-400">
+                <span>Storage</span>
+                <span>35% used</span>
+              </div>
+              <div className="w-full h-2 bg-neutral-200 dark:bg-neutral-700 rounded-full overflow-hidden">
+                <div className="h-full bg-violet-500 rounded-full" style={{ width: '35%' }}></div>
+              </div>
+              <p className="text-xs text-neutral-500 dark:text-neutral-400">3.5 GB of 10 GB</p>
+              <Link href="/cloud/upgrade">
+                <motion.button whileHover={{ scale: 1.02 }} className="w-full text-center text-xs font-medium bg-linear-to-br from-violet-500 to-purple-500 text-white py-2 rounded-lg">
+                  Upgrade Storage
+                </motion.button>
+              </Link>
+            </div>
+          )}
 
           {/* Logout Section */}
           <div className='pt-4 mb-16 border-t border-neutral-200 dark:border-neutral-700'>

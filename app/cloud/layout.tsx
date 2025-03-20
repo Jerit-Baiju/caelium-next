@@ -8,17 +8,19 @@ export default function CloudLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const { setCloudNav, resetToDefaultNav } = useNavbar();
+  const { setCloudNav, resetToDefaultNav, setCloudSidebar, resetToDefaultSidebar } = useNavbar();
 
   useEffect(() => {
-    // Set cloud navigation when the layout mounts
+    // Set cloud navigation and sidebar when the layout mounts
     setCloudNav();
+    setCloudSidebar();
     
-    // Reset to default navigation when the layout unmounts
+    // Reset to default navigation and sidebar when the layout unmounts
     return () => {
       resetToDefaultNav();
+      resetToDefaultSidebar();
     };
-  }, [setCloudNav, resetToDefaultNav]);
+  }, [setCloudNav, resetToDefaultNav, setCloudSidebar, resetToDefaultSidebar]);
 
   return (
     <section className="cloud-container">
