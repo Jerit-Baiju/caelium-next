@@ -43,6 +43,41 @@ const FilePreview = ({ isOpen, onClose, file, onDownload }: PreviewProps) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const { toast } = useToast();
 
+  // Handle keyboard shortcuts
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (!isOpen) return;
+
+      // Prevent default behaviors for these keys
+      if (['Escape', 'f', ' '].includes(e.key)) {
+        e.preventDefault();
+      }
+
+      switch (e.key) {
+        case 'Escape':
+          if (fullscreen) {
+            setFullscreen(false);
+          } else {
+            handleClose();
+          }
+          break;
+        case 'f':
+          toggleFullscreen();
+          break;
+        case ' ': // Space key
+          if (file?.mime_type.startsWith('video/')) {
+            togglePlay();
+          }
+          break;
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [isOpen, fullscreen, file, isPlaying]);
+
   // Reset state when file changes
   useEffect(() => {
     if (file) {
@@ -360,7 +395,7 @@ const FilePreview = ({ isOpen, onClose, file, onDownload }: PreviewProps) => {
               <button 
                 onClick={toggleFullscreen}
                 className="p-2 bg-neutral-700 hover:bg-neutral-600 rounded-full text-white"
-                title={fullscreen ? "Exit fullscreen" : "Fullscreen"}
+                title={fullscreen ? "Exit fullscreen (F)" : "Fullscreen (F)"}
               >
                 {fullscreen ? <FiMinimize size={18} /> : <FiMaximize size={18} />}
               </button>
@@ -381,7 +416,7 @@ const FilePreview = ({ isOpen, onClose, file, onDownload }: PreviewProps) => {
                 <button 
                   onClick={togglePlay}
                   className="p-2 bg-neutral-700 hover:bg-neutral-600 rounded-full text-white"
-                  title={isPlaying ? "Pause" : "Play"}
+                  title={isPlaying ? "Pause (Space)" : "Play (Space)"}
                 >
                   {isPlaying ? <FiPause size={18} /> : <FiPlay size={18} />}
                 </button>
@@ -406,6 +441,19 @@ const FilePreview = ({ isOpen, onClose, file, onDownload }: PreviewProps) => {
                   {formatTime(currentTime)} / {formatTime(duration)}
                 </div>
               </div>
+              <div className="text-xs text-neutral-400 mt-1">
+                <span className="mr-3">Keyboard shortcuts: <span className="px-1 bg-neutral-700 rounded">Space</span> Play/Pause</span>
+                <span className="mr-3"><span className="px-1 bg-neutral-700 rounded">F</span> Fullscreen</span>
+                <span><span className="px-1 bg-neutral-700 rounded">Esc</span> {fullscreen ? "Exit fullscreen" : "Close"}</span>
+              </div>
+            </div>
+          )}
+
+          {/* For non-video files, show shortcuts */}
+          {(!isVideo || !previewUrl) && (
+            <div className="text-xs text-neutral-400 mt-1">
+              <span className="mr-3">Keyboard shortcuts: <span className="px-1 bg-neutral-700 rounded">F</span> Fullscreen</span>
+              <span><span className="px-1 bg-neutral-700 rounded">Esc</span> {fullscreen ? "Exit fullscreen" : "Close"}</span>
             </div>
           )}
         </motion.div>
