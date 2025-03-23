@@ -42,6 +42,7 @@ const FilePreview = ({ isOpen, onClose, file, onDownload }: PreviewProps) => {
   const [currentTime, setCurrentTime] = useState(0);
   const videoRef = useRef<HTMLVideoElement>(null);
   const { toast } = useToast();
+  const [imageLoaded, setImageLoaded] = useState(false); // New state to track image loading
 
   // Handle keyboard shortcuts
   useEffect(() => {
@@ -89,6 +90,7 @@ const FilePreview = ({ isOpen, onClose, file, onDownload }: PreviewProps) => {
       setIsPlaying(false);
       setCurrentTime(0);
       setFullscreen(false); // Reset fullscreen state for new files
+      setImageLoaded(false); // Reset image loading state
       loadPreview();
     }
   }, [file]);
@@ -283,6 +285,11 @@ const FilePreview = ({ isOpen, onClose, file, onDownload }: PreviewProps) => {
   // Check if file is a video
   const isVideo = file?.mime_type.startsWith('video/');
 
+  // Handle image load complete
+  const handleImageLoad = () => {
+    setImageLoaded(true);
+  };
+
   // Animation variants
   const contentVariants = {
     hidden: { opacity: 0, scale: 0.9 },
@@ -317,9 +324,9 @@ const FilePreview = ({ isOpen, onClose, file, onDownload }: PreviewProps) => {
         variants={contentVariants}
         className="flex flex-col items-center relative"
       >
-        {/* Preview container */}
+        {/* Preview container - fixed height to prevent layout shifts */}
         <div 
-          className={`relative w-full overflow-hidden ${fullscreen ? 'h-[90vh]' : 'max-h-[70vh]'} flex items-center justify-center bg-neutral-900`}
+          className={`relative w-full overflow-hidden ${fullscreen ? 'h-[90vh]' : 'h-[70vh]'} flex items-center justify-center bg-neutral-900`}
           onMouseDown={handleMouseDown}
           onMouseMove={handleMouseMove}
           onMouseUp={handleMouseUp}
@@ -342,19 +349,32 @@ const FilePreview = ({ isOpen, onClose, file, onDownload }: PreviewProps) => {
             </div>
           )}
 
-          {/* Image preview */}
+          {/* Image preview with smooth fade-in transition */}
           {!isVideo && previewUrl && !loading && (
-            <motion.img
-              src={previewUrl}
-              alt={file?.name || 'Preview'}
-              className="max-w-full max-h-full object-contain select-none"
-              style={{ 
-                transform: `scale(${zoomLevel}) translate(${position.x}px, ${position.y}px)`,
-                transformOrigin: 'center',
-                transition: isDragging ? 'none' : 'transform 0.2s ease-out'
-              }}
-              draggable={false}
-            />
+            <div className="relative w-full h-full flex items-center justify-center">
+              {/* Placeholder/skeleton while image is loading */}
+              {!imageLoaded && (
+                <div className="absolute inset-0 flex items-center justify-center bg-neutral-800/50 z-10">
+                  <div className="w-10 h-10 border-4 border-neutral-700 border-t-neutral-400 rounded-full animate-spin"></div>
+                </div>
+              )}
+              <motion.img
+                src={previewUrl}
+                alt={file?.name || 'Preview'}
+                className="max-w-full max-h-full object-contain select-none"
+                style={{ 
+                  transform: `scale(${zoomLevel}) translate(${position.x}px, ${position.y}px)`,
+                  transformOrigin: 'center',
+                  transition: isDragging ? 'none' : 'transform 0.2s ease-out',
+                  opacity: imageLoaded ? 1 : 0,
+                }}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: imageLoaded ? 1 : 0 }}
+                transition={{ duration: 0.3 }}
+                onLoad={handleImageLoad}
+                draggable={false}
+              />
+            </div>
           )}
 
           {/* Video preview */}

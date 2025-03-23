@@ -334,11 +334,25 @@ const CloudDashboard = () => {
       if (thumbnailUrl) {
         return (
           <div className="w-6 h-6 relative overflow-hidden rounded-sm">
+            {/* Background color placeholder - always visible */}
             <div className={`absolute inset-0 ${getColorClasses(file.color, 'bg')}`}></div>
+            
+            {/* Loading skeleton overlay - fades out when image loads */}
+            <div className="absolute inset-0 bg-neutral-600/20 dark:bg-neutral-700/50 z-5 transition-opacity duration-300"></div>
+            
             <img 
               src={thumbnailUrl}
               alt={file.name}
-              className="w-full h-full object-cover z-10 relative"
+              className="w-full h-full object-cover z-10 relative transition-opacity duration-300"
+              style={{ opacity: 0 }} // Start with opacity 0
+              onLoad={(e) => {
+                // Fade in the image once loaded
+                (e.target as HTMLImageElement).style.opacity = '1';
+                // Hide the loading overlay
+                if (e.currentTarget.previousElementSibling) {
+                  (e.currentTarget.previousElementSibling as HTMLElement).style.opacity = '0';
+                }
+              }}
               onError={(e) => {
                 // Hide the image on error and show the icon
                 (e.target as HTMLImageElement).style.display = 'none';

@@ -286,22 +286,41 @@ const CloudPhotosPage = () => {
                     className="relative group cursor-pointer rounded-lg overflow-hidden shadow-sm hover:shadow-md transition"
                     onClick={() => handleFilePreview(photo)}
                   >
-                    <div className="aspect-square bg-neutral-100 dark:bg-neutral-700 flex items-center justify-center overflow-hidden">
+                    {/* Fixed aspect ratio container to prevent layout shifts */}
+                    <div className="aspect-square bg-neutral-100 dark:bg-neutral-700 flex items-center justify-center overflow-hidden relative">
+                      {/* Skeleton/placeholder that stays visible until image loads */}
+                      <div className="absolute inset-0 bg-neutral-200 dark:bg-neutral-600 animate-pulse z-0"></div>
+                      
                       {thumbnailUrls[photo.id] ? (
                         <img 
                           src={thumbnailUrls[photo.id]}
                           alt={photo.name}
-                          className="w-full h-full object-cover"
+                          className="w-full h-full object-cover transition-opacity duration-300 relative z-10"
+                          style={{ opacity: 0 }} // Start with 0 opacity
+                          onLoad={(e) => {
+                            // Smoothly fade in the image once loaded
+                            (e.target as HTMLImageElement).style.opacity = '1';
+                            // Find and hide the animation on skeleton
+                            if (e.currentTarget.previousElementSibling) {
+                              (e.currentTarget.previousElementSibling as HTMLElement).classList.remove('animate-pulse');
+                              (e.currentTarget.previousElementSibling as HTMLElement).style.opacity = '0';
+                            }
+                          }}
                           onError={(e) => {
                             // Hide the image on error and show the icon
                             (e.target as HTMLImageElement).style.display = 'none';
-                            e.currentTarget.parentElement?.classList.add('fallback-icon');
+                            // Add a fallback icon if needed
+                            const iconElement = document.createElement('div');
+                            iconElement.className = "absolute inset-0 flex items-center justify-center z-20";
+                            iconElement.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" class="text-neutral-400" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>';
+                            e.currentTarget.parentElement?.appendChild(iconElement);
                           }}
                         />
                       ) : (
-                        <FiImage size={32} className="text-neutral-400" />
+                        <FiImage size={32} className="text-neutral-400 relative z-10" />
                       )}
                     </div>
+                    
                     {/* Overlay with actions */}
                     <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3">
                       <button 
@@ -314,6 +333,7 @@ const CloudPhotosPage = () => {
                         <FiShare2 size={18} />
                       </button>
                     </div>
+                    
                     {/* Caption */}
                     <div className="absolute bottom-0 left-0 right-0 bg-black/70 text-white text-xs px-2 py-1 truncate">
                       {photo.name}
