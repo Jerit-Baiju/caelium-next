@@ -338,7 +338,7 @@ const FilePreview = ({
       >
         {/* Preview container - fixed height to prevent layout shifts */}
         <div
-          className={`relative w-full overflow-hidden ${fullscreen ? 'h-[90vh]' : 'h-[70vh]'} flex items-center justify-center bg-neutral-900`}
+          className={`relative w-full overflow-hidden ${fullscreen ? 'h-[90vh]' : 'h-[70vh]'} flex items-center justify-center`}
           onMouseDown={handleMouseDown}
           onMouseMove={handleMouseMove}
           onMouseUp={handleMouseUp}
@@ -554,7 +554,7 @@ const FilePreview = ({
       }}
     >
       <DialogContent
-        className={`${fullscreen ? 'max-w-[95vw] max-h-[95vh] p-0' : 'max-w-4xl p-4'} bg-neutral-800 text-white border-neutral-700 overflow-hidden`}
+        className={`${fullscreen ? 'max-w-[95vw] max-h-[95vh] p-0' : 'max-w-4xl p-4'} bg-neutral-900 text-white border-neutral-800 overflow-hidden`}
       >
         {!fullscreen && (
           <DialogTitle hidden className='text-white pb-2'>
