@@ -3,16 +3,7 @@ import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useEffect, useRef, useState } from 'react';
-import {
-  FiDownload,
-  FiMaximize,
-  FiMinimize,
-  FiPause,
-  FiPlay,
-  FiSlash,
-  FiVolume,
-  FiVolume2
-} from 'react-icons/fi';
+import { FiDownload, FiMaximize, FiMinimize, FiPause, FiPlay, FiSlash, FiVolume, FiVolume2 } from 'react-icons/fi';
 
 interface PreviewProps {
   isOpen: boolean;
@@ -98,10 +89,10 @@ const FilePreview = ({ isOpen, onClose, file, onDownload }: PreviewProps) => {
   // Load preview based on file type
   const loadPreview = async () => {
     if (!file) return;
-    
+
     try {
       setLoading(true);
-      
+
       // Get auth token from localStorage
       const authTokensStr = localStorage.getItem('authTokens');
       if (!authTokensStr) {
@@ -113,27 +104,27 @@ const FilePreview = ({ isOpen, onClose, file, onDownload }: PreviewProps) => {
         });
         return;
       }
-      
+
       const authTokens = JSON.parse(authTokensStr);
       const accessToken = authTokens.access;
-      
+
       // Use fetch API to get the file with proper authorization
       const response = await fetch(file.download_url, {
         method: 'GET',
         headers: {
-          'Authorization': `Bearer ${accessToken}`
-        }
+          Authorization: `Bearer ${accessToken}`,
+        },
       });
-      
+
       if (!response.ok) {
         throw new Error(`Failed to load preview: ${response.status} ${response.statusText}`);
       }
-      
+
       // Get the file as a blob and create a URL
       const blob = await response.blob();
       const url = window.URL.createObjectURL(blob);
       setPreviewUrl(url);
-      
+
       // Reset states
       setError(null);
 
@@ -191,9 +182,7 @@ const FilePreview = ({ isOpen, onClose, file, onDownload }: PreviewProps) => {
 
   // Handle zoom in and out
   const handleZoom = (direction: 'in' | 'out') => {
-    const newZoom = direction === 'in' 
-      ? Math.min(zoomLevel + 0.25, 3) 
-      : Math.max(zoomLevel - 0.25, 0.5);
+    const newZoom = direction === 'in' ? Math.min(zoomLevel + 0.25, 3) : Math.max(zoomLevel - 0.25, 0.5);
     setZoomLevel(newZoom);
   };
 
@@ -215,7 +204,7 @@ const FilePreview = ({ isOpen, onClose, file, onDownload }: PreviewProps) => {
     if (isDragging && zoomLevel > 1) {
       setPosition({
         x: position.x + e.movementX,
-        y: position.y + e.movementY
+        y: position.y + e.movementY,
       });
     }
   };
@@ -293,39 +282,39 @@ const FilePreview = ({ isOpen, onClose, file, onDownload }: PreviewProps) => {
   // Animation variants
   const contentVariants = {
     hidden: { opacity: 0, scale: 0.9 },
-    visible: { 
-      opacity: 1, 
+    visible: {
+      opacity: 1,
       scale: 1,
-      transition: { duration: 0.3 }
+      transition: { duration: 0.3 },
     },
-    exit: { 
-      opacity: 0, 
+    exit: {
+      opacity: 0,
       scale: 0.9,
-      transition: { duration: 0.2 }
-    }
+      transition: { duration: 0.2 },
+    },
   };
 
   const controlsVariants = {
     hidden: { opacity: 0, y: 20 },
-    visible: { 
-      opacity: 1, 
+    visible: {
+      opacity: 1,
       y: 0,
-      transition: { duration: 0.3, delay: 0.2 }
-    }
+      transition: { duration: 0.3, delay: 0.2 },
+    },
   };
 
   // Define dialog content based on fullscreen state
   const dialogContent = (
-    <AnimatePresence mode="wait">
-      <motion.div 
-        initial="hidden"
-        animate="visible"
-        exit="exit"
+    <AnimatePresence mode='wait'>
+      <motion.div
+        initial='hidden'
+        animate='visible'
+        exit='exit'
         variants={contentVariants}
-        className="flex flex-col items-center relative"
+        className='flex flex-col items-center relative'
       >
         {/* Preview container - fixed height to prevent layout shifts */}
-        <div 
+        <div
           className={`relative w-full overflow-hidden ${fullscreen ? 'h-[90vh]' : 'h-[70vh]'} flex items-center justify-center bg-neutral-900`}
           onMouseDown={handleMouseDown}
           onMouseMove={handleMouseMove}
@@ -335,34 +324,34 @@ const FilePreview = ({ isOpen, onClose, file, onDownload }: PreviewProps) => {
         >
           {/* Loading state */}
           {loading && (
-            <div className="absolute inset-0 flex flex-col items-center justify-center bg-neutral-900 z-20">
-              <div className="w-10 h-10 border-4 border-neutral-600 border-t-neutral-300 rounded-full animate-spin mb-3"></div>
-              <p className="text-neutral-300">Loading preview...</p>
+            <div className='absolute inset-0 flex flex-col items-center justify-center bg-neutral-900 z-20'>
+              <div className='w-10 h-10 border-4 border-neutral-600 border-t-neutral-300 rounded-full animate-spin mb-3'></div>
+              <p className='text-neutral-300'>Loading preview...</p>
             </div>
           )}
 
           {/* Error state */}
           {error && !loading && (
-            <div className="absolute inset-0 flex flex-col items-center justify-center bg-neutral-900 z-20">
-              <FiSlash size={48} className="text-neutral-400 mb-3" />
-              <p className="text-neutral-300">{error}</p>
+            <div className='absolute inset-0 flex flex-col items-center justify-center bg-neutral-900 z-20'>
+              <FiSlash size={48} className='text-neutral-400 mb-3' />
+              <p className='text-neutral-300'>{error}</p>
             </div>
           )}
 
           {/* Image preview with smooth fade-in transition */}
           {!isVideo && previewUrl && !loading && (
-            <div className="relative w-full h-full flex items-center justify-center">
+            <div className='relative w-full h-full flex items-center justify-center'>
               {/* Placeholder/skeleton while image is loading */}
               {!imageLoaded && (
-                <div className="absolute inset-0 flex items-center justify-center bg-neutral-800/50 z-10">
-                  <div className="w-10 h-10 border-4 border-neutral-700 border-t-neutral-400 rounded-full animate-spin"></div>
+                <div className='absolute inset-0 flex items-center justify-center bg-neutral-800/50 z-10'>
+                  <div className='w-10 h-10 border-4 border-neutral-700 border-t-neutral-400 rounded-full animate-spin'></div>
                 </div>
               )}
               <motion.img
                 src={previewUrl}
                 alt={file?.name || 'Preview'}
-                className="max-w-full max-h-full object-contain select-none"
-                style={{ 
+                className='max-w-full max-h-full object-contain select-none'
+                style={{
                   transform: `scale(${zoomLevel}) translate(${position.x}px, ${position.y}px)`,
                   transformOrigin: 'center',
                   transition: isDragging ? 'none' : 'transform 0.2s ease-out',
@@ -382,11 +371,11 @@ const FilePreview = ({ isOpen, onClose, file, onDownload }: PreviewProps) => {
             <motion.video
               ref={videoRef}
               src={previewUrl}
-              className="max-w-full max-h-full object-contain select-none"
-              style={{ 
+              className='max-w-full max-h-full object-contain select-none'
+              style={{
                 transform: `scale(${zoomLevel}) translate(${position.x}px, ${position.y}px)`,
                 transformOrigin: 'center',
-                transition: isDragging ? 'none' : 'transform 0.2s ease-out'
+                transition: isDragging ? 'none' : 'transform 0.2s ease-out',
               }}
               onTimeUpdate={handleTimeUpdate}
               onLoadedMetadata={handleLoadedMetadata}
@@ -399,30 +388,32 @@ const FilePreview = ({ isOpen, onClose, file, onDownload }: PreviewProps) => {
         </div>
 
         {/* Controls */}
-        <motion.div 
-          className="w-full px-4 py-3 flex flex-col space-y-2 bg-neutral-800"
+        <motion.div
+          className='w-full px-4 py-3 flex flex-col space-y-2 bg-neutral-800'
           variants={controlsVariants}
-          initial="hidden"
-          animate="visible"
+          initial='hidden'
+          animate='visible'
         >
           {/* File info */}
-          <div className="flex justify-between items-center">
+          <div className='flex justify-between items-center'>
             <div>
-              <h3 className="text-white font-medium truncate max-w-md">{file?.name}</h3>
-              <p className="text-xs text-neutral-400">{file?.size} • {file?.time}</p>
+              <h3 className='text-white font-medium truncate max-w-md'>{file?.name}</h3>
+              <p className='text-xs text-neutral-400'>
+                {file?.size} • {file?.time}
+              </p>
             </div>
-            <div className="flex gap-2">
-              <button 
+            <div className='flex gap-2'>
+              <button
                 onClick={toggleFullscreen}
-                className="p-2 bg-neutral-700 hover:bg-neutral-600 rounded-full text-white"
-                title={fullscreen ? "Exit fullscreen (F)" : "Fullscreen (F)"}
+                className='p-2 bg-neutral-700 hover:bg-neutral-600 rounded-full text-white'
+                title={fullscreen ? 'Exit fullscreen (F)' : 'Fullscreen (F)'}
               >
                 {fullscreen ? <FiMinimize size={18} /> : <FiMaximize size={18} />}
               </button>
-              <button 
+              <button
                 onClick={handleDownload}
-                className="p-2 bg-neutral-700 hover:bg-neutral-600 rounded-full text-white"
-                title="Download"
+                className='p-2 bg-neutral-700 hover:bg-neutral-600 rounded-full text-white'
+                title='Download'
               >
                 <FiDownload size={18} />
               </button>
@@ -431,49 +422,59 @@ const FilePreview = ({ isOpen, onClose, file, onDownload }: PreviewProps) => {
 
           {/* Video controls */}
           {isVideo && previewUrl && (
-            <div className="flex flex-col space-y-2">
-              <div className="flex items-center space-x-3">
-                <button 
+            <div className='flex flex-col space-y-2'>
+              <div className='flex items-center space-x-3'>
+                <button
                   onClick={togglePlay}
-                  className="p-2 bg-neutral-700 hover:bg-neutral-600 rounded-full text-white"
-                  title={isPlaying ? "Pause (Space)" : "Play (Space)"}
+                  className='p-2 bg-neutral-700 hover:bg-neutral-600 rounded-full text-white'
+                  title={isPlaying ? 'Pause (Space)' : 'Play (Space)'}
                 >
                   {isPlaying ? <FiPause size={18} /> : <FiPlay size={18} />}
                 </button>
-                <div className="flex-grow">
-                  <input 
-                    type="range"
-                    min="0"
+                <div className='flex-grow'>
+                  <input
+                    type='range'
+                    min='0'
                     max={duration}
                     value={currentTime}
                     onChange={handleSeek}
-                    className="w-full accent-white h-1.5 bg-neutral-600 rounded-full appearance-none cursor-pointer"
+                    className='w-full accent-white h-1.5 bg-neutral-600 rounded-full appearance-none cursor-pointer'
                   />
                 </div>
-                <button 
+                <button
                   onClick={toggleMute}
-                  className="p-2 bg-neutral-700 hover:bg-neutral-600 rounded-full text-white"
-                  title={isMuted ? "Unmute" : "Mute"}
+                  className='p-2 bg-neutral-700 hover:bg-neutral-600 rounded-full text-white'
+                  title={isMuted ? 'Unmute' : 'Mute'}
                 >
                   {isMuted ? <FiVolume2 size={18} /> : <FiVolume size={18} />}
                 </button>
-                <div className="w-20 text-center text-sm text-neutral-300">
+                <div className='w-20 text-center text-sm text-neutral-300'>
                   {formatTime(currentTime)} / {formatTime(duration)}
                 </div>
               </div>
-              <div className="text-xs text-neutral-400 mt-1">
-                <span className="mr-3">Keyboard shortcuts: <span className="px-1 bg-neutral-700 rounded">Space</span> Play/Pause</span>
-                <span className="mr-3"><span className="px-1 bg-neutral-700 rounded">F</span> Fullscreen</span>
-                <span><span className="px-1 bg-neutral-700 rounded">Esc</span> {fullscreen ? "Exit fullscreen" : "Close"}</span>
+              <div className='text-xs text-neutral-400 mt-1'>
+                <span className='mr-3'>
+                  Keyboard shortcuts: <span className='px-1 bg-neutral-700 rounded'>Space</span> Play/Pause
+                </span>
+                <span className='mr-3'>
+                  <span className='px-1 bg-neutral-700 rounded'>F</span> Fullscreen
+                </span>
+                <span>
+                  <span className='px-1 bg-neutral-700 rounded'>Esc</span> {fullscreen ? 'Exit fullscreen' : 'Close'}
+                </span>
               </div>
             </div>
           )}
 
           {/* For non-video files, show shortcuts */}
           {(!isVideo || !previewUrl) && (
-            <div className="text-xs text-neutral-400 mt-1">
-              <span className="mr-3">Keyboard shortcuts: <span className="px-1 bg-neutral-700 rounded">F</span> Fullscreen</span>
-              <span><span className="px-1 bg-neutral-700 rounded">Esc</span> {fullscreen ? "Exit fullscreen" : "Close"}</span>
+            <div className='text-xs text-neutral-400 mt-1'>
+              <span className='mr-3'>
+                Keyboard shortcuts: <span className='px-1 bg-neutral-700 rounded'>F</span> Fullscreen
+              </span>
+              <span>
+                <span className='px-1 bg-neutral-700 rounded'>Esc</span> {fullscreen ? 'Exit fullscreen' : 'Close'}
+              </span>
             </div>
           )}
         </motion.div>
@@ -482,26 +483,22 @@ const FilePreview = ({ isOpen, onClose, file, onDownload }: PreviewProps) => {
   );
 
   return (
-    <Dialog open={isOpen} onOpenChange={(open) => {
-      if (!open) {
-        handleClose();
-      }
-    }}>
-      <DialogContent 
+    <Dialog
+      open={isOpen}
+      onOpenChange={(open) => {
+        if (!open) {
+          handleClose();
+        }
+      }}
+    >
+      <DialogContent
         className={`${fullscreen ? 'max-w-[95vw] max-h-[95vh] p-0' : 'max-w-4xl p-4'} bg-neutral-800 text-white border-neutral-700 overflow-hidden`}
       >
-        <DialogTitle className="text-white pb-2">
-          {file?.name || 'File Preview'}
-          {fullscreen && (
-            <button 
-              onClick={toggleFullscreen}
-              className="ml-2 p-1 bg-neutral-700 hover:bg-neutral-600 rounded-full text-white inline-flex items-center justify-center"
-              title="Exit fullscreen"
-            >
-              <FiMinimize size={14} />
-            </button>
-          )}
-        </DialogTitle>
+        {!fullscreen && (
+          <DialogTitle hidden className='text-white pb-2'>
+            {file?.name || 'File Preview'}
+          </DialogTitle>
+        )}
         {dialogContent}
       </DialogContent>
     </Dialog>
