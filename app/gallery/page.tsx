@@ -1,5 +1,5 @@
 'use client';
-import Loader from '@/components/Loader';
+import Loader from '@/components/layout/Loader';
 import { useNavbar } from '@/contexts/NavContext';
 import { Image, NavLink } from '@/helpers/props';
 import { getDate } from '@/helpers/utils';

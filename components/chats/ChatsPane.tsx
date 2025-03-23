@@ -19,7 +19,7 @@ import { Archive, BellOff, ChevronRight, Download, Info, Mail, Pin, PinOff, Tras
 import { usePathname, useRouter } from 'next/navigation';
 import { useContext, useEffect, useState } from 'react';
 import { FiSearch, FiX } from 'react-icons/fi';
-import Loader from '../Loader';
+import Loader from '../layout/Loader';
 import { DeleteChatDialog } from './dialogs/DeleteChatDialog';
 
 const menuItemVariants = {

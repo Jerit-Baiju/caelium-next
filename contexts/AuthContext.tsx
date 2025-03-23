@@ -1,5 +1,5 @@
 'use client';
-import Loader from '@/components/Loader';
+import Loader from '@/components/layout/Loader';
 import { User } from '@/helpers/props';
 import { jwtDecode } from 'jwt-decode';
 import { useRouter } from 'next/navigation';

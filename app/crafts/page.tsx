@@ -1,5 +1,5 @@
 'use client';
-import Loader from '@/components/Loader';
+import Loader from '@/components/layout/Loader';
 import { Button } from '@/components/ui/button';
 import { useNavbar } from '@/contexts/NavContext';
 import { BaseError, Craft } from '@/helpers/props';
