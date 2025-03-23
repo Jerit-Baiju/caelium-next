@@ -38,6 +38,7 @@ const CloudGalleryPage = () => {
   const [thumbnailUrls, setThumbnailUrls] = useState<Record<string, string>>({});
   const api = useAxios();
   const { toast } = useToast();
+  const [selectedFileIndex, setSelectedFileIndex] = useState<number>(-1);
 
   // Simplified motion variants
   const containerVariants = {
@@ -149,13 +150,35 @@ const CloudGalleryPage = () => {
   // Function to handle file preview
   const handleFilePreview = (file: MediaItem) => {
     setSelectedFile(file);
+    // Find the index of the selected file
+    const index = mediaItems.findIndex(item => item.id === file.id);
+    setSelectedFileIndex(index);
     setIsPreviewOpen(true);
   };
 
   // Function to close preview
   const handleClosePreview = () => {
     setSelectedFile(null);
+    setSelectedFileIndex(-1);
     setIsPreviewOpen(false);
+  };
+
+  // Function to navigate to next file
+  const handleNextFile = () => {
+    if (selectedFileIndex < mediaItems.length - 1) {
+      const nextIndex = selectedFileIndex + 1;
+      setSelectedFileIndex(nextIndex);
+      setSelectedFile(mediaItems[nextIndex]);
+    }
+  };
+
+  // Function to navigate to previous file
+  const handlePreviousFile = () => {
+    if (selectedFileIndex > 0) {
+      const prevIndex = selectedFileIndex - 1;
+      setSelectedFileIndex(prevIndex);
+      setSelectedFile(mediaItems[prevIndex]);
+    }
   };
 
   // Function to determine the file color based on mime type
@@ -398,7 +421,16 @@ const CloudGalleryPage = () => {
       </div>
 
       {/* Media Preview Dialog using the new component */}
-      <FilePreview isOpen={isPreviewOpen} onClose={handleClosePreview} file={selectedFile} onDownload={handleFileDownload} />
+      <FilePreview 
+        isOpen={isPreviewOpen} 
+        onClose={handleClosePreview} 
+        file={selectedFile} 
+        onDownload={handleFileDownload}
+        onNext={handleNextFile}
+        onPrevious={handlePreviousFile}
+        hasNext={selectedFileIndex < mediaItems.length - 1}
+        hasPrevious={selectedFileIndex > 0}
+      />
     </motion.div>
   );
 };
