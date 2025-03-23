@@ -44,16 +44,16 @@ const CloudGalleryPage = () => {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
-      transition: { duration: 0.5 }
-    }
+      transition: { duration: 0.5 },
+    },
   };
 
   const itemVariants = {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
-      transition: { duration: 0.3 }
-    }
+      transition: { duration: 0.3 },
+    },
   };
 
   // Function to format file size
@@ -71,8 +71,8 @@ const CloudGalleryPage = () => {
         setLoading(true);
         const response = await api.get('/api/cloud/files/');
         // Filter for both image and video files
-        const filteredFiles = response.data.filter((file: FileData) => 
-          file.mime_type.startsWith('image/') || file.mime_type.startsWith('video/')
+        const filteredFiles = response.data.filter(
+          (file: FileData) => file.mime_type.startsWith('image/') || file.mime_type.startsWith('video/'),
         );
         setMediaFiles(filteredFiles);
       } catch (error) {
@@ -103,28 +103,28 @@ const CloudGalleryPage = () => {
         });
         return;
       }
-      
+
       const authTokens = JSON.parse(authTokensStr);
       const accessToken = authTokens.access;
-      
+
       // Use fetch API for direct file download
       const response = await fetch(downloadUrl, {
         method: 'GET',
         headers: {
-          'Authorization': `Bearer ${accessToken}`
-        }
+          Authorization: `Bearer ${accessToken}`,
+        },
       });
-      
+
       if (!response.ok) {
         throw new Error(`Failed to download file: ${response.status} ${response.statusText}`);
       }
-      
+
       // Get the file as a blob
       const blob = await response.blob();
-      
+
       // Create a URL for the blob
       const url = window.URL.createObjectURL(blob);
-      
+
       // Create a temporary anchor element and trigger download
       const a = document.createElement('a');
       a.style.display = 'none';
@@ -132,11 +132,10 @@ const CloudGalleryPage = () => {
       a.download = fileName;
       document.body.appendChild(a);
       a.click();
-      
+
       // Clean up
       window.URL.revokeObjectURL(url);
       document.body.removeChild(a);
-      
     } catch (error) {
       console.error('Download error:', error);
       toast({
@@ -180,7 +179,7 @@ const CloudGalleryPage = () => {
   };
 
   // Convert FileData to MediaItem objects
-  const mediaItems: MediaItem[] = mediaFiles.map(file => ({
+  const mediaItems: MediaItem[] = mediaFiles.map((file) => ({
     id: file.id,
     name: file.name,
     size: formatFileSize(file.size),
@@ -188,7 +187,7 @@ const CloudGalleryPage = () => {
     color: getFileColor(file.mime_type),
     download_url: file.download_url,
     preview_url: file.preview_url,
-    mime_type: file.mime_type
+    mime_type: file.mime_type,
   }));
 
   // Load thumbnails for media files
@@ -196,12 +195,12 @@ const CloudGalleryPage = () => {
     const loadThumbnails = async () => {
       const authTokensStr = localStorage.getItem('authTokens');
       if (!authTokensStr) return;
-      
+
       const authTokens = JSON.parse(authTokensStr);
       const accessToken = authTokens.access;
-      
+
       const newThumbnailUrls: Record<string, string> = {};
-      
+
       for (const file of mediaFiles) {
         if (isMediaFile(file.mime_type) && (file.preview_url || file.download_url)) {
           try {
@@ -209,10 +208,10 @@ const CloudGalleryPage = () => {
             const response = await fetch(url, {
               method: 'GET',
               headers: {
-                'Authorization': `Bearer ${accessToken}`
-              }
+                Authorization: `Bearer ${accessToken}`,
+              },
             });
-            
+
             if (response.ok) {
               const blob = await response.blob();
               const blobUrl = window.URL.createObjectURL(blob);
@@ -223,44 +222,39 @@ const CloudGalleryPage = () => {
           }
         }
       }
-      
+
       setThumbnailUrls(newThumbnailUrls);
     };
-    
+
     if (mediaFiles.length > 0) {
       loadThumbnails();
     }
-    
+
     // Cleanup function to revoke object URLs
     return () => {
-      Object.values(thumbnailUrls).forEach(url => {
+      Object.values(thumbnailUrls).forEach((url) => {
         window.URL.revokeObjectURL(url);
       });
     };
   }, [mediaFiles]);
-  
+
   // Clean up resources when component unmounts
   useEffect(() => {
     return () => {
       // Clean up all thumbnail URLs
-      Object.values(thumbnailUrls).forEach(url => {
+      Object.values(thumbnailUrls).forEach((url) => {
         window.URL.revokeObjectURL(url);
       });
     };
   }, [thumbnailUrls]);
 
   return (
-    <motion.div
-      className='flex flex-col gap-6 p-6 lg:p-8'
-      initial='hidden'
-      animate='visible'
-      variants={containerVariants}
-    >
-      <div className='p-6 mx-auto space-y-8 w-full max-w-7xl'>
+    <motion.div className='flex grow flex-col gap-6 p-6 lg:p-8' initial='hidden' animate='visible' variants={containerVariants}>
+      <div className='flex flex-col grow p-6 mx-auto space-y-8 w-full max-w-7xl'>
         {/* Header */}
         <motion.div className='flex justify-between items-center' variants={itemVariants}>
-          <div className="flex items-center gap-4">
-            <Link href="/cloud" className="text-neutral-600 hover:text-neutral-800 dark:text-neutral-400 dark:hover:text-neutral-200">
+          <div className='flex items-center gap-4'>
+            <Link href='/cloud' className='text-neutral-600 hover:text-neutral-800 dark:text-neutral-400 dark:hover:text-neutral-200'>
               <FiArrowLeft size={20} />
             </Link>
             <div>
@@ -268,7 +262,7 @@ const CloudGalleryPage = () => {
               <p className='text-neutral-600 dark:text-neutral-400'>Browse your images and videos</p>
             </div>
           </div>
-          <Link href="/cloud/upload">
+          <Link href='/cloud/upload'>
             <button className='flex items-center bg-neutral-800 hover:bg-neutral-700 dark:bg-neutral-700 dark:hover:bg-neutral-600 text-white px-5 py-2.5 rounded-md transition shadow-sm'>
               <FiUpload className='mr-2' />
               <span>Upload Media</span>
@@ -277,18 +271,18 @@ const CloudGalleryPage = () => {
         </motion.div>
 
         {/* Media Grid */}
-        <motion.div variants={itemVariants} className="bg-white dark:bg-neutral-800 rounded-xl shadow-sm p-6">
+        <motion.div variants={itemVariants} className='bg-white dark:bg-neutral-800 rounded-xl shadow-sm p-6'>
           {loading ? (
             <div className='text-center py-10'>
               <p className='text-neutral-500 dark:text-neutral-400'>Loading your gallery...</p>
             </div>
           ) : mediaFiles.length === 0 ? (
             <div className='text-center py-10'>
-              <div className="flex justify-center mb-4">
-                <FiImage size={48} className="text-neutral-400" />
+              <div className='flex justify-center mb-4'>
+                <FiImage size={48} className='text-neutral-400' />
               </div>
               <p className='text-neutral-500 dark:text-neutral-400'>No images or videos found in your cloud storage.</p>
-              <Link href="/cloud/upload">
+              <Link href='/cloud/upload'>
                 <button className='mt-4 px-4 py-2 bg-neutral-200 dark:bg-neutral-700 rounded-md hover:bg-neutral-300 dark:hover:bg-neutral-600 transition'>
                   Upload Media
                 </button>
@@ -296,30 +290,28 @@ const CloudGalleryPage = () => {
             </div>
           ) : (
             <>
-              <h2 className="text-xl font-semibold mb-4 dark:text-neutral-200">
-                Your Gallery ({mediaFiles.length})
-              </h2>
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+              <h2 className='text-xl font-semibold mb-4 dark:text-neutral-200'>Your Gallery ({mediaFiles.length})</h2>
+              <div className='grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4'>
                 {mediaItems.map((item) => (
-                  <div 
-                    key={item.id} 
-                    className="relative group cursor-pointer rounded-lg overflow-hidden shadow-sm hover:shadow-md transition"
+                  <div
+                    key={item.id}
+                    className='relative group cursor-pointer rounded-lg overflow-hidden shadow-sm hover:shadow-md transition'
                     onClick={() => handleFilePreview(item)}
                   >
                     {/* Fixed aspect ratio container to prevent layout shifts */}
-                    <div className="aspect-square bg-neutral-100 dark:bg-neutral-700 flex items-center justify-center overflow-hidden relative">
+                    <div className='aspect-square bg-neutral-100 dark:bg-neutral-700 flex items-center justify-center overflow-hidden relative'>
                       {/* Skeleton/placeholder that stays visible until image loads */}
-                      <div className="absolute inset-0 bg-neutral-200 dark:bg-neutral-600 animate-pulse z-0"></div>
-                      
+                      <div className='absolute inset-0 bg-neutral-200 dark:bg-neutral-600 animate-pulse z-0'></div>
+
                       {thumbnailUrls[item.id] ? (
                         <>
                           {isVideo(item.mime_type) ? (
                             <>
                               {/* Video thumbnail with play overlay */}
-                              <img 
+                              <img
                                 src={thumbnailUrls[item.id]}
                                 alt={item.name}
-                                className="w-full h-full object-cover transition-opacity duration-300 relative z-10"
+                                className='w-full h-full object-cover transition-opacity duration-300 relative z-10'
                                 style={{ opacity: 0 }} // Start with 0 opacity
                                 onLoad={(e) => {
                                   // Fade in the image once loaded
@@ -336,18 +328,18 @@ const CloudGalleryPage = () => {
                                 }}
                               />
                               {/* Play button overlay for videos */}
-                              <div className="absolute inset-0 flex items-center justify-center z-20 pointer-events-none">
-                                <div className="bg-black/40 rounded-full p-3">
-                                  <FiFilm className="text-white" size={24} />
+                              <div className='absolute inset-0 flex items-center justify-center z-20 pointer-events-none'>
+                                <div className='bg-black/40 rounded-full p-3'>
+                                  <FiFilm className='text-white' size={24} />
                                 </div>
                               </div>
                             </>
                           ) : (
                             // Regular image
-                            <img 
+                            <img
                               src={thumbnailUrls[item.id]}
                               alt={item.name}
-                              className="w-full h-full object-cover transition-opacity duration-300 relative z-10"
+                              className='w-full h-full object-cover transition-opacity duration-300 relative z-10'
                               style={{ opacity: 0 }} // Start with 0 opacity
                               onLoad={(e) => {
                                 // Fade in the image once loaded
@@ -367,16 +359,20 @@ const CloudGalleryPage = () => {
                         </>
                       ) : (
                         // Fallback icon
-                        <div className="relative z-10">
-                          {isVideo(item.mime_type) ? <FiFilm size={32} className="text-neutral-400" /> : <FiImage size={32} className="text-neutral-400" />}
+                        <div className='relative z-10'>
+                          {isVideo(item.mime_type) ? (
+                            <FiFilm size={32} className='text-neutral-400' />
+                          ) : (
+                            <FiImage size={32} className='text-neutral-400' />
+                          )}
                         </div>
                       )}
                     </div>
-                    
+
                     {/* Overlay with actions */}
-                    <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3">
-                      <button 
-                        className="p-2 bg-white/20 rounded-full hover:bg-white/30 text-white transition"
+                    <div className='absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3'>
+                      <button
+                        className='p-2 bg-white/20 rounded-full hover:bg-white/30 text-white transition'
                         onClick={(e) => {
                           e.stopPropagation();
                           handleFileDownload(item.download_url, item.name);
@@ -385,10 +381,10 @@ const CloudGalleryPage = () => {
                         <FiShare2 size={18} />
                       </button>
                     </div>
-                    
+
                     {/* Caption with file type indicator */}
-                    <div className="absolute bottom-0 left-0 right-0 bg-black/70 text-white text-xs px-2 py-1 truncate">
-                      <div className="flex items-center gap-1">
+                    <div className='absolute bottom-0 left-0 right-0 bg-black/70 text-white text-xs px-2 py-1 truncate'>
+                      <div className='flex items-center gap-1'>
                         {isVideo(item.mime_type) ? <FiFilm size={10} /> : <FiImage size={10} />}
                         <span>{item.name}</span>
                       </div>
@@ -402,12 +398,7 @@ const CloudGalleryPage = () => {
       </div>
 
       {/* Media Preview Dialog using the new component */}
-      <FilePreview 
-        isOpen={isPreviewOpen}
-        onClose={handleClosePreview}
-        file={selectedFile}
-        onDownload={handleFileDownload}
-      />
+      <FilePreview isOpen={isPreviewOpen} onClose={handleClosePreview} file={selectedFile} onDownload={handleFileDownload} />
     </motion.div>
   );
 };
