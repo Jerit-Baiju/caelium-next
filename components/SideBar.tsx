@@ -83,7 +83,12 @@ const SideBar = () => {
                         href={option.url}
                         className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all
                           ${
-                            route === option.url || route?.startsWith(option.url + '/')
+                            // For /cloud/photos, only highlight exact match
+                            (option.url === '/cloud/photos' && route === '/cloud/photos') ||
+                            // For other paths, highlight if it's an exact match or starts with the URL (but not /cloud/photos special case)
+                            (option.url !== '/cloud/photos' && 
+                              (route === option.url || 
+                                (route?.startsWith(option.url + '/') && option.url !== '/cloud')))
                               ? 'bg-linear-to-br from-violet-500 to-purple-500 text-white'
                               : 'hover:bg-white/10 dark:text-white dark:hover:bg-neutral-800'
                           }`}
@@ -105,7 +110,11 @@ const SideBar = () => {
                       href={option.url}
                       className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all
                         ${
-                          route === option.url || route?.startsWith(option.url + '/')
+                          // For cloud routes, only highlight if exact match to prevent multiple items highlighting
+                          (option.url.includes('/cloud') && route === option.url) ||
+                          // For non-cloud routes, use the original logic
+                          (!option.url.includes('/cloud') && 
+                            (route === option.url || route?.startsWith(option.url + '/')))
                             ? 'bg-linear-to-br from-violet-500 to-purple-500 text-white'
                             : 'hover:bg-white/10 dark:text-white dark:hover:bg-neutral-800'
                         }`}
