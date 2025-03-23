@@ -78,6 +78,9 @@ const CloudUpload = () => {
       
       // Add parent directory if needed
       formData.append('parent', ''); // Root directory by default
+      
+      // Always enable auto-organization
+      formData.append('auto_organize', 'true');
 
       // Upload all files in a single request
       await api.post('/api/cloud/upload/', formData, {
