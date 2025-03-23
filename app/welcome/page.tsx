@@ -1,5 +1,5 @@
 'use client';
-import Loader from '@/components/Loader';
+import Loader from '@/components/layout/Loader';
 import { Vortex } from '@/components/ui/vortex';
 import { useNavbar } from '@/contexts/NavContext';
 import { motion } from 'framer-motion';

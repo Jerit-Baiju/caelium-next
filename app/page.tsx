@@ -1,7 +1,7 @@
 'use client';
 import { ChatSelection } from '@/components/home/ChatSelection';
 import Personal from '@/components/home/spaces/personal';
-import Loader from '@/components/Loader';
+import Loader from '@/components/layout/Loader';
 import { TimeRestrictedPage } from '@/components/TimeRestrictedPage';
 import AuthContext from '@/contexts/AuthContext';
 import { useNavbar } from '@/contexts/NavContext';

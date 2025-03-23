@@ -1,5 +1,5 @@
 'use client';
-import Loader from '@/components/Loader';
+import Loader from '@/components/layout/Loader';
 import AuthContext from '@/contexts/AuthContext';
 import useAxios from '@/hooks/useAxios';
 import { motion } from 'framer-motion';

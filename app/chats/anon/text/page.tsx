@@ -1,6 +1,6 @@
 'use client';
 import ChatPageContent from '@/components/chats/ChatPageContent';
-import Loader from '@/components/Loader';
+import Loader from '@/components/layout/Loader';
 import { ChatProvider } from '@/contexts/ChatContext';
 import { useNavbar } from '@/contexts/NavContext';
 import { useWebSocket } from '@/contexts/SocketContext';

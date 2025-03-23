@@ -1,7 +1,7 @@
 'use client';
-import BottomNav from '@/components/BottomNav';
-import NavBar from '@/components/NavBar';
-import SideBar from '@/components/SideBar';
+import BottomNav from '@/components/layout/BottomNav';
+import NavBar from '@/components/layout/NavBar';
+import SideBar from '@/components/layout/SideBar';
 import AuthContext from '@/contexts/AuthContext';
 import { useNavbar } from '@/contexts/NavContext';
 import { ReactNode, useContext } from 'react';

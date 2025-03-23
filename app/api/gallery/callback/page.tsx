@@ -1,5 +1,5 @@
 'use client';
-import Loader from '@/components/Loader';
+import Loader from '@/components/layout/Loader';
 import useAxios from '@/hooks/useAxios';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect } from 'react';

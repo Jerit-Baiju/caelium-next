@@ -1,5 +1,5 @@
 'use client';
-import Loader from '@/components/Loader';
+import Loader from '@/components/layout/Loader';
 import { Album } from '@/helpers/props';
 import useAxios from '@/hooks/useAxios';
 import Link from 'next/link';

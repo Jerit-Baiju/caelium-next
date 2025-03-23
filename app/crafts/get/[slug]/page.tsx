@@ -1,5 +1,5 @@
 'use client';
-import Loader from '@/components/Loader';
+import Loader from '@/components/layout/Loader';
 import { BaseError, Craft } from '@/helpers/props';
 import { getTime } from '@/helpers/utils';
 import useAxios from '@/hooks/useAxios';
