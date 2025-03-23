@@ -1,5 +1,5 @@
 'use client';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import FilePreview from '@/components/cloud/preview';
 import { formatTimeSince } from '@/helpers/utils';
 import { useToast } from '@/hooks/use-toast';
 import useAxios from '@/hooks/useAxios';
@@ -80,9 +80,8 @@ interface FileData {
 const CloudDashboard = () => {
   const [files, setFiles] = useState<FileData[]>([]);
   const [loading, setLoading] = useState(true);
-  const [previewFile, setPreviewFile] = useState<FileItem | null>(null);
-  const [previewLoading, setPreviewLoading] = useState(false);
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [selectedFile, setSelectedFile] = useState<FileItem | null>(null);
+  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const [thumbnailUrls, setThumbnailUrls] = useState<Record<string, string>>({});
   const api = useAxios();
   const { toast } = useToast();
@@ -268,62 +267,15 @@ const CloudDashboard = () => {
   // Handle file click to preview images with improved preview handling
   const handleFileClick = async (file: FileItem) => {
     if (isImage(file.mime_type)) {
-      setPreviewFile(file);
-      setPreviewLoading(true);
-      setPreviewUrl(null);
-      
-      try {
-        // Get auth token from localStorage
-        const authTokensStr = localStorage.getItem('authTokens');
-        if (!authTokensStr) {
-          toast({
-            title: 'Authentication Error',
-            description: 'You need to be logged in to preview files',
-            variant: 'destructive',
-          });
-          return;
-        }
-        
-        const authTokens = JSON.parse(authTokensStr);
-        const accessToken = authTokens.access;
-        
-        // Use fetch API to get the image with proper authorization
-        const response = await fetch(file.preview_url || file.download_url, {
-          method: 'GET',
-          headers: {
-            'Authorization': `Bearer ${accessToken}`
-          }
-        });
-        
-        if (!response.ok) {
-          throw new Error(`Failed to load preview: ${response.status} ${response.statusText}`);
-        }
-        
-        // Get the file as a blob and create a URL
-        const blob = await response.blob();
-        const url = window.URL.createObjectURL(blob);
-        setPreviewUrl(url);
-      } catch (error) {
-        console.error('Preview error:', error);
-        toast({
-          title: 'Preview Failed',
-          description: 'There was an error loading the preview',
-          variant: 'destructive',
-        });
-      } finally {
-        setPreviewLoading(false);
-      }
+      setSelectedFile(file);
+      setIsPreviewOpen(true);
     }
   };
   
-  // Function to clean up blob URLs when dialog closes
+  // Function to close preview
   const handleClosePreview = () => {
-    if (previewUrl) {
-      // Revoke the blob URL to prevent memory leaks
-      window.URL.revokeObjectURL(previewUrl);
-      setPreviewUrl(null);
-    }
-    setPreviewFile(null);
+    setSelectedFile(null);
+    setIsPreviewOpen(false);
   };
 
   // Load thumbnails for image files
@@ -408,8 +360,8 @@ const CloudDashboard = () => {
   useEffect(() => {
     return () => {
       // Clean up any preview URL
-      if (previewUrl) {
-        window.URL.revokeObjectURL(previewUrl);
+      if (selectedFile?.preview_url) {
+        window.URL.revokeObjectURL(selectedFile.preview_url);
       }
       
       // Clean up all thumbnail URLs
@@ -417,7 +369,7 @@ const CloudDashboard = () => {
         window.URL.revokeObjectURL(url);
       });
     };
-  }, [previewUrl, thumbnailUrls]);
+  }, [selectedFile, thumbnailUrls]);
 
   return (
     <motion.div
@@ -630,50 +582,13 @@ const CloudDashboard = () => {
         </div>
       </div>
 
-      {/* Image Preview Dialog */}
-      <Dialog open={!!previewFile} onOpenChange={(open) => !open && handleClosePreview()}>
-        <DialogContent className="max-w-3xl">
-          <DialogHeader>
-            <DialogTitle>{previewFile?.name}</DialogTitle>
-          </DialogHeader>
-          <div className="flex flex-col items-center justify-center mt-4">
-            <div className="relative w-full h-auto min-h-[300px] max-h-[70vh] overflow-hidden rounded-lg flex items-center justify-center bg-neutral-100 dark:bg-neutral-800">
-              {previewLoading ? (
-                <div className="flex flex-col items-center justify-center">
-                  <div className="w-8 h-8 border-2 border-neutral-300 border-t-neutral-600 rounded-full animate-spin"></div>
-                  <p className="mt-2 text-sm text-neutral-500">Loading preview...</p>
-                </div>
-              ) : previewUrl ? (
-                <img
-                  src={previewUrl}
-                  alt={previewFile?.name || 'Preview'}
-                  className="max-h-[70vh] max-w-full object-contain"
-                />
-              ) : (
-                <div className="flex flex-col items-center justify-center">
-                  <FiImage size={48} className="text-neutral-400" />
-                  <p className="mt-2 text-sm text-neutral-500">Preview not available</p>
-                </div>
-              )}
-            </div>
-            <div className="flex justify-center gap-4 mt-4">
-              <a 
-                href="#"
-                onClick={(e) => {
-                  e.preventDefault();
-                  if (previewFile) {
-                    handleFileDownload(previewFile.download_url, previewFile.name);
-                  }
-                }}
-                className="flex items-center space-x-2 bg-neutral-200 hover:bg-neutral-300 dark:bg-neutral-700 dark:hover:bg-neutral-600 px-4 py-2 rounded-md"
-              >
-                <FiDownload />
-                <span>Download</span>
-              </a>
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
+      {/* Image Preview Dialog using the new component */}
+      <FilePreview 
+        isOpen={isPreviewOpen}
+        onClose={handleClosePreview}
+        file={selectedFile}
+        onDownload={handleFileDownload}
+      />
     </motion.div>
   );
 };

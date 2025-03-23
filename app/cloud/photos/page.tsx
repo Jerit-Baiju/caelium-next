@@ -1,12 +1,12 @@
 'use client';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import FilePreview from '@/components/cloud/preview';
 import { formatTimeSince } from '@/helpers/utils';
 import { useToast } from '@/hooks/use-toast';
 import useAxios from '@/hooks/useAxios';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
-import { FiArrowLeft, FiDownload, FiImage, FiShare2, FiUpload } from 'react-icons/fi';
+import { FiArrowLeft, FiImage, FiShare2, FiUpload } from 'react-icons/fi';
 
 interface FileData {
   id: string;
@@ -33,9 +33,8 @@ interface PhotoItem {
 const CloudPhotosPage = () => {
   const [photos, setPhotos] = useState<FileData[]>([]);
   const [loading, setLoading] = useState(true);
-  const [previewFile, setPreviewFile] = useState<PhotoItem | null>(null);
-  const [previewLoading, setPreviewLoading] = useState(false);
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [selectedFile, setSelectedFile] = useState<PhotoItem | null>(null);
+  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const [thumbnailUrls, setThumbnailUrls] = useState<Record<string, string>>({});
   const api = useAxios();
   const { toast } = useToast();
@@ -149,62 +148,15 @@ const CloudPhotosPage = () => {
   };
 
   // Function to handle file preview
-  const handleFilePreview = async (file: PhotoItem) => {
-    setPreviewFile(file);
-    setPreviewLoading(true);
-    setPreviewUrl(null);
-    
-    try {
-      // Get auth token from localStorage
-      const authTokensStr = localStorage.getItem('authTokens');
-      if (!authTokensStr) {
-        toast({
-          title: 'Authentication Error',
-          description: 'You need to be logged in to preview files',
-          variant: 'destructive',
-        });
-        return;
-      }
-      
-      const authTokens = JSON.parse(authTokensStr);
-      const accessToken = authTokens.access;
-      
-      // Use fetch API to get the image with proper authorization
-      const response = await fetch(file.preview_url || file.download_url, {
-        method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${accessToken}`
-        }
-      });
-      
-      if (!response.ok) {
-        throw new Error(`Failed to load preview: ${response.status} ${response.statusText}`);
-      }
-      
-      // Get the file as a blob and create a URL
-      const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
-      setPreviewUrl(url);
-    } catch (error) {
-      console.error('Preview error:', error);
-      toast({
-        title: 'Preview Failed',
-        description: 'There was an error loading the preview',
-        variant: 'destructive',
-      });
-    } finally {
-      setPreviewLoading(false);
-    }
+  const handleFilePreview = (file: PhotoItem) => {
+    setSelectedFile(file);
+    setIsPreviewOpen(true);
   };
 
-  // Function to clean up blob URLs when dialog closes
+  // Function to close preview
   const handleClosePreview = () => {
-    if (previewUrl) {
-      // Revoke the blob URL to prevent memory leaks
-      window.URL.revokeObjectURL(previewUrl);
-      setPreviewUrl(null);
-    }
-    setPreviewFile(null);
+    setSelectedFile(null);
+    setIsPreviewOpen(false);
   };
 
   // Convert FileData to PhotoItem objects
@@ -270,17 +222,12 @@ const CloudPhotosPage = () => {
   // Clean up resources when component unmounts
   useEffect(() => {
     return () => {
-      // Clean up preview URL
-      if (previewUrl) {
-        window.URL.revokeObjectURL(previewUrl);
-      }
-      
       // Clean up all thumbnail URLs
       Object.values(thumbnailUrls).forEach(url => {
         window.URL.revokeObjectURL(url);
       });
     };
-  }, [previewUrl, thumbnailUrls]);
+  }, [thumbnailUrls]);
 
   return (
     <motion.div
@@ -364,12 +311,6 @@ const CloudPhotosPage = () => {
                           handleFileDownload(photo.download_url, photo.name);
                         }}
                       >
-                        <FiDownload size={18} />
-                      </button>
-                      <button 
-                        className="p-2 bg-white/20 rounded-full hover:bg-white/30 text-white transition"
-                        onClick={(e) => e.stopPropagation()}
-                      >
                         <FiShare2 size={18} />
                       </button>
                     </div>
@@ -385,57 +326,13 @@ const CloudPhotosPage = () => {
         </motion.div>
       </div>
 
-      {/* Image Preview Dialog */}
-      <Dialog open={!!previewFile} onOpenChange={(open) => !open && handleClosePreview()}>
-        <DialogContent className="max-w-4xl">
-          <DialogHeader>
-            <DialogTitle>{previewFile?.name}</DialogTitle>
-          </DialogHeader>
-          <div className="flex flex-col items-center justify-center mt-4">
-            <div className="relative w-full h-auto min-h-[300px] max-h-[70vh] overflow-hidden rounded-lg flex items-center justify-center bg-neutral-100 dark:bg-neutral-800">
-              {previewLoading ? (
-                <div className="flex flex-col items-center justify-center">
-                  <div className="w-8 h-8 border-2 border-neutral-300 border-t-neutral-600 rounded-full animate-spin"></div>
-                  <p className="mt-2 text-sm text-neutral-500">Loading preview...</p>
-                </div>
-              ) : previewUrl ? (
-                <img
-                  src={previewUrl}
-                  alt={previewFile?.name || 'Preview'}
-                  className="max-h-[70vh] max-w-full object-contain"
-                />
-              ) : (
-                <div className="flex flex-col items-center justify-center">
-                  <FiImage size={48} className="text-neutral-400" />
-                  <p className="mt-2 text-sm text-neutral-500">Preview not available</p>
-                </div>
-              )}
-            </div>
-            <div className="mt-4 text-sm text-neutral-500 dark:text-neutral-400">
-              {previewFile?.size} • uploaded {previewFile?.time}
-            </div>
-            <div className="flex justify-center gap-4 mt-4">
-              <button 
-                onClick={() => {
-                  if (previewFile) {
-                    handleFileDownload(previewFile.download_url, previewFile.name);
-                  }
-                }}
-                className="flex items-center space-x-2 bg-neutral-200 hover:bg-neutral-300 dark:bg-neutral-700 dark:hover:bg-neutral-600 px-4 py-2 rounded-md"
-              >
-                <FiDownload />
-                <span>Download</span>
-              </button>
-              <button
-                className="flex items-center space-x-2 bg-neutral-200 hover:bg-neutral-300 dark:bg-neutral-700 dark:hover:bg-neutral-600 px-4 py-2 rounded-md"
-              >
-                <FiShare2 />
-                <span>Share</span>
-              </button>
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
+      {/* Image Preview Dialog using the new component */}
+      <FilePreview 
+        isOpen={isPreviewOpen}
+        onClose={handleClosePreview}
+        file={selectedFile}
+        onDownload={handleFileDownload}
+      />
     </motion.div>
   );
 };
