@@ -83,7 +83,7 @@ let cloudCtaButton: NavLink = { name: 'Upgrade Storage', url: '/cloud/upgrade' }
 
 export const defaultSidebarOptions: SidebarOption[] = [
   { name: 'Home', url: '/', icon: FiHome },
-  { name: 'Gallery', url: '/gallery', icon: FiImage },
+  { name: 'Gallery', url: '/cloud/gallery', icon: FiImage },
   { name: 'Cloud', url: '/cloud', icon: FiCloud },
   { name: 'Settings', url: '/settings', icon: FiSettings },
 ];
@@ -94,7 +94,7 @@ export const cloudSidebarOptions: SidebarSection[] = [
     items: [
       { name: 'My Drive', url: '/cloud', icon: FiHardDrive },
       { name: 'Files', url: '/cloud/files', icon: FiFile },
-      { name: 'Photos', url: '/cloud/photos', icon: FiImage },
+      { name: 'Gallery', url: '/cloud/gallery', icon: FiImage },
       { name: 'Recent', url: '/cloud/recent', icon: FiClock },
       { name: 'Starred', url: '/cloud/starred', icon: FiStar },
       { name: 'Shared', url: '/cloud/shared', icon: FiShare2 },
