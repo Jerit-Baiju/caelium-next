@@ -3,7 +3,7 @@ import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useEffect, useRef, useState } from 'react';
-import { FiDownload, FiMaximize, FiMinimize, FiPause, FiPlay, FiSlash, FiVolume, FiVolume2 } from 'react-icons/fi';
+import { FiChevronLeft, FiChevronRight, FiDownload, FiMaximize, FiMinimize, FiPause, FiPlay, FiSlash, FiVolume, FiVolume2 } from 'react-icons/fi';
 
 interface PreviewProps {
   isOpen: boolean;
@@ -17,9 +17,22 @@ interface PreviewProps {
     mime_type: string;
   } | null;
   onDownload?: (url: string, fileName: string) => void;
+  onNext?: () => void;
+  onPrevious?: () => void;
+  hasNext?: boolean;
+  hasPrevious?: boolean;
 }
 
-const FilePreview = ({ isOpen, onClose, file, onDownload }: PreviewProps) => {
+const FilePreview = ({ 
+  isOpen, 
+  onClose, 
+  file, 
+  onDownload, 
+  onNext, 
+  onPrevious, 
+  hasNext = false, 
+  hasPrevious = false 
+}: PreviewProps) => {
   const [loading, setLoading] = useState(false);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -41,7 +54,7 @@ const FilePreview = ({ isOpen, onClose, file, onDownload }: PreviewProps) => {
       if (!isOpen) return;
 
       // Prevent default behaviors for these keys
-      if (['Escape', 'f', ' '].includes(e.key)) {
+      if (['Escape', 'f', ' ', 'ArrowLeft', 'ArrowRight'].includes(e.key)) {
         e.preventDefault();
       }
 
@@ -61,6 +74,16 @@ const FilePreview = ({ isOpen, onClose, file, onDownload }: PreviewProps) => {
             togglePlay();
           }
           break;
+        case 'ArrowLeft':
+          if (hasPrevious && onPrevious) {
+            onPrevious();
+          }
+          break;
+        case 'ArrowRight':
+          if (hasNext && onNext) {
+            onNext();
+          }
+          break;
       }
     };
 
@@ -68,7 +91,7 @@ const FilePreview = ({ isOpen, onClose, file, onDownload }: PreviewProps) => {
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
     };
-  }, [isOpen, fullscreen, file, isPlaying]);
+  }, [isOpen, fullscreen, file, isPlaying, onNext, onPrevious, hasNext, hasPrevious]);
 
   // Reset state when file changes
   useEffect(() => {
@@ -322,6 +345,33 @@ const FilePreview = ({ isOpen, onClose, file, onDownload }: PreviewProps) => {
           onMouseLeave={handleMouseUp}
           style={{ cursor: isDragging ? 'grabbing' : zoomLevel > 1 ? 'grab' : 'default' }}
         >
+          {/* Navigation buttons */}
+          {hasPrevious && onPrevious && (
+            <button 
+              onClick={(e) => {
+                e.stopPropagation();
+                onPrevious();
+              }}
+              className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-black/40 hover:bg-black/60 rounded-full p-3 z-30 text-white transition-all opacity-60 hover:opacity-100"
+              title="Previous (Left Arrow)"
+            >
+              <FiChevronLeft size={24} />
+            </button>
+          )}
+          
+          {hasNext && onNext && (
+            <button 
+              onClick={(e) => {
+                e.stopPropagation();
+                onNext();
+              }}
+              className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-black/40 hover:bg-black/60 rounded-full p-3 z-30 text-white transition-all opacity-60 hover:opacity-100"
+              title="Next (Right Arrow)"
+            >
+              <FiChevronRight size={24} />
+            </button>
+          )}
+
           {/* Loading state */}
           {loading && (
             <div className='absolute inset-0 flex flex-col items-center justify-center bg-neutral-900 z-20'>
@@ -459,6 +509,12 @@ const FilePreview = ({ isOpen, onClose, file, onDownload }: PreviewProps) => {
                 <span className='mr-3'>
                   <span className='px-1 bg-neutral-700 rounded'>F</span> Fullscreen
                 </span>
+                {(hasNext || hasPrevious) && (
+                  <span className='mr-3'>
+                    <span className='px-1 bg-neutral-700 rounded'>←</span> Previous 
+                    <span className='px-1 bg-neutral-700 rounded ml-2'>→</span> Next
+                  </span>
+                )}
                 <span>
                   <span className='px-1 bg-neutral-700 rounded'>Esc</span> {fullscreen ? 'Exit fullscreen' : 'Close'}
                 </span>
@@ -472,6 +528,12 @@ const FilePreview = ({ isOpen, onClose, file, onDownload }: PreviewProps) => {
               <span className='mr-3'>
                 Keyboard shortcuts: <span className='px-1 bg-neutral-700 rounded'>F</span> Fullscreen
               </span>
+              {(hasNext || hasPrevious) && (
+                <span className='mr-3'>
+                  <span className='px-1 bg-neutral-700 rounded'>←</span> Previous 
+                  <span className='px-1 bg-neutral-700 rounded ml-2'>→</span> Next
+                </span>
+              )}
               <span>
                 <span className='px-1 bg-neutral-700 rounded'>Esc</span> {fullscreen ? 'Exit fullscreen' : 'Close'}
               </span>
