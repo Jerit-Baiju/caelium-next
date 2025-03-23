@@ -294,7 +294,7 @@ const CloudGalleryPage = () => {
         </motion.div>
 
         {/* Media Grid */}
-        <motion.div variants={itemVariants} className='bg-white dark:bg-neutral-800 rounded-xl shadow-sm p-6'>
+        <motion.div variants={itemVariants} className='rounded-xl shadow-sm px-6'>
           {loading ? (
             <div className='text-center py-10'>
               <p className='text-neutral-500 dark:text-neutral-400'>Loading your gallery...</p>
@@ -313,7 +313,6 @@ const CloudGalleryPage = () => {
             </div>
           ) : (
             <>
-              <h2 className='text-xl font-semibold mb-4 dark:text-neutral-200'>Your Gallery ({mediaFiles.length})</h2>
               <div className='grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4'>
                 {mediaItems.map((item) => (
                   <div
