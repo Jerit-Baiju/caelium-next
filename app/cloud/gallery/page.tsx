@@ -6,7 +6,7 @@ import useAxios from '@/hooks/useAxios';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
-import { FiArrowLeft, FiImage, FiShare2, FiUpload } from 'react-icons/fi';
+import { FiArrowLeft, FiFilm, FiImage, FiShare2, FiUpload } from 'react-icons/fi';
 
 interface FileData {
   id: string;
@@ -19,7 +19,7 @@ interface FileData {
   preview_url: string | null;
 }
 
-interface PhotoItem {
+interface MediaItem {
   id: string;
   name: string;
   size: string;
@@ -30,10 +30,10 @@ interface PhotoItem {
   mime_type: string;
 }
 
-const CloudPhotosPage = () => {
-  const [photos, setPhotos] = useState<FileData[]>([]);
+const CloudGalleryPage = () => {
+  const [mediaFiles, setMediaFiles] = useState<FileData[]>([]);
   const [loading, setLoading] = useState(true);
-  const [selectedFile, setSelectedFile] = useState<PhotoItem | null>(null);
+  const [selectedFile, setSelectedFile] = useState<MediaItem | null>(null);
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const [thumbnailUrls, setThumbnailUrls] = useState<Record<string, string>>({});
   const api = useAxios();
@@ -64,22 +64,22 @@ const CloudPhotosPage = () => {
     return `${(bytes / (1024 * 1024 * 1024)).toFixed(1)} GB`;
   };
 
-  // Fetch photos on component mount
+  // Fetch media files on component mount
   useEffect(() => {
-    const fetchPhotos = async () => {
+    const fetchMediaFiles = async () => {
       try {
         setLoading(true);
         const response = await api.get('/api/cloud/files/');
-        // Filter only image files
-        const imageFiles = response.data.filter((file: FileData) => 
-          file.mime_type.startsWith('image/')
+        // Filter for both image and video files
+        const filteredFiles = response.data.filter((file: FileData) => 
+          file.mime_type.startsWith('image/') || file.mime_type.startsWith('video/')
         );
-        setPhotos(imageFiles);
+        setMediaFiles(filteredFiles);
       } catch (error) {
-        console.error('Error fetching photos:', error);
+        console.error('Error fetching media files:', error);
         toast({
           title: 'Error',
-          description: 'Failed to load your photos',
+          description: 'Failed to load your gallery files',
           variant: 'destructive',
         });
       } finally {
@@ -87,7 +87,7 @@ const CloudPhotosPage = () => {
       }
     };
 
-    fetchPhotos();
+    fetchMediaFiles();
   }, []);
 
   // Function to handle file download
@@ -148,7 +148,7 @@ const CloudPhotosPage = () => {
   };
 
   // Function to handle file preview
-  const handleFilePreview = (file: PhotoItem) => {
+  const handleFilePreview = (file: MediaItem) => {
     setSelectedFile(file);
     setIsPreviewOpen(true);
   };
@@ -159,19 +159,39 @@ const CloudPhotosPage = () => {
     setIsPreviewOpen(false);
   };
 
-  // Convert FileData to PhotoItem objects
-  const photoItems: PhotoItem[] = photos.map(photo => ({
-    id: photo.id,
-    name: photo.name,
-    size: formatFileSize(photo.size),
-    time: formatTimeSince(photo.created_at),
-    color: 'emerald', // All photos have the same color classification
-    download_url: photo.download_url,
-    preview_url: photo.preview_url,
-    mime_type: photo.mime_type
+  // Function to determine the file color based on mime type
+  const getFileColor = (mimeType: string) => {
+    if (mimeType.startsWith('image/')) {
+      return 'emerald';
+    } else if (mimeType.startsWith('video/')) {
+      return 'purple';
+    }
+    return 'neutral';
+  };
+
+  // Check if a file is a media type (image or video)
+  const isMediaFile = (mimeType: string) => {
+    return mimeType.startsWith('image/') || mimeType.startsWith('video/');
+  };
+
+  // Check if a file is a video
+  const isVideo = (mimeType: string) => {
+    return mimeType.startsWith('video/');
+  };
+
+  // Convert FileData to MediaItem objects
+  const mediaItems: MediaItem[] = mediaFiles.map(file => ({
+    id: file.id,
+    name: file.name,
+    size: formatFileSize(file.size),
+    time: formatTimeSince(file.created_at),
+    color: getFileColor(file.mime_type),
+    download_url: file.download_url,
+    preview_url: file.preview_url,
+    mime_type: file.mime_type
   }));
 
-  // Load thumbnails for photos
+  // Load thumbnails for media files
   useEffect(() => {
     const loadThumbnails = async () => {
       const authTokensStr = localStorage.getItem('authTokens');
@@ -182,10 +202,10 @@ const CloudPhotosPage = () => {
       
       const newThumbnailUrls: Record<string, string> = {};
       
-      for (const photo of photos) {
-        if (photo.preview_url || photo.download_url) {
+      for (const file of mediaFiles) {
+        if (isMediaFile(file.mime_type) && (file.preview_url || file.download_url)) {
           try {
-            const url = photo.preview_url || photo.download_url;
+            const url = file.preview_url || file.download_url;
             const response = await fetch(url, {
               method: 'GET',
               headers: {
@@ -196,10 +216,10 @@ const CloudPhotosPage = () => {
             if (response.ok) {
               const blob = await response.blob();
               const blobUrl = window.URL.createObjectURL(blob);
-              newThumbnailUrls[photo.id] = blobUrl;
+              newThumbnailUrls[file.id] = blobUrl;
             }
           } catch (error) {
-            console.error(`Error loading thumbnail for ${photo.name}:`, error);
+            console.error(`Error loading thumbnail for ${file.name}:`, error);
           }
         }
       }
@@ -207,7 +227,7 @@ const CloudPhotosPage = () => {
       setThumbnailUrls(newThumbnailUrls);
     };
     
-    if (photos.length > 0) {
+    if (mediaFiles.length > 0) {
       loadThumbnails();
     }
     
@@ -217,7 +237,7 @@ const CloudPhotosPage = () => {
         window.URL.revokeObjectURL(url);
       });
     };
-  }, [photos]);
+  }, [mediaFiles]);
   
   // Clean up resources when component unmounts
   useEffect(() => {
@@ -244,80 +264,112 @@ const CloudPhotosPage = () => {
               <FiArrowLeft size={20} />
             </Link>
             <div>
-              <h1 className='text-3xl font-bold dark:text-neutral-100'>Photos</h1>
-              <p className='text-neutral-600 dark:text-neutral-400'>Browse your images</p>
+              <h1 className='text-3xl font-bold dark:text-neutral-100'>Gallery</h1>
+              <p className='text-neutral-600 dark:text-neutral-400'>Browse your images and videos</p>
             </div>
           </div>
           <Link href="/cloud/upload">
             <button className='flex items-center bg-neutral-800 hover:bg-neutral-700 dark:bg-neutral-700 dark:hover:bg-neutral-600 text-white px-5 py-2.5 rounded-md transition shadow-sm'>
               <FiUpload className='mr-2' />
-              <span>Upload Photos</span>
+              <span>Upload Media</span>
             </button>
           </Link>
         </motion.div>
 
-        {/* Photo Grid */}
+        {/* Media Grid */}
         <motion.div variants={itemVariants} className="bg-white dark:bg-neutral-800 rounded-xl shadow-sm p-6">
           {loading ? (
             <div className='text-center py-10'>
-              <p className='text-neutral-500 dark:text-neutral-400'>Loading your photos...</p>
+              <p className='text-neutral-500 dark:text-neutral-400'>Loading your gallery...</p>
             </div>
-          ) : photos.length === 0 ? (
+          ) : mediaFiles.length === 0 ? (
             <div className='text-center py-10'>
               <div className="flex justify-center mb-4">
                 <FiImage size={48} className="text-neutral-400" />
               </div>
-              <p className='text-neutral-500 dark:text-neutral-400'>No photos found in your cloud storage.</p>
+              <p className='text-neutral-500 dark:text-neutral-400'>No images or videos found in your cloud storage.</p>
               <Link href="/cloud/upload">
                 <button className='mt-4 px-4 py-2 bg-neutral-200 dark:bg-neutral-700 rounded-md hover:bg-neutral-300 dark:hover:bg-neutral-600 transition'>
-                  Upload Photos
+                  Upload Media
                 </button>
               </Link>
             </div>
           ) : (
             <>
               <h2 className="text-xl font-semibold mb-4 dark:text-neutral-200">
-                Your Photos ({photos.length})
+                Your Gallery ({mediaFiles.length})
               </h2>
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-                {photoItems.map((photo) => (
+                {mediaItems.map((item) => (
                   <div 
-                    key={photo.id} 
+                    key={item.id} 
                     className="relative group cursor-pointer rounded-lg overflow-hidden shadow-sm hover:shadow-md transition"
-                    onClick={() => handleFilePreview(photo)}
+                    onClick={() => handleFilePreview(item)}
                   >
                     {/* Fixed aspect ratio container to prevent layout shifts */}
                     <div className="aspect-square bg-neutral-100 dark:bg-neutral-700 flex items-center justify-center overflow-hidden relative">
                       {/* Skeleton/placeholder that stays visible until image loads */}
                       <div className="absolute inset-0 bg-neutral-200 dark:bg-neutral-600 animate-pulse z-0"></div>
                       
-                      {thumbnailUrls[photo.id] ? (
-                        <img 
-                          src={thumbnailUrls[photo.id]}
-                          alt={photo.name}
-                          className="w-full h-full object-cover transition-opacity duration-300 relative z-10"
-                          style={{ opacity: 0 }} // Start with 0 opacity
-                          onLoad={(e) => {
-                            // Smoothly fade in the image once loaded
-                            (e.target as HTMLImageElement).style.opacity = '1';
-                            // Find and hide the animation on skeleton
-                            if (e.currentTarget.previousElementSibling) {
-                              (e.currentTarget.previousElementSibling as HTMLElement).classList.remove('animate-pulse');
-                              (e.currentTarget.previousElementSibling as HTMLElement).style.opacity = '0';
-                            }
-                          }}
-                          onError={(e) => {
-                            // Hide the image on error and show the icon
-                            (e.target as HTMLImageElement).style.display = 'none';
-                            // Add a fallback icon if needed
-                            const iconElement = document.createElement('div');
-                            iconElement.className = "absolute inset-0 flex items-center justify-center z-20";
-                            iconElement.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" class="text-neutral-400" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>';
-                            e.currentTarget.parentElement?.appendChild(iconElement);
-                          }}
-                        />
+                      {thumbnailUrls[item.id] ? (
+                        <>
+                          {isVideo(item.mime_type) ? (
+                            <>
+                              {/* Video thumbnail with play overlay */}
+                              <img 
+                                src={thumbnailUrls[item.id]}
+                                alt={item.name}
+                                className="w-full h-full object-cover transition-opacity duration-300 relative z-10"
+                                style={{ opacity: 0 }} // Start with 0 opacity
+                                onLoad={(e) => {
+                                  // Fade in the image once loaded
+                                  (e.target as HTMLImageElement).style.opacity = '1';
+                                  // Hide the loading overlay
+                                  if (e.currentTarget.previousElementSibling) {
+                                    (e.currentTarget.previousElementSibling as HTMLElement).classList.remove('animate-pulse');
+                                    (e.currentTarget.previousElementSibling as HTMLElement).style.opacity = '0';
+                                  }
+                                }}
+                                onError={(e) => {
+                                  // Hide the image on error and show the icon
+                                  (e.target as HTMLImageElement).style.display = 'none';
+                                }}
+                              />
+                              {/* Play button overlay for videos */}
+                              <div className="absolute inset-0 flex items-center justify-center z-20 pointer-events-none">
+                                <div className="bg-black/40 rounded-full p-3">
+                                  <FiFilm className="text-white" size={24} />
+                                </div>
+                              </div>
+                            </>
+                          ) : (
+                            // Regular image
+                            <img 
+                              src={thumbnailUrls[item.id]}
+                              alt={item.name}
+                              className="w-full h-full object-cover transition-opacity duration-300 relative z-10"
+                              style={{ opacity: 0 }} // Start with 0 opacity
+                              onLoad={(e) => {
+                                // Fade in the image once loaded
+                                (e.target as HTMLImageElement).style.opacity = '1';
+                                // Hide the loading overlay
+                                if (e.currentTarget.previousElementSibling) {
+                                  (e.currentTarget.previousElementSibling as HTMLElement).classList.remove('animate-pulse');
+                                  (e.currentTarget.previousElementSibling as HTMLElement).style.opacity = '0';
+                                }
+                              }}
+                              onError={(e) => {
+                                // Hide the image on error and show the icon
+                                (e.target as HTMLImageElement).style.display = 'none';
+                              }}
+                            />
+                          )}
+                        </>
                       ) : (
-                        <FiImage size={32} className="text-neutral-400 relative z-10" />
+                        // Fallback icon
+                        <div className="relative z-10">
+                          {isVideo(item.mime_type) ? <FiFilm size={32} className="text-neutral-400" /> : <FiImage size={32} className="text-neutral-400" />}
+                        </div>
                       )}
                     </div>
                     
@@ -327,16 +379,19 @@ const CloudPhotosPage = () => {
                         className="p-2 bg-white/20 rounded-full hover:bg-white/30 text-white transition"
                         onClick={(e) => {
                           e.stopPropagation();
-                          handleFileDownload(photo.download_url, photo.name);
+                          handleFileDownload(item.download_url, item.name);
                         }}
                       >
                         <FiShare2 size={18} />
                       </button>
                     </div>
                     
-                    {/* Caption */}
+                    {/* Caption with file type indicator */}
                     <div className="absolute bottom-0 left-0 right-0 bg-black/70 text-white text-xs px-2 py-1 truncate">
-                      {photo.name}
+                      <div className="flex items-center gap-1">
+                        {isVideo(item.mime_type) ? <FiFilm size={10} /> : <FiImage size={10} />}
+                        <span>{item.name}</span>
+                      </div>
                     </div>
                   </div>
                 ))}
@@ -346,7 +401,7 @@ const CloudPhotosPage = () => {
         </motion.div>
       </div>
 
-      {/* Image Preview Dialog using the new component */}
+      {/* Media Preview Dialog using the new component */}
       <FilePreview 
         isOpen={isPreviewOpen}
         onClose={handleClosePreview}
@@ -357,4 +412,4 @@ const CloudPhotosPage = () => {
   );
 };
 
-export default CloudPhotosPage;
+export default CloudGalleryPage;
