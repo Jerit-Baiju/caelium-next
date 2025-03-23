@@ -7,19 +7,19 @@ import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { 
+import {
   FiChevronRight,
-  FiDownload, 
-  FiFile, 
-  FiFolder, 
-  FiGrid, 
-  FiHome, 
-  FiImage, 
-  FiList, 
-  FiMusic, 
+  FiDownload,
+  FiFile,
+  FiFolder,
+  FiGrid,
+  FiHome,
+  FiImage,
+  FiList,
+  FiMusic,
   FiPlus,
-  FiShare2, 
-  FiUpload, 
+  FiShare2,
+  FiUpload,
   FiVideo
 } from 'react-icons/fi';
 
@@ -671,7 +671,14 @@ const CloudExplorer = () => {
       <FilePreview 
         isOpen={isPreviewOpen}
         onClose={handleClosePreview}
-        file={selectedFile}
+        file={selectedFile ? {
+          id: selectedFile.id,
+          name: selectedFile.name,
+          size: formatBytes(selectedFile.size),
+          time: formatTimeSince(selectedFile.created_at),
+          download_url: selectedFile.download_url,
+          mime_type: selectedFile.mime_type
+        } : null}
         onDownload={(url, name) => handleFileDownload(url, name)}
       />
     </motion.div>
