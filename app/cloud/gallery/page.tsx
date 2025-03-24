@@ -1,23 +1,32 @@
 'use client';
 import FilePreview from '@/components/cloud/preview';
-import { FileData, MediaItem } from '@/helpers/props';
+import { MediaItem } from '@/helpers/props';
 import { formatTimeSince } from '@/helpers/utils';
-import { useToast } from '@/hooks/use-toast';
-import useAxios from '@/hooks/useAxios';
+import useCloud from '@/hooks/useCloud';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { FiArrowLeft, FiFilm, FiImage, FiShare2, FiUpload } from 'react-icons/fi';
 
 const CloudGalleryPage = () => {
-  const [mediaFiles, setMediaFiles] = useState<FileData[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [selectedFile, setSelectedFile] = useState<MediaItem | null>(null);
-  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
-  const [thumbnailUrls, setThumbnailUrls] = useState<Record<string, string>>({});
-  const api = useAxios();
-  const { toast } = useToast();
-  const [selectedFileIndex, setSelectedFileIndex] = useState<number>(-1);
+  // Use the useCloud hook with the gallery-specific configuration
+  const {
+    loading,
+    files: mediaFiles,
+    thumbnailUrls,
+    selectedFile,
+    isPreviewOpen,
+    selectedFileIndex,
+    
+    fetchMediaFiles,
+    downloadFile,
+    openFilePreview,
+    closeFilePreview,
+    nextFilePreview,
+    previousFilePreview,
+  } = useCloud({
+    autoFetch: false, // Don't fetch directory contents automatically
+  });
 
   // Simplified motion variants
   const containerVariants = {
@@ -46,147 +55,21 @@ const CloudGalleryPage = () => {
 
   // Fetch media files on component mount
   useEffect(() => {
-    const fetchMediaFiles = async () => {
-      try {
-        setLoading(true);
-        const response = await api.get('/api/cloud/gallery/');
-        // Filter for both image and video files
-        const filteredFiles = response.data.filter(
-          (file: FileData) => file.mime_type.startsWith('image/') || file.mime_type.startsWith('video/'),
-        );
-        setMediaFiles(filteredFiles);
-      } catch (error) {
-        console.error('Error fetching media files:', error);
-        toast({
-          title: 'Error',
-          description: 'Failed to load your gallery files',
-          variant: 'destructive',
-        });
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchMediaFiles();
   }, []);
-
-  // Function to handle file download
-  const handleFileDownload = async (downloadUrl: string, fileName: string) => {
-    try {
-      // Get auth token from localStorage
-      const authTokensStr = localStorage.getItem('authTokens');
-      if (!authTokensStr) {
-        toast({
-          title: 'Authentication Error',
-          description: 'You need to be logged in to download files',
-          variant: 'destructive',
-        });
-        return;
-      }
-
-      const authTokens = JSON.parse(authTokensStr);
-      const accessToken = authTokens.access;
-
-      // Use fetch API for direct file download
-      const response = await fetch(downloadUrl, {
-        method: 'GET',
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error(`Failed to download file: ${response.status} ${response.statusText}`);
-      }
-
-      // Get the file as a blob
-      const blob = await response.blob();
-
-      // Create a URL for the blob
-      const url = window.URL.createObjectURL(blob);
-
-      // Create a temporary anchor element and trigger download
-      const a = document.createElement('a');
-      a.style.display = 'none';
-      a.href = url;
-      a.download = fileName;
-      document.body.appendChild(a);
-      a.click();
-
-      // Clean up
-      window.URL.revokeObjectURL(url);
-      document.body.removeChild(a);
-    } catch (error) {
-      console.error('Download error:', error);
-      toast({
-        title: 'Download Failed',
-        description: 'There was an error downloading the file',
-        variant: 'destructive',
-      });
-    }
-  };
-
-  // Function to handle file preview
-  const handleFilePreview = (file: MediaItem) => {
-    setSelectedFile(file);
-    // Find the index of the selected file
-    const index = mediaItems.findIndex((item) => item.id === file.id);
-    setSelectedFileIndex(index);
-    setIsPreviewOpen(true);
-  };
-
-  // Function to close preview
-  const handleClosePreview = () => {
-    setSelectedFile(null);
-    setSelectedFileIndex(-1);
-    setIsPreviewOpen(false);
-  };
-
-  // Function to navigate to next file
-  const handleNextFile = () => {
-    if (selectedFileIndex < mediaItems.length - 1) {
-      const nextIndex = selectedFileIndex + 1;
-      setSelectedFileIndex(nextIndex);
-      setSelectedFile(mediaItems[nextIndex]);
-    }
-  };
-
-  // Function to navigate to previous file
-  const handlePreviousFile = () => {
-    if (selectedFileIndex > 0) {
-      const prevIndex = selectedFileIndex - 1;
-      setSelectedFileIndex(prevIndex);
-      setSelectedFile(mediaItems[prevIndex]);
-    }
-  };
-
-  // Function to determine the file color based on mime type
-  const getFileColor = (mimeType: string) => {
-    if (mimeType.startsWith('image/')) {
-      return 'emerald';
-    } else if (mimeType.startsWith('video/')) {
-      return 'purple';
-    }
-    return 'neutral';
-  };
-
-  // Check if a file is a media type (image or video)
-  const isMediaFile = (mimeType: string) => {
-    return mimeType.startsWith('image/') || mimeType.startsWith('video/');
-  };
 
   // Check if a file is a video
   const isVideo = (mimeType: string) => {
     return mimeType.startsWith('video/');
   };
 
-  // Convert FileData to MediaItem objects
+  // Convert mediaFiles to MediaItem objects for the FilePreview component
   const mediaItems: MediaItem[] = mediaFiles.map((file) => ({
     id: file.id,
     name: file.name,
     size: formatFileSize(file.size),
     time: formatTimeSince(file.created_at),
-    color: getFileColor(file.mime_type),
+    color: file.mime_type.startsWith('image/') ? 'emerald' : 'purple',
     download_url: file.download_url,
     preview_url: file.preview_url,
     mime_type: file.mime_type,
@@ -195,63 +78,15 @@ const CloudGalleryPage = () => {
     owner_details: file.owner_details,
   }));
 
-  // Load thumbnails for media files
-  useEffect(() => {
-    const loadThumbnails = async () => {
-      const authTokensStr = localStorage.getItem('authTokens');
-      if (!authTokensStr) return;
+  // Handle file download wrapper
+  const handleFileDownload = (downloadUrl: string, fileName: string) => {
+    downloadFile(downloadUrl, fileName);
+  };
 
-      const authTokens = JSON.parse(authTokensStr);
-      const accessToken = authTokens.access;
-
-      const newThumbnailUrls: Record<string, string> = {};
-
-      for (const file of mediaFiles) {
-        if (isMediaFile(file.mime_type) && (file.preview_url || file.download_url)) {
-          try {
-            const url = file.preview_url || file.download_url;
-            const response = await fetch(url, {
-              method: 'GET',
-              headers: {
-                Authorization: `Bearer ${accessToken}`,
-              },
-            });
-
-            if (response.ok) {
-              const blob = await response.blob();
-              const blobUrl = window.URL.createObjectURL(blob);
-              newThumbnailUrls[file.id] = blobUrl;
-            }
-          } catch (error) {
-            console.error(`Error loading thumbnail for ${file.name}:`, error);
-          }
-        }
-      }
-
-      setThumbnailUrls(newThumbnailUrls);
-    };
-
-    if (mediaFiles.length > 0) {
-      loadThumbnails();
-    }
-
-    // Cleanup function to revoke object URLs
-    return () => {
-      Object.values(thumbnailUrls).forEach((url) => {
-        window.URL.revokeObjectURL(url);
-      });
-    };
-  }, [mediaFiles]);
-
-  // Clean up resources when component unmounts
-  useEffect(() => {
-    return () => {
-      // Clean up all thumbnail URLs
-      Object.values(thumbnailUrls).forEach((url) => {
-        window.URL.revokeObjectURL(url);
-      });
-    };
-  }, [thumbnailUrls]);
+  // Handle file preview wrapper
+  const handleFilePreview = (index: number) => {
+    openFilePreview(mediaFiles[index], index);
+  };
 
   return (
     <div className='flex grow flex-col'>
@@ -297,11 +132,11 @@ const CloudGalleryPage = () => {
           ) : (
             <>
               <div className='grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4'>
-                {mediaItems.map((item) => (
+                {mediaFiles.map((item, index) => (
                   <div
                     key={item.id}
                     className='relative group cursor-pointer rounded-lg overflow-hidden shadow-sm hover:shadow-md transition'
-                    onClick={() => handleFilePreview(item)}
+                    onClick={() => handleFilePreview(index)}
                   >
                     {/* Fixed aspect ratio container to prevent layout shifts */}
                     <div className='aspect-square bg-neutral-100 dark:bg-neutral-700 flex items-center justify-center overflow-hidden relative'>
@@ -402,15 +237,15 @@ const CloudGalleryPage = () => {
         </motion.div>
       </div>
 
-      {/* Media Preview Dialog using the new component */}
+      {/* Media Preview Dialog using the FilePreview component */}
       <FilePreview
         isOpen={isPreviewOpen}
-        onClose={handleClosePreview}
-        file={selectedFile}
+        onClose={closeFilePreview}
+        file={selectedFile as MediaItem | null}
         onDownload={handleFileDownload}
-        onNext={handleNextFile}
-        onPrevious={handlePreviousFile}
-        hasNext={selectedFileIndex < mediaItems.length - 1}
+        onNext={nextFilePreview}
+        onPrevious={previousFilePreview}
+        hasNext={selectedFileIndex < mediaFiles.length - 1}
         hasPrevious={selectedFileIndex > 0}
       />
     </div>
