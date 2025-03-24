@@ -103,12 +103,6 @@ const CloudExplorer = () => {
         });
         setDirectories(dirResponse.data || []);
 
-        // Get files in current directory
-        const fileResponse = await api.get('/api/cloud/files/', {
-          params: { parent: currentDirId },
-        });
-        setFiles(fileResponse.data || []);
-
         // If we're in a subdirectory, get its details for breadcrumb
         if (currentDirId) {
           try {
