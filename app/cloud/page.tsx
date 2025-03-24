@@ -504,9 +504,9 @@ const CloudExplorer = () => {
   const imageFiles = files.filter((file) => file.mime_type?.startsWith('image/'));
 
   return (
-    <div className='flex grow flex-col gap-6 p-6 lg:p-8'>
+    <div className='flex grow flex-col'>
       {/* Main content container */}
-      <div className='flex flex-col grow p-6 mx-auto space-y-8 w-full max-w-7xl'>
+      <div className='flex flex-col grow py-6 mx-auto space-y-8 w-full max-w-7xl'>
         {/* Header section */}
         <div className='flex justify-between items-center'>
           <div>

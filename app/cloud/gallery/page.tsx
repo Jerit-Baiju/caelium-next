@@ -254,8 +254,9 @@ const CloudGalleryPage = () => {
   }, [thumbnailUrls]);
 
   return (
-    <motion.div className='flex grow flex-col gap-6 p-6 lg:p-8' initial='hidden' animate='visible' variants={containerVariants}>
-      <div className='flex flex-col grow p-6 mx-auto space-y-8 w-full max-w-7xl'>
+    <div className='flex grow flex-col'>
+      {/* Main content container */}
+      <div className='flex flex-col grow py-6 mx-auto space-y-8 w-full max-w-7xl'>
         {/* Header */}
         <motion.div className='flex justify-between items-center' variants={itemVariants}>
           <div className='flex items-center gap-4'>
@@ -276,7 +277,7 @@ const CloudGalleryPage = () => {
         </motion.div>
 
         {/* Media Grid */}
-        <motion.div variants={itemVariants} className='rounded-xl shadow-sm px-6'>
+        <motion.div variants={itemVariants} className='rounded-xl p-6 shadow-sm'>
           {loading ? (
             <div className='text-center py-10'>
               <p className='text-neutral-500 dark:text-neutral-400'>Loading your gallery...</p>
@@ -412,7 +413,7 @@ const CloudGalleryPage = () => {
         hasNext={selectedFileIndex < mediaItems.length - 1}
         hasPrevious={selectedFileIndex > 0}
       />
-    </motion.div>
+    </div>
   );
 };
 
