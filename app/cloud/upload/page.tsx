@@ -1,6 +1,5 @@
 'use client';
-import { useToast } from '@/hooks/use-toast';
-import useAxios from '@/hooks/useAxios';
+import useCloud from '@/hooks/useCloud';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -9,14 +8,18 @@ import { FiArrowLeft, FiCheck, FiFile, FiGrid, FiList, FiLock, FiUpload, FiX } f
 
 const CloudUpload = () => {
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
-  const [uploading, setUploading] = useState(false);
-  const { toast } = useToast();
-  const [uploadProgress, setUploadProgress] = useState<{ [key: string]: number }>({});
   const fileInputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
-  const api = useAxios();
-  const [viewMode, setViewMode] = useState<'list' | 'grid'>('grid'); // Changed default to 'grid'
+  const [viewMode, setViewMode] = useState<'list' | 'grid'>('grid');
 
+  // Use the cloud hook for upload functionality
+  const { 
+    uploadFiles, 
+    isUploading, 
+    uploadProgress 
+  } = useCloud({ autoFetch: false });
+
+  // Animation variants
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -56,84 +59,20 @@ const CloudUpload = () => {
   };
 
   const handleUpload = async () => {
-    if (selectedFiles.length === 0) {
-      toast({
-        title: 'No files selected',
-        description: 'Please select at least one file to upload',
-        variant: 'destructive',
-      });
-      return;
-    }
+    if (selectedFiles.length === 0) return;
 
-    setUploading(true);
+    const success = await uploadFiles(selectedFiles, {
+      autoOrganize: true,
+      onProgress: (progress) => {
+        // Additional progress handling if needed
+      }
+    });
 
-    try {
-      // Create a single FormData instance for all files
-      const formData = new FormData();
-      
-      // Add all files with the field name "files" (must match Django API expectation)
-      selectedFiles.forEach(file => {
-        formData.append('files', file);
-      });
-      
-      // Add parent directory if needed
-      formData.append('parent', ''); // Root directory by default
-      
-      // Always enable auto-organization
-      formData.append('auto_organize', 'true');
-
-      // Upload all files in a single request
-      await api.post('/api/cloud/upload/', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-        onUploadProgress: (progressEvent) => {
-          if (progressEvent.total) {
-            const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
-            // Apply the same progress to all files
-            const updatedProgress: Record<string, number> = {};
-            selectedFiles.forEach(file => {
-              updatedProgress[file.name] = percentCompleted;
-            });
-            setUploadProgress(prev => ({ ...prev, ...updatedProgress }));
-          }
-        },
-      });
-
-      // Mark all files as completed
-      const completedProgress: Record<string, number> = {};
-      selectedFiles.forEach(file => {
-        completedProgress[file.name] = 100;
-      });
-      setUploadProgress(prev => ({ ...prev, ...completedProgress }));
-
-      toast({
-        title: 'Upload complete',
-        description: 'Your files have been uploaded successfully',
-        variant: 'default',
-      });
-
+    if (success) {
       // Redirect after a brief delay
       setTimeout(() => {
         router.push('/cloud');
       }, 1500);
-
-    } catch (error) {
-      console.error('Error uploading files:', error);
-      toast({
-        title: 'Upload failed',
-        description: 'There was an error uploading your files',
-        variant: 'destructive',
-      });
-
-      // Mark all files as failed
-      const failedProgress: Record<string, number> = {};
-      selectedFiles.forEach(file => {
-        failedProgress[file.name] = -1;
-      });
-      setUploadProgress(prev => ({ ...prev, ...failedProgress }));
-    } finally {
-      setUploading(false);
     }
   };
 
@@ -192,15 +131,15 @@ const CloudUpload = () => {
               <motion.button
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
-                disabled={selectedFiles.length === 0 || uploading}
+                disabled={selectedFiles.length === 0 || isUploading}
                 className={`px-5 py-2 rounded-lg transition ${
-                  selectedFiles.length === 0 || uploading
+                  selectedFiles.length === 0 || isUploading
                     ? 'bg-neutral-300 dark:bg-neutral-600 text-neutral-500 dark:text-neutral-400 cursor-not-allowed'
                     : 'bg-linear-to-br from-violet-500 to-purple-500 text-white'
                 }`}
                 onClick={handleUpload}
               >
-                {uploading ? 'Uploading...' : 'Upload Files'}
+                {isUploading ? 'Uploading...' : 'Upload Files'}
               </motion.button>
             </div>
             <input type='file' ref={fileInputRef} onChange={handleFileChange} className='hidden' multiple />
@@ -286,7 +225,7 @@ const CloudUpload = () => {
                       </div>
                     )}
 
-                    {!uploading && (
+                    {!isUploading && (
                       <motion.button
                         whileHover={{ scale: 1.1 }}
                         whileTap={{ scale: 0.9 }}
@@ -343,7 +282,7 @@ const CloudUpload = () => {
                         </div>
                       )}
                       
-                      {!uploading && (
+                      {!isUploading && (
                         <motion.button
                           whileHover={{ scale: 1.1 }}
                           whileTap={{ scale: 0.9 }}
