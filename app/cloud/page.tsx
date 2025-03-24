@@ -227,7 +227,7 @@ const CloudExplorer = () => {
   }, [files]);
 
   // Navigate to a directory
-  const `navigateToDirectory = (dirId: string | null) => {
+  const navigateToDirectory = (dirId: string | null) => {
     if (dirId) {
       router.push(`/cloud?dir=${dirId}`);
     } else {
