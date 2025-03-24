@@ -3,7 +3,6 @@ import FilePreview from '@/components/cloud/preview';
 import { formatBytes, formatTimeSince } from '@/helpers/utils';
 import { useToast } from '@/hooks/use-toast';
 import useAxios from '@/hooks/useAxios';
-import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
@@ -73,24 +72,6 @@ const CloudExplorer = () => {
   const [currentDirectory, setCurrentDirectory] = useState<DirectoryItem | null>(null);
   const [selectedFileIndex, setSelectedFileIndex] = useState<number>(-1);
 
-  // Animation variants
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: { duration: 0.5 },
-    },
-  };
-
-  const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: { type: 'spring', stiffness: 100, damping: 15 },
-    },
-  };
-
   // Load current directory details and its contents
   useEffect(() => {
     const fetchDirectoryContents = async () => {
@@ -111,32 +92,41 @@ const CloudExplorer = () => {
 
             // Build breadcrumb path
             if (dirDetailsResponse.data?.path) {
-              const pathParts = dirDetailsResponse.data.path.split('/');
+              const pathParts: string[] = dirDetailsResponse.data.path.split('/').filter((part: string) => part.trim());
               const newBreadcrumbs: BreadcrumbItem[] = [{ id: null, name: 'Home', path: '' }];
 
-              // Request each directory in the path to get its ID
-              let currentPath = '';
-              for (let i = 0; i < pathParts.length; i++) {
-                if (pathParts[i]) {
-                  currentPath += (currentPath ? '/' : '') + pathParts[i];
-                  // For the last item, use the current directory info
-                  if (i === pathParts.length - 1) {
+              if (pathParts.length > 0) {
+                // Fetch all parent directories in a single API call
+                try {
+                  const pathStr = pathParts.join('/');
+                  const pathResponse = await api.get('/api/cloud/directories/path/', {
+                    params: { path: pathStr },
+                  });
+
+                  // Add each directory to breadcrumbs with correct ID
+                  const pathDirectories = pathResponse.data || [];
+                  let currentPath = '';
+
+                  pathDirectories.forEach((dir: any) => {
+                    currentPath += (currentPath ? '/' : '') + dir.name;
                     newBreadcrumbs.push({
-                      id: dirDetailsResponse.data.id,
-                      name: pathParts[i],
+                      id: dir.id,
+                      name: dir.name,
                       path: currentPath,
                     });
-                  } else {
-                    // For intermediate directories, we would ideally have their IDs
-                    // This would require additional API calls in a real implementation
-                    newBreadcrumbs.push({
-                      id: '0', // Placeholder, would need real API implementation
-                      name: pathParts[i],
-                      path: currentPath,
-                    });
-                  }
+                  });
+                } catch (pathError) {
+                  console.error('Error fetching path directories:', pathError);
+
+                  // Fallback method: Add the final directory that we know
+                  newBreadcrumbs.push({
+                    id: dirDetailsResponse.data.id,
+                    name: pathParts[pathParts.length - 1],
+                    path: dirDetailsResponse.data.path,
+                  });
                 }
               }
+
               setBreadcrumbs(newBreadcrumbs);
             }
           } catch (error) {
@@ -149,6 +139,12 @@ const CloudExplorer = () => {
           setBreadcrumbs([{ id: null, name: 'Home', path: '' }]);
           setCurrentDirectory(null);
         }
+
+        // Get files in current directory
+        const fileResponse = await api.get('/api/cloud/files/', {
+          params: { parent: currentDirId },
+        });
+        setFiles(fileResponse.data || []);
       } catch (error) {
         console.error('Error fetching directory contents:', error);
         toast({
@@ -432,11 +428,8 @@ const CloudExplorer = () => {
   // Grid view item render function
   const renderGridItem = (item: FileItem | DirectoryItem, isDirectory = false, index = 0) => {
     return (
-      <motion.div
+      <div
         key={item.id}
-        initial={{ opacity: 0, scale: 0.9 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ delay: index * 0.03 }}
         className='group relative rounded-lg overflow-hidden border border-neutral-200 dark:border-neutral-700 hover:border-neutral-300 dark:hover:border-neutral-600 transition-all cursor-pointer shadow-sm hover:shadow-md'
         onClick={() => (isDirectory ? navigateToDirectory(item.id) : handleFileClick(item as FileItem, index))}
       >
@@ -476,18 +469,15 @@ const CloudExplorer = () => {
             </button>
           )}
         </div>
-      </motion.div>
+      </div>
     );
   };
 
   // List view item render function
   const renderListItem = (item: FileItem | DirectoryItem, isDirectory = false, index = 0) => {
     return (
-      <motion.div
+      <div
         key={item.id}
-        initial={{ opacity: 0, x: -20 }}
-        animate={{ opacity: 1, x: 0 }}
-        transition={{ delay: index * 0.03 }}
         className='flex items-center px-4 py-3 border-b border-neutral-200 dark:border-neutral-700 hover:bg-neutral-100 dark:hover:bg-neutral-800/60 cursor-pointer transition'
         onClick={() => (isDirectory ? navigateToDirectory(item.id) : handleFileClick(item as FileItem, index))}
       >
@@ -527,7 +517,7 @@ const CloudExplorer = () => {
             <FiShare2 className='w-4 h-4' />
           </button>
         </div>
-      </motion.div>
+      </div>
     );
   };
 
@@ -535,11 +525,11 @@ const CloudExplorer = () => {
   const imageFiles = files.filter((file) => file.mime_type?.startsWith('image/'));
 
   return (
-    <motion.div className='flex grow flex-col gap-6 p-6 lg:p-8' initial='hidden' animate='visible' variants={containerVariants}>
+    <div className='flex grow flex-col gap-6 p-6 lg:p-8'>
       {/* Main content container */}
       <div className='flex flex-col grow p-6 mx-auto space-y-8 w-full max-w-7xl'>
-        {/* Header section - updated to match gallery style */}
-        <motion.div className='flex justify-between items-center' variants={itemVariants}>
+        {/* Header section */}
+        <div className='flex justify-between items-center'>
           <div>
             <h1 className='text-3xl font-bold dark:text-neutral-100'>My Files</h1>
             <p className='text-neutral-600 dark:text-neutral-400'>Access and manage your secure cloud storage</p>
@@ -564,7 +554,7 @@ const CloudExplorer = () => {
               </button>
             </div>
 
-            {/* Upload button - Updated to match gallery style */}
+            {/* Upload button */}
             <Link
               href='/cloud/upload'
               className='flex items-center bg-neutral-800 hover:bg-neutral-700 dark:bg-neutral-700 dark:hover:bg-neutral-600 text-white px-5 py-2.5 rounded-md transition shadow-sm'
@@ -579,10 +569,10 @@ const CloudExplorer = () => {
               <span>New</span>
             </button>
           </div>
-        </motion.div>
+        </div>
 
         {/* Breadcrumb navigation */}
-        <motion.div variants={itemVariants} className='bg-white dark:bg-neutral-900 rounded-lg p-3 shadow-sm'>
+        <div className='bg-white dark:bg-neutral-900 rounded-lg p-3 shadow-sm'>
           <div className='flex items-center text-sm overflow-x-auto whitespace-nowrap'>
             {breadcrumbs.map((crumb, index) => (
               <div key={`${crumb.id}-${index}`} className='flex items-center'>
@@ -607,19 +597,62 @@ const CloudExplorer = () => {
               </div>
             ))}
           </div>
-        </motion.div>
+        </div>
 
         {/* Main content area */}
-        <motion.div variants={itemVariants} className='bg-white dark:bg-neutral-900 rounded-xl p-6 shadow-sm flex-grow'>
+        <div className='bg-white dark:bg-neutral-900 rounded-xl p-6 shadow-sm flex-grow'>
           {loading ? (
-            <div className='flex items-center justify-center h-64'>
-              <div className='text-center'>
-                <div className='animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-neutral-700 dark:border-neutral-300 mx-auto'></div>
-                <p className='mt-4 text-neutral-600 dark:text-neutral-400'>Loading contents...</p>
-              </div>
+            <div className='w-full'>
+              {viewMode === 'grid' ? (
+                <div className='grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4'>
+                  {/* Skeleton loaders for grid view */}
+                  {Array.from({ length: 12 }).map((_, index) => (
+                    <div 
+                      key={index} 
+                      className='rounded-lg overflow-hidden border border-neutral-200 dark:border-neutral-700'
+                    >
+                      <div className='aspect-square bg-neutral-200 dark:bg-neutral-800 animate-pulse'></div>
+                      <div className='p-3 bg-white dark:bg-neutral-900'>
+                        <div className='h-4 bg-neutral-200 dark:bg-neutral-800 rounded mb-2 animate-pulse'></div>
+                        <div className='h-3 bg-neutral-200 dark:bg-neutral-800 rounded w-2/3 animate-pulse'></div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className='bg-white dark:bg-neutral-800 rounded-md overflow-hidden'>
+                  {/* Header row for list view */}
+                  <div className='px-4 py-3 bg-neutral-100 dark:bg-neutral-800/90 border-b border-neutral-200 dark:border-neutral-700 flex items-center text-sm font-medium text-neutral-600 dark:text-neutral-300'>
+                    <div className='w-10 mr-3'></div>
+                    <div className='flex-grow'>Name</div>
+                    <div className='w-24 text-right'>Size</div>
+                    <div className='ml-4 w-20'>Actions</div>
+                  </div>
+                  
+                  {/* Skeleton loaders for list view */}
+                  <div>
+                    {Array.from({ length: 8 }).map((_, index) => (
+                      <div 
+                        key={index} 
+                        className='flex items-center px-4 py-3 border-b border-neutral-200 dark:border-neutral-700'
+                      >
+                        <div className='flex-shrink-0 w-10 h-10 bg-neutral-200 dark:bg-neutral-700 rounded-md mr-3 animate-pulse'></div>
+                        <div className='flex-grow'>
+                          <div className='h-4 bg-neutral-200 dark:bg-neutral-700 rounded mb-2 w-1/3 animate-pulse'></div>
+                          <div className='h-3 bg-neutral-200 dark:bg-neutral-700 rounded w-1/4 animate-pulse'></div>
+                        </div>
+                        <div className='w-24 h-3 bg-neutral-200 dark:bg-neutral-700 rounded animate-pulse'></div>
+                        <div className='flex space-x-2 ml-4'>
+                          <div className='w-8 h-8 bg-neutral-200 dark:bg-neutral-700 rounded-full animate-pulse'></div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           ) : (
-            <>
+            <div>
               {directories.length === 0 && files.length === 0 ? (
                 <div className='text-center py-16'>
                   <div className='text-neutral-400 dark:text-neutral-500 mb-4'>
@@ -661,18 +694,20 @@ const CloudExplorer = () => {
                         <div className='ml-4 w-20'>Actions</div>
                       </div>
 
-                      {/* Directory items */}
-                      {directories.map((dir, index) => renderListItem(dir, true, index))}
+                      <div>
+                        {/* Directory items */}
+                        {directories.map((dir, index) => renderListItem(dir, true, index))}
 
-                      {/* File items */}
-                      {files.map((file, index) => renderListItem(file, false, directories.length + index))}
+                        {/* File items */}
+                        {files.map((file, index) => renderListItem(file, false, directories.length + index))}
+                      </div>
                     </div>
                   )}
                 </>
               )}
-            </>
+            </div>
           )}
-        </motion.div>
+        </div>
       </div>
 
       {/* Image Preview Dialog */}
@@ -697,7 +732,7 @@ const CloudExplorer = () => {
         hasNext={selectedFileIndex < imageFiles.length - 1}
         hasPrevious={selectedFileIndex > 0}
       />
-    </motion.div>
+    </div>
   );
 };
 
