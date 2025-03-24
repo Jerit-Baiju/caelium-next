@@ -12,15 +12,12 @@ import {
   FiDownload,
   FiFile,
   FiFolder,
-  FiGrid,
   FiHome,
   FiImage,
-  FiList,
   FiMusic,
   FiPlus,
-  FiShare2,
   FiUpload,
-  FiVideo,
+  FiVideo
 } from 'react-icons/fi';
 
 // Interfaces
@@ -43,7 +40,6 @@ const CloudExplorer = () => {
   const [loading, setLoading] = useState(true);
   const [directories, setDirectories] = useState<Directory[]>([]);
   const [files, setFiles] = useState<FileData[]>([]);
-  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [selectedFile, setSelectedFile] = useState<FileData | null>(null);
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const [thumbnailUrls, setThumbnailUrls] = useState<Record<string, string>>({});
@@ -452,54 +448,6 @@ const CloudExplorer = () => {
     );
   };
 
-  // List view item render function
-  const renderListItem = (item: FileData | Directory, isDirectory = false, index = 0) => {
-    return (
-      <div
-        key={item.id}
-        className='flex items-center px-4 py-3 border-b border-neutral-200 dark:border-neutral-700 hover:bg-neutral-100 dark:hover:bg-neutral-800/60 cursor-pointer transition'
-        onClick={() => (isDirectory ? navigateToDirectory(item.id) : handleFileClick(item as FileData, index))}
-      >
-        {/* Icon */}
-        <div className={`flex-shrink-0 w-10 h-10 ${getBgColorClass(item)} rounded-md flex items-center justify-center mr-3`}>
-          {isDirectory ? <FiFolder className={`w-5 h-5 ${getColorClass(item)}`} /> : getFileIcon((item as FileData).mime_type)}
-        </div>
-
-        {/* Name and info */}
-        <div className='flex-grow min-w-0'>
-          <div className='font-medium text-neutral-800 dark:text-neutral-200 truncate'>{item.name}</div>
-          <div className='text-xs text-neutral-500 dark:text-neutral-400'>{formatTimeSince(item.created_at)}</div>
-        </div>
-
-        {/* Size for files */}
-        {'size' in item && (
-          <div className='w-24 text-right text-sm text-neutral-600 dark:text-neutral-400'>{formatBytes(item.size)}</div>
-        )}
-
-        {/* Actions */}
-        <div className='flex space-x-2 ml-4'>
-          {!isDirectory && (
-            <button
-              className='p-1.5 text-neutral-400 hover:text-neutral-700 dark:text-neutral-500 dark:hover:text-neutral-300 transition'
-              onClick={(e) => {
-                e.stopPropagation();
-                handleFileDownload((item as FileData).download_url, item.name, e);
-              }}
-            >
-              <FiDownload className='w-4 h-4' />
-            </button>
-          )}
-          <button
-            className='p-1.5 text-neutral-400 hover:text-neutral-700 dark:text-neutral-500 dark:hover:text-neutral-300 transition'
-            onClick={(e) => e.stopPropagation()}
-          >
-            <FiShare2 className='w-4 h-4' />
-          </button>
-        </div>
-      </div>
-    );
-  };
-
   // Get filtered image files for preview navigation
   const imageFiles = files.filter((file) => file.mime_type?.startsWith('image/'));
 
@@ -515,24 +463,6 @@ const CloudExplorer = () => {
           </div>
 
           <div className='flex items-center space-x-3'>
-            {/* View mode toggle */}
-            <div className='border border-neutral-200 dark:border-neutral-700 rounded-md flex'>
-              <button
-                className={`p-2 ${viewMode === 'grid' ? 'bg-neutral-100 dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100' : 'text-neutral-500 dark:text-neutral-400'} transition`}
-                onClick={() => setViewMode('grid')}
-                title='Grid view'
-              >
-                <FiGrid className='w-4 h-4' />
-              </button>
-              <button
-                className={`p-2 ${viewMode === 'list' ? 'bg-neutral-100 dark:bg-neutral-700 text-neutral-900 dark:text-neutral-100' : 'text-neutral-500 dark:text-neutral-400'} transition`}
-                onClick={() => setViewMode('list')}
-                title='List view'
-              >
-                <FiList className='w-4 h-4' />
-              </button>
-            </div>
-
             {/* Upload button */}
             <Link
               href='/cloud/upload'
@@ -579,50 +509,21 @@ const CloudExplorer = () => {
         </div>
 
         {/* Main content area */}
-        <div className='bg-white dark:bg-neutral-900 rounded-xl p-6 shadow-sm flex-grow'>
+        <div className='rounded-xl shadow-sm flex-grow'>
           {loading ? (
             <div className='w-full'>
-              {viewMode === 'grid' ? (
-                <div className='grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4'>
-                  {/* Skeleton loaders for grid view */}
-                  {Array.from({ length: 12 }).map((_, index) => (
-                    <div key={index} className='rounded-lg overflow-hidden border border-neutral-200 dark:border-neutral-700'>
-                      <div className='aspect-square bg-neutral-200 dark:bg-neutral-800 animate-pulse'></div>
-                      <div className='p-3 bg-white dark:bg-neutral-900'>
-                        <div className='h-4 bg-neutral-200 dark:bg-neutral-800 rounded mb-2 animate-pulse'></div>
-                        <div className='h-3 bg-neutral-200 dark:bg-neutral-800 rounded w-2/3 animate-pulse'></div>
-                      </div>
+              <div className='grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4'>
+                {/* Skeleton loaders for grid view */}
+                {Array.from({ length: 12 }).map((_, index) => (
+                  <div key={index} className='rounded-lg overflow-hidden border border-neutral-200 dark:border-neutral-700'>
+                    <div className='aspect-square bg-neutral-200 dark:bg-neutral-800 animate-pulse'></div>
+                    <div className='p-3 bg-white dark:bg-neutral-900'>
+                      <div className='h-4 bg-neutral-200 dark:bg-neutral-800 rounded mb-2 animate-pulse'></div>
+                      <div className='h-3 bg-neutral-200 dark:bg-neutral-800 rounded w-2/3 animate-pulse'></div>
                     </div>
-                  ))}
-                </div>
-              ) : (
-                <div className='bg-white dark:bg-neutral-800 rounded-md overflow-hidden'>
-                  {/* Header row for list view */}
-                  <div className='px-4 py-3 bg-neutral-100 dark:bg-neutral-800/90 border-b border-neutral-200 dark:border-neutral-700 flex items-center text-sm font-medium text-neutral-600 dark:text-neutral-300'>
-                    <div className='w-10 mr-3'></div>
-                    <div className='flex-grow'>Name</div>
-                    <div className='w-24 text-right'>Size</div>
-                    <div className='ml-4 w-20'>Actions</div>
                   </div>
-
-                  {/* Skeleton loaders for list view */}
-                  <div>
-                    {Array.from({ length: 8 }).map((_, index) => (
-                      <div key={index} className='flex items-center px-4 py-3 border-b border-neutral-200 dark:border-neutral-700'>
-                        <div className='flex-shrink-0 w-10 h-10 bg-neutral-200 dark:bg-neutral-700 rounded-md mr-3 animate-pulse'></div>
-                        <div className='flex-grow'>
-                          <div className='h-4 bg-neutral-200 dark:bg-neutral-700 rounded mb-2 w-1/3 animate-pulse'></div>
-                          <div className='h-3 bg-neutral-200 dark:bg-neutral-700 rounded w-1/4 animate-pulse'></div>
-                        </div>
-                        <div className='w-24 h-3 bg-neutral-200 dark:bg-neutral-700 rounded animate-pulse'></div>
-                        <div className='flex space-x-2 ml-4'>
-                          <div className='w-8 h-8 bg-neutral-200 dark:bg-neutral-700 rounded-full animate-pulse'></div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
+                ))}
+              </div>
             </div>
           ) : (
             <div>
@@ -648,35 +549,13 @@ const CloudExplorer = () => {
                   </div>
                 </div>
               ) : (
-                <>
-                  {viewMode === 'grid' ? (
-                    <div className='grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4'>
-                      {/* Directories first */}
-                      {directories.map((dir, index) => renderGridItem(dir, true, index))}
+                <div className='grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4'>
+                  {/* Directories first */}
+                  {directories.map((dir, index) => renderGridItem(dir, true, index))}
 
-                      {/* Then files */}
-                      {files.map((file, index) => renderGridItem(file, false, directories.length + index))}
-                    </div>
-                  ) : (
-                    <div className='bg-white dark:bg-neutral-800 rounded-md overflow-hidden'>
-                      {/* Header row */}
-                      <div className='px-4 py-3 bg-neutral-100 dark:bg-neutral-800/90 border-b border-neutral-200 dark:border-neutral-700 flex items-center text-sm font-medium text-neutral-600 dark:text-neutral-300'>
-                        <div className='w-10 mr-3'></div>
-                        <div className='flex-grow'>Name</div>
-                        <div className='w-24 text-right'>Size</div>
-                        <div className='ml-4 w-20'>Actions</div>
-                      </div>
-
-                      <div>
-                        {/* Directory items */}
-                        {directories.map((dir, index) => renderListItem(dir, true, index))}
-
-                        {/* File items */}
-                        {files.map((file, index) => renderListItem(file, false, directories.length + index))}
-                      </div>
-                    </div>
-                  )}
-                </>
+                  {/* Then files */}
+                  {files.map((file, index) => renderGridItem(file, false, directories.length + index))}
+                </div>
               )}
             </div>
           )}
