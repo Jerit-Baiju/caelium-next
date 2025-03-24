@@ -1,5 +1,6 @@
 'use client';
 import FilePreview from '@/components/cloud/preview';
+import { Directory, FileData } from '@/helpers/props';
 import { formatBytes, formatTimeSince } from '@/helpers/utils';
 import { useToast } from '@/hooks/use-toast';
 import useAxios from '@/hooks/useAxios';
@@ -23,28 +24,6 @@ import {
 } from 'react-icons/fi';
 
 // Interfaces
-interface DirectoryItem {
-  id: string;
-  name: string;
-  owner: string;
-  path: string;
-  created_at: string;
-  modified_at: string;
-}
-
-interface FileItem {
-  id: string;
-  name: string;
-  owner: string;
-  path: string;
-  size: number;
-  mime_type: string;
-  created_at: string;
-  download_url: string;
-  preview_url: string | null;
-  category: string;
-}
-
 interface BreadcrumbItem {
   id: string | null;
   name: string;
@@ -62,14 +41,14 @@ const CloudExplorer = () => {
 
   // States
   const [loading, setLoading] = useState(true);
-  const [directories, setDirectories] = useState<DirectoryItem[]>([]);
-  const [files, setFiles] = useState<FileItem[]>([]);
+  const [directories, setDirectories] = useState<Directory[]>([]);
+  const [files, setFiles] = useState<FileData[]>([]);
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
-  const [selectedFile, setSelectedFile] = useState<FileItem | null>(null);
+  const [selectedFile, setSelectedFile] = useState<FileData | null>(null);
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const [thumbnailUrls, setThumbnailUrls] = useState<Record<string, string>>({});
   const [breadcrumbs, setBreadcrumbs] = useState<BreadcrumbItem[]>([{ id: null, name: 'Home', path: '' }]);
-  const [currentDirectory, setCurrentDirectory] = useState<DirectoryItem | null>(null);
+  const [currentDirectory, setCurrentDirectory] = useState<Directory | null>(null);
   const [selectedFileIndex, setSelectedFileIndex] = useState<number>(-1);
 
   // Load current directory details and its contents
@@ -299,7 +278,7 @@ const CloudExplorer = () => {
   };
 
   // File click handler
-  const handleFileClick = (file: FileItem, index: number) => {
+  const handleFileClick = (file: FileData, index: number) => {
     // For images, open the preview
     if (file.mime_type?.startsWith('image/')) {
       setSelectedFile(file);
@@ -353,7 +332,7 @@ const CloudExplorer = () => {
   };
 
   // Get color class based on item type
-  const getColorClass = (item: FileItem | DirectoryItem) => {
+  const getColorClass = (item: FileData | Directory) => {
     if ('mime_type' in item) {
       // It's a file
       const { mime_type } = item;
@@ -382,7 +361,7 @@ const CloudExplorer = () => {
   };
 
   // Get background color class
-  const getBgColorClass = (item: FileItem | DirectoryItem) => {
+  const getBgColorClass = (item: FileData | Directory) => {
     if ('mime_type' in item) {
       // It's a file
       const { mime_type } = item;
@@ -411,7 +390,7 @@ const CloudExplorer = () => {
   };
 
   // Render thumbnail or icon
-  const renderThumbnailOrIcon = (file: FileItem) => {
+  const renderThumbnailOrIcon = (file: FileData) => {
     if (file.mime_type?.startsWith('image/') && thumbnailUrls[file.id]) {
       return (
         <div className='w-full h-full overflow-hidden'>
@@ -426,12 +405,12 @@ const CloudExplorer = () => {
   };
 
   // Grid view item render function
-  const renderGridItem = (item: FileItem | DirectoryItem, isDirectory = false, index = 0) => {
+  const renderGridItem = (item: FileData | Directory, isDirectory = false, index = 0) => {
     return (
       <div
         key={item.id}
         className='group relative rounded-lg overflow-hidden border border-neutral-200 dark:border-neutral-700 hover:border-neutral-300 dark:hover:border-neutral-600 transition-all cursor-pointer shadow-sm hover:shadow-md'
-        onClick={() => (isDirectory ? navigateToDirectory(item.id) : handleFileClick(item as FileItem, index))}
+        onClick={() => (isDirectory ? navigateToDirectory(item.id) : handleFileClick(item as FileData, index))}
       >
         <div className='flex flex-col'>
           {/* Thumbnail/Icon container */}
@@ -441,7 +420,7 @@ const CloudExplorer = () => {
                 <FiFolder className='w-12 h-12' />
               </div>
             ) : (
-              renderThumbnailOrIcon(item as FileItem)
+              renderThumbnailOrIcon(item as FileData)
             )}
           </div>
 
@@ -462,7 +441,7 @@ const CloudExplorer = () => {
               className='p-1.5 bg-white/90 dark:bg-neutral-800/90 rounded-full shadow-sm hover:bg-neutral-100 dark:hover:bg-neutral-700 transition'
               onClick={(e) => {
                 e.stopPropagation();
-                handleFileDownload((item as FileItem).download_url, item.name, e);
+                handleFileDownload((item as FileData).download_url, item.name, e);
               }}
             >
               <FiDownload className='w-4 h-4 text-neutral-700 dark:text-neutral-300' />
@@ -474,16 +453,16 @@ const CloudExplorer = () => {
   };
 
   // List view item render function
-  const renderListItem = (item: FileItem | DirectoryItem, isDirectory = false, index = 0) => {
+  const renderListItem = (item: FileData | Directory, isDirectory = false, index = 0) => {
     return (
       <div
         key={item.id}
         className='flex items-center px-4 py-3 border-b border-neutral-200 dark:border-neutral-700 hover:bg-neutral-100 dark:hover:bg-neutral-800/60 cursor-pointer transition'
-        onClick={() => (isDirectory ? navigateToDirectory(item.id) : handleFileClick(item as FileItem, index))}
+        onClick={() => (isDirectory ? navigateToDirectory(item.id) : handleFileClick(item as FileData, index))}
       >
         {/* Icon */}
         <div className={`flex-shrink-0 w-10 h-10 ${getBgColorClass(item)} rounded-md flex items-center justify-center mr-3`}>
-          {isDirectory ? <FiFolder className={`w-5 h-5 ${getColorClass(item)}`} /> : getFileIcon((item as FileItem).mime_type)}
+          {isDirectory ? <FiFolder className={`w-5 h-5 ${getColorClass(item)}`} /> : getFileIcon((item as FileData).mime_type)}
         </div>
 
         {/* Name and info */}
@@ -504,7 +483,7 @@ const CloudExplorer = () => {
               className='p-1.5 text-neutral-400 hover:text-neutral-700 dark:text-neutral-500 dark:hover:text-neutral-300 transition'
               onClick={(e) => {
                 e.stopPropagation();
-                handleFileDownload((item as FileItem).download_url, item.name, e);
+                handleFileDownload((item as FileData).download_url, item.name, e);
               }}
             >
               <FiDownload className='w-4 h-4' />
@@ -607,10 +586,7 @@ const CloudExplorer = () => {
                 <div className='grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4'>
                   {/* Skeleton loaders for grid view */}
                   {Array.from({ length: 12 }).map((_, index) => (
-                    <div 
-                      key={index} 
-                      className='rounded-lg overflow-hidden border border-neutral-200 dark:border-neutral-700'
-                    >
+                    <div key={index} className='rounded-lg overflow-hidden border border-neutral-200 dark:border-neutral-700'>
                       <div className='aspect-square bg-neutral-200 dark:bg-neutral-800 animate-pulse'></div>
                       <div className='p-3 bg-white dark:bg-neutral-900'>
                         <div className='h-4 bg-neutral-200 dark:bg-neutral-800 rounded mb-2 animate-pulse'></div>
@@ -628,14 +604,11 @@ const CloudExplorer = () => {
                     <div className='w-24 text-right'>Size</div>
                     <div className='ml-4 w-20'>Actions</div>
                   </div>
-                  
+
                   {/* Skeleton loaders for list view */}
                   <div>
                     {Array.from({ length: 8 }).map((_, index) => (
-                      <div 
-                        key={index} 
-                        className='flex items-center px-4 py-3 border-b border-neutral-200 dark:border-neutral-700'
-                      >
+                      <div key={index} className='flex items-center px-4 py-3 border-b border-neutral-200 dark:border-neutral-700'>
                         <div className='flex-shrink-0 w-10 h-10 bg-neutral-200 dark:bg-neutral-700 rounded-md mr-3 animate-pulse'></div>
                         <div className='flex-grow'>
                           <div className='h-4 bg-neutral-200 dark:bg-neutral-700 rounded mb-2 w-1/3 animate-pulse'></div>

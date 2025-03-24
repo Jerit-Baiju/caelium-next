@@ -118,3 +118,46 @@ export interface Album {
   title: string;
   images: Image[];
 }
+
+// Cloud interfaces
+
+export interface FileData {
+  id: string;
+  name: string;
+  owner: number;
+  owner_details: User;
+  parent: string;
+  created_at: string;
+  path: string;
+  size: number;
+  mime_type: string;
+  content: string;
+  download_url: string;
+  preview_url: string | null;
+  category: string;
+}
+
+export interface MediaItem {
+  id: string;
+  name: string;
+  size: string;
+  time: string;
+  color: string;
+  download_url: string;
+  preview_url: string | null;
+  mime_type: string;
+  path: string;
+  category: string;
+  owner_details: User;
+}
+
+export interface Directory {
+  id: string;
+  name: string;
+  owner: number;
+  owner_details: User;
+  parent: string | null;
+  created_at: string;
+  modified_at: string;
+  path: string;
+}

@@ -1,5 +1,6 @@
 'use client';
 import FilePreview from '@/components/cloud/preview';
+import { FileData, MediaItem } from '@/helpers/props';
 import { formatTimeSince } from '@/helpers/utils';
 import { useToast } from '@/hooks/use-toast';
 import useAxios from '@/hooks/useAxios';
@@ -7,28 +8,6 @@ import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { FiArrowLeft, FiFilm, FiImage, FiShare2, FiUpload } from 'react-icons/fi';
-
-interface FileData {
-  id: string;
-  name: string;
-  size: number;
-  mime_type: string;
-  created_at: string;
-  modified_at: string;
-  download_url: string;
-  preview_url: string | null;
-}
-
-interface MediaItem {
-  id: string;
-  name: string;
-  size: string;
-  time: string;
-  color: string;
-  download_url: string;
-  preview_url: string | null;
-  mime_type: string;
-}
 
 const CloudGalleryPage = () => {
   const [mediaFiles, setMediaFiles] = useState<FileData[]>([]);
@@ -151,7 +130,7 @@ const CloudGalleryPage = () => {
   const handleFilePreview = (file: MediaItem) => {
     setSelectedFile(file);
     // Find the index of the selected file
-    const index = mediaItems.findIndex(item => item.id === file.id);
+    const index = mediaItems.findIndex((item) => item.id === file.id);
     setSelectedFileIndex(index);
     setIsPreviewOpen(true);
   };
@@ -211,6 +190,9 @@ const CloudGalleryPage = () => {
     download_url: file.download_url,
     preview_url: file.preview_url,
     mime_type: file.mime_type,
+    path: file.path,
+    category: file.category,
+    owner_details: file.owner_details,
   }));
 
   // Load thumbnails for media files
@@ -420,10 +402,10 @@ const CloudGalleryPage = () => {
       </div>
 
       {/* Media Preview Dialog using the new component */}
-      <FilePreview 
-        isOpen={isPreviewOpen} 
-        onClose={handleClosePreview} 
-        file={selectedFile} 
+      <FilePreview
+        isOpen={isPreviewOpen}
+        onClose={handleClosePreview}
+        file={selectedFile}
         onDownload={handleFileDownload}
         onNext={handleNextFile}
         onPrevious={handlePreviousFile}
