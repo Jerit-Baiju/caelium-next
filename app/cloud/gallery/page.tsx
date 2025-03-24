@@ -70,7 +70,7 @@ const CloudGalleryPage = () => {
     const fetchMediaFiles = async () => {
       try {
         setLoading(true);
-        const response = await api.get('/api/cloud/files/');
+        const response = await api.get('/api/cloud/gallery/');
         // Filter for both image and video files
         const filteredFiles = response.data.filter(
           (file: FileData) => file.mime_type.startsWith('image/') || file.mime_type.startsWith('video/'),
