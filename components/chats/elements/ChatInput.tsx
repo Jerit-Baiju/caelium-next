@@ -58,7 +58,7 @@ const ChatInput = () => {
         <div>
           <input type='file' ref={fileInputRef} className='hidden' onChange={handleFileChange} />
         </div>
-        {/* <motion.button
+        <motion.button
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.95 }}
           type='button'
@@ -67,7 +67,7 @@ const ChatInput = () => {
         >
           <i className='fa-solid fa-paperclip text-xl p-1'></i>
           <span className='sr-only'>Upload image</span>
-        </motion.button> */}
+        </motion.button>
         <input
           ref={inputRef}
           type='text'
