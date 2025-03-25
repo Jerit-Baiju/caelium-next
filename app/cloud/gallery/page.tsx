@@ -1,7 +1,6 @@
 'use client';
 import FilePreview from '@/components/cloud/preview';
 import { MediaItem } from '@/helpers/props';
-import { formatTimeSince } from '@/helpers/utils';
 import useCloud from '@/hooks/useCloud';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
@@ -20,7 +19,7 @@ const CloudGalleryPage = () => {
     isDragging,
     isUploading,
     uploadProgress,
-    
+
     fetchMediaFiles,
     downloadFile,
     uploadFiles,
@@ -28,11 +27,10 @@ const CloudGalleryPage = () => {
     closeFilePreview,
     nextFilePreview,
     previousFilePreview,
-    
+
     handleDragEnter,
     handleDragLeave,
     handleDragOver,
-    handleDrop,
   } = useCloud({
     autoFetch: false, // Don't fetch directory contents automatically
   });
@@ -41,31 +39,33 @@ const CloudGalleryPage = () => {
   const handleGalleryDrop = async (e: React.DragEvent<HTMLElement>) => {
     e.preventDefault();
     e.stopPropagation();
-    
-    // Reset drag state
+
+    // Reset drag state immediately to fix UI not returning to normal
+    handleDragLeave(e);
+
+    // Process dropped files
     if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
       const droppedFiles = Array.from(e.dataTransfer.files);
-      
-      // Upload with autoOrganize set to true for gallery
-      await uploadFiles(droppedFiles, {
-        autoOrganize: true,
-        onProgress: (progress) => {
-          console.log(`Upload progress: ${progress}%`);
-        }
-      });
-      
-      // Refresh the media files after upload
-      fetchMediaFiles();
-    }
-  };
 
-  // Simplified motion variants
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: { duration: 0.5 },
-    },
+      try {
+        // Upload with autoOrganize set to true for gallery
+        await uploadFiles(droppedFiles, {
+          autoOrganize: true,
+          onProgress: (progress) => {
+            console.log(`Upload progress: ${progress}%`);
+          },
+        });
+
+        // Add a small delay before fetching to allow server-side processing to complete
+        setTimeout(() => {
+          // Completely refresh media files and thumbnails after upload
+          fetchMediaFiles();
+        }, 500);
+      } catch (error) {
+        console.error('Error uploading files:', error);
+        // Ensure UI state is reset even on error
+      }
+    }
   };
 
   const itemVariants = {
@@ -76,38 +76,25 @@ const CloudGalleryPage = () => {
     },
   };
 
-  // Function to format file size
-  const formatFileSize = (bytes: number): string => {
-    if (bytes < 1024) return `${bytes} B`;
-    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
-    if (bytes < 1024 * 1024 * 1024) return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
-    return `${(bytes / (1024 * 1024 * 1024)).toFixed(1)} GB`;
-  };
-
   // Fetch media files on component mount
   useEffect(() => {
     fetchMediaFiles();
-  }, []);
+
+    // Add a refresh interval to ensure thumbnails load properly
+    const refreshInterval = setInterval(() => {
+      if (mediaFiles.length > 0 && Object.keys(thumbnailUrls).length < mediaFiles.length) {
+        console.log('Refreshing thumbnails...');
+        fetchMediaFiles();
+      }
+    }, 3000);
+
+    return () => clearInterval(refreshInterval);
+  }, [mediaFiles.length, Object.keys(thumbnailUrls).length]);
 
   // Check if a file is a video
   const isVideo = (mimeType: string) => {
     return mimeType.startsWith('video/');
   };
-
-  // Convert mediaFiles to MediaItem objects for the FilePreview component
-  const mediaItems: MediaItem[] = mediaFiles.map((file) => ({
-    id: file.id,
-    name: file.name,
-    size: formatFileSize(file.size),
-    time: formatTimeSince(file.created_at),
-    color: file.mime_type.startsWith('image/') ? 'emerald' : 'purple',
-    download_url: file.download_url,
-    preview_url: file.preview_url,
-    mime_type: file.mime_type,
-    path: file.path,
-    category: file.category,
-    owner_details: file.owner_details,
-  }));
 
   // Handle file download wrapper
   const handleFileDownload = (downloadUrl: string, fileName: string) => {
@@ -120,7 +107,7 @@ const CloudGalleryPage = () => {
   };
 
   return (
-    <div 
+    <div
       className='flex grow flex-col'
       onDragEnter={handleDragEnter}
       onDragOver={handleDragOver}
@@ -155,7 +142,9 @@ const CloudGalleryPage = () => {
               <p className='text-neutral-500 dark:text-neutral-400'>Loading your gallery...</p>
             </div>
           ) : mediaFiles.length === 0 ? (
-            <div className={`text-center py-16 ${isDragging ? 'border-2 border-dashed border-neutral-300 dark:border-neutral-700 rounded-xl' : ''}`}>
+            <div
+              className={`text-center py-16 ${isDragging ? 'border-2 border-dashed border-neutral-300 dark:border-neutral-700 rounded-xl' : ''}`}
+            >
               <div className='flex justify-center mb-4'>
                 <FiImage size={48} className='text-neutral-400' />
               </div>
