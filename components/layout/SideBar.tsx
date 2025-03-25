@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useContext } from 'react';
 import { IconType } from 'react-icons';
-import { FiFeather, FiHome, FiImage, FiLogOut, FiMessageCircle, FiUser } from 'react-icons/fi';
+import { FiFeather, FiHome, FiLogOut, FiMessageCircle, FiUser, FiCloud } from 'react-icons/fi';
 
 // Define interfaces to match those in NavContext
 interface SidebarOption {
@@ -23,7 +23,7 @@ interface SidebarSection {
 // Default fallback options if context isn't available
 export const options: SidebarOption[] = [
   { name: 'Home', url: '/', icon: FiHome },
-  { name: 'Gallery', url: '/gallery', icon: FiImage },
+  { name: 'Cloud', url: '/cloud', icon: FiCloud },
   { name: 'Chats', url: '/chats/main', icon: FiMessageCircle },
   { name: 'Crafts', url: '/crafts', icon: FiFeather },
   { name: 'Profile', url: '/accounts/profile', icon: FiUser },
