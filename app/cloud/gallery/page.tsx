@@ -17,16 +17,47 @@ const CloudGalleryPage = () => {
     selectedFile,
     isPreviewOpen,
     selectedFileIndex,
+    isDragging,
+    isUploading,
+    uploadProgress,
     
     fetchMediaFiles,
     downloadFile,
+    uploadFiles,
     openFilePreview,
     closeFilePreview,
     nextFilePreview,
     previousFilePreview,
+    
+    handleDragEnter,
+    handleDragLeave,
+    handleDragOver,
+    handleDrop,
   } = useCloud({
     autoFetch: false, // Don't fetch directory contents automatically
   });
+
+  // Custom drop handler for gallery that ensures autoOrganize is true
+  const handleGalleryDrop = async (e: React.DragEvent<HTMLElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    // Reset drag state
+    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+      const droppedFiles = Array.from(e.dataTransfer.files);
+      
+      // Upload with autoOrganize set to true for gallery
+      await uploadFiles(droppedFiles, {
+        autoOrganize: true,
+        onProgress: (progress) => {
+          console.log(`Upload progress: ${progress}%`);
+        }
+      });
+      
+      // Refresh the media files after upload
+      fetchMediaFiles();
+    }
+  };
 
   // Simplified motion variants
   const containerVariants = {
@@ -89,9 +120,15 @@ const CloudGalleryPage = () => {
   };
 
   return (
-    <div className='flex grow flex-col'>
-      {/* Main content container */}
-      <div className='flex flex-col grow py-6 mx-auto space-y-8 w-full max-w-7xl'>
+    <div 
+      className='flex grow flex-col'
+      onDragEnter={handleDragEnter}
+      onDragOver={handleDragOver}
+      onDragLeave={handleDragLeave}
+      onDrop={handleGalleryDrop}
+    >
+      {/* Main content container - removed blue background styling when dragging */}
+      <div className='flex flex-col grow py-6 mx-auto space-y-8 w-full max-w-7xl px-4 sm:px-6 lg:px-8'>
         {/* Header */}
         <motion.div className='flex justify-between items-center' variants={itemVariants}>
           <div className='flex items-center gap-4'>
@@ -118,16 +155,22 @@ const CloudGalleryPage = () => {
               <p className='text-neutral-500 dark:text-neutral-400'>Loading your gallery...</p>
             </div>
           ) : mediaFiles.length === 0 ? (
-            <div className='text-center py-10'>
+            <div className={`text-center py-16 ${isDragging ? 'border-2 border-dashed border-neutral-300 dark:border-neutral-700 rounded-xl' : ''}`}>
               <div className='flex justify-center mb-4'>
                 <FiImage size={48} className='text-neutral-400' />
               </div>
-              <p className='text-neutral-500 dark:text-neutral-400'>No images or videos found in your cloud storage.</p>
-              <Link href='/cloud/upload'>
-                <button className='mt-4 px-4 py-2 bg-neutral-200 dark:bg-neutral-700 rounded-md hover:bg-neutral-300 dark:hover:bg-neutral-600 transition'>
-                  Upload Media
-                </button>
-              </Link>
+              <p className='text-neutral-500 dark:text-neutral-400 mb-2'>
+                {isDragging ? 'Drop media files here to upload' : 'No images or videos found in your cloud storage.'}
+              </p>
+              {isDragging ? (
+                <p className='text-neutral-500 dark:text-neutral-400'>Files will be automatically organized in your gallery</p>
+              ) : (
+                <Link href='/cloud/upload'>
+                  <button className='mt-4 px-4 py-2 bg-neutral-200 dark:bg-neutral-700 rounded-md hover:bg-neutral-300 dark:hover:bg-neutral-600 transition'>
+                    Upload Media
+                  </button>
+                </Link>
+              )}
             </div>
           ) : (
             <>
@@ -236,6 +279,31 @@ const CloudGalleryPage = () => {
           )}
         </motion.div>
       </div>
+
+      {/* Drag overlay - simplified with less dramatic coloring */}
+      {isDragging && (
+        <div className='fixed inset-0 bg-black/5 dark:bg-black/20 pointer-events-none z-10 flex items-center justify-center'>
+          <div className='bg-white dark:bg-neutral-800 rounded-xl p-8 shadow-lg'>
+            <p className='text-lg font-medium text-neutral-800 dark:text-neutral-200'>Drop media files to add to your gallery</p>
+          </div>
+        </div>
+      )}
+
+      {/* Upload progress indicator */}
+      {isUploading && (
+        <div className='fixed bottom-5 right-5 bg-white dark:bg-neutral-800 rounded-lg shadow-lg p-4 max-w-md'>
+          <h3 className='font-medium text-neutral-800 dark:text-neutral-200 mb-2'>Uploading media...</h3>
+          <div className='w-full bg-neutral-200 dark:bg-neutral-700 rounded-full h-2 mb-1'>
+            <div
+              className='bg-blue-500 h-2 rounded-full'
+              style={{
+                width: `${(Object.values(uploadProgress).reduce((a, b) => a + b, 0) / (Object.keys(uploadProgress).length * 100)) * 100}%`,
+              }}
+            />
+          </div>
+          <p className='text-xs text-neutral-500 dark:text-neutral-400'>{Object.keys(uploadProgress).length} file(s) uploading</p>
+        </div>
+      )}
 
       {/* Media Preview Dialog using the FilePreview component */}
       <FilePreview

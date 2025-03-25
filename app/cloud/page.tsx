@@ -193,12 +193,8 @@ const CloudExplorer = () => {
       onDragLeave={handleDragLeave}
       onDrop={(e) => handleDrop(e)}
     >
-      {/* Main content container */}
-      <div
-        className={`flex flex-col grow py-6 mx-auto space-y-8 w-full max-w-7xl px-4 sm:px-6 lg:px-8 ${
-          isDragging ? 'bg-blue-50/50 dark:bg-blue-900/20 rounded-xl transition-colors' : ''
-        }`}
-      >
+      {/* Main content container - removed blue background styling when dragging */}
+      <div className='flex flex-col grow py-6 mx-auto space-y-8 w-full max-w-7xl px-4 sm:px-6 lg:px-8'>
         {/* Header section */}
         <div className='flex justify-between items-center'>
           <div>
@@ -275,9 +271,7 @@ const CloudExplorer = () => {
           ) : (
             <div>
               {directories.length === 0 && files.length === 0 ? (
-                <div
-                  className={`text-center py-16 ${isDragging ? 'bg-blue-100/50 dark:bg-blue-900/20 rounded-xl border-2 border-dashed border-blue-300 dark:border-blue-700' : ''}`}
-                >
+                <div className={`text-center py-16 ${isDragging ? 'border-2 border-dashed border-neutral-300 dark:border-neutral-700 rounded-xl' : ''}`}>
                   <div className='text-neutral-400 dark:text-neutral-500 mb-4'>
                     <FiFolder className='w-16 h-16 mx-auto' />
                   </div>
@@ -324,9 +318,9 @@ const CloudExplorer = () => {
         </div>
       </div>
 
-      {/* Drag overlay when dragging files */}
+      {/* Drag overlay - simplified with less dramatic coloring */}
       {isDragging && !draggingOverDirId && (
-        <div className='fixed inset-0 bg-blue-500/10 dark:bg-blue-700/20 pointer-events-none z-10 flex items-center justify-center'>
+        <div className='fixed inset-0 bg-black/5 dark:bg-black/20 pointer-events-none z-10 flex items-center justify-center'>
           <div className='bg-white dark:bg-neutral-800 rounded-xl p-8 shadow-lg'>
             <p className='text-lg font-medium text-neutral-800 dark:text-neutral-200'>Drop files to upload to this folder</p>
           </div>
