@@ -1,4 +1,5 @@
 'use client';
+import FileContextMenu from '@/components/cloud/context-menus/file-context';
 import FilePreview from '@/components/cloud/preview';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -107,7 +108,7 @@ const CloudExplorer = () => {
   const renderGridItem = (item: any, isDirectory = false, index = 0) => {
     const isDragTarget = isDirectory && draggingOverDirId === item.id;
 
-    return (
+    const gridItem = (
       <div
         key={item.id}
         className={`group relative rounded-lg overflow-hidden border transition-all cursor-pointer shadow-sm hover:shadow-md ${
@@ -158,6 +159,15 @@ const CloudExplorer = () => {
           )}
         </div>
       </div>
+    );
+
+    // Wrap with context menu only for files, not directories
+    return isDirectory ? (
+      gridItem
+    ) : (
+      <FileContextMenu key={item.id} file={item}>
+        {gridItem}
+      </FileContextMenu>
     );
   };
 
