@@ -271,7 +271,9 @@ const CloudExplorer = () => {
           ) : (
             <div>
               {directories.length === 0 && files.length === 0 ? (
-                <div className={`text-center py-16 ${isDragging ? 'border-2 border-dashed border-neutral-300 dark:border-neutral-700 rounded-xl' : ''}`}>
+                <div
+                  className={`text-center py-16 ${isDragging ? 'border-2 border-dashed border-neutral-300 dark:border-neutral-700 rounded-xl' : ''}`}
+                >
                   <div className='text-neutral-400 dark:text-neutral-500 mb-4'>
                     <FiFolder className='w-16 h-16 mx-auto' />
                   </div>
@@ -324,22 +326,6 @@ const CloudExplorer = () => {
           <div className='bg-white dark:bg-neutral-800 rounded-xl p-8 shadow-lg'>
             <p className='text-lg font-medium text-neutral-800 dark:text-neutral-200'>Drop files to upload to this folder</p>
           </div>
-        </div>
-      )}
-
-      {/* Upload progress indicator */}
-      {isUploading && (
-        <div className='fixed bottom-5 right-5 bg-white dark:bg-neutral-800 rounded-lg shadow-lg p-4 max-w-md'>
-          <h3 className='font-medium text-neutral-800 dark:text-neutral-200 mb-2'>Uploading files...</h3>
-          <div className='w-full bg-neutral-200 dark:bg-neutral-700 rounded-full h-2 mb-1'>
-            <div
-              className='bg-blue-500 h-2 rounded-full'
-              style={{
-                width: `${(Object.values(uploadProgress).reduce((a, b) => a + b, 0) / (Object.keys(uploadProgress).length * 100)) * 100}%`,
-              }}
-            />
-          </div>
-          <p className='text-xs text-neutral-500 dark:text-neutral-400'>{Object.keys(uploadProgress).length} file(s) uploading</p>
         </div>
       )}
 
