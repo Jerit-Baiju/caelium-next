@@ -28,7 +28,6 @@ export interface User {
   name: string;
   avatar?: string;
   last_seen: Date;
-  is_special_user: boolean;
 }
 
 export interface Message {
