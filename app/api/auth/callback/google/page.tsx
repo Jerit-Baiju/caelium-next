@@ -74,7 +74,7 @@ const Page = () => {
             console.error("Error reading response:", parseError);
           }
           
-          console.error("Error response data:", errorData);
+          console.log("Error response data:", errorData);
           
           if (response.status === 403) {
             toast({
