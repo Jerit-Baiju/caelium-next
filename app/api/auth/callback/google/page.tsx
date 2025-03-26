@@ -57,11 +57,24 @@ const Page = () => {
         if (!response.ok) {
           let errorData = { error: 'Unknown error occurred' };
           try {
-            errorData = await response.json();
+            // Try to parse the response as JSON
+            const errorText = await response.text();
+            console.log("Raw error response:", errorText);
+            
+            // Only try to parse as JSON if we have content
+            if (errorText) {
+              try {
+                errorData = JSON.parse(errorText);
+              } catch (jsonError) {
+                console.error("Error parsing JSON:", jsonError);
+                errorData = { error: errorText || 'Invalid response format' };
+              }
+            }
           } catch (parseError) {
-            console.error("Error parsing error response:", parseError);
+            console.error("Error reading response:", parseError);
           }
-          console.error("Error response:", errorData);
+          
+          console.error("Error response data:", errorData);
           
           if (response.status === 403) {
             toast({
@@ -73,7 +86,7 @@ const Page = () => {
             toast({
               variant: 'destructive',
               title: 'Authentication Error',
-              description: 'An unexpected error occurred. Please try again.',
+              description: `Error ${response.status}: ${errorData.error || 'An unexpected error occurred. Please try again.'}`,
             });
           }
           
