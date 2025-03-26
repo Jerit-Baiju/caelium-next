@@ -1,9 +1,11 @@
 'use client';
 import Loader from '@/components/layout/Loader';
 import { Vortex } from '@/components/ui/vortex';
+import AuthContext from '@/contexts/AuthContext';
 import { useNavbar } from '@/contexts/NavContext';
 import { motion } from 'framer-motion';
-import { useEffect, useRef, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { useContext, useEffect, useRef, useState } from 'react';
 import { FiMessageSquare, FiShield, FiUsers } from 'react-icons/fi';
 
 interface FeatureCardProps {
@@ -16,19 +18,30 @@ const Page: React.FC = () => {
   const [authURL, setAuthURL] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const { setShowNav } = useNavbar();
+  const { authTokens } = useContext(AuthContext);
+  const router = useRouter();
 
   // Ref to prevent duplicate API calls
   const hasCalledApiRef = useRef(false);
+
+  // Check if user is logged in
+  useEffect(() => {
+    // If we have auth tokens, redirect to homepage
+    if (authTokens) {
+      router.replace('/');
+      return;
+    }
+  }, [authTokens, router]);
 
   // Manage navbar visibility
   useEffect(() => {
     setShowNav(false);
     return () => setShowNav(true);
-  }, []);
+  }, [setShowNav]);
 
   // Fetch auth URL when component mounts
   useEffect(() => {
-    if (!hasCalledApiRef.current) {
+    if (!hasCalledApiRef.current && !authTokens) {
       hasCalledApiRef.current = true;
 
       const fetch_auth_url = async () => {
@@ -45,7 +58,12 @@ const Page: React.FC = () => {
 
       fetch_auth_url();
     }
-  }, []);
+  }, [authTokens]);
+
+  // If we're redirecting, show loader
+  if (authTokens) {
+    return <Loader fullScreen />;
+  }
 
   const containerVariants = {
     hidden: { opacity: 0 },
