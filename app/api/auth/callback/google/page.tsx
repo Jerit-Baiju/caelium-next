@@ -1,12 +1,14 @@
 'use client';
 import Loader from '@/components/layout/Loader';
 import AuthContext from '@/contexts/AuthContext';
+import { useNavbar } from '@/contexts/NavContext';
 import { useToast } from '@/hooks/use-toast';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useContext, useEffect, useRef, useState } from 'react';
 
 const Page = () => {
   const { loginUser } = useContext(AuthContext);
+  const { setShowNav } = useNavbar();
   const searchParams = useSearchParams();
   const router = useRouter();
   const { toast } = useToast();
@@ -14,6 +16,15 @@ const Page = () => {
   const [isSuccess, setIsSuccess] = useState(false);
   const [isError, setIsError] = useState(false);
   const processingAttempted = useRef(false);
+
+  // Hide navbar and sidebar on mount, restore on unmount
+  useEffect(() => {
+    setShowNav(false);
+    
+    return () => {
+      setShowNav(true);
+    };
+  }, [setShowNav]);
 
   useEffect(() => {
     // Prevent double execution or processing after errors
@@ -44,7 +55,12 @@ const Page = () => {
         console.log("Response status:", response.status);
         
         if (!response.ok) {
-          const errorData = await response.json();
+          let errorData = { error: 'Unknown error occurred' };
+          try {
+            errorData = await response.json();
+          } catch (parseError) {
+            console.error("Error parsing error response:", parseError);
+          }
           console.error("Error response:", errorData);
           
           if (response.status === 403) {
