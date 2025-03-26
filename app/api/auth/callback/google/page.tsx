@@ -3,7 +3,7 @@ import Loader from '@/components/layout/Loader';
 import AuthContext from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useRef, useState } from 'react';
 
 const Page = () => {
   const { loginUser } = useContext(AuthContext);
@@ -12,14 +12,24 @@ const Page = () => {
   const { toast } = useToast();
   const [isProcessing, setIsProcessing] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+  const [isError, setIsError] = useState(false);
+  const processingAttempted = useRef(false);
 
   useEffect(() => {
-    // Prevent double execution
-    if (isProcessing || isSuccess) return;
+    // Prevent double execution or processing after errors
+    if (isProcessing || isSuccess || isError || processingAttempted.current) return;
+
+    const auth_code = searchParams.get('code');
+    if (!auth_code) {
+      // No auth code, redirect to welcome
+      router.push('/welcome');
+      return;
+    }
 
     const fetch_tokens = async (auth_code: string) => {
       try {
         setIsProcessing(true);
+        processingAttempted.current = true;
         
         console.log("Fetching tokens with code:", auth_code);
         
@@ -51,6 +61,7 @@ const Page = () => {
             });
           }
           
+          setIsError(true);
           setTimeout(() => {
             router.push('/welcome');
           }, 1500);
@@ -84,6 +95,7 @@ const Page = () => {
           description: 'An unexpected error occurred. Please try again.',
         });
         
+        setIsError(true);
         setTimeout(() => {
           router.push('/welcome');
         }, 1500);
@@ -92,13 +104,8 @@ const Page = () => {
       }
     };
     
-    const auth_code = searchParams.get('code');
-    if (auth_code) {
-      fetch_tokens(auth_code);
-    } else {
-      router.push('/welcome');
-    }
-  }, [searchParams, toast, router, loginUser, isProcessing, isSuccess]);
+    fetch_tokens(auth_code);
+  }, [searchParams, toast, router, loginUser, isProcessing, isSuccess, isError]);
 
   return (
     <div className='flex h-dvh items-center justify-center'>

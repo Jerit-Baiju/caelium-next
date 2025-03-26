@@ -47,17 +47,41 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     typeof window !== 'undefined' && localStorage.getItem('authTokens') ? jwtDecode(localStorage.getItem('authTokens') || '{}') : null,
   );
 
+  // Check token expiration
+  useEffect(() => {
+    // Skip if we're still loading or no tokens exist
+    if (loading || !authTokens) return;
+    
+    try {
+      const decodedToken: any = tokenData;
+      
+      // Check if token is expired
+      const isTokenExpired = decodedToken && decodedToken.exp && 
+        decodedToken.exp * 1000 < Date.now();
+      
+      if (isTokenExpired) {
+        console.log("Token expired, logging out");
+        logoutUser();
+        return;
+      }
+    } catch (err) {
+      console.error("Error checking token expiration:", err);
+      logoutUser();
+    }
+  }, [tokenData, loading]);
+
+  // Route protection
   useEffect(() => {
     if (loading) return;
     
     const path = window.location.pathname;
+    const publicPaths = ['/welcome', '/privacy-policy', '/terms-and-conditions'];
+    const isCallbackPath = path.startsWith('/api/auth/callback');
+    const isPublicPath = publicPaths.includes(path) || isCallbackPath;
     
-    // Don't redirect if we have tokens or we're on certain public pages
-    if (!tokenData && 
-        path !== '/welcome' && 
-        path !== '/privacy-policy' && 
-        path !== '/terms-and-conditions' && 
-        !path.startsWith('/api/auth/callback')) {
+    // Redirect logic
+    if (!tokenData && !isPublicPath) {
+      console.log("No auth token, redirecting to welcome");
       router.replace('/welcome');
     }
   }, [router, tokenData, loading]);
@@ -65,17 +89,30 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     const fetchMe = async () => {
       try {
+        if (!authTokens?.access) return;
+        
+        const decodedToken = jwtDecode(authTokens.access) as { user_id: string };
+        if (!decodedToken.user_id) return;
+        
         const response = await fetch(
-          `${process.env.NEXT_PUBLIC_API_HOST}/api/auth/accounts/${(jwtDecode(authTokens?.access) as { user_id: string }).user_id}/`,
+          `${process.env.NEXT_PUBLIC_API_HOST}/api/auth/accounts/${decodedToken.user_id}/`,
         );
+        
+        if (!response.ok) {
+          throw new Error('Failed to fetch user data');
+        }
+        
         const userData = await response.json();
         setUser(userData);
       } catch (error) {
-        console.error(error);
+        console.error("Error fetching user data:", error);
       }
     };
-    authTokens ? fetchMe() : null;
-  }, [tokenData]);
+    
+    if (authTokens) {
+      fetchMe();
+    }
+  }, [authTokens]);
 
   let loginUser = async (data: any) => {
     localStorage.setItem('authTokens', JSON.stringify(data));
@@ -86,16 +123,22 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   let logoutUser = () => {
     setAuthTokens(null);
     setTokenData(null);
+    setUser(null);
     localStorage.removeItem('authTokens');
-    router.push('/landing');
+    router.push('/welcome');
   };
 
   useEffect(() => {
     if (authTokens?.access) {
-      setTokenData(jwtDecode(authTokens.access));
+      try {
+        setTokenData(jwtDecode(authTokens.access));
+      } catch (err) {
+        console.error("Invalid token format:", err);
+        logoutUser();
+      }
     }
     setLoading(false);
-  }, [authTokens, loading]);
+  }, [authTokens]);
 
   let contextData: AuthContextProps = {
     tokenData,
