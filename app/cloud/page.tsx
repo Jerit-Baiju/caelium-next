@@ -23,8 +23,6 @@ const CloudExplorer = () => {
     selectedFileIndex,
     isDragging,
     draggingOverDirId,
-    isUploading,
-    uploadProgress,
 
     fetchDirectoryContents,
     navigateToDirectory,
