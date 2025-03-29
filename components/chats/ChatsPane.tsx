@@ -152,7 +152,7 @@ const ChatsPane = () => {
             <div className='p-2 space-y-1'>
               {filteredChats.length > 0 ? (
                 filteredChats.map((chat: Chat) => {
-                  const isActive = pathname?.startsWith(`/chats/${chat.id}`);
+                  const isActive = pathname?.startsWith(`/chats/main/${chat.id}`);
                   return (
                     <ContextMenu key={chat.id}>
                       <ContextMenuTrigger>
@@ -246,7 +246,7 @@ const ChatsPane = () => {
                           <ContextMenuSeparator className='my-1.5 dark:border-neutral-800' />
                           <MenuGroup label='Settings'>
                             <MenuItem icon={BellOff} label='Mute Notifications' onClick={() => console.log('muted chat')} />
-                            <MenuItem icon={Info} label='View Info' onClick={() => router.push(`/chats/${chat.id}/info`)} />
+                            <MenuItem icon={Info} label='View Info' onClick={() => router.push(`/chats/main/${chat.id}/info`)} />
                           </MenuGroup>
                           <ContextMenuSeparator className='my-1.5 dark:border-neutral-800' />
                           <MenuGroup label='Management'>
