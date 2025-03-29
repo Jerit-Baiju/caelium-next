@@ -1,17 +1,29 @@
 'use client';
 
 import { BreadcrumbItem, ExplorerData, FileData } from '@/helpers/props';
-import useAxios from '@/hooks/useAxios';
+import useCloud from '@/hooks/useCloud';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useEffect, useState } from 'react';
-import { FiArchive, FiChevronRight, FiCode, FiFile, FiFileText, FiFolder, FiHome, FiImage, FiMusic, FiUpload, FiVideo } from 'react-icons/fi';
+import { useEffect, useRef, useState } from 'react';
+import {
+  FiArchive,
+  FiChevronRight,
+  FiCode,
+  FiFile,
+  FiFileText,
+  FiFolder,
+  FiHome,
+  FiImage,
+  FiMusic,
+  FiUpload,
+  FiVideo,
+} from 'react-icons/fi';
 
 const CloudExplorer = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const api = useAxios();
+  const { formatFileSize, fetchExplorerData, fetchImageUrls, getFileThumbnailType } = useCloud();
   const [loading, setLoading] = useState(true);
   const [explorerData, setExplorerData] = useState<ExplorerData>({
     directories: [],
@@ -19,17 +31,21 @@ const CloudExplorer = () => {
     breadcrumbs: [],
     current_directory: null,
   });
+
+  // Use useRef to persist the image cache between directory navigations
+  const imageUrlsCacheRef = useRef<Record<string, string>>({});
   const [imageUrls, setImageUrls] = useState<Record<string, string>>({});
-  const [selectedFiles, setSelectedFiles] = useState<Set<string>>(new Set());
-  const [selectedDirectories, setSelectedDirectories] = useState<Set<string>>(new Set());
   const [currentPath, setCurrentPath] = useState<string>(searchParams?.get('dir') || '');
+
+  // Drag and drop upload states
+  const [isDragging, setIsDragging] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
       try {
-        const response = await api.get(`/api/cloud/explorer${currentPath ? `?parent=${currentPath}` : ''}`);
-        setExplorerData(response.data);
+        const data = await fetchExplorerData(currentPath);
+        setExplorerData(data);
       } catch (error) {
         console.error('Error fetching explorer data:', error);
       } finally {
@@ -39,125 +55,118 @@ const CloudExplorer = () => {
     fetchData();
   }, [currentPath]);
 
+  // Add event listeners for drag and drop
   useEffect(() => {
-    const fetchImageUrls = async () => {
-      const imageFiles = explorerData.files.filter((file) => file.mime_type.startsWith('image/'));
-
-      if (imageFiles.length === 0) return {};
-
-      const batchSize = 8;
-      const urls: Record<string, string> = {};
-
-      for (let i = 0; i < imageFiles.length; i += batchSize) {
-        const batch = imageFiles.slice(i, i + batchSize);
-
-        try {
-          const results = await Promise.all(
-            batch.map(async (file) => {
-              try {
-                const response = await api.get(file.download_url, { responseType: 'blob' });
-                const objectUrl = URL.createObjectURL(response.data);
-                return { id: file.id, url: objectUrl };
-              } catch (error) {
-                console.error(`Error fetching image ${file.name}:`, error);
-                return { id: file.id, url: null };
-              }
-            }),
-          );
-
-          results.forEach(({ id, url }) => {
-            if (url) urls[id] = url;
-          });
-        } catch (error) {
-          console.error('Error fetching batch of images:', error);
-        }
-      }
-
-      setImageUrls(urls);
-
-      return () => {
-        Object.values(urls).forEach((url) => URL.revokeObjectURL(url));
-      };
+    const handleDragOver = (e: DragEvent) => {
+      e.preventDefault();
+      if (!isDragging) setIsDragging(true);
     };
 
-    if (explorerData.files.length > 0) {
-      fetchImageUrls();
-    }
+    const handleDragLeave = (e: DragEvent) => {
+      e.preventDefault();
+      // Only set isDragging to false if we're leaving the document
+      // This prevents flicker when moving between elements
+      if (e.relatedTarget === null) {
+        setIsDragging(false);
+      }
+    };
+
+    const handleDrop = (e: DragEvent) => {
+      e.preventDefault();
+      setIsDragging(false);
+    };
+
+    document.addEventListener('dragover', handleDragOver);
+    document.addEventListener('dragleave', handleDragLeave);
+    document.addEventListener('drop', handleDrop);
 
     return () => {
-      setImageUrls({});
+      document.removeEventListener('dragover', handleDragOver);
+      document.removeEventListener('dragleave', handleDragLeave);
+      document.removeEventListener('drop', handleDrop);
     };
+  }, [isDragging]);
+
+  useEffect(() => {
+    // Initialize imageUrls from cache for current files
+    const cachedUrls: Record<string, string> = {};
+    const filesToFetch: FileData[] = [];
+
+    // For each file that needs a thumbnail, check if it's in cache
+    explorerData.files
+      .filter((file) => getFileThumbnailType(file) === 'image')
+      .forEach((file) => {
+        if (imageUrlsCacheRef.current[file.id]) {
+          cachedUrls[file.id] = imageUrlsCacheRef.current[file.id];
+        } else {
+          filesToFetch.push(file);
+        }
+      });
+
+    // Set initial cached URLs
+    if (Object.keys(cachedUrls).length > 0) {
+      setImageUrls(cachedUrls);
+    }
+
+    // Fetch uncached images in batches of 5
+    const loadImageThumbnails = async () => {
+      if (filesToFetch.length === 0) return;
+
+      // Process files in batches of 5
+      for (let i = 0; i < filesToFetch.length; i += 5) {
+        const batch = filesToFetch.slice(i, i + 5);
+        try {
+          const urls = await fetchImageUrls(batch);
+          if (urls) {
+            // Update both the current state and the persistent cache for each image
+            Object.entries(urls).forEach(([fileId, url]) => {
+              setImageUrls((prevUrls) => ({
+                ...prevUrls,
+                [fileId]: url
+              }));
+              
+              // Update the persistent cache ref
+              imageUrlsCacheRef.current = {
+                ...imageUrlsCacheRef.current,
+                [fileId]: url,
+              };
+            });
+          }
+        } catch (error) {
+          console.error(`Error loading thumbnails for batch ${i/5 + 1}:`, error);
+        }
+      }
+    };
+
+    loadImageThumbnails();
   }, [explorerData.files]);
 
   const renderThumbnail = (file: FileData) => {
-    if (file.mime_type.startsWith('image/')) {
-      return imageUrls[file.id] ? (
-        <img src={imageUrls[file.id]} alt={file.name} className='w-full h-full object-cover rounded-md' />
-      ) : (
-        <div className='flex justify-center items-center h-full w-full text-neutral-400 dark:text-neutral-500'>
-          <FiImage size={24} />
-        </div>
-      );
-    } else if (file.mime_type.startsWith('video/')) {
-      return (
-        <div className='flex justify-center items-center h-full w-full text-blue-400 dark:text-blue-300'>
-          <FiVideo size={24} />
-        </div>
-      );
-    } else if (file.mime_type.startsWith('audio/')) {
-      return (
-        <div className='flex justify-center items-center h-full w-full text-purple-400 dark:text-purple-300'>
-          <FiMusic size={24} />
-        </div>
-      );
-    } else if (file.mime_type.includes('pdf')) {
-      return (
-        <div className='flex justify-center items-center h-full w-full text-red-400 dark:text-red-300'>
-          <FiFileText size={24} />
-        </div>
-      );
-    } else if (file.mime_type.includes('zip') || file.mime_type.includes('archive')) {
-      return (
-        <div className='flex justify-center items-center h-full w-full text-amber-400 dark:text-amber-300'>
-          <FiArchive size={24} />
-        </div>
-      );
-    } else if (file.mime_type.includes('code') || file.name.match(/\.(js|ts|html|css|py|java|cpp|php|json)$/)) {
-      return (
-        <div className='flex justify-center items-center h-full w-full text-emerald-400 dark:text-emerald-300'>
-          <FiCode size={24} />
-        </div>
-      );
+    const thumbnailType = getFileThumbnailType(file);
+    const typeToIcon = {
+      image: { icon: FiImage, color: 'text-neutral-400 dark:text-neutral-500' },
+      video: { icon: FiVideo, color: 'text-blue-400 dark:text-blue-300' },
+      audio: { icon: FiMusic, color: 'text-purple-400 dark:text-purple-300' },
+      pdf: { icon: FiFileText, color: 'text-red-400 dark:text-red-300' },
+      archive: { icon: FiArchive, color: 'text-amber-400 dark:text-amber-300' },
+      code: { icon: FiCode, color: 'text-emerald-400 dark:text-emerald-300' },
+      file: { icon: FiFile, color: 'text-neutral-400 dark:text-neutral-500' },
+      default: { icon: FiFile, color: 'text-neutral-400 dark:text-neutral-500' },
+    };
+
+    const { icon: Icon, color } = typeToIcon[thumbnailType as keyof typeof typeToIcon] || typeToIcon.default;
+
+    // Check both current imageUrls and the persistent cache
+    if (thumbnailType === 'image' && (imageUrls[file.id] || imageUrlsCacheRef.current[file.id])) {
+      const imageUrl = imageUrls[file.id] || imageUrlsCacheRef.current[file.id];
+      return <img src={imageUrl} alt={file.name} className='w-full h-full object-cover rounded-md' />;
     }
+
     return (
-      <div className='flex justify-center items-center h-full w-full text-neutral-400 dark:text-neutral-500'>
-        <FiFile size={24} />
+      <div className={`flex justify-center items-center h-full w-full ${color}`}>
+        <Icon size={52} />
       </div>
     );
-  };
-
-  const toggleFileSelection = (fileId: string, event: React.MouseEvent) => {
-    event.stopPropagation();
-    const newSelection = new Set(selectedFiles);
-    if (newSelection.has(fileId)) {
-      newSelection.delete(fileId);
-    } else {
-      newSelection.add(fileId);
-      setSelectedDirectories(new Set());
-    }
-    setSelectedFiles(newSelection);
-  };
-
-  const toggleDirectorySelection = (dirId: string, event: React.MouseEvent) => {
-    event.stopPropagation();
-    const newSelection = new Set(selectedDirectories);
-    if (newSelection.has(dirId)) {
-      newSelection.delete(dirId);
-    } else {
-      newSelection.add(dirId);
-      setSelectedFiles(new Set());
-    }
-    setSelectedDirectories(newSelection);
   };
 
   const navigateToDirectory = (dirId: string) => {
@@ -165,8 +174,6 @@ const CloudExplorer = () => {
     if (dirId) params.set('dir', dirId);
     router.push(`/cloud?${params.toString()}`);
     setCurrentPath(dirId);
-    setSelectedFiles(new Set());
-    setSelectedDirectories(new Set());
   };
 
   const navigateToBreadcrumb = (breadcrumb: BreadcrumbItem) => {
@@ -175,12 +182,26 @@ const CloudExplorer = () => {
     if (dirId) params.set('dir', dirId);
     router.push(`/cloud?${params.toString()}`);
     setCurrentPath(dirId);
-    setSelectedFiles(new Set());
-    setSelectedDirectories(new Set());
   };
 
   return (
     <div className='flex grow flex-col p-6 max-w-7xl mx-auto'>
+      {/* Drag overlay */}
+      {isDragging && (
+        <div className='fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-8'>
+          <div className='bg-white dark:bg-neutral-800 rounded-xl p-10 text-center max-w-lg w-full border-2 border-dashed border-blue-400'>
+            <div className='flex justify-center mb-6'>
+              <FiUpload size={48} className='text-blue-500' />
+            </div>
+            <h3 className='text-2xl font-bold mb-2 dark:text-white'>Drop files to upload</h3>
+            <p className='text-neutral-600 dark:text-neutral-400'>
+              Files will be uploaded to{' '}
+              {explorerData.current_directory ? `"${explorerData.current_directory.name}"` : 'your root folder'}
+            </p>
+          </div>
+        </div>
+      )}
+
       <div className='mb-6 flex justify-between items-center'>
         <div>
           <h1 className='text-2xl font-semibold text-neutral-800 dark:text-white mb-1'>
@@ -191,17 +212,19 @@ const CloudExplorer = () => {
             {explorerData.directories.length !== 1 ? 's' : ''}
           </p>
         </div>
-        
-        <Link href="/cloud/upload">
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            className='flex items-center gap-2 bg-gradient-to-br from-violet-500 to-purple-500 text-white px-4 py-2 rounded-lg transition-all duration-200 font-medium'
-          >
-            <FiUpload size={18} />
-            <span>Upload</span>
-          </motion.button>
-        </Link>
+
+        <div className='flex items-center gap-3'>
+          <Link href='/cloud/upload'>
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className='flex items-center gap-2 border-white border-2 text-white px-4 py-2 rounded-lg transition-all duration-200 font-medium'
+            >
+              <FiUpload size={18} />
+              <span>Upload</span>
+            </motion.button>
+          </Link>
+        </div>
       </div>
 
       <div className='flex items-center mb-6 shadow-sm backdrop-blur-sm rounded-xl px-4 py-2.5 overflow-hidden border border-neutral-100 dark:border-neutral-700'>
@@ -250,89 +273,79 @@ const CloudExplorer = () => {
             <FiFolder className='w-14 h-14' />
           </div>
           <h3 className='text-xl font-semibold mb-3 text-neutral-800 dark:text-neutral-200'>This folder is empty</h3>
-          <p className='text-sm text-neutral-500 dark:text-neutral-400 max-w-xs'>
+          <p className='text-sm text-neutral-500 dark:text-neutral-400 max-w-xs mb-6'>
             Upload some files or create a new folder to get started
           </p>
+          <div className='flex gap-3'>
+            <Link href='/cloud/upload'>
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className='flex items-center gap-2 bg-gradient-to-br from-violet-500 to-purple-500 text-white px-4 py-2 rounded-lg transition-all duration-200 font-medium'
+              >
+                <FiUpload size={18} />
+                <span>Upload Files</span>
+              </motion.button>
+            </Link>
+          </div>
         </div>
       ) : (
         <div>
-          {explorerData.directories.length > 0 && (
-            <div className='mb-8'>
-              <h2 className='text-sm font-medium uppercase tracking-wider text-neutral-500 dark:text-neutral-400 mb-4 ml-1'>
-                Folders
-              </h2>
-              <div className='grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4'>
-                {explorerData.directories.map((directory) => (
-                  <div
-                    key={directory.id}
-                    className={`group relative bg-white dark:bg-neutral-800 rounded-xl transition-all duration-200 overflow-hidden ${
-                      selectedDirectories.has(directory.id) ? 'ring-2 ring-blue-500 dark:ring-blue-400' : 'hover:shadow-md shadow-sm'
-                    }`}
-                    onClick={(e) => {
-                      if (e.ctrlKey || e.metaKey) {
-                        toggleDirectorySelection(directory.id, e);
-                      } else {
-                        navigateToDirectory(directory.id);
-                      }
-                    }}
-                  >
-                    <div className='aspect-square flex flex-col items-center justify-center p-4 cursor-pointer'>
-                      <div className='flex justify-center items-center h-24 mb-3 text-blue-500 dark:text-blue-400 group-hover:text-blue-600 dark:group-hover:text-blue-300 transition-colors'>
-                        <FiFolder size={50} />
-                      </div>
-                      <div className='w-full'>
-                        <p className='font-medium text-sm whitespace-nowrap overflow-hidden text-ellipsis text-neutral-800 dark:text-neutral-200 text-center'>
-                          {directory.name}
-                        </p> 
-                      </div>
+          <div className='grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4'>
+            {/* Display directories first */}
+            {explorerData.directories.map((directory) => (
+              <div
+                key={directory.id}
+                className='group relative bg-white dark:bg-neutral-800 rounded-lg transition-all duration-200 overflow-hidden border border-neutral-200 dark:border-neutral-700 hover:shadow-md'
+                onClick={() => navigateToDirectory(directory.id)}
+              >
+                <div className='cursor-pointer'>
+                  <div className='aspect-video bg-neutral-100 dark:bg-neutral-800 flex justify-center items-center overflow-hidden'>
+                    <div className='flex justify-center items-center w-full h-full text-blue-500 dark:text-blue-400'>
+                      <FiFolder size={52} />
                     </div>
                   </div>
-                ))}
+                  <div className='p-3'>
+                    <p className='font-medium text-sm whitespace-nowrap overflow-hidden text-ellipsis text-neutral-800 dark:text-neutral-300 mb-1'>
+                      {directory.name}
+                    </p>
+                    <p className='text-xs text-neutral-500 dark:text-neutral-500'>Folder</p>
+                  </div>
+                </div>
               </div>
-            </div>
-          )}
+            ))}
 
-          {explorerData.files.length > 0 && (
-            <div>
-              <h2 className='text-sm font-medium uppercase tracking-wider text-neutral-500 dark:text-neutral-400 mb-4 ml-1'>Files</h2>
-              <div className='grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4'>
-                {explorerData.files.map((file) => (
-                  <div
-                    key={file.id}
-                    className={`group relative bg-white dark:bg-neutral-800 rounded-xl transition-all duration-200 overflow-hidden ${
-                      selectedFiles.has(file.id) ? 'ring-2 ring-blue-500 dark:ring-blue-400' : 'hover:shadow-md shadow-sm'
-                    }`}
-                    onClick={(e) => toggleFileSelection(file.id, e)}
-                  >
-                    <div className='aspect-square flex items-center justify-center bg-neutral-50 dark:bg-neutral-700/50'>{renderThumbnail(file)}</div>
-                    <div className='p-3'>
-                      <p className='font-medium text-sm whitespace-nowrap overflow-hidden text-ellipsis text-neutral-800 dark:text-neutral-200'>
+            {/* Then display files */}
+            {explorerData.files.map((file) => (
+              <div
+                key={file.id}
+                className='group relative bg-white dark:bg-neutral-800 rounded-lg transition-all duration-200 overflow-hidden border border-neutral-200 dark:border-neutral-700 hover:shadow-md'
+              >
+                <div className='cursor-pointer'>
+                  <div className='aspect-video bg-neutral-100 dark:bg-neutral-800 flex justify-center items-center overflow-hidden'>
+                    {renderThumbnail(file)}
+                  </div>
+                  <div className='p-3'>
+                    <div className='flex items-center mb-1'>
+                      <p className='font-medium text-sm whitespace-nowrap overflow-hidden text-ellipsis text-neutral-800 dark:text-neutral-300 flex-grow'>
                         {file.name}
                       </p>
-                      <div className='flex justify-between items-center mt-1'>
-                        <p className='text-xs text-neutral-500 dark:text-neutral-400'>{formatFileSize(file.size)}</p>
-                        <p className='text-xs text-neutral-500 dark:text-neutral-400'>
-                          {new Date(file.created_at).toLocaleDateString()}
-                        </p>
-                      </div>
+                    </div>
+                    <div className='flex justify-between items-center'>
+                      <p className='text-xs text-neutral-500 dark:text-neutral-500'>{formatFileSize(file.size)}</p>
+                      <p className='text-xs text-neutral-500 dark:text-neutral-500'>
+                        {new Date(file.created_at).toLocaleDateString()}
+                      </p>
                     </div>
                   </div>
-                ))}
+                </div>
               </div>
-            </div>
-          )}
+            ))}
+          </div>
         </div>
       )}
     </div>
   );
-};
-
-const formatFileSize = (bytes: number): string => {
-  if (bytes === 0) return '0 Bytes';
-  const k = 1024;
-  const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
-  const i = Math.floor(Math.log(bytes) / Math.log(k));
-  return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
 };
 
 export default CloudExplorer;
