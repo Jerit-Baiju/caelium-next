@@ -1,6 +1,7 @@
 'use client';
 
 import { BreadcrumbItem, ExplorerData, FileData } from '@/helpers/props';
+import useAxios from '@/hooks/useAxios';
 import useCloud from '@/hooks/useCloud';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
@@ -8,6 +9,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 import {
   FiArchive,
+  FiCheck,
   FiChevronRight,
   FiCode,
   FiFile,
@@ -18,12 +20,14 @@ import {
   FiMusic,
   FiUpload,
   FiVideo,
+  FiX,
 } from 'react-icons/fi';
 
 const CloudExplorer = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { formatFileSize, fetchExplorerData, fetchImageUrls, getFileThumbnailType } = useCloud();
+  const api = useAxios();
   const [loading, setLoading] = useState(true);
   const [explorerData, setExplorerData] = useState<ExplorerData>({
     directories: [],
@@ -39,6 +43,10 @@ const CloudExplorer = () => {
 
   // Drag and drop upload states
   const [isDragging, setIsDragging] = useState(false);
+  const [droppedFiles, setDroppedFiles] = useState<File[]>([]);
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [uploadProgressMap, setUploadProgressMap] = useState<Record<string, number>>({});
 
   useEffect(() => {
     const fetchData = async () => {
@@ -64,8 +72,6 @@ const CloudExplorer = () => {
 
     const handleDragLeave = (e: DragEvent) => {
       e.preventDefault();
-      // Only set isDragging to false if we're leaving the document
-      // This prevents flicker when moving between elements
       if (e.relatedTarget === null) {
         setIsDragging(false);
       }
@@ -74,6 +80,11 @@ const CloudExplorer = () => {
     const handleDrop = (e: DragEvent) => {
       e.preventDefault();
       setIsDragging(false);
+
+      if (e.dataTransfer?.files && e.dataTransfer.files.length > 0) {
+        const files = Array.from(e.dataTransfer.files);
+        setDroppedFiles(files);
+      }
     };
 
     document.addEventListener('dragover', handleDragOver);
@@ -87,12 +98,87 @@ const CloudExplorer = () => {
     };
   }, [isDragging]);
 
+  // Function to handle file upload - updated with proper parent_directory parameter
+  const handleUpload = async () => {
+    if (droppedFiles.length === 0) return;
+
+    setIsUploading(true);
+    setUploadProgress(0);
+
+    try {
+      const formData = new FormData();
+
+      // Add all selected files to FormData
+      droppedFiles.forEach((file) => {
+        formData.append('files', file);
+      });
+
+      // Set auto_organize to false
+      formData.append('auto_organize', 'false');
+
+      // Add parent_directory parameter if we have a currentPath
+      if (currentPath) {
+        formData.append('parent_directory', currentPath);
+      }
+
+      // Set progress tracking for each file
+      const newProgress: Record<string, number> = {};
+      droppedFiles.forEach((file) => {
+        newProgress[file.name] = 0;
+      });
+      setUploadProgressMap(newProgress);
+
+      // Configure upload with progress tracking
+      const response = await api.post('/api/cloud/upload/', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+        onUploadProgress: (progressEvent) => {
+          if (progressEvent.total) {
+            const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+            const updatedProgress: Record<string, number> = {};
+            droppedFiles.forEach((file) => {
+              updatedProgress[file.name] = percentCompleted;
+            });
+            setUploadProgressMap(updatedProgress);
+            setUploadProgress(percentCompleted);
+          }
+        },
+      });
+
+      const completedProgress: Record<string, number> = {};
+      droppedFiles.forEach((file) => {
+        completedProgress[file.name] = 100;
+      });
+      setUploadProgressMap(completedProgress);
+
+      const data = await fetchExplorerData(currentPath);
+      setExplorerData(data);
+
+      setTimeout(() => {
+        setDroppedFiles([]);
+      }, 1500);
+    } catch (error) {
+      console.error('Error uploading files:', error);
+
+      const failedProgress: Record<string, number> = {};
+      droppedFiles.forEach((file) => {
+        failedProgress[file.name] = -1;
+      });
+      setUploadProgressMap(failedProgress);
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  const cancelUpload = () => {
+    setDroppedFiles([]);
+  };
+
   useEffect(() => {
-    // Initialize imageUrls from cache for current files
     const cachedUrls: Record<string, string> = {};
     const filesToFetch: FileData[] = [];
 
-    // For each file that needs a thumbnail, check if it's in cache
     explorerData.files
       .filter((file) => getFileThumbnailType(file) === 'image')
       .forEach((file) => {
@@ -103,29 +189,24 @@ const CloudExplorer = () => {
         }
       });
 
-    // Set initial cached URLs
     if (Object.keys(cachedUrls).length > 0) {
       setImageUrls(cachedUrls);
     }
 
-    // Fetch uncached images in batches of 5
     const loadImageThumbnails = async () => {
       if (filesToFetch.length === 0) return;
 
-      // Process files in batches of 5
       for (let i = 0; i < filesToFetch.length; i += 5) {
         const batch = filesToFetch.slice(i, i + 5);
         try {
           const urls = await fetchImageUrls(batch);
           if (urls) {
-            // Update both the current state and the persistent cache for each image
             Object.entries(urls).forEach(([fileId, url]) => {
               setImageUrls((prevUrls) => ({
                 ...prevUrls,
-                [fileId]: url
+                [fileId]: url,
               }));
-              
-              // Update the persistent cache ref
+
               imageUrlsCacheRef.current = {
                 ...imageUrlsCacheRef.current,
                 [fileId]: url,
@@ -133,7 +214,7 @@ const CloudExplorer = () => {
             });
           }
         } catch (error) {
-          console.error(`Error loading thumbnails for batch ${i/5 + 1}:`, error);
+          console.error(`Error loading thumbnails for batch ${i / 5 + 1}:`, error);
         }
       }
     };
@@ -156,7 +237,6 @@ const CloudExplorer = () => {
 
     const { icon: Icon, color } = typeToIcon[thumbnailType as keyof typeof typeToIcon] || typeToIcon.default;
 
-    // Check both current imageUrls and the persistent cache
     if (thumbnailType === 'image' && (imageUrls[file.id] || imageUrlsCacheRef.current[file.id])) {
       const imageUrl = imageUrls[file.id] || imageUrlsCacheRef.current[file.id];
       return <img src={imageUrl} alt={file.name} className='w-full h-full object-cover rounded-md' />;
@@ -186,7 +266,6 @@ const CloudExplorer = () => {
 
   return (
     <div className='flex grow flex-col p-6 max-w-7xl mx-auto'>
-      {/* Drag overlay */}
       {isDragging && (
         <div className='fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-8'>
           <div className='bg-white dark:bg-neutral-800 rounded-xl p-10 text-center max-w-lg w-full border-2 border-dashed border-blue-400'>
@@ -198,6 +277,100 @@ const CloudExplorer = () => {
               Files will be uploaded to{' '}
               {explorerData.current_directory ? `"${explorerData.current_directory.name}"` : 'your root folder'}
             </p>
+          </div>
+        </div>
+      )}
+
+      {droppedFiles.length > 0 && (
+        <div className='fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-8'>
+          <div className='bg-white dark:bg-neutral-800 rounded-xl p-6 max-w-2xl w-full border border-neutral-200 dark:border-neutral-700'>
+            <div className='flex justify-between items-center mb-4'>
+              <h3 className='text-xl font-bold dark:text-white'>Confirm Upload</h3>
+              <button
+                onClick={cancelUpload}
+                className='p-1 rounded-full hover:bg-neutral-100 dark:hover:bg-neutral-700'
+                disabled={isUploading}
+              >
+                <FiX size={20} />
+              </button>
+            </div>
+
+            {isUploading ? (
+              <div className='mb-6'>
+                <p className='mb-2 text-neutral-600 dark:text-neutral-400'>Uploading files... ({uploadProgress}%)</p>
+                <div className='w-full bg-neutral-200 dark:bg-neutral-700 rounded-full h-2.5'>
+                  <div
+                    className='bg-blue-500 h-2.5 rounded-full'
+                    style={{ width: `${uploadProgress}%` }}
+                  ></div>
+                </div>
+              </div>
+            ) : (
+              <>
+                <p className='mb-4 text-neutral-600 dark:text-neutral-400'>
+                  {droppedFiles.length} file{droppedFiles.length !== 1 ? 's' : ''} ready to upload to{' '}
+                  {explorerData.current_directory ? `"${explorerData.current_directory.name}"` : 'your root folder'}
+                </p>
+
+                <div className='max-h-60 overflow-y-auto mb-6 border border-neutral-200 dark:border-neutral-700 rounded-lg'>
+                  <ul className='divide-y divide-neutral-200 dark:divide-neutral-700'>
+                    {droppedFiles.map((file, index) => (
+                      <li key={index} className='p-3 flex justify-between items-center'>
+                        <div className='flex items-center gap-3'>
+                          <div className='text-neutral-500'>
+                            {file.type.startsWith('image/') ? (
+                              <FiImage size={20} />
+                            ) : file.type.startsWith('video/') ? (
+                              <FiVideo size={20} />
+                            ) : file.type.startsWith('audio/') ? (
+                              <FiMusic size={20} />
+                            ) : (
+                              <FiFile size={20} />
+                            )}
+                          </div>
+                          <span className='text-sm truncate max-w-xs'>{file.name}</span>
+                        </div>
+                        <div className='flex items-center'>
+                          {uploadProgressMap[file.name] === 100 && (
+                            <div className='flex items-center text-green-500 dark:text-green-400 mr-2'>
+                              <FiCheck size={16} />
+                            </div>
+                          )}
+                          {uploadProgressMap[file.name] === -1 && (
+                            <span className='text-red-500 text-xs mr-2'>Failed</span>
+                          )}
+                          <span className='text-xs text-neutral-500'>{formatFileSize(file.size)}</span>
+                        </div>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </>
+            )}
+
+            <div className='flex justify-end gap-3'>
+              <button
+                onClick={cancelUpload}
+                disabled={isUploading}
+                className={`px-4 py-2 rounded-lg border border-neutral-200 dark:border-neutral-700 text-sm
+                  ${isUploading ? 'opacity-50 cursor-not-allowed' : 'hover:bg-neutral-100 dark:hover:bg-neutral-700'}`}
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleUpload}
+                disabled={isUploading}
+                className={`px-4 py-2 rounded-lg bg-blue-500 text-white flex items-center gap-2 text-sm
+                  ${isUploading ? 'opacity-50 cursor-not-allowed' : 'hover:bg-blue-600'}`}
+              >
+                {isUploading ? 'Uploading...' : (
+                  <>
+                    <FiCheck size={16} />
+                    Confirm Upload
+                  </>
+                )}
+              </button>
+            </div>
           </div>
         </div>
       )}
@@ -292,7 +465,6 @@ const CloudExplorer = () => {
       ) : (
         <div>
           <div className='grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4'>
-            {/* Display directories first */}
             {explorerData.directories.map((directory) => (
               <div
                 key={directory.id}
@@ -315,7 +487,6 @@ const CloudExplorer = () => {
               </div>
             ))}
 
-            {/* Then display files */}
             {explorerData.files.map((file) => (
               <div
                 key={file.id}
