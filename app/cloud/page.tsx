@@ -376,15 +376,22 @@ const CloudExplorer = () => {
       )}
 
       <div className='mb-6 flex justify-between items-center'>
-        <div>
-          <h1 className='text-2xl font-semibold text-neutral-800 dark:text-white mb-1'>
-            {explorerData.current_directory ? explorerData.current_directory.name : 'My Cloud'}
-          </h1>
-          <p className='text-sm text-neutral-500 dark:text-neutral-400'>
-            {explorerData.files.length} file{explorerData.files.length !== 1 ? 's' : ''} • {explorerData.directories.length} folder
-            {explorerData.directories.length !== 1 ? 's' : ''}
-          </p>
-        </div>
+        {loading ? (
+          <div className='animate-pulse'>
+            <div className='h-7 bg-neutral-200 dark:bg-neutral-700 rounded w-64 mb-2'></div>
+            <div className='h-4 bg-neutral-200 dark:bg-neutral-700 rounded w-40'></div>
+          </div>
+        ) : (
+          <div>
+            <h1 className='text-2xl font-semibold text-neutral-800 dark:text-white mb-1'>
+              {explorerData.current_directory ? explorerData.current_directory.name : 'My Cloud'}
+            </h1>
+            <p className='text-sm text-neutral-500 dark:text-neutral-400'>
+              {explorerData.files.length} file{explorerData.files.length !== 1 ? 's' : ''} • {explorerData.directories.length} folder
+              {explorerData.directories.length !== 1 ? 's' : ''}
+            </p>
+          </div>
+        )}
 
         <div className='flex items-center gap-3'>
           <Link href='/cloud/upload'>
@@ -401,42 +408,69 @@ const CloudExplorer = () => {
       </div>
 
       <div className='flex items-center mb-6 shadow-sm backdrop-blur-sm rounded-xl px-4 py-2.5 overflow-hidden border border-neutral-100 dark:border-neutral-700'>
-        <div className='flex items-center space-x-1 overflow-x-auto scrollbar-hide w-full'>
-          <div className='flex items-center'>
-            <button
-              onClick={() => navigateToDirectory('')}
-              className={`flex items-center justify-center gap-2 py-1.5 px-3 rounded-lg transition-all duration-200`}
-            >
-              <FiHome className='flex-shrink-0' size={15} />
-              <span className='text-sm whitespace-nowrap'>Home</span>
-            </button>
+        {loading ? (
+          <div className='flex items-center space-x-2 w-full py-1'>
+            <div className='flex items-center py-1.5 px-3 rounded-lg'>
+              <div className='h-5 bg-neutral-200 dark:bg-neutral-700 rounded w-14'></div>
+            </div>
+            <div className='text-neutral-400 dark:text-neutral-500'>
+              <FiChevronRight size={14} />
+            </div>
+            <div className='py-1.5 px-3 rounded-lg'>
+              <div className='h-5 bg-neutral-200 dark:bg-neutral-700 rounded w-24'></div>
+            </div>
+            <div className='text-neutral-400 dark:text-neutral-500'>
+              <FiChevronRight size={14} />
+            </div>
+            <div className='py-1.5 px-3 rounded-lg'>
+              <div className='h-5 bg-neutral-200 dark:bg-neutral-700 rounded w-32'></div>
+            </div>
           </div>
-
-          {explorerData.breadcrumbs.map((breadcrumb, index) => (
-            <div key={index} className='flex items-center flex-shrink-0'>
-              <span className='mx-1.5 text-neutral-400 dark:text-neutral-500'>
-                <FiChevronRight className='flex-shrink-0' size={14} />
-              </span>
+        ) : (
+          <div className='flex items-center space-x-1 overflow-x-auto scrollbar-hide w-full'>
+            <div className='flex items-center'>
               <button
-                onClick={() => navigateToBreadcrumb(breadcrumb)}
-                className={`py-1.5 px-3 rounded-lg text-sm transition-all duration-200 flex items-center`}
+                onClick={() => navigateToDirectory('')}
+                className={`flex items-center justify-center gap-2 py-1.5 px-3 rounded-lg transition-all duration-200`}
               >
-                <span className='truncate max-w-[150px]' title={breadcrumb.name}>
-                  {breadcrumb.name}
-                </span>
+                <FiHome className='flex-shrink-0' size={15} />
+                <span className='text-sm whitespace-nowrap'>Home</span>
               </button>
             </div>
-          ))}
-        </div>
+
+            {explorerData.breadcrumbs.map((breadcrumb, index) => (
+              <div key={index} className='flex items-center flex-shrink-0'>
+                <span className='mx-1.5 text-neutral-400 dark:text-neutral-500'>
+                  <FiChevronRight className='flex-shrink-0' size={14} />
+                </span>
+                <button
+                  onClick={() => navigateToBreadcrumb(breadcrumb)}
+                  className={`py-1.5 px-3 rounded-lg text-sm transition-all duration-200 flex items-center`}
+                >
+                  <span className='truncate max-w-[150px]' title={breadcrumb.name}>
+                    {breadcrumb.name}
+                  </span>
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
       {loading ? (
-        <div className='grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4'>
+        <div className='grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-5 gap-4'>
           {Array.from({ length: 12 }).map((_, index) => (
-            <div key={index} className='animate-pulse'>
-              <div className='bg-neutral-200 dark:bg-neutral-700 aspect-square rounded-xl mb-3'></div>
-              <div className='h-4 bg-neutral-200 dark:bg-neutral-700 rounded w-3/4 mb-2'></div>
-              <div className='h-3 bg-neutral-200 dark:bg-neutral-700 rounded w-1/2'></div>
+            <div key={index} className='animate-pulse rounded-lg border border-neutral-200 dark:border-neutral-700 overflow-hidden'>
+              <div className='aspect-square bg-neutral-100 dark:bg-neutral-800 flex justify-center items-center'>
+                <div className='bg-neutral-200 dark:bg-neutral-700 h-16 w-16 rounded'></div>
+              </div>
+              <div className='p-3'>
+                <div className='h-4 bg-neutral-200 dark:bg-neutral-700 rounded w-3/4 mb-2'></div>
+                <div className='flex justify-between'>
+                  <div className='h-3 bg-neutral-200 dark:bg-neutral-700 rounded w-1/3'></div>
+                  <div className='h-3 bg-neutral-200 dark:bg-neutral-700 rounded w-1/4'></div>
+                </div>
+              </div>
             </div>
           ))}
         </div>
@@ -464,7 +498,7 @@ const CloudExplorer = () => {
         </div>
       ) : (
         <div>
-          <div className='grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4'>
+          <div className='grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-5 gap-4'>
             {explorerData.directories.map((directory) => (
               <div
                 key={directory.id}
@@ -472,9 +506,9 @@ const CloudExplorer = () => {
                 onClick={() => navigateToDirectory(directory.id)}
               >
                 <div className='cursor-pointer'>
-                  <div className='aspect-video bg-neutral-100 dark:bg-neutral-800 flex justify-center items-center overflow-hidden'>
+                  <div className='aspect-square bg-neutral-100 dark:bg-neutral-800 flex justify-center items-center overflow-hidden'>
                     <div className='flex justify-center items-center w-full h-full text-blue-500 dark:text-blue-400'>
-                      <FiFolder size={52} />
+                      <FiFolder size={64} />
                     </div>
                   </div>
                   <div className='p-3'>
@@ -493,7 +527,7 @@ const CloudExplorer = () => {
                 className='group relative bg-white dark:bg-neutral-800 rounded-lg transition-all duration-200 overflow-hidden border border-neutral-200 dark:border-neutral-700 hover:shadow-md'
               >
                 <div className='cursor-pointer'>
-                  <div className='aspect-video bg-neutral-100 dark:bg-neutral-800 flex justify-center items-center overflow-hidden'>
+                  <div className='aspect-square bg-neutral-100 dark:bg-neutral-800 flex justify-center items-center overflow-hidden'>
                     {renderThumbnail(file)}
                   </div>
                   <div className='p-3'>
