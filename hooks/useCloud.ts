@@ -34,7 +34,7 @@ export default function useCloud(options: UseCloudOptions = {}) {
   const { toast } = useToast();
 
   // Get current directory from URL query parameter or use provided initialDirectoryId
-  const currentDirId = searchParams.get('dir') || initialDirectoryId;
+  const currentDirId = searchParams?.get('dir') || initialDirectoryId;
 
   // States
   const [loading, setLoading] = useState(true);
