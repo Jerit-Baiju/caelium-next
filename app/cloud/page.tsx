@@ -2,9 +2,11 @@
 
 import { BreadcrumbItem, ExplorerData, FileData } from '@/helpers/props';
 import useAxios from '@/hooks/useAxios';
+import { motion } from 'framer-motion';
+import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { FiArchive, FiChevronRight, FiCode, FiFile, FiFileText, FiFolder, FiHome, FiImage, FiMusic, FiVideo } from 'react-icons/fi';
+import { FiArchive, FiChevronRight, FiCode, FiFile, FiFileText, FiFolder, FiHome, FiImage, FiMusic, FiUpload, FiVideo } from 'react-icons/fi';
 
 const CloudExplorer = () => {
   const router = useRouter();
@@ -179,14 +181,27 @@ const CloudExplorer = () => {
 
   return (
     <div className='flex grow flex-col p-6 max-w-7xl mx-auto'>
-      <div className='mb-6'>
-        <h1 className='text-2xl font-semibold text-neutral-800 dark:text-white mb-1'>
-          {explorerData.current_directory ? explorerData.current_directory.name : 'My Files'}
-        </h1>
-        <p className='text-sm text-neutral-500 dark:text-neutral-400'>
-          {explorerData.files.length} file{explorerData.files.length !== 1 ? 's' : ''} • {explorerData.directories.length} folder
-          {explorerData.directories.length !== 1 ? 's' : ''}
-        </p>
+      <div className='mb-6 flex justify-between items-center'>
+        <div>
+          <h1 className='text-2xl font-semibold text-neutral-800 dark:text-white mb-1'>
+            {explorerData.current_directory ? explorerData.current_directory.name : 'My Cloud'}
+          </h1>
+          <p className='text-sm text-neutral-500 dark:text-neutral-400'>
+            {explorerData.files.length} file{explorerData.files.length !== 1 ? 's' : ''} • {explorerData.directories.length} folder
+            {explorerData.directories.length !== 1 ? 's' : ''}
+          </p>
+        </div>
+        
+        <Link href="/cloud/upload">
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            className='flex items-center gap-2 bg-gradient-to-br from-violet-500 to-purple-500 text-white px-4 py-2 rounded-lg transition-all duration-200 font-medium'
+          >
+            <FiUpload size={18} />
+            <span>Upload</span>
+          </motion.button>
+        </Link>
       </div>
 
       <div className='flex items-center mb-6 shadow-sm backdrop-blur-sm rounded-xl px-4 py-2.5 overflow-hidden border border-neutral-100 dark:border-neutral-700'>
@@ -232,7 +247,7 @@ const CloudExplorer = () => {
       ) : explorerData.directories.length === 0 && explorerData.files.length === 0 ? (
         <div className='flex grow flex-col items-center mt-20 text-center rounded-xl shadow-sm mx-auto w-full'>
           <div className='p-5 rounded-full mb-5'>
-            <FiFolder className='w-14 h-14 text-blue-400 dark:text-blue-300' />
+            <FiFolder className='w-14 h-14' />
           </div>
           <h3 className='text-xl font-semibold mb-3 text-neutral-800 dark:text-neutral-200'>This folder is empty</h3>
           <p className='text-sm text-neutral-500 dark:text-neutral-400 max-w-xs'>
@@ -261,24 +276,16 @@ const CloudExplorer = () => {
                       }
                     }}
                   >
-                    <div className='p-4 cursor-pointer'>
-                      <div className='flex justify-center items-center h-16 mb-3 text-blue-500 dark:text-blue-400 group-hover:text-blue-600 dark:group-hover:text-blue-300 transition-colors'>
-                        <FiFolder size={40} />
+                    <div className='aspect-square flex flex-col items-center justify-center p-4 cursor-pointer'>
+                      <div className='flex justify-center items-center h-24 mb-3 text-blue-500 dark:text-blue-400 group-hover:text-blue-600 dark:group-hover:text-blue-300 transition-colors'>
+                        <FiFolder size={50} />
                       </div>
-                      <div className='text-center'>
-                        <p className='font-medium text-sm whitespace-nowrap overflow-hidden text-ellipsis text-neutral-800 dark:text-neutral-200'>
+                      <div className='w-full'>
+                        <p className='font-medium text-sm whitespace-nowrap overflow-hidden text-ellipsis text-neutral-800 dark:text-neutral-200 text-center'>
                           {directory.name}
-                        </p>
-                        <p className='text-xs text-neutral-500 dark:text-neutral-400 mt-1'>
-                          {new Date(directory.modified_at).toLocaleDateString()}
-                        </p>
+                        </p> 
                       </div>
                     </div>
-                    {selectedDirectories.has(directory.id) && (
-                      <div className='absolute top-2 right-2 w-5 h-5 bg-blue-500 rounded-full flex items-center justify-center'>
-                        <span className='text-white text-xs'>✓</span>
-                      </div>
-                    )}
                   </div>
                 ))}
               </div>
@@ -297,9 +304,9 @@ const CloudExplorer = () => {
                     }`}
                     onClick={(e) => toggleFileSelection(file.id, e)}
                   >
-                    <div className='aspect-square bg-neutral-50 dark:bg-neutral-700/50'>{renderThumbnail(file)}</div>
+                    <div className='aspect-square flex items-center justify-center bg-neutral-50 dark:bg-neutral-700/50'>{renderThumbnail(file)}</div>
                     <div className='p-3'>
-                      <p className='text-sm whitespace-nowrap overflow-hidden text-ellipsis text-neutral-800 dark:text-neutral-200 font-medium'>
+                      <p className='font-medium text-sm whitespace-nowrap overflow-hidden text-ellipsis text-neutral-800 dark:text-neutral-200'>
                         {file.name}
                       </p>
                       <div className='flex justify-between items-center mt-1'>
@@ -309,11 +316,6 @@ const CloudExplorer = () => {
                         </p>
                       </div>
                     </div>
-                    {selectedFiles.has(file.id) && (
-                      <div className='absolute top-2 right-2 w-5 h-5 bg-blue-500 rounded-full flex items-center justify-center'>
-                        <span className='text-white text-xs'>✓</span>
-                      </div>
-                    )}
                   </div>
                 ))}
               </div>
