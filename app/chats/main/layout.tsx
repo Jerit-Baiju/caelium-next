@@ -5,7 +5,7 @@ import { usePathname } from 'next/navigation';
 
 export default function ChatsLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const showMobilePane = pathname === '/chats';
+  const showMobilePane = pathname === '/chats/main';
 
   return (
     <ChatsPaneProvider>
