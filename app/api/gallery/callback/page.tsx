@@ -19,8 +19,10 @@ const Page = () => {
         router.replace('/gallery');
       }
     };
-    const auth_code = searchParams.get('code');
-    fetch_tokens(auth_code);
+    const auth_code = searchParams?.get('code');
+    if (auth_code) {
+      fetch_tokens(auth_code);
+    }
   }, [searchParams]);
   
   return (

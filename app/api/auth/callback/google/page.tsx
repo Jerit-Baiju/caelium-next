@@ -30,6 +30,7 @@ const Page = () => {
     // Prevent double execution or processing after errors
     if (isProcessing || isSuccess || isError || processingAttempted.current) return;
 
+    if (!searchParams) return;
     const auth_code = searchParams.get('code');
     if (!auth_code) {
       // No auth code, redirect to welcome
