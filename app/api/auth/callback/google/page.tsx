@@ -84,7 +84,7 @@ const Page = () => {
               description: errorData.error || 'Only @mariancollege.org email addresses are allowed.',
             });
           } else {
-            toast({
+            console.log({
               variant: 'destructive',
               title: 'Authentication Error',
               description: `Error ${response.status}: ${errorData.error || 'An unexpected error occurred. Please try again.'}`,
