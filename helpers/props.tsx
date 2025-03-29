@@ -132,8 +132,8 @@ export interface FileData {
   mime_type: string;
   content: string;
   download_url: string;
-  preview_url: string | null;
   category: string;
+  drive_file_id: string;
 }
 
 export interface MediaItem {
@@ -159,4 +159,21 @@ export interface Directory {
   created_at: string;
   modified_at: string;
   path: string;
+}
+
+export interface BreadcrumbItem {
+  id: string;
+  name: string;
+  parent: string | null;
+}
+
+export interface ExplorerData {
+  directories: Directory[];
+  files: FileData[];
+  breadcrumbs: BreadcrumbItem[];
+  current_directory: {
+    id: string;
+    name: string;
+    parent: string | null;
+  } | null;
 }
