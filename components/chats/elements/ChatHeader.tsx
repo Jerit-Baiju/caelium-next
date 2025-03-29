@@ -67,7 +67,7 @@ const ChatHeader = () => {
             <i className='fa-solid fa-arrow-left ms-2'></i>
           </div>
         </motion.div>
-        <Link href={`/chats/${meta?.id}/info`} className='flex grow items-center cursor-default'>
+        <Link href={`/chats/main/${meta?.id}/info`} className='flex grow items-center cursor-default'>
           {!meta?.is_group ? (
             <img
               className='h-12 my-2 w-12 max-sm:h-12 max-sm:w-12 rounded-full dark:bg-white object-cover'

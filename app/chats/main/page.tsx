@@ -71,7 +71,7 @@ const Page = () => {
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.9 }}
           onClick={() => {
-            router.replace('/chats/new');
+            router.replace('/chats/main/new');
           }}
           className='w-14 h-14 bg-linear-to-br from-violet-500 to-purple-500 rounded-full flex items-center justify-center text-white shadow-lg'
         >
