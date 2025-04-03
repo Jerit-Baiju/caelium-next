@@ -12,6 +12,7 @@ const useAxios = () => {
     baseURL,
     headers: { Authorization: authTokens?.access ? `Bearer ${authTokens.access}` : '' },
   });
+  
   axiosInstance.interceptors.request.use(async (request) => {
     if (!authTokens?.access) {
       return request;
@@ -19,6 +20,7 @@ const useAxios = () => {
     const user = jwtDecode(authTokens.access);
     const isExpired = dayjs.unix(Number(user.exp)).diff(dayjs()) < 1;
     if (!isExpired) return request;
+    
     try {
       const response = await axios.post(`${baseURL}/api/auth/token/refresh/`, {
         refresh: authTokens.refresh,
@@ -32,9 +34,11 @@ const useAxios = () => {
       if (error.response?.status === 401 && error.response?.statusText === 'Unauthorized') {
         logoutUser();
       }
-      throw error;
+      // Properly reject the interceptor so the calling code knows authentication failed
+      return Promise.reject(error);
     }
   });
+  
   return axiosInstance;
 };
 
