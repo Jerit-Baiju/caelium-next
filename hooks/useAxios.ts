@@ -6,6 +6,10 @@ import { useContext } from 'react';
 
 const baseURL = process.env.NEXT_PUBLIC_API_HOST;
 
+// Track if a refresh is in progress to prevent multiple simultaneous refresh requests
+let isRefreshingToken = false;
+let refreshPromise: Promise<any> | null = null;
+
 const useAxios = () => {
   const { authTokens, setTokenData, setAuthTokens, logoutUser } = useContext(AuthContext);
   const axiosInstance = axios.create({
@@ -17,24 +21,57 @@ const useAxios = () => {
     if (!authTokens?.access) {
       return request;
     }
-    const user = jwtDecode(authTokens.access);
-    const isExpired = dayjs.unix(Number(user.exp)).diff(dayjs()) < 1;
-    if (!isExpired) return request;
     
     try {
-      const response = await axios.post(`${baseURL}/api/auth/token/refresh/`, {
+      const user = jwtDecode(authTokens.access);
+      // Add a buffer of 60 seconds to refresh before actual expiration
+      const isExpired = dayjs.unix(Number(user.exp)).diff(dayjs()) < 60000;
+      
+      if (!isExpired) return request;
+      
+      // If we're already refreshing, wait for that to complete
+      if (isRefreshingToken && refreshPromise) {
+        try {
+          const newTokens = await refreshPromise;
+          request.headers.Authorization = `Bearer ${newTokens.access}`;
+          return request;
+        } catch (error) {
+          // If waiting on the existing refresh fails, we'll try again below
+          console.log('Waiting for refresh failed, attempting new refresh');
+        }
+      }
+      
+      // Start a new refresh process
+      isRefreshingToken = true;
+      refreshPromise = axios.post(`${baseURL}/api/auth/token/refresh/`, {
         refresh: authTokens.refresh,
+      }).then(response => {
+        localStorage.setItem('authTokens', JSON.stringify(response.data));
+        setAuthTokens(response.data);
+        setTokenData(jwtDecode(response.data.access));
+        request.headers.Authorization = `Bearer ${response.data.access}`;
+        return response.data;
+      }).catch(error => {
+        if (error.response?.status === 401) {
+          logoutUser();
+        }
+        return Promise.reject(error);
+      }).finally(() => {
+        isRefreshingToken = false;
+        refreshPromise = null;
       });
-      localStorage.setItem('authTokens', JSON.stringify(response.data));
-      setAuthTokens(response.data);
-      setTokenData(jwtDecode(response.data.access));
-      request.headers.Authorization = `Bearer ${response.data.access}`;
-      return request;
+      
+      try {
+        const newTokens = await refreshPromise;
+        return request;
+      } catch (error) {
+        return Promise.reject(error);
+      }
     } catch (error: any) {
-      if (error.response?.status === 401 && error.response?.statusText === 'Unauthorized') {
+      console.error('Token refresh error:', error);
+      if (error.response?.status === 401) {
         logoutUser();
       }
-      // Properly reject the interceptor so the calling code knows authentication failed
       return Promise.reject(error);
     }
   });
