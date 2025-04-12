@@ -103,7 +103,7 @@ const FilePreview = ({
       setPosition({ x: 0, y: 0 });
       setIsPlaying(false);
       setCurrentTime(0);
-      setFullscreen(false); // Reset fullscreen state for new files
+      // Don't reset fullscreen state when changing files
       setImageLoaded(false); // Reset image loading state
       loadPreview();
     }
@@ -311,7 +311,7 @@ const FilePreview = ({
       transition: { duration: 0.3 },
     },
     exit: {
-      opacity: 0,
+      opacity: 0, 
       scale: 0.9,
       transition: { duration: 0.2 },
     },
