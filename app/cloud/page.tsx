@@ -1,5 +1,6 @@
 'use client';
 
+import FilePreview from '@/components/cloud/preview';
 import { BreadcrumbItem, ExplorerData, FileData } from '@/helpers/props';
 import useAxios from '@/hooks/useAxios';
 import useCloud from '@/hooks/useCloud';
@@ -35,6 +36,18 @@ const CloudExplorer = () => {
     breadcrumbs: [],
     current_directory: null,
   });
+
+  // File preview states
+  const [previewFile, setPreviewFile] = useState<{
+    id: string;
+    name: string;
+    size: string;
+    time: string;
+    download_url: string;
+    mime_type: string;
+  } | null>(null);
+  const [previewOpen, setPreviewOpen] = useState(false);
+  const [currentFileIndex, setCurrentFileIndex] = useState(-1);
 
   // Use useRef to persist the image cache between directory navigations
   const imageUrlsCacheRef = useRef<Record<string, string>>({});
@@ -262,6 +275,129 @@ const CloudExplorer = () => {
     if (dirId) params.set('dir', dirId);
     router.push(`/cloud?${params.toString()}`);
     setCurrentPath(dirId);
+  };
+
+  // Handle opening the file preview
+  const openFilePreview = (file: FileData, index: number) => {
+    // For image files, check if we already have a cached version
+    const isImage = file.mime_type.startsWith('image/');
+    let cachedUrl = null;
+    
+    if (isImage) {
+      // Try to get the cached URL from our image cache
+      cachedUrl = imageUrls[file.id] || imageUrlsCacheRef.current[file.id];
+    }
+    
+    setPreviewFile({
+      id: file.id,
+      name: file.name,
+      size: formatFileSize(file.size),
+      time: new Date(file.created_at).toLocaleDateString(),
+      download_url: cachedUrl || file.download_url, // Use cached URL if available
+      mime_type: file.mime_type,
+    });
+    setCurrentFileIndex(index);
+    setPreviewOpen(true);
+  };
+
+  // Handle closing the file preview
+  const closeFilePreview = () => {
+    setPreviewOpen(false);
+    setPreviewFile(null);
+  };
+
+  // Navigate to the next file in preview
+  const goToNextFile = () => {
+    if (currentFileIndex < explorerData.files.length - 1) {
+      const nextIndex = currentFileIndex + 1;
+      const nextFile = explorerData.files[nextIndex];
+      
+      // For image files, check if we already have a cached version
+      const isImage = nextFile.mime_type.startsWith('image/');
+      let cachedUrl = null;
+      
+      if (isImage) {
+        // Try to get the cached URL from our image cache
+        cachedUrl = imageUrls[nextFile.id] || imageUrlsCacheRef.current[nextFile.id];
+      }
+      
+      setPreviewFile({
+        id: nextFile.id,
+        name: nextFile.name,
+        size: formatFileSize(nextFile.size),
+        time: new Date(nextFile.created_at).toLocaleDateString(),
+        download_url: cachedUrl || nextFile.download_url, // Use cached URL if available
+        mime_type: nextFile.mime_type,
+      });
+      setCurrentFileIndex(nextIndex);
+    }
+  };
+
+  // Navigate to the previous file in preview
+  const goToPreviousFile = () => {
+    if (currentFileIndex > 0) {
+      const prevIndex = currentFileIndex - 1;
+      const prevFile = explorerData.files[prevIndex];
+      
+      // For image files, check if we already have a cached version
+      const isImage = prevFile.mime_type.startsWith('image/');
+      let cachedUrl = null;
+      
+      if (isImage) {
+        // Try to get the cached URL from our image cache
+        cachedUrl = imageUrls[prevFile.id] || imageUrlsCacheRef.current[prevFile.id];
+      }
+      
+      setPreviewFile({
+        id: prevFile.id,
+        name: prevFile.name,
+        size: formatFileSize(prevFile.size),
+        time: new Date(prevFile.created_at).toLocaleDateString(),
+        download_url: cachedUrl || prevFile.download_url, // Use cached URL if available
+        mime_type: prevFile.mime_type,
+      });
+      setCurrentFileIndex(prevIndex);
+    }
+  };
+
+  // Handle file download
+  const handleFileDownload = async (url: string, fileName: string) => {
+    try {
+      // Get auth token from localStorage
+      const authTokensStr = localStorage.getItem('authTokens');
+      if (!authTokensStr) {
+        console.error('Authentication required');
+        return;
+      }
+
+      const authTokens = JSON.parse(authTokensStr);
+      const accessToken = authTokens.access;
+
+      // Use fetch API to get the file with proper authorization
+      const response = await fetch(url, {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(`Download failed: ${response.status} ${response.statusText}`);
+      }
+
+      // Create a blob and download the file
+      const blob = await response.blob();
+      const downloadUrl = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = downloadUrl;
+      a.download = fileName;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(downloadUrl);
+      document.body.removeChild(a);
+    } catch (error) {
+      console.error('Download error:', error);
+    }
   };
 
   return (
@@ -521,10 +657,11 @@ const CloudExplorer = () => {
               </div>
             ))}
 
-            {explorerData.files.map((file) => (
+            {explorerData.files.map((file, index) => (
               <div
                 key={file.id}
                 className='group relative bg-white dark:bg-neutral-800 rounded-lg transition-all duration-200 overflow-hidden border border-neutral-200 dark:border-neutral-700 hover:shadow-md'
+                onClick={() => openFilePreview(file, index)}
               >
                 <div className='cursor-pointer'>
                   <div className='aspect-square bg-neutral-100 dark:bg-neutral-800 flex justify-center items-center overflow-hidden'>
@@ -549,6 +686,18 @@ const CloudExplorer = () => {
           </div>
         </div>
       )}
+
+      {/* File Preview Component */}
+      <FilePreview 
+        isOpen={previewOpen}
+        onClose={closeFilePreview}
+        file={previewFile}
+        onDownload={handleFileDownload}
+        onNext={currentFileIndex < explorerData.files.length - 1 ? goToNextFile : undefined}
+        onPrevious={currentFileIndex > 0 ? goToPreviousFile : undefined}
+        hasNext={currentFileIndex < explorerData.files.length - 1}
+        hasPrevious={currentFileIndex > 0}
+      />
     </div>
   );
 };
