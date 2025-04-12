@@ -209,23 +209,24 @@ const CloudExplorer = () => {
     const loadImageThumbnails = async () => {
       if (filesToFetch.length === 0) return;
 
+      // Handle each image as it loads
+      const handleImageLoaded = (fileId: string, url: string) => {
+        setImageUrls((prevUrls) => ({
+          ...prevUrls,
+          [fileId]: url,
+        }));
+
+        imageUrlsCacheRef.current = {
+          ...imageUrlsCacheRef.current,
+          [fileId]: url,
+        };
+      };
+
       for (let i = 0; i < filesToFetch.length; i += 5) {
         const batch = filesToFetch.slice(i, i + 5);
         try {
-          const urls = await fetchImageUrls(batch);
-          if (urls) {
-            Object.entries(urls).forEach(([fileId, url]) => {
-              setImageUrls((prevUrls) => ({
-                ...prevUrls,
-                [fileId]: url,
-              }));
-
-              imageUrlsCacheRef.current = {
-                ...imageUrlsCacheRef.current,
-                [fileId]: url,
-              };
-            });
-          }
+          // Pass the callback to handle each image as it loads
+          await fetchImageUrls(batch, handleImageLoaded);
         } catch (error) {
           console.error(`Error loading thumbnails for batch ${i / 5 + 1}:`, error);
         }
@@ -282,12 +283,12 @@ const CloudExplorer = () => {
     // For image files, check if we already have a cached version
     const isImage = file.mime_type.startsWith('image/');
     let cachedUrl = null;
-    
+
     if (isImage) {
       // Try to get the cached URL from our image cache
       cachedUrl = imageUrls[file.id] || imageUrlsCacheRef.current[file.id];
     }
-    
+
     setPreviewFile({
       id: file.id,
       name: file.name,
@@ -311,16 +312,16 @@ const CloudExplorer = () => {
     if (currentFileIndex < explorerData.files.length - 1) {
       const nextIndex = currentFileIndex + 1;
       const nextFile = explorerData.files[nextIndex];
-      
+
       // For image files, check if we already have a cached version
       const isImage = nextFile.mime_type.startsWith('image/');
       let cachedUrl = null;
-      
+
       if (isImage) {
         // Try to get the cached URL from our image cache
         cachedUrl = imageUrls[nextFile.id] || imageUrlsCacheRef.current[nextFile.id];
       }
-      
+
       setPreviewFile({
         id: nextFile.id,
         name: nextFile.name,
@@ -338,16 +339,16 @@ const CloudExplorer = () => {
     if (currentFileIndex > 0) {
       const prevIndex = currentFileIndex - 1;
       const prevFile = explorerData.files[prevIndex];
-      
+
       // For image files, check if we already have a cached version
       const isImage = prevFile.mime_type.startsWith('image/');
       let cachedUrl = null;
-      
+
       if (isImage) {
         // Try to get the cached URL from our image cache
         cachedUrl = imageUrls[prevFile.id] || imageUrlsCacheRef.current[prevFile.id];
       }
-      
+
       setPreviewFile({
         id: prevFile.id,
         name: prevFile.name,
@@ -435,10 +436,7 @@ const CloudExplorer = () => {
               <div className='mb-6'>
                 <p className='mb-2 text-neutral-600 dark:text-neutral-400'>Uploading files... ({uploadProgress}%)</p>
                 <div className='w-full bg-neutral-200 dark:bg-neutral-700 rounded-full h-2.5'>
-                  <div
-                    className='bg-blue-500 h-2.5 rounded-full'
-                    style={{ width: `${uploadProgress}%` }}
-                  ></div>
+                  <div className='bg-blue-500 h-2.5 rounded-full' style={{ width: `${uploadProgress}%` }}></div>
                 </div>
               </div>
             ) : (
@@ -472,9 +470,7 @@ const CloudExplorer = () => {
                               <FiCheck size={16} />
                             </div>
                           )}
-                          {uploadProgressMap[file.name] === -1 && (
-                            <span className='text-red-500 text-xs mr-2'>Failed</span>
-                          )}
+                          {uploadProgressMap[file.name] === -1 && <span className='text-red-500 text-xs mr-2'>Failed</span>}
                           <span className='text-xs text-neutral-500'>{formatFileSize(file.size)}</span>
                         </div>
                       </li>
@@ -499,7 +495,9 @@ const CloudExplorer = () => {
                 className={`px-4 py-2 rounded-lg bg-blue-500 text-white flex items-center gap-2 text-sm
                   ${isUploading ? 'opacity-50 cursor-not-allowed' : 'hover:bg-blue-600'}`}
               >
-                {isUploading ? 'Uploading...' : (
+                {isUploading ? (
+                  'Uploading...'
+                ) : (
                   <>
                     <FiCheck size={16} />
                     Confirm Upload
@@ -688,7 +686,7 @@ const CloudExplorer = () => {
       )}
 
       {/* File Preview Component */}
-      <FilePreview 
+      <FilePreview
         isOpen={previewOpen}
         onClose={closeFilePreview}
         file={previewFile}
