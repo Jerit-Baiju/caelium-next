@@ -1,5 +1,6 @@
 'use client';
 
+import FileContextMenu from '@/components/cloud/context-menus/file-context';
 import FilePreview from '@/components/cloud/preview';
 import { BreadcrumbItem, ExplorerData, FileData } from '@/helpers/props';
 import useAxios from '@/hooks/useAxios';
@@ -656,30 +657,45 @@ const CloudExplorer = () => {
             ))}
 
             {explorerData.files.map((file, index) => (
-              <div
+              <FileContextMenu
                 key={file.id}
-                className='group relative bg-neutral-50 dark:bg-neutral-900 rounded-lg transition-all duration-200 overflow-hidden border border-neutral-300 dark:border-neutral-800 hover:shadow-md'
-                onClick={() => openFilePreview(file, index)}
+                file={{
+                  id: file.id,
+                  name: file.name,
+                  download_url: file.download_url,
+                  mime_type: file.mime_type,
+                  parent: currentPath || null
+                }}
               >
-                <div className='cursor-pointer'>
-                  <div className='aspect-square bg-neutral-200 dark:bg-neutral-950 flex justify-center items-center overflow-hidden'>
-                    {renderThumbnail(file)}
-                  </div>
-                  <div className='p-3'>
-                    <div className='flex items-center mb-1'>
-                      <p className='font-medium text-sm whitespace-nowrap overflow-hidden text-ellipsis text-neutral-800 dark:text-neutral-300 flex-grow'>
-                        {file.name}
-                      </p>
+                <div
+                  className='group relative bg-neutral-50 dark:bg-neutral-900 rounded-lg transition-all duration-200 overflow-hidden border border-neutral-300 dark:border-neutral-800 hover:shadow-md'
+                  onClick={(e) => {
+                    // Prevent click when user is trying to open context menu
+                    if (e.type === 'click') {
+                      openFilePreview(file, index);
+                    }
+                  }}
+                >
+                  <div className='cursor-pointer'>
+                    <div className='aspect-square bg-neutral-200 dark:bg-neutral-950 flex justify-center items-center overflow-hidden'>
+                      {renderThumbnail(file)}
                     </div>
-                    <div className='flex justify-between items-center'>
-                      <p className='text-xs text-neutral-500 dark:text-neutral-500'>{formatFileSize(file.size)}</p>
-                      <p className='text-xs text-neutral-500 dark:text-neutral-500'>
-                        {new Date(file.created_at).toLocaleDateString()}
-                      </p>
+                    <div className='p-3'>
+                      <div className='flex items-center mb-1'>
+                        <p className='font-medium text-sm whitespace-nowrap overflow-hidden text-ellipsis text-neutral-800 dark:text-neutral-300 flex-grow'>
+                          {file.name}
+                        </p>
+                      </div>
+                      <div className='flex justify-between items-center'>
+                        <p className='text-xs text-neutral-500 dark:text-neutral-500'>{formatFileSize(file.size)}</p>
+                        <p className='text-xs text-neutral-500 dark:text-neutral-500'>
+                          {new Date(file.created_at).toLocaleDateString()}
+                        </p>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
+              </FileContextMenu>
             ))}
           </div>
         </div>
