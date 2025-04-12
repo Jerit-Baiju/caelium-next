@@ -21,7 +21,7 @@ const useCloud = () => {
     }
   };
 
-  const fetchImageUrls = async (files: any[]) => {
+  const fetchImageUrls = async (files: any[], onImageLoaded?: (fileId: string, url: string) => void) => {
     const imageFiles = files.filter((file) => file.mime_type.startsWith('image/'));
     if (imageFiles.length === 0) return {};
 
@@ -30,25 +30,24 @@ const useCloud = () => {
 
     for (let i = 0; i < imageFiles.length; i += batchSize) {
       const batch = imageFiles.slice(i, i + batchSize);
-      try {
-        const results = await Promise.all(
-          batch.map(async (file) => {
-            try {
-              const response = await api.get(file.download_url, { responseType: 'blob' });
-              const objectUrl = URL.createObjectURL(response.data);
-              return { id: file.id, url: objectUrl };
-            } catch (error) {
-              console.error(`Error fetching image ${file.name}:`, error);
-              return { id: file.id, url: null };
-            }
-          }),
-        );
-        results.forEach(({ id, url }) => {
-          if (url) urls[id] = url;
-        });
-      } catch (error) {
-        console.error('Error fetching batch of images:', error);
-      }
+      
+      // Process each image in the batch individually
+      batch.forEach(async (file) => {
+        try {
+          const response = await api.get(file.download_url, { responseType: 'blob' });
+          const objectUrl = URL.createObjectURL(response.data);
+          
+          // Update the URLs object
+          urls[file.id] = objectUrl;
+          
+          // Call the callback immediately when an individual image is loaded
+          if (onImageLoaded) {
+            onImageLoaded(file.id, objectUrl);
+          }
+        } catch (error) {
+          console.error(`Error fetching image ${file.name}:`, error);
+        }
+      });
     }
 
     return urls;
