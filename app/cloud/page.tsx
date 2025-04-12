@@ -636,11 +636,11 @@ const CloudExplorer = () => {
             {explorerData.directories.map((directory) => (
               <div
                 key={directory.id}
-                className='group relative bg-white dark:bg-neutral-800 rounded-lg transition-all duration-200 overflow-hidden border border-neutral-200 dark:border-neutral-700 hover:shadow-md'
+                className='group relative bg-neutral-50 dark:bg-neutral-900 rounded-lg transition-all duration-200 overflow-hidden border border-neutral-300 dark:border-neutral-800 hover:shadow-md'
                 onClick={() => navigateToDirectory(directory.id)}
               >
                 <div className='cursor-pointer'>
-                  <div className='aspect-square bg-neutral-100 dark:bg-neutral-800 flex justify-center items-center overflow-hidden'>
+                  <div className='aspect-square bg-neutral-200 dark:bg-neutral-950 flex justify-center items-center overflow-hidden'>
                     <div className='flex justify-center items-center w-full h-full text-blue-500 dark:text-blue-400'>
                       <FiFolder size={64} />
                     </div>
@@ -658,11 +658,11 @@ const CloudExplorer = () => {
             {explorerData.files.map((file, index) => (
               <div
                 key={file.id}
-                className='group relative bg-white dark:bg-neutral-800 rounded-lg transition-all duration-200 overflow-hidden border border-neutral-200 dark:border-neutral-700 hover:shadow-md'
+                className='group relative bg-neutral-50 dark:bg-neutral-900 rounded-lg transition-all duration-200 overflow-hidden border border-neutral-300 dark:border-neutral-800 hover:shadow-md'
                 onClick={() => openFilePreview(file, index)}
               >
                 <div className='cursor-pointer'>
-                  <div className='aspect-square bg-neutral-100 dark:bg-neutral-800 flex justify-center items-center overflow-hidden'>
+                  <div className='aspect-square bg-neutral-200 dark:bg-neutral-950 flex justify-center items-center overflow-hidden'>
                     {renderThumbnail(file)}
                   </div>
                   <div className='p-3'>
