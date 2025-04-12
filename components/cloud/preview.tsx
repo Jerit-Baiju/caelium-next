@@ -352,7 +352,7 @@ const FilePreview = ({
                 e.stopPropagation();
                 onPrevious();
               }}
-              className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-black/40 hover:bg-black/60 rounded-full p-3 z-30 text-white transition-all opacity-60 hover:opacity-100"
+              className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-black/40 hover:bg-black/60 rounded-full p-3 z-30 text-white transition-all opacity-60 hover:opacity-100 focus:outline-none"
               title="Previous (Left Arrow)"
             >
               <FiChevronLeft size={24} />
@@ -365,7 +365,7 @@ const FilePreview = ({
                 e.stopPropagation();
                 onNext();
               }}
-              className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-black/40 hover:bg-black/60 rounded-full p-3 z-30 text-white transition-all opacity-60 hover:opacity-100"
+              className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-black/40 hover:bg-black/60 rounded-full p-3 z-30 text-white transition-all opacity-60 hover:opacity-100 focus:outline-none"
               title="Next (Right Arrow)"
             >
               <FiChevronRight size={24} />
@@ -455,14 +455,14 @@ const FilePreview = ({
             <div className='flex gap-2'>
               <button
                 onClick={toggleFullscreen}
-                className='p-2 bg-neutral-700 hover:bg-neutral-600 rounded-full text-white'
+                className='p-2 bg-neutral-700 hover:bg-neutral-600 rounded-full text-white focus:outline-none'
                 title={fullscreen ? 'Exit fullscreen (F)' : 'Fullscreen (F)'}
               >
                 {fullscreen ? <FiMinimize size={18} /> : <FiMaximize size={18} />}
               </button>
               <button
                 onClick={handleDownload}
-                className='p-2 bg-neutral-700 hover:bg-neutral-600 rounded-full text-white'
+                className='p-2 bg-neutral-700 hover:bg-neutral-600 rounded-full text-white focus:outline-none'
                 title='Download'
               >
                 <FiDownload size={18} />
@@ -476,7 +476,7 @@ const FilePreview = ({
               <div className='flex items-center space-x-3'>
                 <button
                   onClick={togglePlay}
-                  className='p-2 bg-neutral-700 hover:bg-neutral-600 rounded-full text-white'
+                  className='p-2 bg-neutral-700 hover:bg-neutral-600 rounded-full text-white focus:outline-none'
                   title={isPlaying ? 'Pause (Space)' : 'Play (Space)'}
                 >
                   {isPlaying ? <FiPause size={18} /> : <FiPlay size={18} />}
@@ -488,12 +488,12 @@ const FilePreview = ({
                     max={duration}
                     value={currentTime}
                     onChange={handleSeek}
-                    className='w-full accent-white h-1.5 bg-neutral-600 rounded-full appearance-none cursor-pointer'
+                    className='w-full accent-white h-1.5 bg-neutral-600 rounded-full appearance-none cursor-pointer focus:outline-none'
                   />
                 </div>
                 <button
                   onClick={toggleMute}
-                  className='p-2 bg-neutral-700 hover:bg-neutral-600 rounded-full text-white'
+                  className='p-2 bg-neutral-700 hover:bg-neutral-600 rounded-full text-white focus:outline-none'
                   title={isMuted ? 'Unmute' : 'Mute'}
                 >
                   {isMuted ? <FiVolume2 size={18} /> : <FiVolume size={18} />}

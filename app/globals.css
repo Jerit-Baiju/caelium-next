@@ -20,6 +20,17 @@
   }
 }
 
+/* Remove focus outline on keyboard navigation */
+@layer base {
+  :focus {
+    outline: none !important;
+  }
+  
+  :focus-visible {
+    outline: none !important;
+  }
+}
+
 @layer base {
   :root {
     --background: 0 0% 100%;
