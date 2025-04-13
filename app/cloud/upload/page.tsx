@@ -4,12 +4,20 @@ import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useRef, useState } from 'react';
-import { FiArrowLeft, FiCheck, FiFile, FiGrid, FiList, FiLock, FiUpload, FiX } from 'react-icons/fi';
+import { FiAlertCircle, FiArrowLeft, FiCheck, FiFile, FiGrid, FiList, FiLock, FiUpload, FiX } from 'react-icons/fi';
+
+// Maximum number of files allowed per upload (must match DATA_UPLOAD_MAX_NUMBER_FILES in Django settings)
+const MAX_FILES_ALLOWED = 200;
+// Maximum number of files to display in the UI
+const MAX_UI_DISPLAY = 250;
 
 const CloudUpload = () => {
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+  const [displayedFiles, setDisplayedFiles] = useState<File[]>([]);
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState<Record<string, number>>({});
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [tooManyFiles, setTooManyFiles] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
   const [viewMode, setViewMode] = useState<'list' | 'grid'>('grid');
@@ -38,7 +46,27 @@ const CloudUpload = () => {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       const newFiles = Array.from(e.target.files);
-      setSelectedFiles((prev) => [...prev, ...newFiles]);
+      
+      // Check if adding these files would exceed the maximum
+      if (selectedFiles.length + newFiles.length > MAX_FILES_ALLOWED) {
+        setErrorMessage(`You can only upload a maximum of ${MAX_FILES_ALLOWED} files at once.`);
+        setTooManyFiles(true);
+        return;
+      }
+      
+      const updatedFiles = [...selectedFiles, ...newFiles];
+      setSelectedFiles(updatedFiles);
+      
+      // Update displayed files (limited to MAX_UI_DISPLAY)
+      if (updatedFiles.length > MAX_UI_DISPLAY) {
+        setDisplayedFiles(updatedFiles.slice(0, MAX_UI_DISPLAY));
+        setErrorMessage(`Only showing ${MAX_UI_DISPLAY} of ${updatedFiles.length} selected files in the interface. All files will be uploaded.`);
+      } else {
+        setDisplayedFiles(updatedFiles);
+        setErrorMessage(null); // Clear any previous error
+      }
+      
+      setTooManyFiles(false);
     }
   };
 
@@ -46,18 +74,71 @@ const CloudUpload = () => {
     e.preventDefault();
     if (e.dataTransfer.files) {
       const newFiles = Array.from(e.dataTransfer.files);
-      setSelectedFiles((prev) => [...prev, ...newFiles]);
+      
+      // Check if adding these files would exceed the maximum
+      if (selectedFiles.length + newFiles.length > MAX_FILES_ALLOWED) {
+        setErrorMessage(`You can only upload a maximum of ${MAX_FILES_ALLOWED} files at once.`);
+        setTooManyFiles(true);
+        return;
+      }
+      
+      const updatedFiles = [...selectedFiles, ...newFiles];
+      setSelectedFiles(updatedFiles);
+      
+      // Update displayed files (limited to MAX_UI_DISPLAY)
+      if (updatedFiles.length > MAX_UI_DISPLAY) {
+        setDisplayedFiles(updatedFiles.slice(0, MAX_UI_DISPLAY));
+        setErrorMessage(`Only showing ${MAX_UI_DISPLAY} of ${updatedFiles.length} selected files in the interface. All files will be uploaded.`);
+      } else {
+        setDisplayedFiles(updatedFiles);
+        setErrorMessage(null); // Clear any previous error
+      }
+      
+      setTooManyFiles(false);
     }
   };
 
   const handleRemoveFile = (index: number) => {
-    setSelectedFiles((prev) => prev.filter((_, i) => i !== index));
+    // Remove from selectedFiles
+    const newSelectedFiles = selectedFiles.filter((_, i) => {
+      // If we're displaying all files, the indexes match
+      if (selectedFiles.length <= MAX_UI_DISPLAY) {
+        return i !== index;
+      }
+      
+      // If we're only displaying a subset, we need to map the index to the correct file
+      // This ensures we remove the correct file from the full list
+      const fileToRemove = displayedFiles[index];
+      const actualIndex = selectedFiles.findIndex(file => file === fileToRemove);
+      return i !== actualIndex;
+    });
+    
+    setSelectedFiles(newSelectedFiles);
+    
+    // Update displayed files
+    if (newSelectedFiles.length > MAX_UI_DISPLAY) {
+      setDisplayedFiles(newSelectedFiles.slice(0, MAX_UI_DISPLAY));
+      setErrorMessage(`Only showing ${MAX_UI_DISPLAY} of ${newSelectedFiles.length} selected files in the interface. All files will be uploaded.`);
+    } else {
+      setDisplayedFiles(newSelectedFiles);
+      setErrorMessage(null); // Clear any error when removing files brings count under limit
+    }
+    
+    setTooManyFiles(false);
   };
 
   const handleUpload = async () => {
     if (selectedFiles.length === 0) return;
+    
+    // Double check we're not exceeding the limit
+    if (selectedFiles.length > MAX_FILES_ALLOWED) {
+      setErrorMessage(`You can only upload a maximum of ${MAX_FILES_ALLOWED} files at once.`);
+      setTooManyFiles(true);
+      return;
+    }
 
     setIsUploading(true);
+    setErrorMessage(null);
 
     // Create FormData object to hold files
     const formData = new FormData();
@@ -70,7 +151,7 @@ const CloudUpload = () => {
     try {
       // Set progress tracking for each file
       const newProgress: Record<string, number> = {};
-      selectedFiles.forEach((file) => {
+      displayedFiles.forEach((file) => {
         newProgress[file.name] = 0;
       });
       setUploadProgress(newProgress);
@@ -85,7 +166,7 @@ const CloudUpload = () => {
             const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
             // Update all files with same progress since we can't track individual files
             const updatedProgress: Record<string, number> = {};
-            selectedFiles.forEach((file) => {
+            displayedFiles.forEach((file) => {
               updatedProgress[file.name] = percentCompleted;
             });
             setUploadProgress(updatedProgress);
@@ -95,7 +176,7 @@ const CloudUpload = () => {
 
       // Set all files to 100% complete
       const completedProgress: Record<string, number> = {};
-      selectedFiles.forEach((file) => {
+      displayedFiles.forEach((file) => {
         completedProgress[file.name] = 100;
       });
       setUploadProgress(completedProgress);
@@ -105,15 +186,22 @@ const CloudUpload = () => {
         router.push('/cloud');
       }, 1500);
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error uploading files:', error);
 
       // Set failed status for all files
       const failedProgress: Record<string, number> = {};
-      selectedFiles.forEach((file) => {
+      displayedFiles.forEach((file) => {
         failedProgress[file.name] = -1; // -1 indicates failure
       });
       setUploadProgress(failedProgress);
+      
+      // Handle the specific error for too many files
+      if (error.response && error.response.status === 400) {
+        setErrorMessage(error.response.data?.error || 'Upload failed. You may have exceeded the file limit.');
+      } else {
+        setErrorMessage('Failed to upload files. Please try again later.');
+      }
 
     } finally {
       setIsUploading(false);
@@ -143,10 +231,25 @@ const CloudUpload = () => {
             </Link>
             <div>
               <h1 className='text-3xl font-bold dark:text-neutral-100'>Upload Files</h1>
-              <p className='text-neutral-600 dark:text-neutral-400'>Upload files to your secure cloud storage</p>
+              <p className='text-neutral-600 dark:text-neutral-400'>Upload up to {MAX_FILES_ALLOWED} files at once to your secure cloud storage</p>
             </div>
           </div>
         </motion.div>
+
+        {/* Error message display */}
+        {errorMessage && (
+          <motion.div 
+            className={`${tooManyFiles ? 'bg-red-50 dark:bg-red-900/20 border-l-4 border-red-500' : 'bg-amber-50 dark:bg-amber-900/20 border-l-4 border-amber-500'} p-4 rounded-md`}
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3 }}
+          >
+            <div className='flex items-start'>
+              <FiAlertCircle className={`${tooManyFiles ? 'text-red-500' : 'text-amber-500'} mt-0.5 mr-2`} size={18} />
+              <p className={`${tooManyFiles ? 'text-red-700 dark:text-red-400' : 'text-amber-700 dark:text-amber-400'}`}>{errorMessage}</p>
+            </div>
+          </motion.div>
+        )}
 
         {/* File Drop Area */}
         <motion.div
@@ -169,15 +272,16 @@ const CloudUpload = () => {
                 whileTap={{ scale: 0.98 }}
                 className='bg-neutral-800 hover:bg-neutral-700 dark:bg-neutral-700 dark:hover:bg-neutral-600 text-white px-5 py-2 rounded-lg transition'
                 onClick={() => fileInputRef.current?.click()}
+                disabled={tooManyFiles}
               >
                 Browse Files
               </motion.button>
               <motion.button
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
-                disabled={selectedFiles.length === 0 || isUploading}
+                disabled={selectedFiles.length === 0 || isUploading || tooManyFiles}
                 className={`px-5 py-2 rounded-lg transition ${
-                  selectedFiles.length === 0 || isUploading
+                  selectedFiles.length === 0 || isUploading || tooManyFiles
                     ? 'bg-neutral-300 dark:bg-neutral-600 text-neutral-500 dark:text-neutral-400 cursor-not-allowed'
                     : 'bg-gradient-to-br from-violet-500 to-purple-500 text-white'
                 }`}
@@ -190,8 +294,16 @@ const CloudUpload = () => {
           </div>
         </motion.div>
 
+        {/* File Count Display */}
+        {selectedFiles.length > 0 && !tooManyFiles && (
+          <div className="text-sm text-neutral-500 dark:text-neutral-400 text-center">
+            {selectedFiles.length} of {MAX_FILES_ALLOWED} files selected
+            {selectedFiles.length > MAX_UI_DISPLAY && ` (showing first ${MAX_UI_DISPLAY})`}
+          </div>
+        )}
+
         {/* Selected Files */}
-        {selectedFiles.length > 0 && (
+        {displayedFiles.length > 0 && !tooManyFiles && (
           <motion.div className='bg-white dark:bg-neutral-800 rounded-xl p-6 shadow-sm' variants={itemVariants}>
             <div className='flex justify-between items-center mb-4'>
               <h3 className='text-lg font-medium dark:text-neutral-200 flex items-center'>
@@ -221,7 +333,7 @@ const CloudUpload = () => {
 
             {viewMode === 'list' ? (
               <div className='space-y-3'>
-                {selectedFiles.map((file, index) => (
+                {displayedFiles.map((file, index) => (
                   <motion.div
                     key={`${file.name}-${index}`}
                     className='flex items-center p-3 bg-neutral-50 dark:bg-neutral-700/40 rounded-lg'
@@ -284,7 +396,7 @@ const CloudUpload = () => {
               </div>
             ) : (
               <div className='grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4'>
-                {selectedFiles.map((file, index) => (
+                {displayedFiles.map((file, index) => (
                   <motion.div
                     key={`${file.name}-${index}`}
                     className='flex flex-col bg-neutral-50 dark:bg-neutral-700/40 rounded-lg overflow-hidden'
