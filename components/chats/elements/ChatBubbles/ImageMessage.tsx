@@ -45,12 +45,15 @@ const ImageMessage = ({ message }: { message: Message }) => {
             max-w-md overflow-hidden
           `}
         >
-          <img 
-            className='w-full h-auto object-cover' 
-            src={message.file ? message.file : ''} 
-            alt='Image message'
-            loading='lazy'
-          />
+          <div className="max-h-[300px] max-w-[300px] overflow-hidden">
+            <img 
+              className='w-full h-auto object-contain' 
+              src={message.file ? message.file : ''} 
+              alt='Image message'
+              loading='lazy'
+              style={{ maxHeight: '300px', maxWidth: '300px' }}
+            />
+          </div>
           {message.content && (
             <p className='p-4 text-[15px] leading-relaxed tracking-[0.01em] font-normal
               selection:bg-neutral-200 dark:selection:bg-neutral-700
