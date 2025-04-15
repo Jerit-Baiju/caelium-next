@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useContext } from 'react';
 import { IconType } from 'react-icons';
-import { FiFeather, FiHome, FiLogOut, FiMessageCircle, FiUser, FiCloud } from 'react-icons/fi';
+import { FiCloud, FiFeather, FiHome, FiLogOut, FiMessageCircle, FiUser } from 'react-icons/fi';
 
 // Define interfaces to match those in NavContext
 interface SidebarOption {
@@ -52,7 +52,7 @@ const SideBar = () => {
           translate-x-0'
         aria-label='Sidebar'
       >
-        <div className='h-full flex flex-col px-4 py-8 overflow-y-auto'>
+        <div className='h-full flex flex-col px-4 py-8 overflow-y-auto scrollbar-hide'>
           {/* User Profile Section */}
           <div className='mb-8'>
             <motion.div className='p-4 rounded-2xl bg-linear-to-br from-violet-500/10 to-purple-500/10' whileHover={{ scale: 1.02 }}>
@@ -205,6 +205,19 @@ const SideBar = () => {
           </motion.div>
         </div>
       </motion.div>
+
+      <style jsx global>{`
+        /* Hide scrollbar for Chrome, Safari and Opera */
+        .scrollbar-hide::-webkit-scrollbar {
+          display: none;
+        }
+        
+        /* Hide scrollbar for IE, Edge and Firefox */
+        .scrollbar-hide {
+          -ms-overflow-style: none;  /* IE and Edge */
+          scrollbar-width: none;  /* Firefox */
+        }
+      `}</style>
     </>
   );
 };
