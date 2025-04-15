@@ -542,7 +542,7 @@ const CloudExplorer = () => {
         </div>
       </div>
 
-      <div className='flex items-center mb-6 shadow-sm backdrop-blur-sm rounded-xl px-4 py-2.5 overflow-hidden border border-neutral-100 dark:border-neutral-700'>
+      <div className='flex items-center mb-6 shadow-sm backdrop-blur-sm rounded-xl px-4 min-h-[48px] overflow-hidden border border-neutral-100 dark:border-neutral-700'>
         {loading ? (
           <div className='flex items-center space-x-2 w-full py-1'>
             <div className='flex items-center py-1.5 px-3 rounded-lg'>
@@ -562,32 +562,34 @@ const CloudExplorer = () => {
             </div>
           </div>
         ) : (
-          <div className='flex items-center space-x-1 overflow-x-auto scrollbar-hide w-full'>
-            <div className='flex items-center'>
+          <div className='flex items-center w-full overflow-x-auto scrollbar-hide scroll-smooth py-1'>
+            <div className='flex items-center min-w-fit flex-nowrap'>
               <button
                 onClick={() => navigateToDirectory('')}
-                className={`flex items-center justify-center gap-2 py-1.5 px-3 rounded-lg transition-all duration-200`}
+                className={`flex items-center justify-center gap-2 py-1.5 px-3 rounded-lg transition-all duration-200 flex-shrink-0 hover:bg-neutral-100 dark:hover:bg-neutral-800`}
               >
                 <FiHome className='flex-shrink-0' size={15} />
                 <span className='text-sm whitespace-nowrap'>Home</span>
               </button>
-            </div>
 
-            {explorerData.breadcrumbs.map((breadcrumb, index) => (
-              <div key={index} className='flex items-center flex-shrink-0'>
-                <span className='mx-1.5 text-neutral-400 dark:text-neutral-500'>
-                  <FiChevronRight className='flex-shrink-0' size={14} />
-                </span>
-                <button
-                  onClick={() => navigateToBreadcrumb(breadcrumb)}
-                  className={`py-1.5 px-3 rounded-lg text-sm transition-all duration-200 flex items-center`}
-                >
-                  <span className='truncate max-w-[150px]' title={breadcrumb.name}>
-                    {breadcrumb.name}
+              {explorerData.breadcrumbs.map((breadcrumb, index) => (
+                <div key={index} className='flex items-center flex-shrink-0'>
+                  <span className='mx-1 text-neutral-400 dark:text-neutral-500'>
+                    <FiChevronRight className='flex-shrink-0' size={14} />
                   </span>
-                </button>
-              </div>
-            ))}
+                  <button
+                    onClick={() => navigateToBreadcrumb(breadcrumb)}
+                    className={`py-1.5 px-3 rounded-lg text-sm transition-all duration-200 flex items-center 
+                    hover:bg-neutral-100 dark:hover:bg-neutral-800
+                    ${index === explorerData.breadcrumbs.length - 1 ? 'font-medium text-blue-500' : ''}`}
+                  >
+                    <span className='truncate max-w-[100px] sm:max-w-[120px] md:max-w-[160px]' title={breadcrumb.name}>
+                      {breadcrumb.name}
+                    </span>
+                  </button>
+                </div>
+              ))}
+            </div>
           </div>
         )}
       </div>
