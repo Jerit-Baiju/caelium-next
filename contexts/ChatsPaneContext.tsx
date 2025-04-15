@@ -105,19 +105,24 @@ export function ChatsPaneProvider({ children }: { children: ReactNode }) {
 
       const updatedChats = [...prevChats];
       const chatToUpdate = { ...updatedChats[chatIndex] };
+      
+      // Get the other participant from the chat (the actual sender)
+      const otherParticipant = chatToUpdate.participants?.find(p => p.id !== user.id);
 
-      // Update the chat
-      chatToUpdate.last_message = {
-        content: lastMessage,
-        timestamp: new Date(),
-        sender: user,
-        type: 'text',
-      };
-      chatToUpdate.updated_time = new Date();
+      // Update the chat only if we have a valid sender
+      if (otherParticipant) {
+        chatToUpdate.last_message = {
+          content: lastMessage,
+          timestamp: new Date(),
+          sender: otherParticipant, // Use the other participant as the sender
+          type: 'txt', // Use 'txt' to match the type check in the ChatsPane component
+        };
+        chatToUpdate.updated_time = new Date();
 
-      // Remove old chat and add updated one
-      updatedChats.splice(chatIndex, 1);
-      updatedChats.push(chatToUpdate);
+        // Remove old chat and add updated one
+        updatedChats.splice(chatIndex, 1);
+        updatedChats.push(chatToUpdate);
+      }
 
       // Sort the entire array
       return sortChats(updatedChats);
