@@ -290,7 +290,7 @@ export const ChatProvider = ({ chatId, is_anon = false, children }: childrenProp
       <div className='flex flex-col flex-grow max-sm:h-screen sm:w-3/4'>
         <div className='flex flex-col gap-4 flex-grow items-center justify-center'>
           <p className='text-2xl text-balance text-center my-8'>{error.text}</p>
-          <Button className='px-6 py-5' variant='outline' onClick={() => router.push('/chats')}>
+          <Button className='px-6 py-5' variant='outline' onClick={() => router.push('/chats/main')}>
             Go Back
           </Button>
         </div>
