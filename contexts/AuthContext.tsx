@@ -50,27 +50,26 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   // Reference to track refresh timers
   const refreshTimerRef = useRef<NodeJS.Timeout | null>(null);
-  
+
   // Proactive token refresh
   const refreshToken = async () => {
     if (!authTokens?.refresh) return;
-    
+
     try {
-      const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_API_HOST}/api/auth/token/refresh/`,
-        { refresh: authTokens.refresh }
-      );
-      
+      const response = await axios.post(`${process.env.NEXT_PUBLIC_API_HOST}/api/auth/token/refresh/`, {
+        refresh: authTokens.refresh,
+      });
+
       localStorage.setItem('authTokens', JSON.stringify(response.data));
       setAuthTokens(response.data);
       setTokenData(jwtDecode(response.data.access));
-      
+
       // Schedule next refresh
       scheduleTokenRefresh(response.data.access);
-      
+
       return response.data;
     } catch (error) {
-      console.error("Token refresh failed:", error);
+      console.error('Token refresh failed:', error);
       // Only logout if it's a 401 unauthorized
       if (axios.isAxiosError(error) && error.response?.status === 401) {
         logoutUser();
@@ -78,30 +77,30 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       return null;
     }
   };
-  
+
   // Schedule token refresh before it expires
   const scheduleTokenRefresh = (accessToken: string) => {
     if (refreshTimerRef.current) {
       clearTimeout(refreshTimerRef.current);
     }
-    
+
     try {
       const decoded = jwtDecode(accessToken) as { exp: number };
       const expiryTime = decoded.exp * 1000; // Convert to milliseconds
-      
+
       // Refresh 5 minutes before expiry
       const timeUntilRefresh = expiryTime - Date.now() - 5 * 60 * 1000;
-      
+
       if (timeUntilRefresh <= 0) {
         // Token is already expired or about to expire, refresh now
         refreshToken();
         return;
       }
-      
+
       console.log(`Scheduling token refresh in ${Math.floor(timeUntilRefresh / 60000)} minutes`);
       refreshTimerRef.current = setTimeout(refreshToken, timeUntilRefresh);
     } catch (error) {
-      console.error("Failed to schedule token refresh:", error);
+      console.error('Failed to schedule token refresh:', error);
     }
   };
 
@@ -109,27 +108,26 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     // Skip if we're still loading or no tokens exist
     if (loading || !authTokens) return;
-    
+
     try {
       const decodedToken: any = tokenData;
-      
+
       // Check if token is expired
-      const isExpired = decodedToken && decodedToken.exp && 
-        decodedToken.exp * 1000 < Date.now();
-      
+      const isExpired = decodedToken && decodedToken.exp && decodedToken.exp * 1000 < Date.now();
+
       if (isExpired) {
-        console.log("Token expired, attempting refresh");
+        console.log('Token expired, attempting refresh');
         refreshToken();
         return;
       }
-      
+
       // Schedule refresh for non-expired token
       scheduleTokenRefresh(authTokens.access);
     } catch (err) {
-      console.error("Error checking token expiration:", err);
+      console.error('Error checking token expiration:', err);
       logoutUser();
     }
-    
+
     return () => {
       if (refreshTimerRef.current) {
         clearTimeout(refreshTimerRef.current);
@@ -140,15 +138,15 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   // Route protection
   useEffect(() => {
     if (loading) return;
-    
+
     const path = window.location.pathname;
     const publicPaths = ['/welcome', '/privacy-policy', '/terms-and-conditions'];
     const isCallbackPath = path.startsWith('/api/auth/callback');
     const isPublicPath = publicPaths.includes(path) || isCallbackPath;
-    
+
     // Redirect logic
     if (!tokenData && !isPublicPath) {
-      console.log("No auth token, redirecting to welcome");
+      console.log('No auth token, redirecting to welcome');
       router.replace('/welcome');
     }
   }, [router, tokenData, loading]);
@@ -157,25 +155,24 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const fetchMe = async () => {
       try {
         if (!authTokens?.access) return;
-        
+
         const decodedToken = jwtDecode(authTokens.access) as { user_id: string };
         if (!decodedToken.user_id) return;
-        
-        const response = await fetch(
-          `${process.env.NEXT_PUBLIC_API_HOST}/api/auth/accounts/${decodedToken.user_id}/`,
-        );
-        
+
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_HOST}/api/auth/accounts/${decodedToken.user_id}/`);
+
         if (!response.ok) {
           throw new Error('Failed to fetch user data');
         }
-        
+
         const userData = await response.json();
         setUser(userData);
       } catch (error) {
-        console.error("Error fetching user data:", error);
+        console.error('Error fetching user data:', error);
+        logoutUser();
       }
     };
-    
+
     if (authTokens) {
       fetchMe();
     }
@@ -185,7 +182,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     localStorage.setItem('authTokens', JSON.stringify(data));
     setAuthTokens(data);
     setTokenData(jwtDecode(data?.access));
-    
+
     // Schedule refresh when logging in
     scheduleTokenRefresh(data.access);
   };
@@ -206,7 +203,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       try {
         setTokenData(jwtDecode(authTokens.access));
       } catch (err) {
-        console.error("Invalid token format:", err);
+        console.error('Invalid token format:', err);
         logoutUser();
       }
     }
