@@ -130,7 +130,7 @@ const Profile = () => {
         </motion.div>
       )}
 
-      <div className='max-w-4xl mx-auto bg-white dark:bg-neutral-800 rounded-2xl shadow-xs p-8'>
+      <div className='max-w-2xl mx-auto bg-white dark:bg-neutral-800 rounded-2xl shadow-xs p-8'>
         <div className='relative flex flex-col items-center mb-8'>
           <div className='relative'>
             {avatarSrc ? (
@@ -200,15 +200,36 @@ const Profile = () => {
               ) : (
                 <div className='space-y-2'>
                   <label className='text-sm text-neutral-500 dark:text-neutral-400'>{field.name}</label>
-                  <select
-                    value={field.value || 'Other'}
-                    className='w-full p-3 bg-neutral-50 dark:bg-neutral-700/50 rounded-xl border-0'
-                    disabled={!editable}
-                    onChange={(e) => handleInputChange(field.fieldName, field.name, e.target.value)}
-                  >
-                    <option disabled>{field.name}</option>
-                    {field.options?.map((option, i) => <option key={i}>{option}</option>)}
-                  </select>
+                  <div className='flex gap-4 mt-2'>
+                    {field.options?.map((option, i) => (
+                      <div key={i} className='flex-1'>
+                        <input
+                          type='radio'
+                          id={`gender-${option}`}
+                          name='gender'
+                          value={option}
+                          checked={field.value === option}
+                          className='hidden peer'
+                          disabled={!editable}
+                          onChange={(e) => handleInputChange(field.fieldName, field.name, e.target.value)}
+                        />
+                        <label
+                          htmlFor={`gender-${option}`}
+                          className={`
+                            w-full p-3 flex justify-center items-center rounded-xl cursor-pointer
+                            ${!editable ? 'opacity-70 cursor-not-allowed' : ''}
+                            ${field.value === option 
+                              ? 'bg-violet-100 dark:bg-violet-900/30 text-violet-700 dark:text-violet-300 border-2 border-violet-500'
+                              : 'bg-neutral-50 dark:bg-neutral-700/50 text-neutral-600 dark:text-neutral-400 border-2 border-transparent'
+                            }
+                            transition-all hover:bg-violet-50 dark:hover:bg-violet-900/20 peer-checked:border-violet-500
+                          `}
+                        >
+                          {option}
+                        </label>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               )}
               {errors[field.fieldName as keyof typeof errors] && (
