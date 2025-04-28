@@ -31,7 +31,7 @@ const menuItemVariants = {
 const ChatsPane = () => {
   const { socketData } = useWebSocket();
   const { user } = useContext(AuthContext);
-  const {activeUsers} = useAppContext()
+  const { activeUsers } = useAppContext();
   const { deleteChat } = useChatUtils();
   const { chats, isLoading, searchQuery, setSearchQuery, searchChats, updateChatOrder, togglePinChat } = useChatsPaneContext();
   const { refreshChats, lastFetched } = useAppContext();
@@ -152,7 +152,15 @@ const ChatsPane = () => {
             <div className='p-2 space-y-1'>
               {filteredChats.length > 0 ? (
                 filteredChats.map((chat: Chat) => {
-                  const isActive = pathname?.startsWith(`/chats/main/${chat.id}`);
+                  // Fix: Use regex or path segments to match exact chat ID
+                  const chatPath = `/chats/main/${chat.id}`;
+                  const isActive =
+                    pathname === chatPath || // Exact match
+                    pathname === `${chatPath}/` || // Trailing slash
+                    pathname?.startsWith(`${chatPath}/info`) || // Info page
+                    // Use regex to ensure it's the full ID (matches /chatID/ or /chatID/anything)
+                    new RegExp(`^/chats/main/${chat.id}(?:/|$)`).test(pathname || '');
+
                   return (
                     <ContextMenu key={chat.id}>
                       <ContextMenuTrigger>
