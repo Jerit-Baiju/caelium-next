@@ -1,12 +1,12 @@
 import {
-    AlertDialog,
-    AlertDialogAction,
-    AlertDialogCancel,
-    AlertDialogContent,
-    AlertDialogDescription,
-    AlertDialogFooter,
-    AlertDialogHeader,
-    AlertDialogTitle,
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import AuthContext from '@/contexts/AuthContext';
@@ -58,14 +58,9 @@ const ChatHeader = () => {
         className='flex sticky top-0 z-10 flex-row h-16 bg-linear-to-r md:rounded-t-2xl from-neutral-300/90 to-neutral-200/90 backdrop-blur-xs dark:from-neutral-900/90 dark:to-neutral-800/90 dark:text-white'
       >
         <motion.div className='flex justify-center' whileHover={{ scale: 1.05 }}>
-          <div
-            onClick={() => {
-              router.back();
-            }}
-            className='flex flex-col my-auto self-start p-3 h-min justify-center rounded-full'
-          >
+          <Link href={'/chats/main'} className='flex flex-col my-auto self-start p-3 h-min justify-center rounded-full'>
             <i className='fa-solid fa-arrow-left ms-2'></i>
-          </div>
+          </Link>
         </motion.div>
         <Link href={`/chats/main/${meta?.id}/info`} className='flex grow items-center cursor-default'>
           {!meta?.is_group ? (
