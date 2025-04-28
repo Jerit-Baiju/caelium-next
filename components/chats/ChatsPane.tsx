@@ -149,6 +149,11 @@ const ChatsPane = () => {
           </div>
         ) : (
           <motion.div initial={{ y: 20 }} animate={{ y: 0 }} className='flex-1 overflow-y-auto'>
+            {searchQuery && (
+              <div className='px-4 py-2 text-sm text-neutral-500 dark:text-neutral-400 font-medium'>
+                Showing results for &quot;{searchQuery}&quot;
+              </div>
+            )}
             <div className='p-2 space-y-1'>
               {filteredChats.length > 0 ? (
                 filteredChats.map((chat: Chat) => {
