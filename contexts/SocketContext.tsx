@@ -12,7 +12,7 @@ interface WebSocketContextType {
 const WebSocketContext = createContext<WebSocketContextType | null>(null);
 
 export const WebSocketProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const { logoutUser } = useContext(AuthContext);
+  const { logoutUser, authTokens } = useContext(AuthContext); // Use authTokens from AuthContext
   const { setActiveUsers, addActiveUser, removeActiveUser, updateLastSeen } = useAppContext();
   const socketRef = useRef<WebSocket | null>(null);
   const [socketData, setSocketData] = useState<any>();
@@ -38,10 +38,16 @@ export const WebSocketProvider: React.FC<{ children: React.ReactNode }> = ({ chi
 
   useEffect(() => {
     mounted.current = true;
-    const token = localStorage.getItem('authTokens');
-    if (!token) return;
-
     let reconnectTimeout: NodeJS.Timeout;
+
+    if (!authTokens || !authTokens.access) {
+      setIsConnected(false);
+      if (socketRef.current) {
+        socketRef.current.onclose = null;
+        socketRef.current.close();
+      }
+      return;
+    }
 
     const getReconnectDelay = () => {
       // Exponential backoff: 500ms, 1000ms, 2000ms, 4000ms, etc.
@@ -56,7 +62,7 @@ export const WebSocketProvider: React.FC<{ children: React.ReactNode }> = ({ chi
         socketRef.current.close();
       }
 
-      const ws = new WebSocket(`${process.env.NEXT_PUBLIC_WS_HOST}/ws/base/${JSON.parse(token).access}/`);
+      const ws = new WebSocket(`${process.env.NEXT_PUBLIC_WS_HOST}/ws/base/${authTokens.access}/`);
 
       ws.onopen = () => {
         console.log('Connected to WebSocket');
@@ -121,7 +127,7 @@ export const WebSocketProvider: React.FC<{ children: React.ReactNode }> = ({ chi
         clearTimeout(reconnectTimeout);
       }
     };
-  }, []);
+  }, [authTokens]); // Depend on authTokens
 
   const send = (data: any) => {
     if (socketRef.current?.readyState === WebSocket.OPEN) {
