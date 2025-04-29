@@ -55,7 +55,7 @@ const useChatUtils = () => {
   const deleteChat = async (chatId: number) => {
     try {
       await api.delete(`/api/chats/${chatId}/`);
-      router.push('/chats');
+      router.push('/chats/main');
     } catch (error) {
       console.error('Error deleting chat:', error);
     }
