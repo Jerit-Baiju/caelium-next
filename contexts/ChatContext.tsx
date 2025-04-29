@@ -138,7 +138,7 @@ export const ChatProvider = ({ chatId, is_anon = false, children }: childrenProp
       }
     };
     fetchInitialData();
-  }, [chatId, user, api]);
+  }, [chatId, user]);
 
   useEffect(() => {
     if (socket?.readyState === WebSocket.OPEN) {
