@@ -58,7 +58,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       const response = await axios.post(`${process.env.NEXT_PUBLIC_API_HOST}/api/auth/token/refresh/`, {
         refresh: authTokens.refresh,
       });
-      // Merge new access with existing refresh
       const newTokens = {
         access: response.data.access,
         refresh: authTokens.refresh,
@@ -69,9 +68,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       scheduleTokenRefresh(response.data.access);
       return newTokens;
     } catch (error) {
-      // Silent logout on 401 or expired/invalid refresh
       if (axios.isAxiosError(error) && error.response?.status === 401) {
-        console.log('[Auth] Refresh token expired or invalid, logging out at', new Date().toLocaleTimeString());
         logoutUser();
       }
       return null;
@@ -86,17 +83,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     try {
       const decoded = jwtDecode(accessToken) as { exp: number };
       const expiryTime = decoded.exp * 1000;
-
-      // Refresh 5 minutes (300,000 ms) before expiry
       const timeUntilRefresh = expiryTime - Date.now() - 300000;
-
       if (timeUntilRefresh <= 0) {
         refreshToken();
         return;
       }
-
       refreshTimerRef.current = setTimeout(refreshToken, timeUntilRefresh);
-      console.log(`[Auth] Next token refresh scheduled in ${Math.max(0, Math.floor(timeUntilRefresh / 1000))}s`);
     } catch (error) {
       logoutUser();
     }
@@ -133,7 +125,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
     // Redirect logic
     if (!tokenData && !isPublicPath) {
-      console.log('No auth token, redirecting to welcome');
       router.replace('/welcome');
     }
   }, [router, tokenData, loading]);
