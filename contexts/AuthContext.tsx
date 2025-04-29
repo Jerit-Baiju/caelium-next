@@ -54,80 +54,67 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   // Proactive token refresh
   const refreshToken = async () => {
     if (!authTokens?.refresh) return;
-
     try {
       const response = await axios.post(`${process.env.NEXT_PUBLIC_API_HOST}/api/auth/token/refresh/`, {
         refresh: authTokens.refresh,
       });
-
-      localStorage.setItem('authTokens', JSON.stringify(response.data));
-      setAuthTokens(response.data);
+      // Merge new access with existing refresh
+      const newTokens = {
+        access: response.data.access,
+        refresh: authTokens.refresh,
+      };
+      localStorage.setItem('authTokens', JSON.stringify(newTokens));
+      setAuthTokens(newTokens);
       setTokenData(jwtDecode(response.data.access));
-
-      // Schedule next refresh
       scheduleTokenRefresh(response.data.access);
-
-      return response.data;
+      return newTokens;
     } catch (error) {
-      console.error('Token refresh failed:', error);
-      // Only logout if it's a 401 unauthorized
+      // Silent logout on 401 or expired/invalid refresh
       if (axios.isAxiosError(error) && error.response?.status === 401) {
+        console.log('[Auth] Refresh token expired or invalid, logging out at', new Date().toLocaleTimeString());
         logoutUser();
       }
       return null;
     }
   };
 
-  // Schedule token refresh before it expires
+  // Schedule token refresh 5 minutes before expiry
   const scheduleTokenRefresh = (accessToken: string) => {
     if (refreshTimerRef.current) {
       clearTimeout(refreshTimerRef.current);
     }
-
     try {
       const decoded = jwtDecode(accessToken) as { exp: number };
-      const expiryTime = decoded.exp * 1000; // Convert to milliseconds
+      const expiryTime = decoded.exp * 1000;
 
-      // Refresh 5 minutes before expiry
-      const timeUntilRefresh = expiryTime - Date.now() - 5 * 60 * 1000;
+      // Refresh 5 minutes (300,000 ms) before expiry
+      const timeUntilRefresh = expiryTime - Date.now() - 300000;
 
       if (timeUntilRefresh <= 0) {
-        // Token is already expired or about to expire, refresh now
         refreshToken();
         return;
       }
 
-      console.log(`Scheduling token refresh in ${Math.floor(timeUntilRefresh / 60000)} minutes`);
       refreshTimerRef.current = setTimeout(refreshToken, timeUntilRefresh);
+      console.log(`[Auth] Next token refresh scheduled in ${Math.max(0, Math.floor(timeUntilRefresh / 1000))}s`);
     } catch (error) {
-      console.error('Failed to schedule token refresh:', error);
+      logoutUser();
     }
   };
 
-  // Check token expiration
   useEffect(() => {
-    // Skip if we're still loading or no tokens exist
     if (loading || !authTokens) return;
-
     try {
       const decodedToken: any = tokenData;
-
-      // Check if token is expired
       const isExpired = decodedToken && decodedToken.exp && decodedToken.exp * 1000 < Date.now();
-
       if (isExpired) {
-        console.log('Token expired, attempting refresh');
         refreshToken();
         return;
       }
-
-      // Schedule refresh for non-expired token
       scheduleTokenRefresh(authTokens.access);
     } catch (err) {
-      console.error('Error checking token expiration:', err);
       logoutUser();
     }
-
     return () => {
       if (refreshTimerRef.current) {
         clearTimeout(refreshTimerRef.current);
@@ -182,8 +169,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     localStorage.setItem('authTokens', JSON.stringify(data));
     setAuthTokens(data);
     setTokenData(jwtDecode(data?.access));
-
-    // Schedule refresh when logging in
     scheduleTokenRefresh(data.access);
   };
 
