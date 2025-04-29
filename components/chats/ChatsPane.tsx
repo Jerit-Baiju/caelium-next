@@ -33,7 +33,7 @@ const ChatsPane = () => {
   const { user } = useContext(AuthContext);
   const { activeUsers } = useAppContext();
   const { deleteChat } = useChatUtils();
-  const { chats, isLoading, searchQuery, setSearchQuery, searchChats, updateChatOrder, togglePinChat } = useChatsPaneContext();
+  const { chats, isLoading, searchQuery, setSearchQuery, searchChats, updateChatOrder, togglePinChat, removeChatFromPane } = useChatsPaneContext();
   const { refreshChats, lastFetched } = useAppContext();
   const pathname = usePathname();
   const router = useRouter();
@@ -60,6 +60,7 @@ const ChatsPane = () => {
   const handleDeleteChat = async (chat: Chat) => {
     if (chat.id) {
       await deleteChat(chat.id);
+      removeChatFromPane(chat.id);
       setChatToDelete(null);
     }
   };

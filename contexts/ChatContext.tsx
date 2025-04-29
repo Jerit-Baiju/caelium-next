@@ -8,10 +8,10 @@ import useAxios from '@/hooks/useAxios';
 import { AxiosError } from 'axios';
 import { useRouter } from 'next/navigation';
 import { ReactNode, createContext, useContext, useEffect, useState } from 'react';
+import { useAppContext } from './AppContext';
 import AuthContext from './AuthContext';
 import { useChatsPaneContext } from './ChatsPaneContext';
 import { useWebSocket } from './SocketContext';
-import { useAppContext } from './AppContext';
 
 interface childrenProps {
   chatId: number;
@@ -94,7 +94,7 @@ export const ChatProvider = ({ chatId, is_anon = false, children }: childrenProp
   const api = useAxios();
   const router = useRouter();
   const { socket, socketData } = useWebSocket();
-  const { updateChatOrder } = useChatsPaneContext();
+  const { updateChatOrder, removeChatFromPane } = useChatsPaneContext();
 
   const getRandomFancyName = () => {
     const firstName = fancyFirstNames[Math.floor(Math.random() * fancyFirstNames.length)];
@@ -264,6 +264,7 @@ export const ChatProvider = ({ chatId, is_anon = false, children }: childrenProp
   const clearChat = async () => {
     try {
       await api.delete(`/api/chats/${chatId}/`);
+      removeChatFromPane(chatId);
       router.push('/chats');
     } catch (error) {
       if (error instanceof AxiosError) {

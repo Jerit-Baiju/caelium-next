@@ -17,6 +17,7 @@ interface ChatsPaneContextType {
   updateChatOrder: (chatId: number, lastMessage: string) => void;
   clearChat: (chatId: number) => Promise<void>;
   togglePinChat: (chatId: number) => Promise<void>;
+  removeChatFromPane: (chatId: number) => void;
 }
 
 const ChatsPaneContext = createContext<ChatsPaneContextType | undefined>(undefined);
@@ -98,33 +99,53 @@ export function ChatsPaneProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const updateChatOrder = (chatId: number, lastMessage: string) => {
+  // Add this helper to remove a chat from the pane
+  const removeChatFromPane = (chatId: number) => {
+    setAppChats((prevChats: Chat[]) => prevChats.filter((chat) => chat.id !== chatId));
+  };
+
+  // Enhance updateChatOrder to add chat if missing, but prevent duplicates
+  const updateChatOrder = async (chatId: number, lastMessage: string) => {
     setAppChats((prevChats: Chat[]) => {
       const chatIndex = prevChats.findIndex((chat) => chat.id === Number(chatId));
-      if (chatIndex === -1) return prevChats;
-
+      if (chatIndex === -1) {
+        // Chat not found, fetch and add it if not already present
+        (async () => {
+          try {
+            const response = await api.get(`/api/chats/${chatId}/`);
+            const chat = response.data;
+            chat.last_message = {
+              content: lastMessage,
+              timestamp: new Date(),
+              sender: chat.participants?.find((p: any) => p.id !== user.id),
+              type: 'txt',
+            };
+            chat.updated_time = new Date();
+            setAppChats((prev) => {
+              // Prevent duplicate ids
+              if (prev.some((c) => c.id === chat.id)) return sortChats(prev);
+              return sortChats([...prev, chat]);
+            });
+          } catch (err) {
+            // ignore
+          }
+        })();
+        return prevChats;
+      }
       const updatedChats = [...prevChats];
       const chatToUpdate = { ...updatedChats[chatIndex] };
-      
-      // Get the other participant from the chat (the actual sender)
       const otherParticipant = chatToUpdate.participants?.find(p => p.id !== user.id);
-
-      // Update the chat only if we have a valid sender
       if (otherParticipant) {
         chatToUpdate.last_message = {
           content: lastMessage,
           timestamp: new Date(),
-          sender: otherParticipant, // Use the other participant as the sender
-          type: 'txt', // Use 'txt' to match the type check in the ChatsPane component
+          sender: otherParticipant,
+          type: 'txt',
         };
         chatToUpdate.updated_time = new Date();
-
-        // Remove old chat and add updated one
         updatedChats.splice(chatIndex, 1);
         updatedChats.push(chatToUpdate);
       }
-
-      // Sort the entire array
       return sortChats(updatedChats);
     });
   };
@@ -139,6 +160,7 @@ export function ChatsPaneProvider({ children }: { children: ReactNode }) {
     updateChatOrder,
     clearChat,
     togglePinChat,
+    removeChatFromPane, // add to context
   };
 
   return <ChatsPaneContext.Provider value={value}>{children}</ChatsPaneContext.Provider>;
