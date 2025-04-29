@@ -19,6 +19,7 @@ interface AuthContextProps {
   setTokenData: (e: any) => void;
   setAuthTokens: (e: any) => void;
   user: any;
+  refreshToken: () => Promise<any>; // <-- Expose refreshToken
 }
 
 const AuthContext = createContext<AuthContextProps>({
@@ -30,6 +31,7 @@ const AuthContext = createContext<AuthContextProps>({
   setTokenData: () => {},
   setAuthTokens: () => {},
   user: {},
+  refreshToken: async () => null, // <-- Provide a default implementation
 });
 
 export default AuthContext;
@@ -195,6 +197,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setTokenData,
     setAuthTokens,
     user,
+    refreshToken,
   };
 
   return <AuthContext.Provider value={contextData}>{loading ? <Loader fullScreen /> : children}</AuthContext.Provider>;
