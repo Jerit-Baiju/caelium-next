@@ -64,10 +64,15 @@ const ChatsPane = () => {
     }
   };
 
-  const filteredChats = chats.filter((chat: Chat) => {
-    const chatName = chat.is_group ? chat.name : chat.participants.find((p) => p.id !== user.id)?.name;
-    return chatName!.toLowerCase().includes(searchQuery.toLowerCase());
-  });
+  // Fix: Only filter if user exists
+  const filteredChats = user
+    ? chats.filter((chat: Chat) => {
+        const chatName = chat.is_group
+          ? chat.name
+          : chat.participants.find((p) => p.id !== user.id)?.name;
+        return chatName?.toLowerCase().includes(searchQuery.toLowerCase());
+      })
+    : [];
 
   const MenuGroup = ({ children, label }: { children: React.ReactNode; label: string }) => (
     <div className='px-2 py-1.5'>
