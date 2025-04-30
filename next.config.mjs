@@ -2,8 +2,12 @@ import nextPWA from 'next-pwa';
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  experimental: {
-    turbo: {
+  turbopack: {
+    // Example Turbopack configuration
+    resolveExtensions: ['.tsx', '.ts', '.js', '.jsx', '.json'],
+    resolveAlias: {
+      // Add your aliases here, e.g.:
+      // '@components': './components',
     },
   },
   images: {
