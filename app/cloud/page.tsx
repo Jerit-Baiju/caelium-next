@@ -528,18 +528,21 @@ const CloudExplorer = () => {
           </div>
         )}
 
-        <div className='flex items-center gap-3'>
-          <Link href='/cloud/upload'>
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className='flex items-center gap-2 border-white border-2 text-white px-4 py-2 rounded-lg transition-all duration-200 font-medium'
-            >
-              <FiUpload size={18} />
-              <span>Upload</span>
-            </motion.button>
-          </Link>
-        </div>
+        {/* Only show the upload button in the header if there are files or directories */}
+        {(!loading && (explorerData.directories.length > 0 || explorerData.files.length > 0)) && (
+          <div className='flex items-center gap-3'>
+            <Link href='/cloud/upload'>
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className='flex items-center gap-2 border-white border-2 text-white px-4 py-2 rounded-lg transition-all duration-200 font-medium'
+              >
+                <FiUpload size={18} />
+                <span>Upload</span>
+              </motion.button>
+            </Link>
+          </div>
+        )}
       </div>
 
       <div className='flex items-center mb-6 shadow-sm backdrop-blur-sm rounded-xl px-4 min-h-[48px] overflow-hidden border border-neutral-100 dark:border-neutral-700'>
