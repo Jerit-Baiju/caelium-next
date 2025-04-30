@@ -38,7 +38,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           href='https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0'
         />
         <link href='https://fonts.googleapis.com/icon?family=Material+Icons' rel='stylesheet' />
-        <meta name='google-adsense-account' content='ca-pub-8007113895720249' />
       </head>
       <body className={`${handleeFont.className} dark:bg-neutral-950 bg-white dark:text-neutral-200 text-neutral-800`}>
         <ThemeProvider attribute='class' defaultTheme='system' enableSystem disableTransitionOnChange>
@@ -51,11 +50,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <Toaster />
         <Script src='https://kit.fontawesome.com/c75f557ffd.js' crossOrigin='anonymous'></Script>
         <script src='https://accounts.google.com/gsi/client' async></script>
-        <script
-          async
-          src='https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8007113895720249'
-          crossOrigin='anonymous'
-        ></script>
       </body>
     </html>
   );
