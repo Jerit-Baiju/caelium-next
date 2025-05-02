@@ -19,7 +19,7 @@ const Page = (props: { params: Promise<{ slug?: number }> }) => {
       if (!isNaN(parsed) && parsed > 0) resolvedSlug = parsed;
     } else {
       // fallback: try to get from URL if not in params
-      const urlSlug = searchParams.get('slug');
+      const urlSlug = searchParams?.get('slug');
       if (urlSlug) {
         const parsed = Number(urlSlug);
         if (!isNaN(parsed) && parsed > 0) resolvedSlug = parsed;
