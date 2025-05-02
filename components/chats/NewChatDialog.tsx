@@ -1,6 +1,8 @@
 import { User } from '@/helpers/props';
 import useChatUtils from '@/hooks/useChat';
 import { useEffect, useState } from 'react';
+import { FaFont, FaSearch, FaTimes } from 'react-icons/fa';
+import { MdGroupAdd } from 'react-icons/md';
 
 interface NewChatDialogProps {
   onClose?: () => void;
@@ -63,7 +65,9 @@ const NewChatDialog = ({ onClose }: NewChatDialogProps) => {
                 placeholder='Search by name or email'
               />
               {isGroupMode && (
-                <i className='fa-solid fa-font p-3 bg-neutral-200 dark:bg-neutral-600 rounded-md h-10 w-10 text-neutral-700 dark:text-white'></i>
+                <div className='p-3 bg-neutral-200 dark:bg-neutral-600 rounded-md h-10 w-10 text-neutral-700 dark:text-white flex items-center justify-center'>
+                  <FaFont />
+                </div>
               )}
             </div>
           ) : (
@@ -76,7 +80,9 @@ const NewChatDialog = ({ onClose }: NewChatDialogProps) => {
                 placeholder='Enter group name'
                 maxLength={30}
               />
-              <i className='fa-solid fa-search p-3 bg-neutral-200 dark:bg-neutral-600 rounded-md h-10 w-10 text-neutral-700 dark:text-white'></i>
+              <div className='p-3 bg-neutral-200 dark:bg-neutral-600 rounded-md h-10 w-10 text-neutral-700 dark:text-white flex items-center justify-center'>
+                <FaSearch />
+              </div>
             </div>
           )}
         </div>
@@ -90,7 +96,9 @@ const NewChatDialog = ({ onClose }: NewChatDialogProps) => {
                 <img src={user.avatar} alt={user.name} className='w-6 h-6 rounded-full' />
                 <span>{user.name}</span>
                 <button onClick={() => handleCreateChat(user.id)}>
-                  <i className='fa-solid fa-xmark hover:bg-neutral-300 dark:hover:bg-neutral-700 rounded-full p-1'></i>
+                  <div className='hover:bg-neutral-300 dark:hover:bg-neutral-700 rounded-full p-1'>
+                    <FaTimes />
+                  </div>
                 </button>
               </div>
             ))}
@@ -114,7 +122,7 @@ const NewChatDialog = ({ onClose }: NewChatDialogProps) => {
                 >
                   <div className='flex items-center gap-3'>
                     <div className='w-12 h-12 rounded-full bg-linear-to-br from-blue-500 to-purple-600 flex items-center justify-center'>
-                      <span className='material-symbols-outlined text-white'>group_add</span>
+                      <MdGroupAdd className="text-white text-xl" />
                     </div>
                     <div>
                       <p className='font-semibold text-neutral-900 dark:text-white'>Create Group</p>
@@ -153,7 +161,7 @@ const NewChatDialog = ({ onClose }: NewChatDialogProps) => {
             onClick={handleCreateGroup}
             className='w-full py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center gap-2'
           >
-            <span className='material-symbols-outlined'>group_add</span>
+            <MdGroupAdd />
             Create Group ({selectedUsers.length} members)
           </button>
         </div>
