@@ -1,7 +1,13 @@
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
 import { User } from '@/helpers/props';
 import useChatUtils from '@/hooks/useChat';
 import { useEffect, useState } from 'react';
-import { FaFont, FaSearch, FaTimes } from 'react-icons/fa';
+import { FaSearch, FaTimes } from 'react-icons/fa';
 import { MdGroupAdd } from 'react-icons/md';
 
 interface NewChatDialogProps {
@@ -15,12 +21,34 @@ const NewChatDialog = ({ onClose }: NewChatDialogProps) => {
   const [groupName, setGroupName] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [inputBox, setInputBox] = useState<'search' | 'name'>('search');
+  const [validationError, setValidationError] = useState<string>('');
+  const [isValid, setIsValid] = useState(false);
+  const [hasInteracted, setHasInteracted] = useState(false);
 
   useEffect(() => {
     setIsLoading(true);
     fetchNewChats().finally(() => setIsLoading(false));
   }, []);
+
+  // Update validation state when dependencies change
+  useEffect(() => {
+    let error = '';
+    if (isGroupMode) {
+      if (!groupName.trim()) {
+        error = 'Please enter a group name';
+      } else if (selectedUsers.length < 2) {
+        error = 'Please select at least 2 members';
+      }
+    }
+    
+    setValidationError(error);
+    setIsValid(!error);
+  }, [groupName, selectedUsers, isGroupMode]);
+  
+  // Reset interaction state when switching modes
+  useEffect(() => {
+    setHasInteracted(false);
+  }, [isGroupMode]);
 
   const filteredChats = newChats.filter(
     (chat) =>
@@ -38,6 +66,7 @@ const NewChatDialog = ({ onClose }: NewChatDialogProps) => {
           setSelectedUsers([...selectedUsers, user]);
         }
       }
+      setHasInteracted(true);
     } else {
       createChat(recipientId);
       onClose?.();
@@ -45,47 +74,59 @@ const NewChatDialog = ({ onClose }: NewChatDialogProps) => {
   };
 
   const handleCreateGroup = () => {
-    if (!groupName.trim()) return;
+    setHasInteracted(true);
+    if (!isValid) return;
     const participantIds = selectedUsers.map((user) => user.id);
     createGroup(groupName, participantIds);
     onClose?.();
+  };
+  
+  // Handle group name input and mark form as interacted with
+  const handleGroupNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setGroupName(e.target.value);
+    setHasInteracted(true);
   };
 
   return (
     <div className='flex flex-col h-[calc(100vh-6rem)] sm:h-[600px] bg-white dark:bg-neutral-900'>
       <div className='border-b border-neutral-200 dark:border-neutral-700 p-4 shrink-0'>
-        <div className='relative'>
-          {inputBox == 'search' ? (
-            <div className='flex items-center gap-2'>
+        {/* Modern, unified input area for group creation */}
+        {isGroupMode ? (
+          <div className='flex flex-col gap-2'>
+            <input
+              type='text'
+              value={groupName}
+              onChange={handleGroupNameChange}
+              className='bg-neutral-50 dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-600 text-neutral-900 dark:text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 mb-1'
+              placeholder='Group name (e.g. Project Team, Family, etc.)'
+              maxLength={30}
+            />
+            <div className='relative'>
+              <FaSearch className='absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400' />
               <input
                 type='text'
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className='bg-neutral-50 dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-600 text-neutral-900 dark:text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5'
-                placeholder='Search by name or email'
+                className='pl-10 bg-neutral-50 dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-600 text-neutral-900 dark:text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5'
+                placeholder='Add people by name or email'
               />
-              {isGroupMode && (
-                <div className='p-3 bg-neutral-200 dark:bg-neutral-600 rounded-md h-10 w-10 text-neutral-700 dark:text-white flex items-center justify-center'>
-                  <FaFont />
-                </div>
-              )}
             </div>
-          ) : (
-            <div className='flex items-center gap-2'>
-              <input
-                type='text'
-                value={groupName}
-                onChange={(e) => setGroupName(e.target.value)}
-                className='bg-neutral-50 dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-600 text-neutral-900 dark:text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5'
-                placeholder='Enter group name'
-                maxLength={30}
-              />
-              <div className='p-3 bg-neutral-200 dark:bg-neutral-600 rounded-md h-10 w-10 text-neutral-700 dark:text-white flex items-center justify-center'>
-                <FaSearch />
-              </div>
-            </div>
-          )}
-        </div>
+            {/* Only show validation error after user interaction */}
+            {hasInteracted && validationError && (
+              <p className='text-red-500 text-sm mt-1'>{validationError}</p>
+            )}
+          </div>
+        ) : (
+          <div className='relative'>
+            <input
+              type='text'
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className='bg-neutral-50 dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-600 text-neutral-900 dark:text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5'
+              placeholder='Search by name or email'
+            />
+          </div>
+        )}
       </div>
 
       <div className='flex-1 overflow-y-auto p-4'>
@@ -116,7 +157,6 @@ const NewChatDialog = ({ onClose }: NewChatDialogProps) => {
                 <li
                   onClick={() => {
                     setIsGroupMode(true);
-                    setInputBox('name');
                   }}
                   className='p-3 rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-700 transition-colors cursor-pointer'
                 >
@@ -155,15 +195,32 @@ const NewChatDialog = ({ onClose }: NewChatDialogProps) => {
         </div>
       </div>
 
-      {isGroupMode && selectedUsers.length >= 2 && groupName.trim() && (
+      {isGroupMode && (
         <div className='border-t border-neutral-200 dark:border-neutral-700 p-4 shrink-0'>
-          <button
-            onClick={handleCreateGroup}
-            className='w-full py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center gap-2'
-          >
-            <MdGroupAdd />
-            Create Group ({selectedUsers.length} members)
-          </button>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <button
+                  onClick={handleCreateGroup}
+                  className={`w-full py-2.5 rounded-lg flex items-center justify-center gap-2 transition-colors ${
+                    isValid
+                      ? 'bg-blue-600 text-white hover:bg-blue-700'
+                      : 'bg-neutral-300 dark:bg-neutral-700 text-neutral-500 dark:text-neutral-400 cursor-not-allowed'
+                  }`}
+                  disabled={!isValid}
+                >
+                  <MdGroupAdd />
+                  Create Group {selectedUsers.length > 0 && `(${selectedUsers.length} members)`}
+                </button>
+              </TooltipTrigger>
+              {/* Only show tooltip with error after user interaction */}
+              {hasInteracted && !isValid && (
+                <TooltipContent className="bg-neutral-800 text-white p-2 rounded-md">
+                  <p>{validationError}</p>
+                </TooltipContent>
+              )}
+            </Tooltip>
+          </TooltipProvider>
         </div>
       )}
     </div>
