@@ -265,7 +265,7 @@ export const ChatProvider = ({ chatId, is_anon = false, children }: childrenProp
     try {
       await api.delete(`/api/chats/${chatId}/`);
       removeChatFromPane(chatId);
-      router.push('/chats');
+      router.push('/chats/main');
     } catch (error) {
       if (error instanceof AxiosError) {
         setError({
