@@ -70,6 +70,9 @@ const CloudExplorer = () => {
   const gridRef = useRef<HTMLDivElement>(null);
   // Store refs for all file/folder cards
   const itemRefs = useRef<Record<string, HTMLDivElement | null>>({});
+  // Store the base selection for additive marquee
+  const baseSelectedIdsRef = useRef<Set<string>>(new Set());
+  const marqueeAdditiveRef = useRef(false);
 
   // Mouse event handlers for marquee selection
   const selectionStart = useRef<{ x: number; y: number } | null>(null);
@@ -83,7 +86,15 @@ const CloudExplorer = () => {
     const y = e.clientY - (rect?.top || 0);
     selectionStart.current = { x, y };
     setSelectionBox({ x, y, w: 0, h: 0 });
-    setSelectedIds(new Set());
+    // If Ctrl/Cmd/Shift is held, store the current selection for additive marquee
+    if (e.ctrlKey || e.metaKey || e.shiftKey) {
+      baseSelectedIdsRef.current = new Set(selectedIds);
+      marqueeAdditiveRef.current = true;
+    } else {
+      baseSelectedIdsRef.current = new Set();
+      marqueeAdditiveRef.current = false;
+      setSelectedIds(new Set());
+    }
   };
 
   const handleMouseMove = (e: React.MouseEvent) => {
@@ -101,7 +112,7 @@ const CloudExplorer = () => {
     };
     setSelectionBox(box);
     // Check intersection for all items
-    const newSelected = new Set<string>();
+    const marqueeSelected = new Set<string>();
     // Directories
     explorerData.directories.forEach((dir) => {
       const ref = itemRefs.current[dir.id];
@@ -115,7 +126,7 @@ const CloudExplorer = () => {
           bottom: r.bottom - parentRect.top,
         };
         if (box.x < rel.right && box.x + box.w > rel.left && box.y < rel.bottom && box.y + box.h > rel.top) {
-          newSelected.add(dir.id);
+          marqueeSelected.add(dir.id);
         }
       }
     });
@@ -132,17 +143,31 @@ const CloudExplorer = () => {
           bottom: r.bottom - parentRect.top,
         };
         if (box.x < rel.right && box.x + box.w > rel.left && box.y < rel.bottom && box.y + box.h > rel.top) {
-          newSelected.add(file.id);
+          marqueeSelected.add(file.id);
         }
       }
     });
-    setSelectedIds(newSelected);
+    if (marqueeAdditiveRef.current) {
+      // Toggle selection: deselect if already selected, select if not
+      const merged = new Set(baseSelectedIdsRef.current);
+      marqueeSelected.forEach((id) => {
+        if (baseSelectedIdsRef.current.has(id)) {
+          merged.delete(id);
+        } else {
+          merged.add(id);
+        }
+      });
+      setSelectedIds(merged);
+    } else {
+      setSelectedIds(marqueeSelected);
+    }
   };
 
   const handleMouseUp = () => {
     setIsSelecting(false);
     setSelectionBox(null);
     selectionStart.current = null;
+    marqueeAdditiveRef.current = false;
   };
 
   useEffect(() => {
