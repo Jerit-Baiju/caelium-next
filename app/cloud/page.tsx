@@ -9,7 +9,7 @@ import useCloud from '@/hooks/useCloud';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   FiArchive,
   FiCheck,
@@ -62,6 +62,88 @@ const CloudExplorer = () => {
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [uploadProgressMap, setUploadProgressMap] = useState<Record<string, number>>({});
+
+  // Marquee selection states
+  const [selectionBox, setSelectionBox] = useState<null | { x: number; y: number; w: number; h: number }>(null);
+  const [isSelecting, setIsSelecting] = useState(false);
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const gridRef = useRef<HTMLDivElement>(null);
+  // Store refs for all file/folder cards
+  const itemRefs = useRef<Record<string, HTMLDivElement | null>>({});
+
+  // Mouse event handlers for marquee selection
+  const selectionStart = useRef<{ x: number; y: number } | null>(null);
+
+  const handleMouseDown = (e: React.MouseEvent) => {
+    // Only left click, and not on a child element (avoid context menu, etc)
+    if (e.button !== 0 || e.target !== gridRef.current) return;
+    setIsSelecting(true);
+    const rect = gridRef.current?.getBoundingClientRect();
+    const x = e.clientX - (rect?.left || 0);
+    const y = e.clientY - (rect?.top || 0);
+    selectionStart.current = { x, y };
+    setSelectionBox({ x, y, w: 0, h: 0 });
+    setSelectedIds(new Set());
+  };
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!isSelecting || !selectionStart.current || !gridRef.current) return;
+    const rect = gridRef.current.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    const startX = selectionStart.current.x;
+    const startY = selectionStart.current.y;
+    const box = {
+      x: Math.min(x, startX),
+      y: Math.min(y, startY),
+      w: Math.abs(x - startX),
+      h: Math.abs(y - startY),
+    };
+    setSelectionBox(box);
+    // Check intersection for all items
+    const newSelected = new Set<string>();
+    // Directories
+    explorerData.directories.forEach((dir) => {
+      const ref = itemRefs.current[dir.id];
+      if (ref) {
+        const r = ref.getBoundingClientRect();
+        const parentRect = gridRef.current!.getBoundingClientRect();
+        const rel = {
+          left: r.left - parentRect.left,
+          top: r.top - parentRect.top,
+          right: r.right - parentRect.left,
+          bottom: r.bottom - parentRect.top,
+        };
+        if (box.x < rel.right && box.x + box.w > rel.left && box.y < rel.bottom && box.y + box.h > rel.top) {
+          newSelected.add(dir.id);
+        }
+      }
+    });
+    // Files
+    explorerData.files.forEach((file) => {
+      const ref = itemRefs.current[file.id];
+      if (ref) {
+        const r = ref.getBoundingClientRect();
+        const parentRect = gridRef.current!.getBoundingClientRect();
+        const rel = {
+          left: r.left - parentRect.left,
+          top: r.top - parentRect.top,
+          right: r.right - parentRect.left,
+          bottom: r.bottom - parentRect.top,
+        };
+        if (box.x < rel.right && box.x + box.w > rel.left && box.y < rel.bottom && box.y + box.h > rel.top) {
+          newSelected.add(file.id);
+        }
+      }
+    });
+    setSelectedIds(newSelected);
+  };
+
+  const handleMouseUp = () => {
+    setIsSelecting(false);
+    setSelectionBox(null);
+    selectionStart.current = null;
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -546,7 +628,7 @@ const CloudExplorer = () => {
         )}
       </div>
 
-      <div className='flex items-center mb-6 shadow-sm backdrop-blur-sm rounded-xl px-4 min-h-[48px] overflow-hidden border border-neutral-100 dark:border-neutral-700'>
+      <div className='flex items-center mb-0 shadow-sm backdrop-blur-sm rounded-xl px-4 min-h-[48px] overflow-hidden border border-neutral-100 dark:border-neutral-700'>
         {loading ? (
           <div className='flex items-center space-x-2 w-full py-1'>
             <div className='flex items-center py-1.5 px-3 rounded-lg'>
@@ -624,12 +706,55 @@ const CloudExplorer = () => {
         </div>
       ) : (
         <div>
-          <div className='grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-5 gap-4'>
+          <div
+            ref={gridRef}
+            className='grid p-8 grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-5 gap-4 relative select-none'
+            style={{ userSelect: isSelecting ? 'none' : undefined }}
+            onMouseDown={handleMouseDown}
+            onMouseMove={isSelecting ? handleMouseMove : undefined}
+            onMouseUp={isSelecting ? handleMouseUp : undefined}
+          >
+            {/* Selection rectangle overlay */}
+            {isSelecting && selectionBox && (
+              <div
+                style={{
+                  position: 'absolute',
+                  left: selectionBox.x,
+                  top: selectionBox.y,
+                  width: selectionBox.w,
+                  height: selectionBox.h,
+                  background: 'rgba(59,130,246,0.15)',
+                  border: '2px solid #3b82f6',
+                  zIndex: 10,
+                  pointerEvents: 'none',
+                }}
+              />
+            )}
+            {/* Directories */}
             {explorerData.directories.map((directory) => (
               <div
                 key={directory.id}
-                className='group relative bg-neutral-50 dark:bg-neutral-900 rounded-lg transition-all duration-200 overflow-hidden border border-neutral-300 dark:border-neutral-800 hover:shadow-md'
-                onClick={() => navigateToDirectory(directory.id)}
+                ref={(el) => (itemRefs.current[directory.id] = el)}
+                className={`group relative bg-neutral-50 dark:bg-neutral-900 rounded-lg transition-all duration-200 overflow-hidden border border-neutral-300 dark:border-neutral-800 hover:shadow-md ${selectedIds.has(directory.id) ? 'ring-2 ring-blue-400 bg-blue-50 dark:bg-blue-950' : ''}`}
+                onClick={(e) => {
+                  // Custom selection: Cmd/Ctrl + click toggles selection
+                  if (e.metaKey || e.ctrlKey) {
+                    setSelectedIds((prev) => {
+                      const newSet = new Set(prev);
+                      if (newSet.has(directory.id)) {
+                        newSet.delete(directory.id);
+                      } else {
+                        newSet.add(directory.id);
+                      }
+                      return newSet;
+                    });
+                  } else {
+                    // Normal click: select only this and navigate
+                    setSelectedIds(new Set([directory.id]));
+                    navigateToDirectory(directory.id);
+                  }
+                  e.stopPropagation();
+                }}
               >
                 <div className='cursor-pointer'>
                   <div className='aspect-square bg-neutral-200 dark:bg-neutral-950 flex justify-center items-center overflow-hidden'>
@@ -646,7 +771,7 @@ const CloudExplorer = () => {
                 </div>
               </div>
             ))}
-
+            {/* Files */}
             {explorerData.files.map((file, index) => (
               <FileContextMenu
                 key={file.id}
@@ -659,12 +784,26 @@ const CloudExplorer = () => {
                 }}
               >
                 <div
-                  className='group relative bg-neutral-50 dark:bg-neutral-900 rounded-lg transition-all duration-200 overflow-hidden border border-neutral-300 dark:border-neutral-800 hover:shadow-md'
+                  ref={(el) => (itemRefs.current[file.id] = el)}
+                  className={`group relative bg-neutral-50 dark:bg-neutral-900 rounded-lg transition-all duration-200 overflow-hidden border border-neutral-300 dark:border-neutral-800 hover:shadow-md ${selectedIds.has(file.id) ? 'ring-2 ring-blue-400 bg-blue-50 dark:bg-blue-950' : ''}`}
                   onClick={(e) => {
-                    // Prevent click when user is trying to open context menu
-                    if (e.type === 'click') {
+                    // Custom selection: Cmd/Ctrl + click toggles selection
+                    if (e.metaKey || e.ctrlKey) {
+                      setSelectedIds((prev) => {
+                        const newSet = new Set(prev);
+                        if (newSet.has(file.id)) {
+                          newSet.delete(file.id);
+                        } else {
+                          newSet.add(file.id);
+                        }
+                        return newSet;
+                      });
+                    } else {
+                      // Normal click: select only this and open preview
+                      setSelectedIds(new Set([file.id]));
                       openFilePreview(file, index);
                     }
+                    e.stopPropagation();
                   }}
                 >
                   <div className='cursor-pointer'>
