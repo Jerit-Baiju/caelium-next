@@ -1,6 +1,7 @@
 'use client';
 
 import FileContextMenu from '@/components/cloud/context-menus/file-context';
+import ItemSkeleton from '@/components/cloud/ItemSkeleton';
 import FilePreview from '@/components/cloud/preview';
 import { BreadcrumbItem, ExplorerData, FileData } from '@/helpers/props';
 import useAxios from '@/hooks/useAxios';
@@ -529,7 +530,7 @@ const CloudExplorer = () => {
         )}
 
         {/* Only show the upload button in the header if there are files or directories */}
-        {(!loading && (explorerData.directories.length > 0 || explorerData.files.length > 0)) && (
+        {!loading && (explorerData.directories.length > 0 || explorerData.files.length > 0) && (
           <div className='flex items-center gap-3'>
             <Link href='/cloud/upload'>
               <motion.button
@@ -598,22 +599,7 @@ const CloudExplorer = () => {
       </div>
 
       {loading ? (
-        <div className='grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-5 gap-4'>
-          {Array.from({ length: 12 }).map((_, index) => (
-            <div key={index} className='animate-pulse rounded-lg border border-neutral-200 dark:border-neutral-700 overflow-hidden'>
-              <div className='aspect-square bg-neutral-100 dark:bg-neutral-800 flex justify-center items-center'>
-                <div className='bg-neutral-200 dark:bg-neutral-700 h-16 w-16 rounded'></div>
-              </div>
-              <div className='p-3'>
-                <div className='h-4 bg-neutral-200 dark:bg-neutral-700 rounded w-3/4 mb-2'></div>
-                <div className='flex justify-between'>
-                  <div className='h-3 bg-neutral-200 dark:bg-neutral-700 rounded w-1/3'></div>
-                  <div className='h-3 bg-neutral-200 dark:bg-neutral-700 rounded w-1/4'></div>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
+        <ItemSkeleton />
       ) : explorerData.directories.length === 0 && explorerData.files.length === 0 ? (
         <div className='flex grow flex-col items-center mt-20 text-center rounded-xl shadow-sm mx-auto w-full'>
           <div className='p-5 rounded-full mb-5'>
@@ -669,7 +655,7 @@ const CloudExplorer = () => {
                   name: file.name,
                   download_url: file.download_url,
                   mime_type: file.mime_type,
-                  parent: currentPath || null
+                  parent: currentPath || null,
                 }}
               >
                 <div
