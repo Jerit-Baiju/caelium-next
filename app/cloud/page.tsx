@@ -734,7 +734,7 @@ const CloudExplorer = () => {
             {explorerData.directories.map((directory) => (
               <div
                 key={directory.id}
-                ref={(el) => (itemRefs.current[directory.id] = el)}
+                ref={el => { itemRefs.current[directory.id] = el; }}
                 className={`group relative bg-neutral-50 dark:bg-neutral-900 rounded-lg transition-all duration-200 overflow-hidden border border-neutral-300 dark:border-neutral-800 hover:shadow-md ${selectedIds.has(directory.id) ? 'ring-2 ring-blue-400 bg-blue-50 dark:bg-blue-950' : ''}`}
                 onClick={(e) => {
                   // Custom selection: Cmd/Ctrl + click toggles selection
@@ -784,7 +784,7 @@ const CloudExplorer = () => {
                 }}
               >
                 <div
-                  ref={(el) => (itemRefs.current[file.id] = el)}
+                  ref={el => { itemRefs.current[file.id] = el; }}
                   className={`group relative bg-neutral-50 dark:bg-neutral-900 rounded-lg transition-all duration-200 overflow-hidden border border-neutral-300 dark:border-neutral-800 hover:shadow-md ${selectedIds.has(file.id) ? 'ring-2 ring-blue-400 bg-blue-50 dark:bg-blue-950' : ''}`}
                   onClick={(e) => {
                     // Custom selection: Cmd/Ctrl + click toggles selection
