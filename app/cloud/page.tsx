@@ -21,6 +21,7 @@ import {
   FiHome,
   FiImage,
   FiMusic,
+  FiTag,
   FiUpload,
   FiVideo,
   FiX,
@@ -510,6 +511,16 @@ const CloudExplorer = () => {
     }
   };
 
+  // Tag modal states
+  const [tagModalOpen, setTagModalOpen] = useState(false);
+  const [tagSearch, setTagSearch] = useState('');
+  const [selectedTags, setSelectedTags] = useState<string[]>([]);
+  // Static tags for now
+  const staticTags = [
+    'Work', 'Personal', 'Important', 'To Review', 'Shared', 'Images', 'Videos', 'Archive', 'Project', 'Misc'
+  ];
+  const filteredTags = staticTags.filter(tag => tag.toLowerCase().includes(tagSearch.toLowerCase()));
+
   return (
     <div className='flex grow flex-col p-6 max-w-7xl mx-auto'>
       {isDragging && (
@@ -636,20 +647,64 @@ const CloudExplorer = () => {
           </div>
         )}
 
-        {/* Only show the upload button in the header if there are files or directories */}
+        {/* Button area: Upload or Management, with framer-motion animation */}
         {!loading && (explorerData.directories.length > 0 || explorerData.files.length > 0) && (
-          <div className='flex items-center gap-3'>
-            <Link href='/cloud/upload'>
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className='flex items-center gap-2 border-white border-2 text-white px-4 py-2 rounded-lg transition-all duration-200 font-medium'
+          <motion.div className='flex items-center gap-3 min-w-[120px]' initial={false}>
+            <motion.div style={{ position: 'relative', minWidth: 120 }}>
+              <motion.div
+                key={selectedIds.size > 0 ? 'manage' : 'upload'}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.18 }}
               >
-                <FiUpload size={18} />
-                <span>Upload</span>
-              </motion.button>
-            </Link>
-          </div>
+                {selectedIds.size > 0 ? (
+                  <div className='flex gap-2'>
+                    {/* Management buttons with neutral theme */}
+                    <motion.button
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      className='flex items-center gap-2 border-white border-2 text-white px-4 py-2 rounded-lg font-medium transition-all duration-200'
+                      // onClick={handleDeleteSelected} // implement as needed
+                    >
+                      <FiX size={18} />
+                      <span>Delete</span>
+                    </motion.button>
+                    <motion.button
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      className='flex items-center gap-2 border-white border-2 text-white px-4 py-2 rounded-lg font-medium transition-all duration-200'
+                      // onClick={handleMoveSelected} // implement as needed
+                    >
+                      <FiFolder size={18} />
+                      <span>Move</span>
+                    </motion.button>
+                    <motion.button
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      className='flex items-center gap-2 border-white border-2 text-white px-4 py-2 rounded-lg font-medium transition-all duration-200'
+                      style={{ background: 'none', color: 'white' }}
+                      onClick={() => setTagModalOpen(true)}
+                    >
+                      <FiTag size={18} />
+                      <span>Tag</span>
+                    </motion.button>
+                  </div>
+                ) : (
+                  <Link href='/cloud/upload'>
+                    <motion.button
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      className='flex items-center gap-2 border-white border-2 text-white px-4 py-2 rounded-lg transition-all duration-200 font-medium'
+                    >
+                      <FiUpload size={18} />
+                      <span>Upload</span>
+                    </motion.button>
+                  </Link>
+                )}
+              </motion.div>
+            </motion.div>
+          </motion.div>
         )}
       </div>
 
@@ -867,6 +922,56 @@ const CloudExplorer = () => {
         hasNext={currentFileIndex < explorerData.files.length - 1}
         hasPrevious={currentFileIndex > 0}
       />
+
+      {/* Tag Modal */}
+      {tagModalOpen && (
+        <div className='fixed inset-0 z-50 flex items-center justify-center bg-black/60'>
+          <div className='bg-white dark:bg-neutral-900 rounded-xl p-6 w-full max-w-md border border-neutral-200 dark:border-neutral-700 shadow-lg'>
+            <div className='flex justify-between items-center mb-4'>
+              <h3 className='text-lg font-bold dark:text-white'>Tag Selected</h3>
+              <button onClick={() => setTagModalOpen(false)} className='p-1 rounded-full hover:bg-neutral-100 dark:hover:bg-neutral-800'>
+                <FiX size={20} />
+              </button>
+            </div>
+            <input
+              type='text'
+              placeholder='Search tags...'
+              value={tagSearch}
+              onChange={e => setTagSearch(e.target.value)}
+              className='w-full mb-4 px-3 py-2 rounded-lg border border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 text-neutral-800 dark:text-neutral-200 focus:outline-none focus:ring-2 focus:ring-blue-400'
+            />
+            <div className='flex flex-wrap gap-2 mb-4 max-h-32 overflow-y-auto'>
+              {filteredTags.length === 0 ? (
+                <span className='text-neutral-400 text-sm'>No tags found</span>
+              ) : (
+                filteredTags.map(tag => (
+                  <button
+                    key={tag}
+                    className={`px-3 py-1 rounded-full border text-sm transition-all duration-150 ${selectedTags.includes(tag) ? 'bg-blue-500 text-white border-blue-500' : 'bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-200 border-neutral-300 dark:border-neutral-700'}`}
+                    onClick={() => setSelectedTags(prev => prev.includes(tag) ? prev.filter(t => t !== tag) : [...prev, tag])}
+                  >
+                    {tag}
+                  </button>
+                ))
+              )}
+            </div>
+            <div className='flex justify-end gap-2'>
+              <button
+                onClick={() => setTagModalOpen(false)}
+                className='px-4 py-2 rounded-lg border border-neutral-200 dark:border-neutral-700 text-sm hover:bg-neutral-100 dark:hover:bg-neutral-800'
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => { setTagModalOpen(false); setSelectedTags([]); }}
+                className='px-4 py-2 rounded-lg bg-blue-500 text-white text-sm hover:bg-blue-600'
+              >
+                Apply Tags
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
