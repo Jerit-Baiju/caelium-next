@@ -13,7 +13,6 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import React, { useEffect, useRef, useState } from 'react';
 import {
   FiArchive,
-  FiCheck,
   FiChevronRight,
   FiCode,
   FiFile,
@@ -517,400 +516,298 @@ const CloudExplorer = () => {
   const [tagSearch, setTagSearch] = useState('');
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   // Static tags for now
-  const staticTags = [
-    'Work', 'Personal', 'Important', 'To Review', 'Shared', 'Images', 'Videos', 'Archive', 'Project', 'Misc'
-  ];
-  const filteredTags = staticTags.filter(tag => tag.toLowerCase().includes(tagSearch.toLowerCase()));
+  const staticTags = ['Work', 'Personal', 'Important', 'To Review', 'Shared', 'Images', 'Videos', 'Archive', 'Project', 'Misc'];
+  const filteredTags = staticTags.filter((tag) => tag.toLowerCase().includes(tagSearch.toLowerCase()));
 
   return (
-    <div className='flex grow flex-col p-6 max-w-7xl mx-auto'>
-      {isDragging && (
-        <div className='fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-8'>
-          <div className='bg-white dark:bg-neutral-800 rounded-xl p-10 text-center max-w-lg w-full border-2 border-dashed border-blue-400'>
-            <div className='flex justify-center mb-6'>
-              <FiUpload size={48} className='text-blue-500' />
+    <div className='flex grow flex-col max-w-7xl mx-auto'>
+      {/* Header Section */}
+      <div className='rounded-xl px-6 pt-6'>
+        <div className='mb-6 flex justify-between items-center'>
+          {loading ? (
+            <div className='animate-pulse'>
+              <div className='h-7 bg-neutral-200 dark:bg-neutral-700 rounded w-64 mb-2'></div>
+              <div className='h-4 bg-neutral-200 dark:bg-neutral-700 rounded w-40'></div>
             </div>
-            <h3 className='text-2xl font-bold mb-2 dark:text-white'>Drop files to upload</h3>
-            <p className='text-neutral-600 dark:text-neutral-400'>
-              Files will be uploaded to{' '}
-              {explorerData.current_directory ? `"${explorerData.current_directory.name}"` : 'your root folder'}
-            </p>
-          </div>
-        </div>
-      )}
-
-      {droppedFiles.length > 0 && (
-        <div className='fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-8'>
-          <div className='bg-white dark:bg-neutral-800 rounded-xl p-6 max-w-2xl w-full border border-neutral-200 dark:border-neutral-700'>
-            <div className='flex justify-between items-center mb-4'>
-              <h3 className='text-xl font-bold dark:text-white'>Confirm Upload</h3>
-              <button
-                onClick={cancelUpload}
-                className='p-1 rounded-full hover:bg-neutral-100 dark:hover:bg-neutral-700'
-                disabled={isUploading}
-              >
-                <FiX size={20} />
-              </button>
+          ) : (
+            <div>
+              <h1 className='text-2xl font-semibold text-neutral-800 dark:text-white mb-1'>
+                {explorerData.current_directory ? explorerData.current_directory.name : 'My Cloud'}
+              </h1>
+              <p className='text-sm text-neutral-500 dark:text-neutral-400'>
+                {explorerData.files.length} file{explorerData.files.length !== 1 ? 's' : ''} • {explorerData.directories.length} folder
+                {explorerData.directories.length !== 1 ? 's' : ''}
+              </p>
             </div>
+          )}
 
-            {isUploading ? (
-              <div className='mb-6'>
-                <p className='mb-2 text-neutral-600 dark:text-neutral-400'>Uploading files... ({uploadProgress}%)</p>
-                <div className='w-full bg-neutral-200 dark:bg-neutral-700 rounded-full h-2.5'>
-                  <div className='bg-blue-500 h-2.5 rounded-full' style={{ width: `${uploadProgress}%` }}></div>
-                </div>
-              </div>
-            ) : (
-              <>
-                <p className='mb-4 text-neutral-600 dark:text-neutral-400'>
-                  {droppedFiles.length} file{droppedFiles.length !== 1 ? 's' : ''} ready to upload to{' '}
-                  {explorerData.current_directory ? `"${explorerData.current_directory.name}"` : 'your root folder'}
-                </p>
-
-                <div className='max-h-60 overflow-y-auto mb-6 border border-neutral-200 dark:border-neutral-700 rounded-lg'>
-                  <ul className='divide-y divide-neutral-200 dark:divide-neutral-700'>
-                    {droppedFiles.map((file, index) => (
-                      <li key={index} className='p-3 flex justify-between items-center'>
-                        <div className='flex items-center gap-3'>
-                          <div className='text-neutral-500'>
-                            {file.type.startsWith('image/') ? (
-                              <FiImage size={20} />
-                            ) : file.type.startsWith('video/') ? (
-                              <FiVideo size={20} />
-                            ) : file.type.startsWith('audio/') ? (
-                              <FiMusic size={20} />
-                            ) : (
-                              <FiFile size={20} />
-                            )}
-                          </div>
-                          <span className='text-sm truncate max-w-xs'>{file.name}</span>
-                        </div>
-                        <div className='flex items-center'>
-                          {uploadProgressMap[file.name] === 100 && (
-                            <div className='flex items-center text-green-500 dark:text-green-400 mr-2'>
-                              <FiCheck size={16} />
-                            </div>
-                          )}
-                          {uploadProgressMap[file.name] === -1 && <span className='text-red-500 text-xs mr-2'>Failed</span>}
-                          <span className='text-xs text-neutral-500'>{formatFileSize(file.size)}</span>
-                        </div>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </>
-            )}
-
-            <div className='flex justify-end gap-3'>
-              <button
-                onClick={cancelUpload}
-                disabled={isUploading}
-                className={`px-4 py-2 rounded-lg border border-neutral-200 dark:border-neutral-700 text-sm
-                  ${isUploading ? 'opacity-50 cursor-not-allowed' : 'hover:bg-neutral-100 dark:hover:bg-neutral-700'}`}
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleUpload}
-                disabled={isUploading}
-                className={`px-4 py-2 rounded-lg bg-blue-500 text-white flex items-center gap-2 text-sm
-                  ${isUploading ? 'opacity-50 cursor-not-allowed' : 'hover:bg-blue-600'}`}
-              >
-                {isUploading ? (
-                  'Uploading...'
-                ) : (
-                  <>
-                    <FiCheck size={16} />
-                    Confirm Upload
-                  </>
-                )}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      <div className='mb-6 flex justify-between items-center'>
-        {loading ? (
-          <div className='animate-pulse'>
-            <div className='h-7 bg-neutral-200 dark:bg-neutral-700 rounded w-64 mb-2'></div>
-            <div className='h-4 bg-neutral-200 dark:bg-neutral-700 rounded w-40'></div>
-          </div>
-        ) : (
-          <div>
-            <h1 className='text-2xl font-semibold text-neutral-800 dark:text-white mb-1'>
-              {explorerData.current_directory ? explorerData.current_directory.name : 'My Cloud'}
-            </h1>
-            <p className='text-sm text-neutral-500 dark:text-neutral-400'>
-              {explorerData.files.length} file{explorerData.files.length !== 1 ? 's' : ''} • {explorerData.directories.length} folder
-              {explorerData.directories.length !== 1 ? 's' : ''}
-            </p>
-          </div>
-        )}
-
-        {/* Button area: Upload or Management, with framer-motion animation */}
-        {!loading && (explorerData.directories.length > 0 || explorerData.files.length > 0) && (
-          <motion.div className='flex items-center gap-3 min-w-[120px]' initial={false}>
-            <motion.div style={{ position: 'relative', minWidth: 120 }}>
-              <motion.div
-                key={selectedIds.size > 0 ? 'manage' : 'upload'}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
-                transition={{ duration: 0.18 }}
-              >
-                {selectedIds.size > 0 ? (
-                  <div className='flex gap-2'>
-                    {/* Management buttons with neutral theme */}
-                    <motion.button
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                      className='flex items-center gap-2 border-white border-2 text-white px-4 py-2 rounded-lg font-medium transition-all duration-200'
-                      // onClick={handleDeleteSelected} // implement as needed
-                    >
-                      <FiX size={18} />
-                      <span>Delete</span>
-                    </motion.button>
-                    <motion.button
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                      className='flex items-center gap-2 border-white border-2 text-white px-4 py-2 rounded-lg font-medium transition-all duration-200'
-                      // onClick={handleMoveSelected} // implement as needed
-                    >
-                      <FiFolder size={18} />
-                      <span>Move</span>
-                    </motion.button>
-                    <motion.button
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                      className='flex items-center gap-2 border-white border-2 text-white px-4 py-2 rounded-lg font-medium transition-all duration-200'
-                      style={{ background: 'none', color: 'white' }}
-                      onClick={() => setTagModalOpen(true)}
-                    >
-                      <FiTag size={18} />
-                      <span>Tag</span>
-                    </motion.button>
-                  </div>
-                ) : (
-                  <Link href='/cloud/upload'>
-                    <motion.button
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                      className='flex items-center gap-2 border-white border-2 text-white px-4 py-2 rounded-lg transition-all duration-200 font-medium'
-                    >
-                      <FiUpload size={18} />
-                      <span>Upload</span>
-                    </motion.button>
-                  </Link>
-                )}
+          {/* Button area: Upload or Management, with framer-motion animation */}
+          {!loading && (explorerData.directories.length > 0 || explorerData.files.length > 0) && (
+            <motion.div className='flex items-center gap-3 min-w-[120px]' initial={false}>
+              <motion.div style={{ position: 'relative', minWidth: 120 }}>
+                <motion.div
+                  key={selectedIds.size > 0 ? 'manage' : 'upload'}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  transition={{ duration: 0.18 }}
+                >
+                  {selectedIds.size > 0 ? (
+                    <div className='flex gap-2'>
+                      {/* Management buttons with neutral theme */}
+                      <motion.button
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        className='flex items-center gap-2 border-white border-2 text-white px-4 py-2 rounded-lg font-medium transition-all duration-200'
+                        // onClick={handleDeleteSelected} // implement as needed
+                      >
+                        <FiX size={18} />
+                        <span>Delete</span>
+                      </motion.button>
+                      <motion.button
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        className='flex items-center gap-2 border-white border-2 text-white px-4 py-2 rounded-lg font-medium transition-all duration-200'
+                        // onClick={handleMoveSelected} // implement as needed
+                      >
+                        <FiFolder size={18} />
+                        <span>Move</span>
+                      </motion.button>
+                      <motion.button
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        className='flex items-center gap-2 border-white border-2 text-white px-4 py-2 rounded-lg font-medium transition-all duration-200'
+                        style={{ background: 'none', color: 'white' }}
+                        onClick={() => setTagModalOpen(true)}
+                      >
+                        <FiTag size={18} />
+                        <span>Tag</span>
+                      </motion.button>
+                    </div>
+                  ) : (
+                    <Link href='/cloud/upload'>
+                      <motion.button
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        className='flex items-center gap-2 border-white border-2 text-white px-4 py-2 rounded-lg transition-all duration-200 font-medium'
+                      >
+                        <FiUpload size={18} />
+                        <span>Upload</span>
+                      </motion.button>
+                    </Link>
+                  )}
+                </motion.div>
               </motion.div>
             </motion.div>
-          </motion.div>
-        )}
+          )}
+        </div>
+
+        <div className='flex items-center mb-0 shadow-sm backdrop-blur-sm rounded-xl px-4 min-h-[48px] overflow-hidden border border-neutral-100 dark:border-neutral-700'>
+          {loading ? (
+            <div className='flex items-center space-x-2 w-full py-1'>
+              <div className='flex items-center py-1.5 px-3 rounded-lg'>
+                <div className='h-5 bg-neutral-200 dark:bg-neutral-700 rounded w-14'></div>
+              </div>
+              <div className='text-neutral-400 dark:text-neutral-500'>
+                <FiChevronRight size={14} />
+              </div>
+              <div className='py-1.5 px-3 rounded-lg'>
+                <div className='h-5 bg-neutral-200 dark:bg-neutral-700 rounded w-24'></div>
+              </div>
+              <div className='text-neutral-400 dark:text-neutral-500'>
+                <FiChevronRight size={14} />
+              </div>
+              <div className='py-1.5 px-3 rounded-lg'>
+                <div className='h-5 bg-neutral-200 dark:bg-neutral-700 rounded w-32'></div>
+              </div>
+            </div>
+          ) : (
+            <div className='flex items-center w-full overflow-x-auto scrollbar-hide scroll-smooth py-1'>
+              <div className='flex items-center min-w-fit flex-nowrap'>
+                <button
+                  onClick={() => navigateToDirectory('')}
+                  className={`flex items-center justify-center gap-2 py-1.5 px-3 rounded-lg transition-all duration-200 flex-shrink-0 hover:bg-neutral-100 dark:hover:bg-neutral-800`}
+                >
+                  <FiHome className='flex-shrink-0' size={15} />
+                  <span className='text-sm whitespace-nowrap'>Home</span>
+                </button>
+
+                {explorerData.breadcrumbs.map((breadcrumb, index) => (
+                  <div key={index} className='flex items-center flex-shrink-0'>
+                    <span className='mx-1 text-neutral-400 dark:text-neutral-500'>
+                      <FiChevronRight className='flex-shrink-0' size={14} />
+                    </span>
+                    <button
+                      onClick={() => navigateToBreadcrumb(breadcrumb)}
+                      className={`py-1.5 px-3 rounded-lg text-sm transition-all duration-200 flex items-center 
+                      hover:bg-neutral-100 dark:hover:bg-neutral-800
+                      ${index === explorerData.breadcrumbs.length - 1 ? 'font-medium text-blue-500' : ''}`}
+                    >
+                      <span className='truncate max-w-[100px] sm:max-w-[120px] md:max-w-[160px]' title={breadcrumb.name}>
+                        {breadcrumb.name}
+                      </span>
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
       </div>
 
-      <div className='flex items-center mb-0 shadow-sm backdrop-blur-sm rounded-xl px-4 min-h-[48px] overflow-hidden border border-neutral-100 dark:border-neutral-700'>
+      {/* Files Area Section */}
+      <div className='grow'>
         {loading ? (
-          <div className='flex items-center space-x-2 w-full py-1'>
-            <div className='flex items-center py-1.5 px-3 rounded-lg'>
-              <div className='h-5 bg-neutral-200 dark:bg-neutral-700 rounded w-14'></div>
+          <ItemSkeleton />
+        ) : explorerData.directories.length === 0 && explorerData.files.length === 0 ? (
+          <div className='flex grow flex-col items-center mt-20 text-center rounded-xl shadow-sm mx-auto w-full'>
+            <div className='p-5 rounded-full mb-5'>
+              <FiFolder className='w-14 h-14' />
             </div>
-            <div className='text-neutral-400 dark:text-neutral-500'>
-              <FiChevronRight size={14} />
-            </div>
-            <div className='py-1.5 px-3 rounded-lg'>
-              <div className='h-5 bg-neutral-200 dark:bg-neutral-700 rounded w-24'></div>
-            </div>
-            <div className='text-neutral-400 dark:text-neutral-500'>
-              <FiChevronRight size={14} />
-            </div>
-            <div className='py-1.5 px-3 rounded-lg'>
-              <div className='h-5 bg-neutral-200 dark:bg-neutral-700 rounded w-32'></div>
+            <h3 className='text-xl font-semibold mb-3 text-neutral-800 dark:text-neutral-200'>This folder is empty</h3>
+            <p className='text-sm text-neutral-500 dark:text-neutral-400 max-w-xs mb-6'>
+              Upload some files or create a new folder to get started
+            </p>
+            <div className='flex gap-3'>
+              <Link href='/cloud/upload'>
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className='flex items-center gap-2 bg-gradient-to-br from-violet-500 to-purple-500 text-white px-4 py-2 rounded-lg transition-all duration-200 font-medium'
+                >
+                  <FiUpload size={18} />
+                  <span>Upload Files</span>
+                </motion.button>
+              </Link>
             </div>
           </div>
         ) : (
-          <div className='flex items-center w-full overflow-x-auto scrollbar-hide scroll-smooth py-1'>
-            <div className='flex items-center min-w-fit flex-nowrap'>
-              <button
-                onClick={() => navigateToDirectory('')}
-                className={`flex items-center justify-center gap-2 py-1.5 px-3 rounded-lg transition-all duration-200 flex-shrink-0 hover:bg-neutral-100 dark:hover:bg-neutral-800`}
-              >
-                <FiHome className='flex-shrink-0' size={15} />
-                <span className='text-sm whitespace-nowrap'>Home</span>
-              </button>
-
-              {explorerData.breadcrumbs.map((breadcrumb, index) => (
-                <div key={index} className='flex items-center flex-shrink-0'>
-                  <span className='mx-1 text-neutral-400 dark:text-neutral-500'>
-                    <FiChevronRight className='flex-shrink-0' size={14} />
-                  </span>
-                  <button
-                    onClick={() => navigateToBreadcrumb(breadcrumb)}
-                    className={`py-1.5 px-3 rounded-lg text-sm transition-all duration-200 flex items-center 
-                    hover:bg-neutral-100 dark:hover:bg-neutral-800
-                    ${index === explorerData.breadcrumbs.length - 1 ? 'font-medium text-blue-500' : ''}`}
-                  >
-                    <span className='truncate max-w-[100px] sm:max-w-[120px] md:max-w-[160px]' title={breadcrumb.name}>
-                      {breadcrumb.name}
-                    </span>
-                  </button>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-      </div>
-
-      {loading ? (
-        <ItemSkeleton />
-      ) : explorerData.directories.length === 0 && explorerData.files.length === 0 ? (
-        <div className='flex grow flex-col items-center mt-20 text-center rounded-xl shadow-sm mx-auto w-full'>
-          <div className='p-5 rounded-full mb-5'>
-            <FiFolder className='w-14 h-14' />
-          </div>
-          <h3 className='text-xl font-semibold mb-3 text-neutral-800 dark:text-neutral-200'>This folder is empty</h3>
-          <p className='text-sm text-neutral-500 dark:text-neutral-400 max-w-xs mb-6'>
-            Upload some files or create a new folder to get started
-          </p>
-          <div className='flex gap-3'>
-            <Link href='/cloud/upload'>
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className='flex items-center gap-2 bg-gradient-to-br from-violet-500 to-purple-500 text-white px-4 py-2 rounded-lg transition-all duration-200 font-medium'
-              >
-                <FiUpload size={18} />
-                <span>Upload Files</span>
-              </motion.button>
-            </Link>
-          </div>
-        </div>
-      ) : (
-        <div>
-          <div
-            ref={gridRef}
-            className='grid p-8 grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-5 gap-4 relative select-none'
-            style={{ userSelect: isSelecting ? 'none' : undefined }}
-            onMouseDown={handleMouseDown}
-            onMouseMove={isSelecting ? handleMouseMove : undefined}
-            onMouseUp={isSelecting ? handleMouseUp : undefined}
-          >
-            {/* Selection rectangle overlay */}
-            {isSelecting && selectionBox && (
-              <div
-                style={{
-                  position: 'absolute',
-                  left: selectionBox.x,
-                  top: selectionBox.y,
-                  width: selectionBox.w,
-                  height: selectionBox.h,
-                  background: 'rgba(59,130,246,0.15)',
-                  border: '2px solid #3b82f6',
-                  zIndex: 10,
-                  pointerEvents: 'none',
-                }}
-              />
-            )}
-            {/* Directories */}
-            {explorerData.directories.map((directory) => (
-              <div
-                key={directory.id}
-                ref={el => { itemRefs.current[directory.id] = el; }}
-                className={`group relative bg-neutral-50 dark:bg-neutral-900 rounded-lg transition-all duration-200 overflow-hidden border border-neutral-300 dark:border-neutral-800 hover:shadow-md ${selectedIds.has(directory.id) ? 'ring-2 ring-blue-400 bg-blue-50 dark:bg-blue-950' : ''}`}
-                onClick={(e) => {
-                  // Custom selection: Cmd/Ctrl + click toggles selection
-                  if (e.metaKey || e.ctrlKey) {
-                    setSelectedIds((prev) => {
-                      const newSet = new Set(prev);
-                      if (newSet.has(directory.id)) {
-                        newSet.delete(directory.id);
-                      } else {
-                        newSet.add(directory.id);
-                      }
-                      return newSet;
-                    });
-                  } else {
-                    // Normal click: select only this and navigate
-                    setSelectedIds(new Set([directory.id]));
-                    navigateToDirectory(directory.id);
-                  }
-                  e.stopPropagation();
-                }}
-              >
-                <div className='cursor-pointer'>
-                  <div className='aspect-square bg-neutral-200 dark:bg-neutral-950 flex justify-center items-center overflow-hidden'>
-                    <div className='flex justify-center items-center w-full h-full text-blue-500 dark:text-blue-400'>
-                      <FiFolder size={64} />
-                    </div>
-                  </div>
-                  <div className='p-3'>
-                    <p className='font-medium text-sm whitespace-nowrap overflow-hidden text-ellipsis text-neutral-800 dark:text-neutral-300 mb-1'>
-                      {directory.name}
-                    </p>
-                    <p className='text-xs text-neutral-500 dark:text-neutral-500'>Folder</p>
-                  </div>
-                </div>
-              </div>
-            ))}
-            {/* Files */}
-            {explorerData.files.map((file, index) => (
-              <FileContextMenu
-                key={file.id}
-                file={{
-                  id: file.id,
-                  name: file.name,
-                  download_url: file.download_url,
-                  mime_type: file.mime_type,
-                  parent: currentPath || null,
-                }}
-              >
+          <div className='mx-6 min-h-[calc(100dvh-16rem)] rounded-xl'>
+            <div
+              ref={gridRef}
+              className='grid p-8 grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-5 gap-6 relative select-none'
+              style={{ userSelect: isSelecting ? 'none' : undefined }}
+              onMouseDown={handleMouseDown}
+              onMouseMove={isSelecting ? handleMouseMove : undefined}
+              onMouseUp={isSelecting ? handleMouseUp : undefined}
+            >
+              {/* Selection rectangle overlay */}
+              {isSelecting && selectionBox && (
                 <div
-                  ref={el => { itemRefs.current[file.id] = el; }}
-                  className={`group relative bg-neutral-50 dark:bg-neutral-900 rounded-lg transition-all duration-200 overflow-hidden border border-neutral-300 dark:border-neutral-800 hover:shadow-md ${selectedIds.has(file.id) ? 'ring-2 ring-blue-400 bg-blue-50 dark:bg-blue-950' : ''}`}
+                  style={{
+                    position: 'absolute',
+                    left: selectionBox.x,
+                    top: selectionBox.y,
+                    width: selectionBox.w,
+                    height: selectionBox.h,
+                    background: 'rgba(59,130,246,0.15)',
+                    border: '2px solid #3b82f6',
+                    zIndex: 10,
+                    pointerEvents: 'none',
+                  }}
+                />
+              )}
+              {/* Directories */}
+              {explorerData.directories.map((directory) => (
+                <div
+                  key={directory.id}
+                  ref={(el) => {
+                    itemRefs.current[directory.id] = el;
+                  }}
+                  className={`group relative bg-neutral-50 dark:bg-neutral-900 rounded-lg transition-all duration-200 overflow-hidden border border-neutral-300 dark:border-neutral-800 hover:shadow-md ${selectedIds.has(directory.id) ? 'ring-2 ring-blue-400 bg-blue-50 dark:bg-blue-950' : ''}`}
                   onClick={(e) => {
-                    // Custom selection: Cmd/Ctrl + click toggles selection
                     if (e.metaKey || e.ctrlKey) {
                       setSelectedIds((prev) => {
                         const newSet = new Set(prev);
-                        if (newSet.has(file.id)) {
-                          newSet.delete(file.id);
+                        if (newSet.has(directory.id)) {
+                          newSet.delete(directory.id);
                         } else {
-                          newSet.add(file.id);
+                          newSet.add(directory.id);
                         }
                         return newSet;
                       });
                     } else {
-                      // Normal click: select only this and open preview
-                      setSelectedIds(new Set([file.id]));
-                      openFilePreview(file, index);
+                      setSelectedIds(new Set([directory.id]));
+                      navigateToDirectory(directory.id);
                     }
                     e.stopPropagation();
                   }}
                 >
                   <div className='cursor-pointer'>
                     <div className='aspect-square bg-neutral-200 dark:bg-neutral-950 flex justify-center items-center overflow-hidden'>
-                      {renderThumbnail(file)}
+                      <div className='flex justify-center items-center w-full h-full text-blue-500 dark:text-blue-400'>
+                        <FiFolder size={64} />
+                      </div>
                     </div>
                     <div className='p-3'>
-                      <div className='flex items-center mb-1'>
-                        <p className='font-medium text-sm whitespace-nowrap overflow-hidden text-ellipsis text-neutral-800 dark:text-neutral-300 flex-grow'>
-                          {file.name}
-                        </p>
-                      </div>
-                      <div className='flex justify-between items-center'>
-                        <p className='text-xs text-neutral-500 dark:text-neutral-500'>{formatFileSize(file.size)}</p>
-                        <p className='text-xs text-neutral-500 dark:text-neutral-500'>
-                          {new Date(file.created_at).toLocaleDateString()}
-                        </p>
-                      </div>
+                      <p className='font-medium text-sm whitespace-nowrap overflow-hidden text-ellipsis text-neutral-800 dark:text-neutral-300 mb-1'>
+                        {directory.name}
+                      </p>
+                      <p className='text-xs text-neutral-500 dark:text-neutral-500'>Folder</p>
                     </div>
                   </div>
                 </div>
-              </FileContextMenu>
-            ))}
+              ))}
+              {/* Files */}
+              {explorerData.files.map((file, index) => (
+                <FileContextMenu
+                  key={file.id}
+                  file={{
+                    id: file.id,
+                    name: file.name,
+                    download_url: file.download_url,
+                    mime_type: file.mime_type,
+                    parent: currentPath || null,
+                  }}
+                >
+                  <div
+                    ref={(el) => {
+                      itemRefs.current[file.id] = el;
+                    }}
+                    className={`group relative bg-neutral-50 dark:bg-neutral-900 rounded-lg transition-all duration-200 overflow-hidden border border-neutral-300 dark:border-neutral-800 hover:shadow-md ${selectedIds.has(file.id) ? 'ring-2 ring-blue-400 bg-blue-50 dark:bg-blue-950' : ''}`}
+                    onClick={(e) => {
+                      if (e.metaKey || e.ctrlKey) {
+                        setSelectedIds((prev) => {
+                          const newSet = new Set(prev);
+                          if (newSet.has(file.id)) {
+                            newSet.delete(file.id);
+                          } else {
+                            newSet.add(file.id);
+                          }
+                          return newSet;
+                        });
+                      } else {
+                        setSelectedIds(new Set([file.id]));
+                        openFilePreview(file, index);
+                      }
+                      e.stopPropagation();
+                    }}
+                  >
+                    <div className='cursor-pointer'>
+                      <div className='aspect-square bg-neutral-200 dark:bg-neutral-950 flex justify-center items-center overflow-hidden'>
+                        {renderThumbnail(file)}
+                      </div>
+                      <div className='p-3'>
+                        <div className='flex items-center mb-1'>
+                          <p className='font-medium text-sm whitespace-nowrap overflow-hidden text-ellipsis text-neutral-800 dark:text-neutral-300 flex-grow'>
+                            {file.name}
+                          </p>
+                        </div>
+                        <div className='flex justify-between items-center'>
+                          <p className='text-xs text-neutral-500 dark:text-neutral-500'>{formatFileSize(file.size)}</p>
+                          <p className='text-xs text-neutral-500 dark:text-neutral-500'>
+                            {new Date(file.created_at).toLocaleDateString()}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </FileContextMenu>
+              ))}
+            </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
 
       {/* File Preview Component */}
       <FilePreview
@@ -933,7 +830,9 @@ const CloudExplorer = () => {
         filteredTags={filteredTags}
         selectedTags={selectedTags}
         setSelectedTags={setSelectedTags}
-        onApply={() => { setSelectedTags([]); }}
+        onApply={() => {
+          setSelectedTags([]);
+        }}
       />
     </div>
   );
