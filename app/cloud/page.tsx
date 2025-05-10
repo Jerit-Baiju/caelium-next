@@ -3,6 +3,7 @@
 import FileContextMenu from '@/components/cloud/context-menus/file-context';
 import ItemSkeleton from '@/components/cloud/ItemSkeleton';
 import FilePreview from '@/components/cloud/preview';
+import CloudTagModal from '@/components/cloud/TagModal';
 import { BreadcrumbItem, ExplorerData, FileData } from '@/helpers/props';
 import useAxios from '@/hooks/useAxios';
 import useCloud from '@/hooks/useCloud';
@@ -924,54 +925,16 @@ const CloudExplorer = () => {
       />
 
       {/* Tag Modal */}
-      {tagModalOpen && (
-        <div className='fixed inset-0 z-50 flex items-center justify-center bg-black/60'>
-          <div className='bg-white dark:bg-neutral-900 rounded-xl p-6 w-full max-w-md border border-neutral-200 dark:border-neutral-700 shadow-lg'>
-            <div className='flex justify-between items-center mb-4'>
-              <h3 className='text-lg font-bold dark:text-white'>Tag Selected</h3>
-              <button onClick={() => setTagModalOpen(false)} className='p-1 rounded-full hover:bg-neutral-100 dark:hover:bg-neutral-800'>
-                <FiX size={20} />
-              </button>
-            </div>
-            <input
-              type='text'
-              placeholder='Search tags...'
-              value={tagSearch}
-              onChange={e => setTagSearch(e.target.value)}
-              className='w-full mb-4 px-3 py-2 rounded-lg border border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 text-neutral-800 dark:text-neutral-200 focus:outline-none focus:ring-2 focus:ring-blue-400'
-            />
-            <div className='flex flex-wrap gap-2 mb-4 max-h-32 overflow-y-auto'>
-              {filteredTags.length === 0 ? (
-                <span className='text-neutral-400 text-sm'>No tags found</span>
-              ) : (
-                filteredTags.map(tag => (
-                  <button
-                    key={tag}
-                    className={`px-3 py-1 rounded-full border text-sm transition-all duration-150 ${selectedTags.includes(tag) ? 'bg-blue-500 text-white border-blue-500' : 'bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-200 border-neutral-300 dark:border-neutral-700'}`}
-                    onClick={() => setSelectedTags(prev => prev.includes(tag) ? prev.filter(t => t !== tag) : [...prev, tag])}
-                  >
-                    {tag}
-                  </button>
-                ))
-              )}
-            </div>
-            <div className='flex justify-end gap-2'>
-              <button
-                onClick={() => setTagModalOpen(false)}
-                className='px-4 py-2 rounded-lg border border-neutral-200 dark:border-neutral-700 text-sm hover:bg-neutral-100 dark:hover:bg-neutral-800'
-              >
-                Cancel
-              </button>
-              <button
-                onClick={() => { setTagModalOpen(false); setSelectedTags([]); }}
-                className='px-4 py-2 rounded-lg bg-blue-500 text-white text-sm hover:bg-blue-600'
-              >
-                Apply Tags
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      <CloudTagModal
+        isOpen={tagModalOpen}
+        onClose={() => setTagModalOpen(false)}
+        tagSearch={tagSearch}
+        setTagSearch={setTagSearch}
+        filteredTags={filteredTags}
+        selectedTags={selectedTags}
+        setSelectedTags={setSelectedTags}
+        onApply={() => { setSelectedTags([]); }}
+      />
     </div>
   );
 };
