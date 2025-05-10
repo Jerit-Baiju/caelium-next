@@ -671,7 +671,6 @@ const CloudExplorer = () => {
         </div>
       </div>
 
-      {/* Files Area Section */}
       <div className='grow'>
         {loading ? (
           <ItemSkeleton />
