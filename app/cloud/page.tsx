@@ -1,6 +1,8 @@
 'use client';
 
+import EmptySpaceContextMenu from '@/components/cloud/context-menus/EmptySpaceContextMenu';
 import FileContextMenu from '@/components/cloud/context-menus/file-context';
+import FolderContextMenu from '@/components/cloud/context-menus/FolderContextMenu';
 import ItemSkeleton from '@/components/cloud/ItemSkeleton';
 import FilePreview from '@/components/cloud/preview';
 import CloudTagModal from '@/components/cloud/TagModal';
@@ -519,6 +521,20 @@ const CloudExplorer = () => {
   const staticTags = ['Work', 'Personal', 'Important', 'To Review', 'Shared', 'Images', 'Videos', 'Archive', 'Project', 'Misc'];
   const filteredTags = staticTags.filter((tag) => tag.toLowerCase().includes(tagSearch.toLowerCase()));
 
+  const handleCreateFolder = async (name: string) => {
+    // TODO: Implement API call to create folder
+    // For now, just log and refresh
+    console.log('Create folder:', name, 'in', currentPath);
+    // Simulate refresh
+    // await fetchExplorerData(currentPath)
+  };
+
+  const handleShareCurrentFolder = () => {
+    // TODO: Implement share logic for current folder
+    // For now, just log
+    console.log('Share folder:', currentPath);
+  };
+
   return (
     <div className='flex grow flex-col max-w-7xl mx-auto'>
       {/* Header Section */}
@@ -682,130 +698,168 @@ const CloudExplorer = () => {
             </div>
           </div>
         ) : (
-          <div className='mx-6 min-h-[calc(100dvh-16rem)] rounded-xl'>
-            <div
-              ref={gridRef}
-              className='grid p-8 grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-5 gap-6 relative select-none'
-              style={{ userSelect: isSelecting ? 'none' : undefined }}
-              onMouseDown={handleMouseDown}
-              onMouseMove={isSelecting ? handleMouseMove : undefined}
-              onMouseUp={isSelecting ? handleMouseUp : undefined}
-            >
-              {/* Selection rectangle overlay */}
-              {isSelecting && selectionBox && (
-                <div
-                  style={{
-                    position: 'absolute',
-                    left: selectionBox.x,
-                    top: selectionBox.y,
-                    width: selectionBox.w,
-                    height: selectionBox.h,
-                    background: 'rgba(59,130,246,0.15)',
-                    border: '2px solid #3b82f6',
-                    zIndex: 10,
-                    pointerEvents: 'none',
-                  }}
-                />
-              )}
-              {/* Directories */}
-              {explorerData.directories.map((directory) => (
-                <div
-                  key={directory.id}
-                  ref={(el) => {
-                    itemRefs.current[directory.id] = el;
-                  }}
-                  className={`group relative bg-neutral-50 dark:bg-neutral-900 rounded-lg transition-all duration-200 overflow-hidden border border-neutral-300 dark:border-neutral-800 hover:shadow-md ${selectedIds.has(directory.id) ? 'ring-2 ring-blue-400 bg-blue-50 dark:bg-blue-950' : ''}`}
-                  onClick={(e) => {
-                    if (e.metaKey || e.ctrlKey) {
-                      setSelectedIds((prev) => {
-                        const newSet = new Set(prev);
-                        if (newSet.has(directory.id)) {
-                          newSet.delete(directory.id);
-                        } else {
-                          newSet.add(directory.id);
-                        }
-                        return newSet;
-                      });
-                    } else {
-                      setSelectedIds(new Set([directory.id]));
-                      navigateToDirectory(directory.id);
-                    }
-                    e.stopPropagation();
-                  }}
-                >
-                  <div className='cursor-pointer'>
-                    <div className='aspect-square bg-neutral-200 dark:bg-neutral-950 flex justify-center items-center overflow-hidden'>
-                      <div className='flex justify-center items-center w-full h-full text-blue-500 dark:text-blue-400'>
-                        <FiFolder size={64} />
-                      </div>
-                    </div>
-                    <div className='p-3'>
-                      <p className='font-medium text-sm whitespace-nowrap overflow-hidden text-ellipsis text-neutral-800 dark:text-neutral-300 mb-1'>
-                        {directory.name}
-                      </p>
-                      <p className='text-xs text-neutral-500 dark:text-neutral-500'>Folder</p>
-                    </div>
-                  </div>
-                </div>
-              ))}
-              {/* Files */}
-              {explorerData.files.map((file, index) => (
-                <FileContextMenu
-                  key={file.id}
-                  file={{
-                    id: file.id,
-                    name: file.name,
-                    download_url: file.download_url,
-                    mime_type: file.mime_type,
-                    parent: currentPath || null,
-                  }}
-                >
+          <EmptySpaceContextMenu
+            currentFolderId={currentPath || null}
+            onCreateFolder={handleCreateFolder}
+            onShareFolder={handleShareCurrentFolder}
+          >
+            <div className='mx-6 min-h-[calc(100dvh-16rem)] rounded-xl'>
+              <div
+                ref={gridRef}
+                className='grid p-8 grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-5 gap-6 relative select-none'
+                style={{ userSelect: isSelecting ? 'none' : undefined }}
+                onMouseDown={handleMouseDown}
+                onMouseMove={isSelecting ? handleMouseMove : undefined}
+                onMouseUp={isSelecting ? handleMouseUp : undefined}
+              >
+                {/* Selection rectangle overlay */}
+                {isSelecting && selectionBox && (
                   <div
-                    ref={(el) => {
-                      itemRefs.current[file.id] = el;
+                    style={{
+                      position: 'absolute',
+                      left: selectionBox.x,
+                      top: selectionBox.y,
+                      width: selectionBox.w,
+                      height: selectionBox.h,
+                      background: 'rgba(59,130,246,0.15)',
+                      border: '2px solid #3b82f6',
+                      zIndex: 10,
+                      pointerEvents: 'none',
                     }}
-                    className={`group relative bg-neutral-50 dark:bg-neutral-900 rounded-lg transition-all duration-200 overflow-hidden border border-neutral-300 dark:border-neutral-800 hover:shadow-md ${selectedIds.has(file.id) ? 'ring-2 ring-blue-400 bg-blue-50 dark:bg-blue-950' : ''}`}
-                    onClick={(e) => {
-                      if (e.metaKey || e.ctrlKey) {
-                        setSelectedIds((prev) => {
-                          const newSet = new Set(prev);
-                          if (newSet.has(file.id)) {
-                            newSet.delete(file.id);
-                          } else {
-                            newSet.add(file.id);
-                          }
-                          return newSet;
-                        });
-                      } else {
-                        setSelectedIds(new Set([file.id]));
-                        openFilePreview(file, index);
-                      }
-                      e.stopPropagation();
+                  />
+                )}
+                {/* Directories */}
+                {explorerData.directories.map((directory) => (
+                  <FolderContextMenu
+                    key={directory.id}
+                    folder={{
+                      id: directory.id,
+                      name: directory.name,
+                      parent: currentPath || null,
+                    }}
+                    onRename={(id, newName) => {
+                      // TODO: Implement folder rename logic
+                      console.log('Rename folder', id, 'to', newName);
+                    }}
+                    onDelete={(id) => {
+                      // TODO: Implement folder delete logic
+                      console.log('Delete folder', id);
+                    }}
+                    onShare={(id) => {
+                      // TODO: Implement folder share logic
+                      console.log('Share folder', id);
+                    }}
+                    onMove={(id) => {
+                      // TODO: Implement folder move logic
+                      console.log('Move folder', id);
+                    }}
+                    onCopy={(id) => {
+                      // TODO: Implement folder copy logic
+                      console.log('Copy folder', id);
+                    }}
+                    onCreateSubfolder={(parentId, name) => {
+                      // TODO: Implement create subfolder logic
+                      console.log('Create subfolder', name, 'in', parentId);
                     }}
                   >
-                    <div className='cursor-pointer'>
-                      <div className='aspect-square bg-neutral-200 dark:bg-neutral-950 flex justify-center items-center overflow-hidden'>
-                        {renderThumbnail(file)}
-                      </div>
-                      <div className='p-3'>
-                        <div className='flex items-center mb-1'>
-                          <p className='font-medium text-sm whitespace-nowrap overflow-hidden text-ellipsis text-neutral-800 dark:text-neutral-300 flex-grow'>
-                            {file.name}
-                          </p>
+                    <div
+                      ref={(el) => {
+                        itemRefs.current[directory.id] = el;
+                      }}
+                      className={`group relative bg-neutral-50 dark:bg-neutral-900 rounded-lg transition-all duration-200 overflow-hidden border border-neutral-300 dark:border-neutral-800 hover:shadow-md ${selectedIds.has(directory.id) ? 'ring-2 ring-blue-400 bg-blue-50 dark:bg-blue-950' : ''}`}
+                      onClick={(e) => {
+                        if (e.metaKey || e.ctrlKey) {
+                          setSelectedIds((prev) => {
+                            const newSet = new Set(prev);
+                            if (newSet.has(directory.id)) {
+                              newSet.delete(directory.id);
+                            } else {
+                              newSet.add(directory.id);
+                            }
+                            return newSet;
+                          });
+                        } else {
+                          setSelectedIds(new Set([directory.id]));
+                          navigateToDirectory(directory.id);
+                        }
+                        e.stopPropagation();
+                      }}
+                    >
+                      <div className='cursor-pointer'>
+                        <div className='aspect-square bg-neutral-200 dark:bg-neutral-950 flex justify-center items-center overflow-hidden'>
+                          <div className='flex justify-center items-center w-full h-full text-blue-500 dark:text-blue-400'>
+                            <FiFolder size={64} />
+                          </div>
                         </div>
-                        <div className='flex justify-between items-center'>
-                          <p className='text-xs text-neutral-500 dark:text-neutral-500'>{formatFileSize(file.size)}</p>
-                          <p className='text-xs text-neutral-500 dark:text-neutral-500'>
-                            {new Date(file.created_at).toLocaleDateString()}
+                        <div className='p-3'>
+                          <p className='font-medium text-sm whitespace-nowrap overflow-hidden text-ellipsis text-neutral-800 dark:text-neutral-300 mb-1'>
+                            {directory.name}
                           </p>
+                          <p className='text-xs text-neutral-500 dark:text-neutral-500'>Folder</p>
                         </div>
                       </div>
                     </div>
-                  </div>
-                </FileContextMenu>
-              ))}
+                  </FolderContextMenu>
+                ))}
+                {/* Files */}
+                {explorerData.files.map((file, index) => (
+                  <FileContextMenu
+                    key={file.id}
+                    file={{
+                      id: file.id,
+                      name: file.name,
+                      download_url: file.download_url,
+                      mime_type: file.mime_type,
+                      parent: currentPath || null,
+                    }}
+                  >
+                    <div
+                      ref={(el) => {
+                        itemRefs.current[file.id] = el;
+                      }}
+                      className={`group relative bg-neutral-50 dark:bg-neutral-900 rounded-lg transition-all duration-200 overflow-hidden border border-neutral-300 dark:border-neutral-800 hover:shadow-md ${selectedIds.has(file.id) ? 'ring-2 ring-blue-400 bg-blue-50 dark:bg-blue-950' : ''}`}
+                      onClick={(e) => {
+                        if (e.metaKey || e.ctrlKey) {
+                          setSelectedIds((prev) => {
+                            const newSet = new Set(prev);
+                            if (newSet.has(file.id)) {
+                              newSet.delete(file.id);
+                            } else {
+                              newSet.add(file.id);
+                            }
+                            return newSet;
+                          });
+                        } else {
+                          setSelectedIds(new Set([file.id]));
+                          openFilePreview(file, index);
+                        }
+                        e.stopPropagation();
+                      }}
+                    >
+                      <div className='cursor-pointer'>
+                        <div className='aspect-square bg-neutral-200 dark:bg-neutral-950 flex justify-center items-center overflow-hidden'>
+                          {renderThumbnail(file)}
+                        </div>
+                        <div className='p-3'>
+                          <div className='flex items-center mb-1'>
+                            <p className='font-medium text-sm whitespace-nowrap overflow-hidden text-ellipsis text-neutral-800 dark:text-neutral-300 flex-grow'>
+                              {file.name}
+                            </p>
+                          </div>
+                          <div className='flex justify-between items-center'>
+                            <p className='text-xs text-neutral-500 dark:text-neutral-500'>{formatFileSize(file.size)}</p>
+                            <p className='text-xs text-neutral-500 dark:text-neutral-500'>
+                              {new Date(file.created_at).toLocaleDateString()}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </FileContextMenu>
+                ))}
+              </div>
             </div>
-          </div>
+          </EmptySpaceContextMenu>
         )}
       </div>
 
