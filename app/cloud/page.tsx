@@ -6,7 +6,6 @@ import FileContextMenu from '@/components/cloud/context-menus/file-context';
 import FolderContextMenu from '@/components/cloud/context-menus/FolderContextMenu';
 import ItemSkeleton from '@/components/cloud/ItemSkeleton';
 import FilePreview from '@/components/cloud/preview';
-import CloudTagModal from '@/components/cloud/TagModal';
 import { BreadcrumbItem, ExplorerData, FileData } from '@/helpers/props';
 import useAxios from '@/hooks/useAxios';
 import useCloud from '@/hooks/useCloud';
@@ -24,7 +23,6 @@ import {
   FiHome,
   FiImage,
   FiMusic,
-  FiTag,
   FiUpload,
   FiVideo,
   FiX,
@@ -381,6 +379,7 @@ const CloudExplorer = () => {
     if (dirId) params.set('dir', dirId);
     router.push(`/cloud?${params.toString()}`);
     setCurrentPath(dirId);
+    setSelectedIds(new Set()); // Clear selection when navigating
   };
 
   const navigateToBreadcrumb = (breadcrumb: BreadcrumbItem) => {
@@ -389,6 +388,7 @@ const CloudExplorer = () => {
     if (dirId) params.set('dir', dirId);
     router.push(`/cloud?${params.toString()}`);
     setCurrentPath(dirId);
+    setSelectedIds(new Set()); // Clear selection when navigating
   };
 
   // Handle opening the file preview
@@ -514,13 +514,7 @@ const CloudExplorer = () => {
     }
   };
 
-  // Tag modal states
-  const [tagModalOpen, setTagModalOpen] = useState(false);
-  const [tagSearch, setTagSearch] = useState('');
-  const [selectedTags, setSelectedTags] = useState<string[]>([]);
-  // Static tags for now
-  const staticTags = ['Work', 'Personal', 'Important', 'To Review', 'Shared', 'Images', 'Videos', 'Archive', 'Project', 'Misc'];
-  const filteredTags = staticTags.filter((tag) => tag.toLowerCase().includes(tagSearch.toLowerCase()));
+  // End of file download handler
 
   const handleCreateFolder = async (name: string) => {
     // TODO: Implement API call to create folder
@@ -589,16 +583,6 @@ const CloudExplorer = () => {
                       >
                         <FiFolder size={18} />
                         <span>Move</span>
-                      </motion.button>
-                      <motion.button
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
-                        className='flex items-center gap-2 border-white border-2 text-white px-4 py-2 rounded-lg font-medium transition-all duration-200'
-                        style={{ background: 'none', color: 'white' }}
-                        onClick={() => setTagModalOpen(true)}
-                      >
-                        <FiTag size={18} />
-                        <span>Tag</span>
                       </motion.button>
                     </div>
                   ) : (
@@ -749,6 +733,7 @@ const CloudExplorer = () => {
                       className={`group relative bg-neutral-50 dark:bg-neutral-900 rounded-lg transition-all duration-200 overflow-hidden border border-neutral-300 dark:border-neutral-800 hover:shadow-md ${selectedIds.has(directory.id) ? 'ring-2 ring-blue-400 bg-blue-50 dark:bg-blue-950' : ''}`}
                       onClick={(e) => {
                         if (e.metaKey || e.ctrlKey) {
+                          // When meta/ctrl key is pressed, toggle selection without navigation
                           setSelectedIds((prev) => {
                             const newSet = new Set(prev);
                             if (newSet.has(directory.id)) {
@@ -759,7 +744,8 @@ const CloudExplorer = () => {
                             return newSet;
                           });
                         } else {
-                          setSelectedIds(new Set([directory.id]));
+                          // Regular click should just navigate without setting selection
+                          // Selection will be cleared by the navigateToDirectory function
                           navigateToDirectory(directory.id);
                         }
                         e.stopPropagation();
@@ -853,20 +839,6 @@ const CloudExplorer = () => {
         onPrevious={currentFileIndex > 0 ? goToPreviousFile : undefined}
         hasNext={currentFileIndex < explorerData.files.length - 1}
         hasPrevious={currentFileIndex > 0}
-      />
-
-      {/* Tag Modal */}
-      <CloudTagModal
-        isOpen={tagModalOpen}
-        onClose={() => setTagModalOpen(false)}
-        tagSearch={tagSearch}
-        setTagSearch={setTagSearch}
-        filteredTags={filteredTags}
-        selectedTags={selectedTags}
-        setSelectedTags={setSelectedTags}
-        onApply={() => {
-          setSelectedTags([]);
-        }}
       />
     </div>
   );
