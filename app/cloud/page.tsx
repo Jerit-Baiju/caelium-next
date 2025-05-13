@@ -1,6 +1,7 @@
 'use client';
 
 import CloudEmptyState from '@/components/cloud/CloudEmptyState';
+import CloudTagModal from '@/components/cloud/CloudTagModal';
 import EmptySpaceContextMenu from '@/components/cloud/context-menus/EmptySpaceContextMenu';
 import FileContextMenu from '@/components/cloud/context-menus/file-context';
 import FolderContextMenu from '@/components/cloud/context-menus/FolderContextMenu';
@@ -23,6 +24,7 @@ import {
   FiHome,
   FiImage,
   FiMusic,
+  FiTag,
   FiUpload,
   FiVideo,
   FiX,
@@ -40,6 +42,9 @@ const CloudExplorer = () => {
     breadcrumbs: [],
     current_directory: null,
   });
+
+  // Tag modal state
+  const [isTagModalOpen, setIsTagModalOpen] = useState(false);
 
   // File preview states
   const [previewFile, setPreviewFile] = useState<{
@@ -297,6 +302,23 @@ const CloudExplorer = () => {
 
   const cancelUpload = () => {
     setDroppedFiles([]);
+  };
+
+  // Tag related handlers
+  const handleOpenTagModal = () => {
+    setIsTagModalOpen(true);
+  };
+
+  const handleCloseTagModal = () => {
+    setIsTagModalOpen(false);
+  };
+
+  const handleApplyTags = (tagIds: string[]) => {
+    // In a real implementation, this would call an API to tag the files
+    console.log('Applied tags', tagIds, 'to items', Array.from(selectedIds));
+    // You would then refresh the data or update the UI
+    // For now, just close the modal
+    setIsTagModalOpen(false);
   };
 
   useEffect(() => {
@@ -584,6 +606,15 @@ const CloudExplorer = () => {
                         <FiFolder size={18} />
                         <span>Move</span>
                       </motion.button>
+                      <motion.button
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        className='flex items-center gap-2 border-white border-2 text-white px-4 py-2 rounded-lg font-medium transition-all duration-200'
+                        onClick={handleOpenTagModal}
+                      >
+                        <FiTag size={18} />
+                        <span>Tag</span>
+                      </motion.button>
                     </div>
                   ) : (
                     <Link href='/cloud/upload'>
@@ -839,6 +870,14 @@ const CloudExplorer = () => {
         onPrevious={currentFileIndex > 0 ? goToPreviousFile : undefined}
         hasNext={currentFileIndex < explorerData.files.length - 1}
         hasPrevious={currentFileIndex > 0}
+      />
+
+      {/* Tag Modal Component */}
+      <CloudTagModal
+        isOpen={isTagModalOpen}
+        onClose={handleCloseTagModal}
+        selectedItemsCount={selectedIds.size}
+        onTagApply={handleApplyTags}
       />
     </div>
   );
