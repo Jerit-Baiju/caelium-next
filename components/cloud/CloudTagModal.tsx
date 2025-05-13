@@ -6,7 +6,8 @@ import { useToast } from '@/hooks/use-toast';
 import useAxios from '@/hooks/useAxios';
 import { AnimatePresence, motion } from 'framer-motion';
 import React, { useEffect, useState } from 'react';
-import { FiLoader, FiPlus, FiSearch } from 'react-icons/fi';
+import { FiLoader, FiSearch } from 'react-icons/fi';
+import { IoWarningOutline } from 'react-icons/io5';
 
 interface CloudTagModalProps {
   isOpen: boolean;
@@ -47,12 +48,14 @@ const CloudTagModal: React.FC<CloudTagModalProps> = ({ isOpen, onClose, selected
     setIsLoading(true);
     try {
       const response = await api.get('/api/cloud/tags/');
-      setAllTags(response.data.map((tag: any) => ({
-        id: tag.id,
-        name: tag.name,
-        color: tag.color || getRandomColor(),
-        owner: tag.owner
-      })));
+      setAllTags(
+        response.data.map((tag: any) => ({
+          id: tag.id,
+          name: tag.name,
+          color: tag.color || getRandomColor(),
+          owner: tag.owner,
+        })),
+      );
     } catch (error) {
       console.error('Error fetching tags:', error);
       toast({
@@ -72,9 +75,17 @@ const CloudTagModal: React.FC<CloudTagModalProps> = ({ isOpen, onClose, selected
   };
 
   // Filter tags based on search query
-  const filteredTags = searchQuery 
-    ? allTags.filter((tag) => tag.name.toLowerCase().includes(searchQuery.toLowerCase())) 
-    : allTags;
+  const filteredTags = searchQuery ? allTags.filter((tag) => tag.name.toLowerCase().includes(searchQuery.toLowerCase())) : allTags;
+
+  // Check if search query exactly matches any existing tag name (case-insensitive)
+  const tagExists = searchQuery ? allTags.some((tag) => tag.name.toLowerCase() === searchQuery.toLowerCase()) : false;
+  
+  // Generate a dummy tag for visual preview when typing a new tag name
+  const dummyTag: Tag | null = searchQuery && !tagExists ? {
+    id: 'dummy-tag',
+    name: searchQuery,
+    color: getRandomColor(),
+  } : null;
 
   // Create new tag
   const handleCreateTag = async () => {
@@ -92,25 +103,25 @@ const CloudTagModal: React.FC<CloudTagModalProps> = ({ isOpen, onClose, selected
     }
 
     setIsCreatingTag(true);
-    
+
     try {
       // Create the tag and associate it with the selected files
       const response = await api.post('/api/cloud/tags/', {
         name: searchQuery.trim(),
-        file_ids: selectedFileIds
+        file_ids: selectedFileIds,
       });
-      
+
       const newTag: Tag = {
         id: response.data.id,
         name: response.data.name,
         color: getRandomColor(), // Backend doesn't have color yet, so we assign randomly
-        owner: response.data.owner
+        owner: response.data.owner,
       };
 
       setAllTags([...allTags, newTag]);
       setSelectedTags([...selectedTags, newTag.id]);
       setSearchQuery('');
-      
+
       toast({
         title: 'Tag created',
         description: `Tag "${newTag.name}" created successfully.`,
@@ -145,22 +156,22 @@ const CloudTagModal: React.FC<CloudTagModalProps> = ({ isOpen, onClose, selected
       onClose();
       return;
     }
-    
+
     try {
       // For each selected tag, associate it with all selected files
-      const promises = selectedTags.map(tagId => 
+      const promises = selectedTags.map((tagId) =>
         api.post(`/api/cloud/tags/${tagId}/tag_files/`, {
-          file_ids: selectedFileIds
-        })
+          file_ids: selectedFileIds,
+        }),
       );
-      
+
       await Promise.all(promises);
-      
+
       toast({
         title: 'Tags applied',
         description: `Successfully applied tags to ${selectedItemsCount} files.`,
       });
-      
+
       onTagApply(selectedTags);
       onClose();
     } catch (error) {
@@ -202,20 +213,10 @@ const CloudTagModal: React.FC<CloudTagModalProps> = ({ isOpen, onClose, selected
             }}
           />
           {searchQuery && !filteredTags.some((t) => t.name.toLowerCase() === searchQuery.toLowerCase()) && (
-            <div className='mt-2 flex items-center text-sm text-muted-foreground'>
-              <FiPlus className='mr-1' size={16} />
-              <span>Create "</span>
-              <span className='font-medium text-foreground'>{searchQuery}</span>
-              <span>"</span>
-              <Button 
-                variant='ghost' 
-                size='sm' 
-                className='ml-auto' 
-                onClick={handleCreateTag}
-                disabled={isCreatingTag}
-              >
-                {isCreatingTag ? <FiLoader className="animate-spin mr-1" /> : "Create"}
-              </Button>
+            <div className='mt-2 flex justify-items-center text-sm text-muted-foreground'>
+              <IoWarningOutline className='mr-1' size={16} />
+              <span>Pressing Enter will create a new tag named </span>
+              <span className='font-medium text-foreground mx-1'>{searchQuery}</span>
             </div>
           )}
         </div>
@@ -223,22 +224,21 @@ const CloudTagModal: React.FC<CloudTagModalProps> = ({ isOpen, onClose, selected
         <div className='mt-4'>
           {isLoading ? (
             <div className='flex justify-center py-8'>
-              <FiLoader className="animate-spin text-primary" size={24} />
+              <FiLoader className='animate-spin text-primary' size={24} />
             </div>
-          ) : filteredTags.length > 0 ? (
+          ) : (selectedTags.length > 0 || filteredTags.length > 0 || (searchQuery && !tagExists)) ? (
             <div className='flex flex-wrap gap-2'>
               {(() => {
-                // First get all the selected tags that match the filter criteria
-                const selectedFilteredTags = selectedTags
+                // Get all selected tags regardless of search query
+                const selectedTagObjects = selectedTags
                   .map((tagId) => allTags.find((tag) => tag.id === tagId))
-                  .filter(Boolean)
-                  .filter((tag) => !searchQuery || tag!.name.toLowerCase().includes(searchQuery.toLowerCase()));
+                  .filter(Boolean);
 
                 // Then get all the unselected tags that match the filter criteria
                 const unselectedFilteredTags = filteredTags.filter((tag) => !selectedTags.includes(tag.id));
 
-                // Combine them
-                const orderedTags = [...selectedFilteredTags, ...unselectedFilteredTags];
+                // Always include selected tags first, then filtered unselected tags
+                const orderedTags = [...selectedTagObjects, ...unselectedFilteredTags];
 
                 // Render the combined list with AnimatePresence
                 return (
@@ -276,14 +276,40 @@ const CloudTagModal: React.FC<CloudTagModalProps> = ({ isOpen, onClose, selected
                         </motion.div>
                       );
                     })}
+                    
+                    {/* Show the dummy tag when typing a new tag name */}
+                    {dummyTag && (
+                      <motion.div
+                        key={dummyTag.id}
+                        className='cursor-pointer'
+                        layout
+                        initial={{ opacity: 0, scale: 0.8 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.8 }}
+                        transition={{
+                          type: 'spring',
+                          stiffness: 500,
+                          damping: 30,
+                          duration: 0.2,
+                        }}
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        onClick={handleCreateTag}
+                      >
+                        <Badge
+                          variant='default'
+                          className='px-3 py-1 bg-secondary/30 text-secondary-foreground border-1 border-dashed border-white shadow-md'
+                        >
+                          {dummyTag.name}
+                        </Badge>
+                      </motion.div>
+                    )}
                   </AnimatePresence>
                 );
               })()}
             </div>
           ) : (
-            <div className='text-center py-4 text-muted-foreground'>
-              {searchQuery ? 'No matching tags found' : 'No tags yet. Create your first tag!'}
-            </div>
+            <div className='text-center py-4 text-muted-foreground'>{searchQuery ? '' : 'No tags yet. Create your first tag!'}</div>
           )}
         </div>
 
@@ -291,9 +317,7 @@ const CloudTagModal: React.FC<CloudTagModalProps> = ({ isOpen, onClose, selected
           <Button variant='outline' onClick={handleClose}>
             Cancel
           </Button>
-          <Button onClick={handleApply}>
-            Apply Tags
-          </Button>
+          <Button onClick={handleApply}>Apply Tags</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
