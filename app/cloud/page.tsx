@@ -716,8 +716,10 @@ const CloudExplorer = () => {
                       top: selectionBox.y,
                       width: selectionBox.w,
                       height: selectionBox.h,
-                      background: 'rgba(59,130,246,0.15)',
-                      border: '2px solid #3b82f6',
+                      background: 'rgba(82,82,91,0.15)',
+                      border: document.documentElement.classList.contains('dark') 
+                        ? '2px solid #ffffff' 
+                        : '2px solid #525252',
                       zIndex: 10,
                       pointerEvents: 'none',
                     }}
@@ -761,7 +763,7 @@ const CloudExplorer = () => {
                       ref={(el) => {
                         itemRefs.current[directory.id] = el;
                       }}
-                      className={`group relative bg-neutral-50 dark:bg-neutral-900 rounded-lg transition-all duration-200 overflow-hidden border border-neutral-300 dark:border-neutral-800 hover:shadow-md ${selectedIds.has(directory.id) ? 'ring-2 ring-blue-400 bg-blue-50 dark:bg-blue-950' : ''}`}
+                      className={`group relative bg-neutral-50 dark:bg-neutral-900 rounded-lg transition-all duration-200 overflow-hidden border border-neutral-300 dark:border-neutral-800 hover:shadow-md ${selectedIds.has(directory.id) ? 'ring-2 ring-neutral-600 dark:ring-white bg-blue-50 dark:bg-blue-950' : ''}`}
                       onClick={(e) => {
                         if (e.metaKey || e.ctrlKey) {
                           // When meta/ctrl key is pressed, toggle selection without navigation
@@ -814,7 +816,7 @@ const CloudExplorer = () => {
                       ref={(el) => {
                         itemRefs.current[file.id] = el;
                       }}
-                      className={`group relative bg-neutral-50 dark:bg-neutral-900 rounded-lg transition-all duration-200 overflow-hidden border border-neutral-300 dark:border-neutral-800 hover:shadow-md ${selectedIds.has(file.id) ? 'ring-2 ring-blue-400 bg-blue-50 dark:bg-blue-950' : ''}`}
+                      className={`group relative bg-neutral-50 dark:bg-neutral-900 rounded-lg transition-all duration-200 overflow-hidden border border-neutral-300 dark:border-neutral-800 hover:shadow-md ${selectedIds.has(file.id) ? 'ring-2 ring-neutral-600 dark:ring-white bg-blue-50 dark:bg-blue-950' : ''}`}
                       onClick={(e) => {
                         if (e.metaKey || e.ctrlKey) {
                           setSelectedIds((prev) => {
@@ -877,6 +879,7 @@ const CloudExplorer = () => {
         isOpen={isTagModalOpen}
         onClose={handleCloseTagModal}
         selectedItemsCount={selectedIds.size}
+        selectedFileIds={Array.from(selectedIds)}
         onTagApply={handleApplyTags}
       />
     </div>

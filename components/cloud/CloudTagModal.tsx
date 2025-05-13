@@ -2,25 +2,16 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
+import { useToast } from '@/hooks/use-toast';
+import useAxios from '@/hooks/useAxios';
 import { AnimatePresence, motion } from 'framer-motion';
 import React, { useEffect, useState } from 'react';
-import { FiPlus, FiSearch } from 'react-icons/fi';
-
-// Static tag data for now
-const STATIC_TAGS: Tag[] = [
-  { id: '1', name: 'Important', color: 'blue' },
-  { id: '2', name: 'Work', color: 'green' },
-  { id: '3', name: 'Personal', color: 'amber' },
-  { id: '4', name: 'Archived', color: 'purple' },
-  { id: '5', name: 'Shared', color: 'pink' },
-  { id: '6', name: 'Project A', color: 'blue' },
-  { id: '7', name: 'Project B', color: 'green' },
-  { id: '8', name: 'Reference', color: 'red' },
-];
+import { FiLoader, FiPlus, FiSearch } from 'react-icons/fi';
 
 interface CloudTagModalProps {
   isOpen: boolean;
   onClose: () => void;
+  selectedFileIds: string[];
   selectedItemsCount: number;
   onTagApply: (tags: string[]) => void; // We'll keep this interface the same for future implementation
 }
@@ -29,12 +20,17 @@ interface Tag {
   id: string;
   name: string;
   color: 'blue' | 'green' | 'amber' | 'red' | 'purple' | 'pink';
+  owner?: string;
 }
 
-const CloudTagModal: React.FC<CloudTagModalProps> = ({ isOpen, onClose, selectedItemsCount, onTagApply }) => {
+const CloudTagModal: React.FC<CloudTagModalProps> = ({ isOpen, onClose, selectedFileIds, selectedItemsCount, onTagApply }) => {
   const [searchQuery, setSearchQuery] = useState('');
-  const [allTags, setAllTags] = useState<Tag[]>(STATIC_TAGS);
+  const [allTags, setAllTags] = useState<Tag[]>([]);
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isCreatingTag, setIsCreatingTag] = useState(false);
+  const { toast } = useToast();
+  const api = useAxios();
 
   // Reset selections when modal is opened/closed
   useEffect(() => {
@@ -42,34 +38,93 @@ const CloudTagModal: React.FC<CloudTagModalProps> = ({ isOpen, onClose, selected
       // Reset selection when opening the modal
       setSelectedTags([]);
       setSearchQuery('');
+      fetchTags();
     }
   }, [isOpen]);
 
+  // Fetch tags from the backend
+  const fetchTags = async () => {
+    setIsLoading(true);
+    try {
+      const response = await api.get('/api/cloud/tags/');
+      setAllTags(response.data.map((tag: any) => ({
+        id: tag.id,
+        name: tag.name,
+        color: tag.color || getRandomColor(),
+        owner: tag.owner
+      })));
+    } catch (error) {
+      console.error('Error fetching tags:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to fetch tags. Please try again.',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Get random color for tags
+  const getRandomColor = (): Tag['color'] => {
+    const colors: Tag['color'][] = ['blue', 'green', 'amber', 'red', 'purple', 'pink'];
+    return colors[Math.floor(Math.random() * colors.length)];
+  };
+
   // Filter tags based on search query
-  const filteredTags = searchQuery ? allTags.filter((tag) => tag.name.toLowerCase().includes(searchQuery.toLowerCase())) : allTags;
+  const filteredTags = searchQuery 
+    ? allTags.filter((tag) => tag.name.toLowerCase().includes(searchQuery.toLowerCase())) 
+    : allTags;
 
   // Create new tag
-  const handleCreateTag = () => {
+  const handleCreateTag = async () => {
     if (!searchQuery.trim()) return;
 
     // Check if tag already exists
     const tagExists = allTags.some((tag) => tag.name.toLowerCase() === searchQuery.toLowerCase());
+    if (tagExists) {
+      toast({
+        title: 'Tag already exists',
+        description: 'A tag with this name already exists.',
+        variant: 'destructive',
+      });
+      return;
+    }
 
-    if (tagExists) return;
+    setIsCreatingTag(true);
+    
+    try {
+      // Create the tag and associate it with the selected files
+      const response = await api.post('/api/cloud/tags/', {
+        name: searchQuery.trim(),
+        file_ids: selectedFileIds
+      });
+      
+      const newTag: Tag = {
+        id: response.data.id,
+        name: response.data.name,
+        color: getRandomColor(), // Backend doesn't have color yet, so we assign randomly
+        owner: response.data.owner
+      };
 
-    // Random color selection
-    const colors: Tag['color'][] = ['blue', 'green', 'amber', 'red', 'purple', 'pink'];
-    const randomColor = colors[Math.floor(Math.random() * colors.length)];
-
-    const newTag: Tag = {
-      id: `new-${Date.now()}`,
-      name: searchQuery.trim(),
-      color: randomColor,
-    };
-
-    setAllTags([...allTags, newTag]);
-    setSelectedTags([...selectedTags, newTag.id]);
-    setSearchQuery('');
+      setAllTags([...allTags, newTag]);
+      setSelectedTags([...selectedTags, newTag.id]);
+      setSearchQuery('');
+      
+      toast({
+        title: 'Tag created',
+        description: `Tag "${newTag.name}" created successfully.`,
+      });
+    } catch (error) {
+      console.error('Error creating tag:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to create tag. Please try again.',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsCreatingTag(false);
+    }
   };
 
   // Toggle tag selection
@@ -84,10 +139,38 @@ const CloudTagModal: React.FC<CloudTagModalProps> = ({ isOpen, onClose, selected
     });
   };
 
-  // Apply tags and close modal
-  const handleApply = () => {
-    onTagApply(selectedTags);
-    onClose();
+  // Apply tags to files
+  const handleApply = async () => {
+    if (selectedTags.length === 0) {
+      onClose();
+      return;
+    }
+    
+    try {
+      // For each selected tag, associate it with all selected files
+      const promises = selectedTags.map(tagId => 
+        api.post(`/api/cloud/tags/${tagId}/tag_files/`, {
+          file_ids: selectedFileIds
+        })
+      );
+      
+      await Promise.all(promises);
+      
+      toast({
+        title: 'Tags applied',
+        description: `Successfully applied tags to ${selectedItemsCount} files.`,
+      });
+      
+      onTagApply(selectedTags);
+      onClose();
+    } catch (error) {
+      console.error('Error applying tags:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to apply tags to some files. Please try again.',
+        variant: 'destructive',
+      });
+    }
   };
 
   // Custom close handler that resets state
@@ -124,17 +207,26 @@ const CloudTagModal: React.FC<CloudTagModalProps> = ({ isOpen, onClose, selected
               <span>Create "</span>
               <span className='font-medium text-foreground'>{searchQuery}</span>
               <span>"</span>
-              <Button variant='ghost' size='sm' className='ml-auto' onClick={handleCreateTag}>
-                Create
+              <Button 
+                variant='ghost' 
+                size='sm' 
+                className='ml-auto' 
+                onClick={handleCreateTag}
+                disabled={isCreatingTag}
+              >
+                {isCreatingTag ? <FiLoader className="animate-spin mr-1" /> : "Create"}
               </Button>
             </div>
           )}
         </div>
 
         <div className='mt-4'>
-          {filteredTags.length > 0 ? (
+          {isLoading ? (
+            <div className='flex justify-center py-8'>
+              <FiLoader className="animate-spin text-primary" size={24} />
+            </div>
+          ) : filteredTags.length > 0 ? (
             <div className='flex flex-wrap gap-2'>
-              {/* Create a new sorted tags array with selected tags at the beginning */}
               {(() => {
                 // First get all the selected tags that match the filter criteria
                 const selectedFilteredTags = selectedTags
@@ -189,7 +281,9 @@ const CloudTagModal: React.FC<CloudTagModalProps> = ({ isOpen, onClose, selected
               })()}
             </div>
           ) : (
-            <div className='text-center py-4 text-muted-foreground'>No tags found</div>
+            <div className='text-center py-4 text-muted-foreground'>
+              {searchQuery ? 'No matching tags found' : 'No tags yet. Create your first tag!'}
+            </div>
           )}
         </div>
 
@@ -197,7 +291,7 @@ const CloudTagModal: React.FC<CloudTagModalProps> = ({ isOpen, onClose, selected
           <Button variant='outline' onClick={handleClose}>
             Cancel
           </Button>
-          <Button onClick={handleApply} disabled={selectedTags.length === 0}>
+          <Button onClick={handleApply}>
             Apply Tags
           </Button>
         </DialogFooter>
