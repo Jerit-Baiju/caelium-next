@@ -49,6 +49,15 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         </ThemeProvider>
         <Toaster />
         <Script src='https://kit.fontawesome.com/c75f557ffd.js' crossOrigin='anonymous'></Script>
+        <Script src="https://www.googletagmanager.com/gtag/js?id=G-RN3WVJ9FLK" strategy="afterInteractive" />
+        <Script id="google-analytics" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-RN3WVJ9FLK');
+          `}
+        </Script>
       </body>
     </html>
   );
