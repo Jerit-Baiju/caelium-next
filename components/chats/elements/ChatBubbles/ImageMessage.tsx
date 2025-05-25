@@ -8,7 +8,7 @@ const ImageMessage = ({ message }: { message: Message }) => {
   const { user } = useContext(AuthContext);
   const { getParticipant, is_anon, anonAvatar, anonName } = useChatContext();
   const participant = getParticipant(message.sender);
-  const isMe = message.sender == user.id;
+  const isMe = message.sender == user?.id;
   const formattedTime = date.toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true });
 
   return (

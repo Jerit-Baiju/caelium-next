@@ -46,7 +46,7 @@ const ChatsPane = () => {
   }, [pathname, lastFetched, refreshChats]);
 
   useEffect(() => {
-    if (socketData?.category === 'new_message' && socketData.sender !== user.id) {
+    if (socketData?.category === 'new_message' && socketData.sender !== user?.id) {
       updateChatOrder(socketData.chat, socketData.content);
     }
   }, [socketData]);
@@ -192,11 +192,11 @@ const ChatsPane = () => {
                                   <div className='w-12 h-12 rounded-xl overflow-hidden'>
                                     <img
                                       className='w-full h-full object-cover rounded-[10px]'
-                                      src={chat.participants.find((p) => p.id !== user.id)?.avatar}
+                                      src={chat.participants.find((p) => p.id !== user?.id)?.avatar}
                                       alt='avatar'
                                     />
                                   </div>
-                                  {activeUsers.includes(chat.participants.find((p) => p.id !== user.id)?.id || 0) && (
+                                  {activeUsers.includes(chat.participants.find((p) => p.id !== user?.id)?.id || 0) && (
                                     <div className='absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full ring-2 ring-white dark:ring-neutral-900'></div>
                                   )}
                                 </>
@@ -217,7 +217,7 @@ const ChatsPane = () => {
                               <div className='flex items-center justify-between'>
                                 <div className='flex items-center gap-2'>
                                   <h3 className='font-medium dark:text-white truncate'>
-                                    {chat.is_group ? chat.name : chat.participants.find((p) => p.id !== user.id)?.name}
+                                    {chat.is_group ? chat.name : chat.participants.find((p) => p.id !== user?.id)?.name}
                                   </h3>
                                   {chat.is_pinned && <Pin className='w-3 h-3 text-violet-500' />}
                                 </div>
@@ -226,7 +226,7 @@ const ChatsPane = () => {
                                 )}
                               </div>
                               <p className='text-sm text-neutral-500 dark:text-neutral-400 truncate'>
-                                {chat.last_message?.sender?.id === user.id
+                                {chat.last_message?.sender?.id === user?.id
                                   ? 'You: '
                                   : chat.last_message?.sender
                                     ? `${chat.last_message.sender.name}: `

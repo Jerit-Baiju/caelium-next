@@ -4,7 +4,7 @@ import AuthContext from '@/contexts/AuthContext';
 import { useNavbar } from '@/contexts/NavContext';
 import { useContext, useEffect } from 'react';
 
-const page = () => {
+const Page = () => {
   const { user, authTokens } = useContext(AuthContext);
   const { setShowNav } = useNavbar();
   // Hide navbar and sidebar on mount, restore on unmount
@@ -26,4 +26,4 @@ const page = () => {
   return <Loader fullScreen />;
 };
 
-export default page;
+export default Page;

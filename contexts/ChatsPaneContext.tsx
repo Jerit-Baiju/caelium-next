@@ -117,7 +117,7 @@ export function ChatsPaneProvider({ children }: { children: ReactNode }) {
             chat.last_message = {
               content: lastMessage,
               timestamp: new Date(),
-              sender: chat.participants?.find((p: any) => p.id !== user.id),
+              sender: chat.participants?.find((p: any) => p.id !== user?.id),
               type: 'txt',
             };
             chat.updated_time = new Date();
@@ -134,7 +134,7 @@ export function ChatsPaneProvider({ children }: { children: ReactNode }) {
       }
       const updatedChats = [...prevChats];
       const chatToUpdate = { ...updatedChats[chatIndex] };
-      const otherParticipant = chatToUpdate.participants?.find(p => p.id !== user.id);
+      const otherParticipant = chatToUpdate.participants?.find(p => p.id !== user?.id);
       if (otherParticipant) {
         chatToUpdate.last_message = {
           content: lastMessage,

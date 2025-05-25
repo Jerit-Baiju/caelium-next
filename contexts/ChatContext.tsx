@@ -106,7 +106,7 @@ export const ChatProvider = ({ chatId, is_anon = false, children }: childrenProp
 
   useEffect(() => {
     const data = socketData;
-    if (!data) return;
+    if (!data || !user) return;
     if (data.category === 'new_message' && data.chat == chatId && data.sender != user.id) {
       setMessages((prevMessages) => [...prevMessages, data]);
     } else if (data.category === 'typing' && data.chat_id == chatId) {
@@ -170,7 +170,7 @@ export const ChatProvider = ({ chatId, is_anon = false, children }: childrenProp
   };
 
   const sendMessage = async (type: 'txt' | 'attachment', content?: string, file?: File) => {
-    if (type === 'txt') {
+    if (type === 'txt' && user) {
       if (!socket || socket.readyState !== WebSocket.OPEN) {
         console.warn('Socket not ready, queueing message');
         setMessageQueue((prev) => [...prev, { type, content }]);
@@ -217,7 +217,7 @@ export const ChatProvider = ({ chatId, is_anon = false, children }: childrenProp
       });
       if (response.status == 201) {
         socket?.send(JSON.stringify({ category: 'file_message', chat_id: chatId, message_id: response.data.id }));
-        setMessages((prevMessages) => [...prevMessages, { ...response.data, sender: user.id }]);
+        setMessages((prevMessages) => [...prevMessages, { ...response.data, sender: user?.id }]);
         updateChatOrder(chatId, 'Sent an attachment');
       }
       setIsUploading(false);

@@ -8,7 +8,7 @@ const VoiceMessage = ({ message }: { message: Message }) => {
   const { user } = useContext(AuthContext);
   const { getParticipant } = useChatContext();
   const participant = getParticipant(message.sender);
-  const isMe = message.sender == user.id;
+  const isMe = message.sender == user?.id;
   const formattedTime = date.toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true });
   return (
     <div className={`chat ${isMe ? 'chat-end' : 'chat-start'}`}>
@@ -17,7 +17,7 @@ const VoiceMessage = ({ message }: { message: Message }) => {
           <img
             className='dark:bg-white border-1 border-neutral-200 dark:border-neutral-800'
             alt={participant?.name}
-            src={isMe ? user.avatar : participant?.avatar}
+            src={isMe ? user?.avatar : participant?.avatar}
           />
         </div>
       </div>
