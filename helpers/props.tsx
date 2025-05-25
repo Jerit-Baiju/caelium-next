@@ -28,6 +28,10 @@ export interface User {
   name: string;
   avatar?: string;
   last_seen: Date;
+  birthdate: Date;
+  location: string;
+  gender: string;
+  username: string;
 }
 
 export interface Message {

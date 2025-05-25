@@ -25,7 +25,7 @@ export const DeleteChatDialog = ({ chat, isOpen, onClose, onDelete }: DeleteChat
   const { user } = useContext(AuthContext);
   if (!chat) return null;
 
-  const chatName = chat.is_group ? chat.name : chat.participants.find((p) => p.id !== user.id)?.name;
+  const chatName = chat.is_group ? chat.name : chat.participants.find((p) => p.id !== user?.id)?.name;
 
   return (
     <AlertDialog open={isOpen} onOpenChange={onClose}>

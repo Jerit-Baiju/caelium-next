@@ -8,7 +8,7 @@ const DocMessage = ({ message }: { message: Message }) => {
   const { user } = useContext(AuthContext);
   const { getParticipant, is_anon, anonAvatar, anonName } = useChatContext();
   const participant = getParticipant(message.sender);
-  const isMe = message.sender == user.id;
+  const isMe = message.sender == user?.id;
   const formattedTime = date.toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true });
 
   return (
@@ -21,8 +21,8 @@ const DocMessage = ({ message }: { message: Message }) => {
             className='rounded-full w-full h-full object-cover 
               ring-2 ring-white/80 dark:ring-neutral-800
               shadow-[0_2px_8px_rgba(0,0,0,0.1)] dark:shadow-[0_2px_8px_rgba(0,0,0,0.3)]'
-            alt={is_anon ? 'Anonymous' : isMe ? user.name : participant?.name}
-            src={is_anon ? anonAvatar : isMe ? user.avatar : participant?.avatar}
+            alt={is_anon ? 'Anonymous' : isMe ? user?.name : participant?.name}
+            src={is_anon ? anonAvatar : isMe ? user?.avatar : participant?.avatar}
           />
         </div>
       </div>}

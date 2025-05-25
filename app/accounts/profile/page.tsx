@@ -30,14 +30,20 @@ const Profile = () => {
   }, [user]);
 
   const fields: { name: string; value: string; placeholder?: string; type?: string; fieldName: string; options?: string[] }[] = [
-    { name: 'Name', value: name, fieldName: 'name' },
+    { name: 'Name', value: name || '', fieldName: 'name' },
 
-    { name: 'Email', value: email, placeholder: 'Add your E-mail here', fieldName: 'email' },
-    { name: 'Date of Birth', value: birthdate, placeholder: 'Add your age here', type: 'date', fieldName: 'birthdate' },
-    { name: 'Location', value: location, placeholder: 'Mark your location', fieldName: 'location' },
+    { name: 'Email', value: email || '', placeholder: 'Add your E-mail here', fieldName: 'email' },
+    {
+      name: 'Date of Birth',
+      value: birthdate instanceof Date ? birthdate.toISOString().split('T')[0] : birthdate || '',
+      placeholder: 'Add your age here',
+      type: 'date',
+      fieldName: 'birthdate',
+    },
+    { name: 'Location', value: location || '', placeholder: 'Mark your location', fieldName: 'location' },
     {
       name: 'Gender',
-      value: gender,
+      value: gender || '',
       placeholder: 'Choose Gender',
       fieldName: 'gender',
       type: 'select',
@@ -75,7 +81,7 @@ const Profile = () => {
 
   const updateProfile = () => {
     api
-      .patch(`/api/auth/update/${user.id}/`, newData)
+      .patch(`/api/auth/update/${user?.id}/`, newData)
       .then(() => {
         setAlert(true);
       })
@@ -102,7 +108,7 @@ const Profile = () => {
     formData.append('avatar', file);
     setAvatarSrc(URL.createObjectURL(file));
     try {
-      await api.patch(`/api/auth/update/${user.id}/`, formData, {
+      await api.patch(`/api/auth/update/${user?.id}/`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
@@ -114,11 +120,7 @@ const Profile = () => {
   };
 
   return user ? (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      className='container mx-auto px-4 py-8'
-    >
+    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className='container mx-auto px-4 py-8'>
       {alert && (
         <motion.div
           initial={{ opacity: 0, y: -20 }}
@@ -149,7 +151,7 @@ const Profile = () => {
             <input type='file' ref={fileInputRef} className='hidden' onChange={handleFileChange} />
           </div>
           <h1 className='text-2xl font-semibold mt-4 dark:text-white'>{user?.name}</h1>
-          
+
           <div className='flex gap-3 mt-4'>
             <motion.button
               whileHover={{ scale: 1.05 }}
@@ -162,15 +164,15 @@ const Profile = () => {
                 }
               }}
               className={`px-6 py-2 rounded-xl flex items-center gap-2 ${
-                editable 
-                  ? 'bg-linear-to-br from-violet-500 to-purple-500 text-white' 
+                editable
+                  ? 'bg-linear-to-br from-violet-500 to-purple-500 text-white'
                   : 'bg-neutral-100 dark:bg-neutral-700 text-neutral-700 dark:text-white'
               }`}
             >
               <FiEdit2 className='w-4 h-4' />
               {editable ? 'Save' : 'Edit'}
             </motion.button>
-            
+
             <motion.button
               whileHover={{ scale: 1.05 }}
               data-copy-to-clipboard-target='shareLink'
@@ -218,9 +220,10 @@ const Profile = () => {
                           className={`
                             w-full p-3 flex justify-center items-center rounded-xl cursor-pointer
                             ${!editable ? 'opacity-70 cursor-not-allowed' : ''}
-                            ${field.value === option 
-                              ? 'bg-violet-100 dark:bg-violet-900/30 text-violet-700 dark:text-violet-300 border-2 border-violet-500'
-                              : 'bg-neutral-50 dark:bg-neutral-700/50 text-neutral-600 dark:text-neutral-400 border-2 border-transparent'
+                            ${
+                              field.value === option
+                                ? 'bg-violet-100 dark:bg-violet-900/30 text-violet-700 dark:text-violet-300 border-2 border-violet-500'
+                                : 'bg-neutral-50 dark:bg-neutral-700/50 text-neutral-600 dark:text-neutral-400 border-2 border-transparent'
                             }
                             transition-all hover:bg-violet-50 dark:hover:bg-violet-900/20 peer-checked:border-violet-500
                           `}
@@ -233,9 +236,7 @@ const Profile = () => {
                 </div>
               )}
               {errors[field.fieldName as keyof typeof errors] && (
-                <p className='text-sm text-red-500 mt-1'>
-                  {(errors[field.fieldName as keyof typeof errors] as string[])[0]}
-                </p>
+                <p className='text-sm text-red-500 mt-1'>{(errors[field.fieldName as keyof typeof errors] as string[])[0]}</p>
               )}
             </div>
           ))}

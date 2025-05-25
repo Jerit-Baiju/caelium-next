@@ -69,7 +69,7 @@ const ChatHeader = () => {
               src={
                 is_anon
                   ? anonAvatar
-                  : getParticipant(meta?.participants.find((participant) => participant.id !== user.id)?.id ?? 0)?.avatar
+                  : getParticipant(meta?.participants.find((participant) => participant.id !== user?.id)?.id ?? 0)?.avatar
               }
               alt='user photo'
               width={100}
@@ -95,7 +95,7 @@ const ChatHeader = () => {
                   ? meta.name
                   : is_anon
                     ? anonName
-                    : getParticipant(meta?.participants.find((participant) => participant.id !== user.id)?.id ?? 0)?.name}
+                    : getParticipant(meta?.participants.find((participant) => participant.id !== user?.id)?.id ?? 0)?.name}
               </p>
             </div>
             {meta?.is_group ? (
@@ -110,7 +110,7 @@ const ChatHeader = () => {
               </p>
             ) : (
               <span className='text-sm'>
-                {is_anon ? 'Anonymous' : getLastSeen(meta?.participants.find((participant) => participant.id !== user.id)?.id ?? 0)}
+                {is_anon ? 'Anonymous' : getLastSeen(meta?.participants.find((participant) => participant.id !== user?.id)?.id ?? 0)}
               </span>
             )}
           </div>
