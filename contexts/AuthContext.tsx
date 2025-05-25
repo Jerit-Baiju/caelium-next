@@ -18,7 +18,7 @@ interface AuthContextProps {
   logoutUser: () => void;
   setTokenData: (e: any) => void;
   setAuthTokens: (e: any) => void;
-  user: any;
+  user: User | null;
   refreshToken: () => Promise<any>; // <-- Expose refreshToken
 }
 
@@ -30,7 +30,7 @@ const AuthContext = createContext<AuthContextProps>({
   logoutUser: () => {},
   setTokenData: () => {},
   setAuthTokens: () => {},
-  user: {},
+  user: null,
   refreshToken: async () => null, // <-- Provide a default implementation
 });
 
