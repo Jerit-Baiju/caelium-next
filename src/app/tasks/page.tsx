@@ -6,10 +6,10 @@ import { motion } from 'framer-motion';
 import { FormEvent, useEffect, useState } from 'react';
 
 const Page = () => {
-  let [newTask, setNewTask] = useState('');
-  let [tasks, setTasks] = useState<Task[]>([]);
-  let [filter, setFilter] = useState('all');
-  let api = useAxios();
+  const [newTask, setNewTask] = useState('');
+  const [tasks, setTasks] = useState<Task[]>([]);
+  const [filter, setFilter] = useState('all');
+  const api = useAxios();
 
   useEffect(() => {
     const fetchTasks = async () => {

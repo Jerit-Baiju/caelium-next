@@ -2,7 +2,7 @@
 import Loader from '@/components/layout/Loader';
 import { Button } from '@/components/ui/button';
 import { useNavbar } from '@/contexts/NavContext';
-import { BaseError, Craft } from '@/helpers/props';
+import { Craft } from '@/helpers/props';
 import { getTime } from '@/helpers/utils';
 import useAxios from '@/hooks/useAxios';
 import { AxiosError } from 'axios';
@@ -10,10 +10,9 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 
 const CraftsHome = () => {
-  let api = useAxios();
+  const api = useAxios();
   const { setCtaButton, defaultCtaButton } = useNavbar();
-  let [crafts, setCrafts] = useState<Craft[]>([]);
-  const [error, setError] = useState<BaseError | null>(null);
+  const [crafts, setCrafts] = useState<Craft[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   useEffect(() => {
     const fetchCrafts = async () => {
@@ -22,7 +21,7 @@ const CraftsHome = () => {
         setCrafts(response.data);
       } catch (error) {
         if (error instanceof AxiosError && error.code === 'ERR_BAD_REQUEST')
-          setError({ text: 'Failed to fetch messages', code: 'FETCH_FAILED' });
+          console.log({ text: 'Failed to fetch messages', code: 'FETCH_FAILED' });
         console.error('Error fetching data:', error);
       } finally {
         setLoading(false);

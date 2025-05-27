@@ -15,7 +15,7 @@ const useAxios = () => {
     if (authTokens?.access) {
       // Check if token is expired or about to expire (within 1 minute)
       try {
-        const decoded: any = jwtDecode(authTokens.access);
+        const decoded: { exp: number } = jwtDecode(authTokens.access);
         const expiry = decoded.exp * 1000;
         if (expiry - Date.now() < 60000) {
           // Token is expired or about to expire, refresh it
@@ -32,6 +32,7 @@ const useAxios = () => {
         }
       } catch (err) {
         logoutUser();
+        console.error('Error decoding token:', err);
         return Promise.reject('Invalid token');
       }
     }

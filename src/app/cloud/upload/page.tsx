@@ -46,26 +46,28 @@ const CloudUpload = () => {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       const newFiles = Array.from(e.target.files);
-      
+
       // Check if adding these files would exceed the maximum
       if (selectedFiles.length + newFiles.length > MAX_FILES_ALLOWED) {
         setErrorMessage(`You can only upload a maximum of ${MAX_FILES_ALLOWED} files at once.`);
         setTooManyFiles(true);
         return;
       }
-      
+
       const updatedFiles = [...selectedFiles, ...newFiles];
       setSelectedFiles(updatedFiles);
-      
+
       // Update displayed files (limited to MAX_UI_DISPLAY)
       if (updatedFiles.length > MAX_UI_DISPLAY) {
         setDisplayedFiles(updatedFiles.slice(0, MAX_UI_DISPLAY));
-        setErrorMessage(`Only showing ${MAX_UI_DISPLAY} of ${updatedFiles.length} selected files in the interface. All files will be uploaded.`);
+        setErrorMessage(
+          `Only showing ${MAX_UI_DISPLAY} of ${updatedFiles.length} selected files in the interface. All files will be uploaded.`
+        );
       } else {
         setDisplayedFiles(updatedFiles);
         setErrorMessage(null); // Clear any previous error
       }
-      
+
       setTooManyFiles(false);
     }
   };
@@ -74,26 +76,28 @@ const CloudUpload = () => {
     e.preventDefault();
     if (e.dataTransfer.files) {
       const newFiles = Array.from(e.dataTransfer.files);
-      
+
       // Check if adding these files would exceed the maximum
       if (selectedFiles.length + newFiles.length > MAX_FILES_ALLOWED) {
         setErrorMessage(`You can only upload a maximum of ${MAX_FILES_ALLOWED} files at once.`);
         setTooManyFiles(true);
         return;
       }
-      
+
       const updatedFiles = [...selectedFiles, ...newFiles];
       setSelectedFiles(updatedFiles);
-      
+
       // Update displayed files (limited to MAX_UI_DISPLAY)
       if (updatedFiles.length > MAX_UI_DISPLAY) {
         setDisplayedFiles(updatedFiles.slice(0, MAX_UI_DISPLAY));
-        setErrorMessage(`Only showing ${MAX_UI_DISPLAY} of ${updatedFiles.length} selected files in the interface. All files will be uploaded.`);
+        setErrorMessage(
+          `Only showing ${MAX_UI_DISPLAY} of ${updatedFiles.length} selected files in the interface. All files will be uploaded.`
+        );
       } else {
         setDisplayedFiles(updatedFiles);
         setErrorMessage(null); // Clear any previous error
       }
-      
+
       setTooManyFiles(false);
     }
   };
@@ -105,31 +109,33 @@ const CloudUpload = () => {
       if (selectedFiles.length <= MAX_UI_DISPLAY) {
         return i !== index;
       }
-      
+
       // If we're only displaying a subset, we need to map the index to the correct file
       // This ensures we remove the correct file from the full list
       const fileToRemove = displayedFiles[index];
-      const actualIndex = selectedFiles.findIndex(file => file === fileToRemove);
+      const actualIndex = selectedFiles.findIndex((file) => file === fileToRemove);
       return i !== actualIndex;
     });
-    
+
     setSelectedFiles(newSelectedFiles);
-    
+
     // Update displayed files
     if (newSelectedFiles.length > MAX_UI_DISPLAY) {
       setDisplayedFiles(newSelectedFiles.slice(0, MAX_UI_DISPLAY));
-      setErrorMessage(`Only showing ${MAX_UI_DISPLAY} of ${newSelectedFiles.length} selected files in the interface. All files will be uploaded.`);
+      setErrorMessage(
+        `Only showing ${MAX_UI_DISPLAY} of ${newSelectedFiles.length} selected files in the interface. All files will be uploaded.`
+      );
     } else {
       setDisplayedFiles(newSelectedFiles);
       setErrorMessage(null); // Clear any error when removing files brings count under limit
     }
-    
+
     setTooManyFiles(false);
   };
 
   const handleUpload = async () => {
     if (selectedFiles.length === 0) return;
-    
+
     // Double check we're not exceeding the limit
     if (selectedFiles.length > MAX_FILES_ALLOWED) {
       setErrorMessage(`You can only upload a maximum of ${MAX_FILES_ALLOWED} files at once.`);
@@ -157,7 +163,7 @@ const CloudUpload = () => {
       setUploadProgress(newProgress);
 
       // Configure upload with progress tracking
-       await api.post('/api/cloud/upload/', formData, {
+      await api.post('/api/cloud/upload/', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
@@ -185,8 +191,7 @@ const CloudUpload = () => {
       setTimeout(() => {
         router.push('/cloud');
       }, 1500);
-
-    } catch (error: any) {
+    } catch (error) {
       console.error('Error uploading files:', error);
 
       // Set failed status for all files
@@ -195,14 +200,8 @@ const CloudUpload = () => {
         failedProgress[file.name] = -1; // -1 indicates failure
       });
       setUploadProgress(failedProgress);
-      
-      // Handle the specific error for too many files
-      if (error.response && error.response.status === 400) {
-        setErrorMessage(error.response.data?.error || 'Upload failed. You may have exceeded the file limit.');
-      } else {
-        setErrorMessage('Failed to upload files. Please try again later.');
-      }
 
+      setErrorMessage('Failed to upload files. Please try again later.');
     } finally {
       setIsUploading(false);
     }
@@ -231,22 +230,29 @@ const CloudUpload = () => {
             </Link>
             <div>
               <h1 className='text-3xl font-bold dark:text-neutral-100'>Upload Files</h1>
-              <p className='text-neutral-600 dark:text-neutral-400'>Upload up to {MAX_FILES_ALLOWED} files at once to your secure cloud storage</p>
+              <p className='text-neutral-600 dark:text-neutral-400'>
+                Upload up to {MAX_FILES_ALLOWED} files at once to your secure cloud storage
+              </p>
             </div>
           </div>
         </motion.div>
 
         {/* Error message display */}
         {errorMessage && (
-          <motion.div 
-            className={`${tooManyFiles ? 'bg-red-50 dark:bg-red-900/20 border-l-4 border-red-500' : 'bg-amber-50 dark:bg-amber-900/20 border-l-4 border-amber-500'} p-4 rounded-md`}
+          <motion.div
+            className={`${
+              tooManyFiles
+                ? 'bg-red-50 dark:bg-red-900/20 border-l-4 border-red-500'
+                : 'bg-amber-50 dark:bg-amber-900/20 border-l-4 border-amber-500'
+            } p-4 rounded-md`}
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3 }}
-          >
+            transition={{ duration: 0.3 }}>
             <div className='flex items-start'>
               <FiAlertCircle className={`${tooManyFiles ? 'text-red-500' : 'text-amber-500'} mt-0.5 mr-2`} size={18} />
-              <p className={`${tooManyFiles ? 'text-red-700 dark:text-red-400' : 'text-amber-700 dark:text-amber-400'}`}>{errorMessage}</p>
+              <p className={`${tooManyFiles ? 'text-red-700 dark:text-red-400' : 'text-amber-700 dark:text-amber-400'}`}>
+                {errorMessage}
+              </p>
             </div>
           </motion.div>
         )}
@@ -256,8 +262,7 @@ const CloudUpload = () => {
           className='w-full bg-white dark:bg-neutral-800 rounded-xl p-8 mb-6 border-2 border-dashed border-neutral-300 dark:border-neutral-700'
           variants={itemVariants}
           onDragOver={(e) => e.preventDefault()}
-          onDrop={handleDrop}
-        >
+          onDrop={handleDrop}>
           <div className='flex flex-col items-center justify-center'>
             <div className='p-4 bg-neutral-100 dark:bg-neutral-700 rounded-full mb-4'>
               <FiUpload className='h-8 w-8 text-neutral-600 dark:text-neutral-300' />
@@ -272,8 +277,7 @@ const CloudUpload = () => {
                 whileTap={{ scale: 0.98 }}
                 className='bg-neutral-800 hover:bg-neutral-700 dark:bg-neutral-700 dark:hover:bg-neutral-600 text-white px-5 py-2 rounded-lg transition'
                 onClick={() => fileInputRef.current?.click()}
-                disabled={tooManyFiles}
-              >
+                disabled={tooManyFiles}>
                 Browse Files
               </motion.button>
               <motion.button
@@ -285,8 +289,7 @@ const CloudUpload = () => {
                     ? 'bg-neutral-300 dark:bg-neutral-600 text-neutral-500 dark:text-neutral-400 cursor-not-allowed'
                     : 'bg-gradient-to-br from-violet-500 to-purple-500 text-white'
                 }`}
-                onClick={handleUpload}
-              >
+                onClick={handleUpload}>
                 {isUploading ? 'Uploading...' : 'Upload Files'}
               </motion.button>
             </div>
@@ -296,7 +299,7 @@ const CloudUpload = () => {
 
         {/* File Count Display */}
         {selectedFiles.length > 0 && !tooManyFiles && (
-          <div className="text-sm text-neutral-500 dark:text-neutral-400 text-center">
+          <div className='text-sm text-neutral-500 dark:text-neutral-400 text-center'>
             {selectedFiles.length} of {MAX_FILES_ALLOWED} files selected
             {selectedFiles.length > MAX_UI_DISPLAY && ` (showing first ${MAX_UI_DISPLAY})`}
           </div>
@@ -310,22 +313,24 @@ const CloudUpload = () => {
                 <FiLock className='mr-2' /> Selected Files ({selectedFiles.length})
               </h3>
               <div className='flex bg-neutral-100 dark:bg-neutral-700 rounded-lg p-1'>
-                <button 
-                  className={`p-2 rounded-md transition-colors ${viewMode === 'list' 
-                    ? 'bg-white dark:bg-neutral-600 text-neutral-800 dark:text-neutral-100' 
-                    : 'text-neutral-500 dark:text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-300'}`}
+                <button
+                  className={`p-2 rounded-md transition-colors ${
+                    viewMode === 'list'
+                      ? 'bg-white dark:bg-neutral-600 text-neutral-800 dark:text-neutral-100'
+                      : 'text-neutral-500 dark:text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-300'
+                  }`}
                   onClick={() => setViewMode('list')}
-                  aria-label="List View"
-                >
+                  aria-label='List View'>
                   <FiList size={16} />
                 </button>
-                <button 
-                  className={`p-2 rounded-md transition-colors ${viewMode === 'grid' 
-                    ? 'bg-white dark:bg-neutral-600 text-neutral-800 dark:text-neutral-100' 
-                    : 'text-neutral-500 dark:text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-300'}`}
+                <button
+                  className={`p-2 rounded-md transition-colors ${
+                    viewMode === 'grid'
+                      ? 'bg-white dark:bg-neutral-600 text-neutral-800 dark:text-neutral-100'
+                      : 'text-neutral-500 dark:text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-300'
+                  }`}
                   onClick={() => setViewMode('grid')}
-                  aria-label="Grid View"
-                >
+                  aria-label='Grid View'>
                   <FiGrid size={16} />
                 </button>
               </div>
@@ -339,13 +344,12 @@ const CloudUpload = () => {
                     className='flex items-center p-3 bg-neutral-50 dark:bg-neutral-700/40 rounded-lg'
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: index * 0.05 }}
-                  >
+                    transition={{ delay: index * 0.05 }}>
                     {isImageFile(file) ? (
                       <div className='w-12 h-12 mr-3 rounded-md overflow-hidden flex-shrink-0 bg-neutral-200 dark:bg-neutral-600'>
-                        <img 
-                          src={URL.createObjectURL(file)} 
-                          alt={file.name} 
+                        <img
+                          src={URL.createObjectURL(file)}
+                          alt={file.name}
                           className='w-full h-full object-cover'
                           onLoad={(e) => {
                             // Clean up the object URL when the image loads
@@ -386,8 +390,7 @@ const CloudUpload = () => {
                         whileHover={{ scale: 1.1 }}
                         whileTap={{ scale: 0.9 }}
                         className='text-neutral-400 hover:text-red-500 dark:text-neutral-500 dark:hover:text-red-400'
-                        onClick={() => handleRemoveFile(index)}
-                      >
+                        onClick={() => handleRemoveFile(index)}>
                         <FiX />
                       </motion.button>
                     )}
@@ -402,13 +405,12 @@ const CloudUpload = () => {
                     className='flex flex-col bg-neutral-50 dark:bg-neutral-700/40 rounded-lg overflow-hidden'
                     initial={{ opacity: 0, scale: 0.9 }}
                     animate={{ opacity: 1, scale: 1 }}
-                    transition={{ delay: index * 0.05 }}
-                  >
+                    transition={{ delay: index * 0.05 }}>
                     <div className='relative pt-[100%] bg-neutral-200 dark:bg-neutral-600'>
                       {isImageFile(file) ? (
-                        <img 
-                          src={URL.createObjectURL(file)} 
-                          alt={file.name} 
+                        <img
+                          src={URL.createObjectURL(file)}
+                          alt={file.name}
                           className='absolute top-0 left-0 w-full h-full object-cover'
                           onLoad={(e) => {
                             // Clean up the object URL when the image loads
@@ -420,7 +422,7 @@ const CloudUpload = () => {
                           <FiFile size={32} className='text-neutral-600 dark:text-neutral-300' />
                         </div>
                       )}
-                      
+
                       {uploadProgress[file.name] !== undefined && (
                         <div className='absolute bottom-0 left-0 right-0 bg-black/20 p-1'>
                           {uploadProgress[file.name] === -1 ? (
@@ -437,14 +439,13 @@ const CloudUpload = () => {
                           )}
                         </div>
                       )}
-                      
+
                       {!isUploading && (
                         <motion.button
                           whileHover={{ scale: 1.1 }}
                           whileTap={{ scale: 0.9 }}
                           className='absolute top-2 right-2 p-1 bg-black/50 rounded-full text-white hover:bg-red-500/80'
-                          onClick={() => handleRemoveFile(index)}
-                        >
+                          onClick={() => handleRemoveFile(index)}>
                           <FiX size={14} />
                         </motion.button>
                       )}
