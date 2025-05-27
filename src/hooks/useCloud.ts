@@ -21,7 +21,7 @@ const useCloud = () => {
     }
   };
 
-  const fetchImageUrls = async (files: any[], onImageLoaded?: (fileId: string, url: string) => void) => {
+  const fetchImageUrls = async (files: { id: string; download_url: string; mime_type: string; name: string }[], onImageLoaded?: (fileId: string, url: string) => void) => {
     const imageFiles = files.filter((file) => file.mime_type.startsWith('image/'));
     if (imageFiles.length === 0) return {};
 
@@ -66,7 +66,7 @@ const useCloud = () => {
       files.forEach((file) => (newProgress[file.name] = 0));
       if (onProgress) onProgress(newProgress);
 
-      const response = await api.post('/api/cloud/upload/', formData, {
+      await api.post('/api/cloud/upload/', formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
         onUploadProgress: (progressEvent) => {
           if (progressEvent.total && onProgress) {
@@ -92,7 +92,7 @@ const useCloud = () => {
     }
   };
 
-  const getFileThumbnailType = (file: any) => {
+  const getFileThumbnailType = (file: { mime_type: string; name: string }) => {
     if (file.mime_type.startsWith('image/')) return 'image';
     if (file.mime_type.startsWith('video/')) return 'video';
     if (file.mime_type.startsWith('audio/')) return 'audio';

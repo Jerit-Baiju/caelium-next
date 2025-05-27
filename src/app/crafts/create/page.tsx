@@ -11,7 +11,6 @@ const CraftCreate = () => {
   const [banner, setBanner] = useState<File | null>(null);
   const [content, setContent] = useState('');
   const [selectedDate, setSelectedDate] = useState<string>(formattedDate);
-  const [space, setSpace] = useState('personal');
   const router = useRouter();
   const api = useAxios();
 
@@ -19,16 +18,13 @@ const CraftCreate = () => {
     setSelectedDate(event.target.value);
   };
 
-  const handleSpaceChange = (selectedPrivacy: string) => {
-    setSpace(selectedPrivacy);
-  };
+
   const handleBannerChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       setBanner(e.target.files[0]);
     }
   };
 
-  const privacyOptions = ['personal', 'partner', 'family', 'all'];
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -37,7 +33,6 @@ const CraftCreate = () => {
     formData.append('tag', tag);
     formData.append('banner', banner as File);
     formData.append('content', content);
-    formData.append('space', space);
     formData.append('date', selectedDate);
     try {
       const request = await api.post('/api/crafts/', formData, { headers: { 'Content-Type': 'multipart/form-data' } });
@@ -108,24 +103,6 @@ const CraftCreate = () => {
                 required
               />
             </div>
-            {/* <div className='mb-4'>
-                <label htmlFor='privacy' className='block text-sm font-medium text-gray-700 dark:text-white'>
-                  Space
-                </label>
-                <div className='mt-1 grid grid-cols-4 max-sm:grid-cols-2 gap-4'>
-                  {privacyOptions.map((option) => (
-                    <button
-                      key={option}
-                      className={`p-2 rounded-md focus:outline-hidden ${
-                        space === option ? 'bg-blue-500 text-white' : 'bg-gray-200 dark:bg-neutral-700 text-gray-800 dark:text-white'
-                      }`}
-                      onClick={() => handleSpaceChange(option)}
-                    >
-                      {option.charAt(0).toUpperCase() + option.slice(1)}
-                    </button>
-                  ))}
-                </div>
-              </div> */}
             <div className='flex justify-center'>
               <button
                 className='bg-blue-500 w-1/2 rounded-lg hover:bg-blue-600 text-white font-bold py-2 px-4 focus:outline-hidden focus:shadow-outline'

@@ -48,20 +48,20 @@ export const useNavbar = () => {
   return context;
 };
 
-let defaultNavLinks: NavLink[] = [
+const defaultNavLinks: NavLink[] = [
   { name: 'Cloud', url: '/cloud' },
   { name: 'Write', url: '/crafts/create' },
   { name: 'Settings', url: '#' },
 ];
 
-let cloudNavLinks: NavLink[] = [
+const cloudNavLinks: NavLink[] = [
   { name: 'Files', url: '/cloud/files' },
   { name: 'Photos', url: '/cloud/photos' },
   { name: 'Recent', url: '/cloud/recent' },
   { name: 'Shared', url: '/cloud/shared' },
 ];
 
-let cloudDropdown: DropDown = {
+const cloudDropdown: DropDown = {
   name: 'New',
   options: [
     { name: 'Upload File', url: '/cloud/upload' },
@@ -70,7 +70,7 @@ let cloudDropdown: DropDown = {
   ],
 };
 
-let createDropdown: DropDown = {
+const createDropdown: DropDown = {
   name: 'Create',
   options: [
     { name: 'Event', url: '/calendar/create' },
@@ -78,8 +78,8 @@ let createDropdown: DropDown = {
   ],
 };
 
-let defaultCtaButton: NavLink = { name: 'Get Started', url: '/get-started' };
-let cloudCtaButton: NavLink = { name: 'Upgrade Storage', url: '/cloud/upgrade' };
+const defaultCtaButton: NavLink = { name: 'Get Started', url: '/get-started' };
+const cloudCtaButton: NavLink = { name: 'Upgrade Storage', url: '/cloud/upgrade' };
 
 export const defaultSidebarOptions: SidebarOption[] = [
   { name: 'Home', url: '/', icon: FiHome },

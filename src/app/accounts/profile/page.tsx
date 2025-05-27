@@ -9,11 +9,14 @@ import { FiEdit2, FiLogOut, FiShare2, FiUser } from 'react-icons/fi';
 const Profile = () => {
   const api = useAxios();
   const { user, logoutUser } = useContext(AuthContext);
-  const [name, setName] = useState(user?.name);
-  const [email, setEmail] = useState(user?.email);
-  const [birthdate, setBirthdate] = useState(user?.birthdate);
-  const [location, setLocation] = useState(user?.location);
-  const [gender, setGender] = useState(user?.gender);
+  const [profile, setProfile] = useState({
+    name: user?.name || '',
+    email: user?.email || '',
+    birthdate: user?.birthdate || '',
+    location: user?.location || '',
+    gender: user?.gender || '',
+    avatar: user?.avatar,
+  });
   const [editable, setEditable] = useState(false);
   const [errors, setErrors] = useState({});
   const [alert, setAlert] = useState(false);
@@ -21,29 +24,31 @@ const Profile = () => {
   const [newData, setNewData] = useState({});
 
   useEffect(() => {
-    setName(user?.name);
-    setEmail(user?.email);
-    setBirthdate(user?.birthdate);
-    setLocation(user?.location);
-    setGender(user?.gender);
+    setProfile({
+      name: user?.name || '',
+      email: user?.email || '',
+      birthdate: user?.birthdate || '',
+      location: user?.location || '',
+      gender: user?.gender || '',
+      avatar: user?.avatar,
+    });
     setAvatarSrc(user?.avatar);
   }, [user]);
 
-  const fields: { name: string; value: string; placeholder?: string; type?: string; fieldName: string; options?: string[] }[] = [
-    { name: 'Name', value: name || '', fieldName: 'name' },
-
-    { name: 'Email', value: email || '', placeholder: 'Add your E-mail here', fieldName: 'email' },
+  const fields = [
+    { name: 'Name', value: profile.name, fieldName: 'name' },
+    { name: 'Email', value: profile.email, placeholder: 'Add your E-mail here', fieldName: 'email' },
     {
       name: 'Date of Birth',
-      value: birthdate instanceof Date ? birthdate.toISOString().split('T')[0] : birthdate || '',
+      value: profile.birthdate instanceof Date ? profile.birthdate.toISOString().split('T')[0] : profile.birthdate || '',
       placeholder: 'Add your age here',
       type: 'date',
       fieldName: 'birthdate',
     },
-    { name: 'Location', value: location || '', placeholder: 'Mark your location', fieldName: 'location' },
+    { name: 'Location', value: profile.location, placeholder: 'Mark your location', fieldName: 'location' },
     {
       name: 'Gender',
-      value: gender || '',
+      value: profile.gender,
       placeholder: 'Choose Gender',
       fieldName: 'gender',
       type: 'select',
@@ -57,26 +62,7 @@ const Profile = () => {
       ...prevData,
       [fieldName]: value,
     }));
-
-    switch (stateName) {
-      case 'Name':
-        setName(value);
-        break;
-      case 'Email':
-        setEmail(value);
-        break;
-      case 'Date of Birth':
-        setBirthdate(value);
-        break;
-      case 'Location':
-        setLocation(value);
-        break;
-      case 'Gender':
-        setGender(value);
-        break;
-      default:
-        break;
-    }
+    setProfile((prev) => ({ ...prev, [fieldName]: value }));
   };
 
   const updateProfile = () => {
@@ -107,6 +93,7 @@ const Profile = () => {
     const formData = new FormData();
     formData.append('avatar', file);
     setAvatarSrc(URL.createObjectURL(file));
+    setProfile((prev) => ({ ...prev, avatar: URL.createObjectURL(file) }));
     try {
       await api.patch(`/api/auth/update/${user?.id}/`, formData, {
         headers: {
@@ -150,7 +137,7 @@ const Profile = () => {
             </button>
             <input type='file' ref={fileInputRef} className='hidden' onChange={handleFileChange} />
           </div>
-          <h1 className='text-2xl font-semibold mt-4 dark:text-white'>{user?.name}</h1>
+          <h1 className='text-2xl font-semibold mt-4 dark:text-white'>{profile.name}</h1>
 
           <div className='flex gap-3 mt-4'>
             <motion.button
