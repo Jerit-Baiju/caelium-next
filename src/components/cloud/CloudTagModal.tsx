@@ -28,7 +28,7 @@ const CloudTagModal: React.FC<CloudTagModalProps> = ({ isOpen, onClose, selected
   const [allTags, setAllTags] = useState<Tag[]>([]);
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [isCreatingTag, setIsCreatingTag] = useState(false);
+  // Removed unused isCreatingTag state
   const api = useAxios();
 
   // Reset selections when modal is opened/closed
@@ -47,7 +47,7 @@ const CloudTagModal: React.FC<CloudTagModalProps> = ({ isOpen, onClose, selected
     try {
       const response = await api.get('/api/cloud/tags/');
       setAllTags(
-        response.data.map((tag: any) => ({
+        response.data.map((tag: Tag) => ({
           id: tag.id,
           name: tag.name,
           color: tag.color || getRandomColor(),
@@ -100,7 +100,6 @@ const CloudTagModal: React.FC<CloudTagModalProps> = ({ isOpen, onClose, selected
       return;
     }
 
-    setIsCreatingTag(true);
 
     try {
       // Create the tag and associate it with the selected files
@@ -131,8 +130,6 @@ const CloudTagModal: React.FC<CloudTagModalProps> = ({ isOpen, onClose, selected
         description: 'Failed to create tag. Please try again.',
         variant: 'destructive',
       });
-    } finally {
-      setIsCreatingTag(false);
     }
   };
 

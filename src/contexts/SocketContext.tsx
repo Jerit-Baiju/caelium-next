@@ -1,12 +1,13 @@
 import React, { createContext, useContext, useEffect, useRef, useState } from 'react';
 import { useAppContext } from './AppContext';
 import AuthContext from './AuthContext';
+import { SocketData } from '@/types/socketData';
 
 interface WebSocketContextType {
   socket: WebSocket | null;
   isConnected: boolean;
-  send: (data: any) => void;
-  socketData: any;
+  send: (data: object) => void;
+  socketData: SocketData | null;
 }
 
 const WebSocketContext = createContext<WebSocketContextType | null>(null);
@@ -15,7 +16,7 @@ export const WebSocketProvider: React.FC<{ children: React.ReactNode }> = ({ chi
   const { logoutUser, authTokens } = useContext(AuthContext); // Use authTokens from AuthContext
   const { setActiveUsers, addActiveUser, removeActiveUser, updateLastSeen } = useAppContext();
   const socketRef = useRef<WebSocket | null>(null);
-  const [socketData, setSocketData] = useState<any>();
+  const [socketData, setSocketData] = useState<SocketData| null>(null);
   const [isConnected, setIsConnected] = useState(false);
   const retryCountRef = useRef(0);
   const maxRetries = 10; // Increased from 2 to 10
@@ -28,13 +29,17 @@ export const WebSocketProvider: React.FC<{ children: React.ReactNode }> = ({ chi
       if (socketData.category === 'online_users') {
         setActiveUsers(socketData.online_users);
       } else if (socketData.category === 'status_update') {
-        socketData.is_online ? addActiveUser(socketData.user_id) : removeActiveUser(socketData.user_id);
+        if (socketData.is_online) {
+          addActiveUser(socketData.user_id);
+        } else {
+          removeActiveUser(socketData.user_id);
+        }
         updateLastSeen(socketData.user_id);
       }
     } catch (error) {
       console.error('Error processing socket data:', error);
     }
-  }, [socketData]);
+  }, [socketData, setActiveUsers, addActiveUser, removeActiveUser, updateLastSeen]);
 
   useEffect(() => {
     mounted.current = true;
@@ -127,9 +132,9 @@ export const WebSocketProvider: React.FC<{ children: React.ReactNode }> = ({ chi
         clearTimeout(reconnectTimeout);
       }
     };
-  }, [authTokens]); // Depend on authTokens
+  }, [authTokens, logoutUser]); // Depend on authTokens
 
-  const send = (data: any) => {
+  const send = (data: object) => {
     if (socketRef.current?.readyState === WebSocket.OPEN) {
       socketRef.current.send(JSON.stringify(data));
     } else {

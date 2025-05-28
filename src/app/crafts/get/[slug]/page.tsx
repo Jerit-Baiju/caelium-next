@@ -6,7 +6,7 @@ import useAxios from '@/hooks/useAxios';
 import { AxiosError } from 'axios';
 import { use, useEffect, useState } from 'react';
 
-const CraftRead = (props: { params: Promise<{ slug: Number }> }) => {
+const CraftRead = (props: { params: Promise<{ slug: number }> }) => {
   const params = use(props.params);
   const [craft, setCraft] = useState<Craft | null>(null);
   const [loading, setLoading] = useState<boolean>(true);

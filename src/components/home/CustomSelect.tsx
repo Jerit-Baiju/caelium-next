@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
 interface Option {
   value: string;
@@ -9,7 +9,7 @@ interface Option {
 interface CustomSelectProps {
   options: Option[];
   defaultOption?: string;
-  onSelect: (value: string|any) => void;
+  onSelect: (value: string) => void;
 }
 
 const CustomSelect: React.FC<CustomSelectProps> = ({ options, defaultOption, onSelect }) => {
@@ -43,8 +43,7 @@ const CustomSelect: React.FC<CustomSelectProps> = ({ options, defaultOption, onS
     <div className='relative w-32' ref={dropdownRef}>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className='bg-neutral-200 dark:bg-neutral-800 dark:text-white font-semibold py-2 px-4 rounded inline-flex items-center w-full'
-      >
+        className='bg-neutral-200 dark:bg-neutral-800 dark:text-white font-semibold py-2 px-4 rounded inline-flex items-center w-full'>
         {selectedOption ? (
           <>
             <i className={`fa-solid fa-${options.find((option) => option.value === selectedOption)?.icon}`}></i>
@@ -62,8 +61,7 @@ const CustomSelect: React.FC<CustomSelectProps> = ({ options, defaultOption, onS
               <li
                 key={option.value}
                 onClick={() => handleOptionClick(option.value)}
-                className='cursor-pointer py-2 px-4 dark:hover:bg-neutral-700 hover:bg-neutral-300'
-              >
+                className='cursor-pointer py-2 px-4 dark:hover:bg-neutral-700 hover:bg-neutral-300'>
                 <i className={`fa-solid fa-${option.icon} mr-2`}></i>
                 {option.label}
               </li>

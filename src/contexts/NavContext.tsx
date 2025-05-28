@@ -110,7 +110,7 @@ export const cloudSidebarOptions: SidebarSection[] = [
   }
 ];
 
-export const NavbarProvider: React.FC<React.PropsWithChildren<{}>> = ({ children }) => {
+export const NavbarProvider: React.FC<React.PropsWithChildren> = ({ children }) => {
   const [ctaButton, setCtaButton] = useState<NavLink | null>(defaultCtaButton);
   const [navLinks, setNavLinks] = useState<NavLink[] | null>(defaultNavLinks);
   const [dropDown, setDropDown] = useState<DropDown | null>(createDropdown);

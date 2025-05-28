@@ -20,7 +20,6 @@ interface EmptySpaceContextMenuProps {
 
 const EmptySpaceContextMenu: React.FC<EmptySpaceContextMenuProps> = ({
   children,
-  currentFolderId,
   onCreateFolder,
   onShareFolder,
 }) => {

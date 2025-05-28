@@ -35,7 +35,7 @@ const SideBar = () => {
   const { sidebarOptions } = useNavbar();
 
   // Type guard function to check if we have sections or simple options
-  const hasSections = (options: any[]): options is SidebarSection[] => {
+  const hasSections = (options: SidebarOption[] | SidebarSection[]): options is SidebarSection[] => {
     return options.length > 0 && 'section' in options[0] && 'items' in options[0];
   };
   

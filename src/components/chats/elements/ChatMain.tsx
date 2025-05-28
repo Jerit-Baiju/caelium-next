@@ -107,7 +107,7 @@ const ChatMain = ({ viewportHeight }: { viewportHeight?: number }) => {
               No messages yet
             </motion.div>
           )}
-          {messages.map((message, index) => {
+          {messages.map((message) => {
             const currentDate = new Date(message.timestamp);
             const isNewDay = !prevDate || !isSameDay(prevDate, currentDate);
             prevDate = currentDate;

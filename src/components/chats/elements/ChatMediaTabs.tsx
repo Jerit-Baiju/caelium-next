@@ -27,7 +27,9 @@ const ChatMediaTabs = ({ chatId }: ChatMediaTabsProps) => {
         console.log('Error fetching media:', error);
       }
     };
-    chatId && fetchMedia();
+    if (chatId) {
+      fetchMedia();
+    }
   }, [chatId]);
 
   if (!media) return null;
@@ -80,8 +82,7 @@ const ChatMediaTabs = ({ chatId }: ChatMediaTabsProps) => {
                 href={getURL(message.file || '')}
                 target='_blank'
                 rel='noopener noreferrer'
-                className='flex items-center p-4 bg-neutral-100 dark:bg-neutral-800 rounded-lg hover:bg-neutral-200 dark:hover:bg-neutral-700'
-              >
+                className='flex items-center p-4 bg-neutral-100 dark:bg-neutral-800 rounded-lg hover:bg-neutral-200 dark:hover:bg-neutral-700'>
                 <BsFileEarmark className='text-2xl mr-3' />
                 <span className='flex-1 truncate'>{message.file_name || 'Document'}</span>
               </a>

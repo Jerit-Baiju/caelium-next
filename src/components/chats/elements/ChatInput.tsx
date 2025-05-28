@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { useContext, useEffect, useRef } from 'react';
 
 const ChatInput = () => {
-  let { textInput, setTextInput, handleSubmit, sendFile, handleTyping } = useContext(ChatContext);
+  const { textInput, setTextInput, handleSubmit, sendFile, handleTyping } = useContext(ChatContext);
   const formRef = useRef<HTMLFormElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -22,7 +22,9 @@ const ChatInput = () => {
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    file ? sendFile(file) : null;
+    if (file) {
+      sendFile(file);
+    }
   };
 
   const preventDefault = (e: TouchEvent) => {

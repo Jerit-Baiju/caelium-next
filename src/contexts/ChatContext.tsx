@@ -21,7 +21,7 @@ interface ChatContextProps {
   handleSubmit: (e?: React.FormEvent<HTMLFormElement>) => Promise<void>;
   textInput: string;
   setTextInput: (e: string) => void;
-  messages: Array<any>;
+  messages: Message[];
   clearChat: () => void;
   sendFile: (file: File) => void;
   typingMessage: { sender: number; typed: string } | null;
@@ -34,22 +34,7 @@ interface ChatContextProps {
   meta: Chat | null;
   getParticipant: (id: number) => User | null;
   getLastSeen: (participantId: number) => ReactNode;
-  is_anon: boolean;
-  anonAvatar: string;
-  anonName: string;
 }
-
-const fancyFirstNames = [
-  'Celestial', 'Mystic', 'Aurora', 'Phoenix', 'Nebula', 
-  'Quantum', 'Cosmic', 'Solar', 'Luna', 'Astral',
-  'Crystal', 'Nova', 'Storm', 'Echo', 'Shadow'
-];
-
-const fancyLastNames = [
-  'Voyager', 'Starweaver', 'Dreamwalker', 'Lightbringer', 'Nightweaver',
-  'Stormchaser', 'Moonwhisper', 'Starseeker', 'Dawnkeeper', 'Skydancer',
-  'Frostweaver', 'Sunseeker', 'Cloudweaver', 'Windwalker', 'Starshaper'
-];
 
 const ChatContext = createContext<ChatContextProps>({
   handleSubmit: async () => {},
@@ -68,13 +53,10 @@ const ChatContext = createContext<ChatContextProps>({
   meta: null,
   getParticipant: () => null,
   getLastSeen: () => null,
-  is_anon: false,
-  anonAvatar: '',
-  anonName: '',
 });
 export default ChatContext;
 
-export const ChatProvider = ({ chatId, is_anon = false, children }: childrenProps) => {
+export const ChatProvider = ({ chatId, children }: childrenProps) => {
   const { user } = useContext(AuthContext);
   const {activeUsers, lastSeenUsers} = useAppContext()
   const [textInput, setTextInput] = useState('');
@@ -86,31 +68,31 @@ export const ChatProvider = ({ chatId, is_anon = false, children }: childrenProp
   const [isLoadingMore, setIsLoadingMore] = useState<boolean>(false);
   const [typingMessage, setTypingMessage] = useState<{ typed: string; sender: number } | null>(null);
   const [nextPage, setNextPage] = useState<string | null>(null);
-  const [_, setIsSocketReady] = useState(false);
-  const [messageQueue, setMessageQueue] = useState<{ type: 'txt' | 'attachment'; content?: string }[]>([]);
 
   const api = useAxios();
   const router = useRouter();
   const { socket, socketData } = useWebSocket();
   const { updateChatOrder, removeChatFromPane } = useChatsPaneContext();
 
-  const getRandomFancyName = () => {
-    const firstName = fancyFirstNames[Math.floor(Math.random() * fancyFirstNames.length)];
-    const lastName = fancyLastNames[Math.floor(Math.random() * fancyLastNames.length)];
-    return `${firstName} ${lastName}`;
-  };
-
-  const [anonName] = useState(getRandomFancyName());
-
   useEffect(() => {
     const data = socketData;
     if (!data || !user) return;
     if (data.category === 'new_message' && data.chat == chatId && data.sender != user.id) {
-      setMessages((prevMessages) => [...prevMessages, data]);
+      // Map socketData to Message type
+      const newMessage: Message = {
+        id: data.id ?? Date.now(),
+        content: data.content,
+        type: data.type ?? 'txt',
+        sender: data.sender,
+        file_name: data.file_name ?? '',
+        timestamp: data.timestamp ? new Date(data.timestamp) : new Date(),
+        file: null,
+      };
+      setMessages((prevMessages) => [...prevMessages, newMessage]);
     } else if (data.category === 'typing' && data.chat_id == chatId) {
-      setTypingMessage(data);
+      setTypingMessage({ sender: data.sender, typed: data.typed });
     }
-  }, [socketData]);
+  }, [socketData, chatId, user]);
 
   useEffect(() => {
     const fetchInitialData = async () => {
@@ -138,26 +120,13 @@ export const ChatProvider = ({ chatId, is_anon = false, children }: childrenProp
     fetchInitialData();
   }, [chatId, user]);
 
-  useEffect(() => {
-    if (socket?.readyState === WebSocket.OPEN) {
-      setIsSocketReady(true);
-      // Process any queued messages
-      messageQueue.forEach((msg) => {
-        sendMessage(msg.type, msg.content);
-      });
-      setMessageQueue([]);
-    } else {
-      setIsSocketReady(false);
-    }
-  }, [socket?.readyState]);
-
   const loadMoreMessages = async () => {
     if (!nextPage || isLoadingMore) return; // Prevent fetching if already at the last page or currently loading
     setIsLoadingMore(true);
     try {
       const nextPageUrl = nextPage.includes('caelium.co') ? nextPage.replace('http://', 'https://') : nextPage;
       const response = await api.get(nextPageUrl);
-      let olderMessages = response.data.results.reverse();
+      const olderMessages = response.data.results.reverse();
       setMessages((prevMessages) => [...olderMessages, ...prevMessages]); // Prepend older messages
       setNextPage(response.data.next); // Update next page URL
     } catch (error) {
@@ -171,7 +140,6 @@ export const ChatProvider = ({ chatId, is_anon = false, children }: childrenProp
     if (type === 'txt' && user) {
       if (!socket || socket.readyState !== WebSocket.OPEN) {
         console.warn('Socket not ready, queueing message');
-        setMessageQueue((prev) => [...prev, { type, content }]);
         return;
       }
 
@@ -195,14 +163,13 @@ export const ChatProvider = ({ chatId, is_anon = false, children }: childrenProp
               sender: user.id,
               file_name: '',
               timestamp: new Date(),
-              file: null,
+              file: null, 
             },
           ]);
           updateChatOrder(chatId, content || '');
         }
       } catch (error) {
         console.error('Failed to send message:', error);
-        setMessageQueue((prev) => [...prev, { type, content }]);
       }
     } else {
       setIsUploading(true);
@@ -253,7 +220,9 @@ export const ChatProvider = ({ chatId, is_anon = false, children }: childrenProp
 
   const handleSubmit = async (e?: React.FormEvent<HTMLFormElement>) => {
     e?.preventDefault();
-    textInput.trim() !== '' && sendMessage('txt', textInput);
+    if (textInput.trim() !== '') {
+      await sendMessage('txt', textInput);
+    }
     setTextInput('');
   };
 
@@ -279,9 +248,6 @@ export const ChatProvider = ({ chatId, is_anon = false, children }: childrenProp
     }
   };
 
-  const getAnonAvatar = () => {
-    return `https://api.dicebear.com/5.x/avataaars-neutral/svg?seed=${anonName}&backgroundColor=transparent`;
-  };
 
   if (error) {
     return (
@@ -315,9 +281,6 @@ export const ChatProvider = ({ chatId, is_anon = false, children }: childrenProp
         meta,
         getParticipant,
         getLastSeen,
-        is_anon,
-        anonAvatar: getAnonAvatar(),
-        anonName,
       }}
     >
       {children}
