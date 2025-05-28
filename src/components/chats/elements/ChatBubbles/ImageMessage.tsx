@@ -6,7 +6,7 @@ import { useContext } from 'react';
 const ImageMessage = ({ message }: { message: Message }) => {
   const date = new Date(message.timestamp);
   const { user } = useContext(AuthContext);
-  const { getParticipant, is_anon, anonAvatar, anonName } = useChatContext();
+  const { getParticipant } = useChatContext();
   const participant = getParticipant(message.sender);
   const isMe = message.sender == user?.id;
   const formattedTime = date.toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true });
@@ -20,8 +20,8 @@ const ImageMessage = ({ message }: { message: Message }) => {
               className='rounded-full w-full h-full object-cover 
                 ring-2 ring-white/80 dark:ring-neutral-800
                 shadow-[0_2px_8px_rgba(0,0,0,0.1)] dark:shadow-[0_2px_8px_rgba(0,0,0,0.3)]'
-              alt={is_anon ? 'Anonymous' : participant?.name}
-              src={is_anon ? anonAvatar : participant?.avatar}
+              alt={participant?.name}
+              src={participant?.avatar}
             />
           </div>
         </div>
@@ -29,7 +29,7 @@ const ImageMessage = ({ message }: { message: Message }) => {
       <div className='flex flex-col'>
         <div className='flex items-center gap-2 mb-1.5'>
           <span className='text-sm font-medium text-neutral-800 dark:text-neutral-200'>
-            {isMe ? 'You' : is_anon ? anonName : participant?.name}
+            {isMe ? 'You' : participant?.name}
           </span>
           <span className='text-[11px] text-neutral-500 dark:text-neutral-400'>{formattedTime}</span>
         </div>

@@ -2,30 +2,31 @@
 import Loader from '@/components/layout/Loader';
 import { User } from '@/helpers/props';
 import axios from 'axios';
-import { jwtDecode } from 'jwt-decode';
+import { jwtDecode, JwtPayload } from 'jwt-decode';
 import { useRouter } from 'next/navigation';
-import { ReactNode, createContext, useEffect, useRef, useState } from 'react';
+import { createContext, ReactNode, useEffect, useRef, useState } from 'react';
 
-interface ErrorObject {
-  [key: string]: string;
+interface TokenData {
+  access: string;
+  refresh: string;
+  exp?: number;
+  user_id?: string;
 }
 
 interface AuthContextProps {
-  tokenData?: any;
-  authTokens: any;
-  error: ErrorObject;
-  loginUser: (e: any) => Promise<void>;
+  tokenData?: TokenData | JwtPayload | null;
+  authTokens: TokenData | null;
+  loginUser: (e: TokenData) => Promise<void>;
   logoutUser: () => void;
-  setTokenData: (e: any) => void;
-  setAuthTokens: (e: any) => void;
+  setTokenData: (e: TokenData) => void;
+  setAuthTokens: (e: TokenData) => void;
   user: User | null;
-  refreshToken: () => Promise<any>; // <-- Expose refreshToken
+  refreshToken: () => Promise<TokenData | null>;
 }
 
 const AuthContext = createContext<AuthContextProps>({
-  tokenData: {},
-  authTokens: {},
-  error: {},
+  tokenData: null,
+  authTokens: null,
   loginUser: async () => {},
   logoutUser: () => {},
   setTokenData: () => {},
@@ -37,17 +38,14 @@ const AuthContext = createContext<AuthContextProps>({
 export default AuthContext;
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const router = useRouter();
-  let [loading, setLoading] = useState(true);
-  let [error, setError] = useState({});
-  let [user, setUser] = useState<User | null>(null);
-  let [authTokens, setAuthTokens] = useState(() =>
-    typeof window !== 'undefined' && localStorage.getItem('authTokens')
-      ? JSON.parse(localStorage.getItem('authTokens') || '{}')
-      : null,
+  const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState<User | null>(null);
+  const [authTokens, setAuthTokens] = useState(() =>
+    typeof window !== 'undefined' && localStorage.getItem('authTokens') ? JSON.parse(localStorage.getItem('authTokens') || '{}') : null
   );
 
-  let [tokenData, setTokenData] = useState(() =>
-    typeof window !== 'undefined' && localStorage.getItem('authTokens') ? jwtDecode(localStorage.getItem('authTokens') || '{}') : null,
+  const [tokenData, setTokenData] = useState(() =>
+    typeof window !== 'undefined' && localStorage.getItem('authTokens') ? jwtDecode(localStorage.getItem('authTokens') || '{}') : null
   );
 
   // Reference to track refresh timers
@@ -55,7 +53,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   // Proactive token refresh
   const refreshToken = async () => {
-    if (!authTokens?.refresh) return;
+    if (!authTokens?.refresh) return null; // <-- Always return null, not undefined
     try {
       const response = await axios.post(`${process.env.NEXT_PUBLIC_API_HOST}/api/auth/token/refresh/`, {
         refresh: authTokens.refresh,
@@ -93,13 +91,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       refreshTimerRef.current = setTimeout(refreshToken, timeUntilRefresh);
     } catch (error) {
       logoutUser();
+      console.error('Error scheduling token refresh:', error);
     }
   };
 
   useEffect(() => {
     if (loading || !authTokens) return;
     try {
-      const decodedToken: any = tokenData;
+      const decodedToken = tokenData;
       const isExpired = decodedToken && decodedToken.exp && decodedToken.exp * 1000 < Date.now();
       if (isExpired) {
         refreshToken();
@@ -108,6 +107,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       scheduleTokenRefresh(authTokens.access);
     } catch (err) {
       logoutUser();
+      console.error('Error decoding token:', err);
     }
     return () => {
       if (refreshTimerRef.current) {
@@ -158,14 +158,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   }, [authTokens]);
 
-  let loginUser = async (data: any) => {
+  const loginUser = async (data: TokenData) => {
     localStorage.setItem('authTokens', JSON.stringify(data));
     setAuthTokens(data);
     setTokenData(jwtDecode(data?.access));
     scheduleTokenRefresh(data.access);
   };
 
-  let logoutUser = () => {
+  const logoutUser = () => {
     if (refreshTimerRef.current) {
       clearTimeout(refreshTimerRef.current);
     }
@@ -188,10 +188,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setLoading(false);
   }, [authTokens]);
 
-  let contextData: AuthContextProps = {
+  const contextData: AuthContextProps = {
     tokenData,
     authTokens,
-    error,
     loginUser,
     logoutUser,
     setTokenData,

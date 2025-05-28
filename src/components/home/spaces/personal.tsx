@@ -6,7 +6,7 @@ import EventWidget from '../widgets/EventWidget';
 import TaskWidget from '../widgets/TaskWidget';
 
 const Personal = () => {
-  let { user } = useContext(AuthContext);
+  const { user } = useContext(AuthContext);
 
   const greeting = useMemo(() => {
     const hour = new Date().getHours();

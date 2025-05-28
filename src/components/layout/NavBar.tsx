@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { useState } from 'react';
 
 const NavBar = () => {
-  let { ctaButton, navLinks, dropDown } = useNavbar();
+  const { ctaButton, navLinks, dropDown } = useNavbar();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const toggleMobileMenu = () => {

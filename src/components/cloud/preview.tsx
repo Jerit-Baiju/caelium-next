@@ -203,20 +203,9 @@ const FilePreview = ({
     setPosition({ x: 0, y: 0 });
   };
 
-  // Handle zoom in and out
-  const handleZoom = (direction: 'in' | 'out') => {
-    const newZoom = direction === 'in' ? Math.min(zoomLevel + 0.25, 3) : Math.max(zoomLevel - 0.25, 0.5);
-    setZoomLevel(newZoom);
-  };
-
-  // Reset zoom and position
-  const resetZoom = () => {
-    setZoomLevel(1);
-    setPosition({ x: 0, y: 0 });
-  };
 
   // Handle mouse down for dragging
-  const handleMouseDown = (e: React.MouseEvent) => {
+  const handleMouseDown = () => {
     if (zoomLevel > 1) {
       setIsDragging(true);
     }

@@ -8,7 +8,6 @@ import FolderContextMenu from '@/components/cloud/context-menus/FolderContextMen
 import ItemSkeleton from '@/components/cloud/ItemSkeleton';
 import FilePreview from '@/components/cloud/preview';
 import { BreadcrumbItem, ExplorerData, FileData } from '@/helpers/props';
-import useAxios from '@/hooks/useAxios';
 import useCloud from '@/hooks/useCloud';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
@@ -34,7 +33,6 @@ const CloudExplorer = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { formatFileSize, fetchExplorerData, fetchImageUrls, getFileThumbnailType } = useCloud();
-  const api = useAxios();
   const [loading, setLoading] = useState(true);
   const [explorerData, setExplorerData] = useState<ExplorerData>({
     directories: [],
@@ -65,7 +63,6 @@ const CloudExplorer = () => {
 
   // Drag and drop upload states
   const [isDragging, setIsDragging] = useState(false);
-  const [droppedFiles, setDroppedFiles] = useState<File[]>([]);
 
   // Marquee selection states
   const [selectionBox, setSelectionBox] = useState<null | { x: number; y: number; w: number; h: number }>(null);
@@ -207,12 +204,12 @@ const CloudExplorer = () => {
       e.preventDefault();
       setIsDragging(false);
 
-      if (e.dataTransfer?.files && e.dataTransfer.files.length > 0) {
-        const files = Array.from(e.dataTransfer.files);
-        setDroppedFiles(files);
-      }
+      // Handle dropped files here if needed
+      // if (e.dataTransfer?.files && e.dataTransfer.files.length > 0) {
+      //   const files = Array.from(e.dataTransfer.files);
+      //   // Process files
+      // }
     };
-
     document.addEventListener('dragover', handleDragOver);
     document.addEventListener('dragleave', handleDragLeave);
     document.addEventListener('drop', handleDrop);

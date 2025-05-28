@@ -1,5 +1,5 @@
 'use client';
-import { Chat } from '@/helpers/props';
+import { Chat, User } from '@/helpers/props';
 import useAxios from '@/hooks/useAxios';
 import useChatUtils from '@/hooks/useChat';
 import { createContext, ReactNode, useCallback, useContext, useState } from 'react';
@@ -38,6 +38,7 @@ export function ChatsPaneProvider({ children }: { children: ReactNode }) {
           variant: 'destructive',
           title: 'Error',
           description: 'Failed to clear chat',
+          body: err,
         });
       }
     },
@@ -82,10 +83,11 @@ export function ChatsPaneProvider({ children }: { children: ReactNode }) {
           variant: 'destructive',
           title: 'Error',
           description: 'Failed to pin/unpin chat. Please try again.',
+          body: err,
         });
       }
     },
-    [appChats, api, setAppChats],
+    [appChats, api, setAppChats, sortChats],
   );
 
   const searchChats = async (e: React.FormEvent) => {
@@ -116,7 +118,7 @@ export function ChatsPaneProvider({ children }: { children: ReactNode }) {
             chat.last_message = {
               content: lastMessage,
               timestamp: new Date(),
-              sender: chat.participants?.find((p: any) => p.id !== user?.id),
+              sender: chat.participants?.find((p: User) => p.id !== user?.id),
               type: 'txt',
             };
             chat.updated_time = new Date();
@@ -126,7 +128,7 @@ export function ChatsPaneProvider({ children }: { children: ReactNode }) {
               return sortChats([...prev, chat]);
             });
           } catch (err) {
-            // ignore
+            console.log(err);
           }
         })();
         return prevChats;

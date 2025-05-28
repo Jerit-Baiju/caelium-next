@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
 
 const Typing = () => {
-  const { typingMessage, getParticipant, is_anon, anonAvatar } = useChatContext();
+  const { typingMessage, getParticipant } = useChatContext();
   const [typist, setTypist] = useState<User | null>(null);
 
   useEffect(() => {
@@ -25,15 +25,15 @@ const Typing = () => {
               className='rounded-full w-full h-full object-cover 
                 ring-2 ring-white/80 dark:ring-neutral-800
                 shadow-[0_2px_8px_rgba(0,0,0,0.1)] dark:shadow-[0_2px_8px_rgba(0,0,0,0.3)]'
-              alt={is_anon ? 'Anonymous' : typist?.name}
-              src={is_anon ? anonAvatar : typist?.avatar}
+              alt={typist?.name}
+              src={typist?.avatar}
             />
           </div>
         </div>
         <div className='flex flex-col'>
           <div className='flex items-center gap-2 mb-1.5'>
             <span className='text-sm font-medium text-neutral-800 dark:text-neutral-200'>
-              {is_anon ? 'Anonymous' : typist?.name}
+              {typist?.name}
             </span>
           </div>
           <div className='rounded-2xl rounded-tl-none px-5 py-3 

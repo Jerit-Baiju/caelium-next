@@ -56,7 +56,11 @@ const Profile = () => {
     },
   ];
 
-  const handleInputChange = (fieldName: string, stateName: string, value: any) => {
+  const handleInputChange = (
+    fieldName: string,
+    stateName: string,
+    value: string | number | Date
+  ) => {
     setErrors({ ...errors, [fieldName]: null });
     setNewData((prevData) => ({
       ...prevData,
