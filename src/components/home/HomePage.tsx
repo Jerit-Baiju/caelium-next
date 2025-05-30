@@ -1,6 +1,4 @@
-import AuthContext from '@/contexts/AuthContext';
 import { motion } from 'framer-motion';
-import { useContext } from 'react';
 import { FiPlus, FiRefreshCw, FiUsers } from 'react-icons/fi';
 import Post from '../../../components/home/Post';
 
@@ -93,7 +91,7 @@ const suggestions = [
 ];
 
 const HomePageLayout = () => {
-  const { user } = useContext(AuthContext);
+  // const { user } = useContext(AuthContext);
 
   return (
     <div className='w-full max-w-7xl mx-auto md:px-4 overflow-auto max-sm:mx-4'>
@@ -103,18 +101,19 @@ const HomePageLayout = () => {
           {/* Stories and Create Post (placeholder for now) */}
           {/* Posts Feed - Now with scrolling */}
           <div className='md:h-[calc(100vh-8rem)] rounded-2xl scrollbar-thin scrollbar-track-transparent overflow-y-auto overflow-x-hidden'>
-            <div className='mb-6 rounded-2xl bg-white dark:bg-neutral-800 shadow-xs'>
-              <div className='flex items-center gap-4 mb-2'>
-                <div className='h-10 w-10 rounded-full bg-linear-to-br from-violet-500 to-purple-500 flex items-center justify-center'>
+            {/* <div className='mb-3 shadow-xs'>
+              <div className='flex items-center gap-1 mx-2'>
+                <div className='h-10 w-10 rounded-full m-2'>
                   <img className='rounded-full w-full h-full object-cover' src={user?.avatar} alt={user?.name} />
                 </div>
                 <div className='flex-grow'>
                   <input
                     placeholder={`What's on your mind, ${user?.name.split(' ')[0]}?`}
-                    className='w-full text-left p-2.5 bg-neutral-100 dark:bg-neutral-700 rounded-full text-neutral-500 dark:text-neutral-400 outline-none'></input>
+                    className='w-full text-left px-3 py-2.5 bg-neutral-100 dark:bg-neutral-800 rounded-4xl text-neutral-500 dark:text-neutral-400 outline-none'
+                  />
                 </div>
               </div>
-            </div>
+            </div> */}
             <div className='space-y-6'>
               {samplePosts.map((post) => (
                 <Post key={post.id} post={post} />
