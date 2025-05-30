@@ -110,9 +110,9 @@ const HomePageLayout = () => {
                   <img className='rounded-full w-full h-full object-cover' src={user?.avatar} alt={user?.name} />
                 </div>
                 <div className='flex-grow'>
-                  <button className='w-full text-left p-2.5 bg-neutral-100 dark:bg-neutral-700 rounded-full text-neutral-500 dark:text-neutral-400'>
-                    What&apos;s on your mind, {user?.name.split(' ')[0]}?
-                  </button>
+                  <input
+                    placeholder={`What's on your mind, ${user?.name.split(' ')[0]}?`}
+                    className='w-full text-left p-2.5 bg-neutral-100 dark:bg-neutral-700 rounded-full text-neutral-500 dark:text-neutral-400 outline-none'></input>
                 </div>
               </div>
             </div>
