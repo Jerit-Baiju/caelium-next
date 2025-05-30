@@ -6,11 +6,11 @@ import { useChatContext } from '@/contexts/ChatContext';
 import { motion } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 import { useContext, useState } from 'react';
-import { FaPhone, FaVideo } from 'react-icons/fa';
+// import { FaPhone, FaVideo } from 'react-icons/fa';
 import { FaPeopleGroup } from 'react-icons/fa6';
-import { FiDownload } from 'react-icons/fi';
-import { IoArrowBack, IoNotifications, IoPerson, IoPersonRemoveSharp } from 'react-icons/io5';
-import { MdDelete } from 'react-icons/md';
+// import { FiDownload } from 'react-icons/fi';
+import { IoArrowBack, IoPersonRemoveSharp } from 'react-icons/io5';
+// import { MdDelete } from 'react-icons/md';
 import ChatMediaTabs from './ChatMediaTabs';
 
 const ChatProfile = () => {
@@ -30,12 +30,12 @@ const ChatProfile = () => {
   const normalParticipants = filteredParticipants?.filter((p) => p.id !== meta?.creator) ?? [];
 
   return (
-    user && (
+    user &&
+    recipient && (
       <motion.div
         initial={{ opacity: 0, x: 20 }}
         animate={{ opacity: 1, x: 0 }}
-        className='flex flex-col grow sm:w-3/4 bg-white dark:bg-neutral-900 md:rounded-2xl shadow-xs'
-      >
+        className='flex flex-col grow sm:w-3/4 bg-white dark:bg-neutral-900 md:rounded-2xl shadow-xs'>
         <div className='flex-1 overflow-y-auto'>
           {/* Profile Header */}
           <div className='border-b border-neutral-200 dark:border-neutral-800'>
@@ -43,8 +43,7 @@ const ChatProfile = () => {
               <motion.button
                 whileHover={{ scale: 1.1 }}
                 onClick={() => router.back()}
-                className='absolute left-2 top-2 p-2 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded-full transition-colors'
-              >
+                className='absolute left-2 top-2 p-2 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded-full transition-colors'>
                 <IoArrowBack className='text-2xl text-neutral-800 dark:text-white' />
               </motion.button>
 
@@ -75,7 +74,7 @@ const ChatProfile = () => {
             </motion.div>
           </div>
 
-          <div className='grid grid-cols-4 gap-2 p-4 border-b border-neutral-200 dark:border-neutral-800'>
+          {/* <div className='grid grid-cols-4 gap-2 p-4 border-b border-neutral-200 dark:border-neutral-800'>
             {[
               { icon: meta?.is_group ? FaPeopleGroup : IoPerson, label: meta?.is_group ? 'Participants' : 'Profile', color: 'violet' },
               { icon: IoNotifications, label: 'Mute', color: 'yellow' },
@@ -90,24 +89,22 @@ const ChatProfile = () => {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.1 }}
                 onClick={action.label === 'Participants' ? () => setShowParticipants(true) : undefined}
-                className='flex flex-col items-center text-neutral-700 dark:text-white'
-              >
+                className='flex flex-col items-center text-neutral-700 dark:text-white'>
                 <div className={`p-3 bg-${action.color}-500/10 rounded-xl mb-1`}>
                   <action.icon className={`text-xl text-${action.color}-500`} />
                 </div>
                 <span className='text-sm'>{action.label}</span>
               </motion.button>
             ))}
-          </div>
+          </div> */}
 
           {/* Chat Options */}
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className='flex flex-col p-4 space-y-2'>
+          {/* <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className='flex flex-col p-4 space-y-2'>
             <div className='grid grid-cols-1 gap-2'>
               <motion.button
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
-                className='flex items-center p-4 bg-neutral-100 dark:bg-neutral-800 rounded-xl'
-              >
+                className='flex items-center p-4 bg-neutral-100 dark:bg-neutral-800 rounded-xl'>
                 <FiDownload className='text-xl mr-4 text-green-500' />
                 <span>Export chat</span>
               </motion.button>
@@ -116,8 +113,7 @@ const ChatProfile = () => {
                 <motion.button
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
-                  className='flex items-center p-4 bg-neutral-100 dark:bg-neutral-800 rounded-xl'
-                >
+                  className='flex items-center p-4 bg-neutral-100 dark:bg-neutral-800 rounded-xl'>
                   <IoPersonRemoveSharp className='text-xl mr-4 text-red-500' />
                   <span>Block contact</span>
                 </motion.button>
@@ -126,13 +122,12 @@ const ChatProfile = () => {
               <motion.button
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
-                className='flex items-center p-4 bg-neutral-100 dark:bg-neutral-800 rounded-xl'
-              >
+                className='flex items-center p-4 bg-neutral-100 dark:bg-neutral-800 rounded-xl'>
                 <MdDelete className='text-xl mr-4 text-red-500' />
                 <span>Delete chat</span>
               </motion.button>
             </div>
-          </motion.div>
+          </motion.div> */}
 
           {/* Participants Dialog */}
           <Dialog open={showParticipants} onOpenChange={setShowParticipants}>
@@ -152,8 +147,7 @@ const ChatProfile = () => {
                       className='w-4 h-4 absolute left-3 top-3 text-neutral-500'
                       fill='none'
                       stroke='currentColor'
-                      viewBox='0 0 24 24'
-                    >
+                      viewBox='0 0 24 24'>
                       <path
                         strokeLinecap='round'
                         strokeLinejoin='round'
@@ -177,8 +171,7 @@ const ChatProfile = () => {
                       return (
                         <div
                           key={participant.id}
-                          className='flex items-center px-4 py-2 hover:bg-neutral-100 dark:hover:bg-neutral-800'
-                        >
+                          className='flex items-center px-4 py-2 hover:bg-neutral-100 dark:hover:bg-neutral-800'>
                           <img
                             src={participantDetails?.avatar}
                             alt={participantDetails?.name}
@@ -215,8 +208,7 @@ const ChatProfile = () => {
                       return (
                         <div
                           key={participant.id}
-                          className='flex items-center px-4 py-2 hover:bg-neutral-100 dark:hover:bg-neutral-800'
-                        >
+                          className='flex items-center px-4 py-2 hover:bg-neutral-100 dark:hover:bg-neutral-800'>
                           <img
                             src={participantDetails?.avatar}
                             alt={participantDetails?.name}
@@ -256,7 +248,7 @@ const ChatProfile = () => {
 
           {/* Media Section */}
           <div className='p-4 border-t border-neutral-200 dark:border-neutral-800'>
-            <h2 className='text-lg font-semibold mb-4 text-neutral-900 dark:text-white'>Media, links and documents</h2>
+            <h2 className='text-lg font-semibold mb-4 text-neutral-900 dark:text-white'>Media files and documents</h2>
             <ChatMediaTabs chatId={meta?.id ?? 0} />
           </div>
         </div>
