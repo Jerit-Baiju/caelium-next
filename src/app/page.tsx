@@ -15,7 +15,7 @@ export default function Home() {
     );
   }
   return (
-    <main className='flex grow mt-6 md:px-6 md:gap-6 md:h-[calc(100vh-7rem)] overflow-hidden'>
+    <main className='flex grow mt-6 md:px-6 md:gap-6 md:h-[calc(100vh-8rem)] overflow-scroll'>
       <HomePageLayout />
     </main>
   );

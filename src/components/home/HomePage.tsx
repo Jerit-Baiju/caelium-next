@@ -96,15 +96,14 @@ const HomePageLayout = () => {
   const { user } = useContext(AuthContext);
 
   return (
-    <div className='w-full h-[calc(100dvh-0rem)] max-w-7xl mx-auto px-4 pb-16'>
+    <div className='w-full max-w-7xl mx-auto md:px-4 overflow-auto max-sm:mx-4'>
       <div className='flex flex-col lg:flex-row gap-6'>
         {/* Main Content - Posts Feed */}
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }} className='flex-1'>
           {/* Stories and Create Post (placeholder for now) */}
-
           {/* Posts Feed - Now with scrolling */}
-          <div className='md:h-[calc(100vh-6rem)] rounded-2xl overflow-y-auto scrollbar-thin scrollbar-thumb-neutral-300 dark:scrollbar-thumb-neutral-600 scrollbar-track-transparent'>
-            <div className='mb-6 p-5 rounded-2xl bg-white dark:bg-neutral-800 shadow-xs'>
+          <div className='md:h-[calc(100vh-8rem)] rounded-2xl scrollbar-thin scrollbar-track-transparent overflow-y-auto overflow-x-hidden'>
+            <div className='mb-6 rounded-2xl bg-white dark:bg-neutral-800 shadow-xs'>
               <div className='flex items-center gap-4 mb-2'>
                 <div className='h-10 w-10 rounded-full bg-linear-to-br from-violet-500 to-purple-500 flex items-center justify-center'>
                   <img className='rounded-full w-full h-full object-cover' src={user?.avatar} alt={user?.name} />
@@ -142,7 +141,7 @@ const HomePageLayout = () => {
           transition={{ duration: 0.4, delay: 0.2 }}
           className='w-full lg:w-80 shrink-0 lg:sticky lg:self-start'>
           {/* Suggestions */}
-          <div className='p-5 rounded-2xl bg-white dark:bg-neutral-800 shadow-xs'>
+          <div className='p-5 rounded-2xl bg-white dark:bg-neutral-800 shadow-xs max-sm:hidden'>
             <div className='flex justify-between items-center mb-4'>
               <h3 className='font-medium text-neutral-700 dark:text-neutral-200'>Suggested for you</h3>
               <a href='#' className='text-sm text-violet-600 dark:text-violet-400 font-medium'>
@@ -177,7 +176,7 @@ const HomePageLayout = () => {
           </div>
 
           {/* Footer Links */}
-          <div className='mt-6 px-2 text-xs text-neutral-500 dark:text-neutral-400'>
+          <div className='mt-6 px-2 text-xs text-neutral-500 dark:text-neutral-400 max-sm:hidden'>
             <div className='flex flex-wrap gap-x-2 gap-y-1'>
               <a href='#' className='hover:underline'>
                 About
