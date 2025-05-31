@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { FiPlus, FiRefreshCw, FiUsers } from 'react-icons/fi';
-import Post from '../../../components/home/Post';
+import Post from './Post';
 
 // Sample data for posts (in a real app, this would come from API)
 const samplePosts = [
