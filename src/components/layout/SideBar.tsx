@@ -23,9 +23,9 @@ interface SidebarSection {
 // Default fallback options if context isn't available
 export const options: SidebarOption[] = [
   { name: 'Home', url: '/', icon: FiHome },
-  { name: 'Cloud', url: '/cloud', icon: FiCloud },
-  { name: 'Create', url: '/create', icon: FiPlus },
   { name: 'Chats', url: '/chats/main', icon: FiMessageCircle },
+  { name: 'Create', url: '/create', icon: FiPlus },
+  { name: 'Cloud', url: '/cloud', icon: FiCloud },
   { name: 'Profile', url: '/accounts/profile', icon: FiUser },
 ];
 
