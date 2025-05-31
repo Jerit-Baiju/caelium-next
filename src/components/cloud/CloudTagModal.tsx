@@ -19,7 +19,6 @@ interface CloudTagModalProps {
 interface Tag {
   id: string;
   name: string;
-  color: 'blue' | 'green' | 'amber' | 'red' | 'purple' | 'pink';
   owner?: string;
 }
 
@@ -50,7 +49,6 @@ const CloudTagModal: React.FC<CloudTagModalProps> = ({ isOpen, onClose, selected
         response.data.map((tag: Tag) => ({
           id: tag.id,
           name: tag.name,
-          color: tag.color || getRandomColor(),
           owner: tag.owner,
         })),
       );
@@ -66,11 +64,7 @@ const CloudTagModal: React.FC<CloudTagModalProps> = ({ isOpen, onClose, selected
     }
   };
 
-  // Get random color for tags
-  const getRandomColor = (): Tag['color'] => {
-    const colors: Tag['color'][] = ['blue', 'green', 'amber', 'red', 'purple', 'pink'];
-    return colors[Math.floor(Math.random() * colors.length)];
-  };
+
 
   // Filter tags based on search query
   const filteredTags = searchQuery ? allTags.filter((tag) => tag.name.toLowerCase().includes(searchQuery.toLowerCase())) : allTags;
@@ -82,7 +76,6 @@ const CloudTagModal: React.FC<CloudTagModalProps> = ({ isOpen, onClose, selected
   const dummyTag: Tag | null = searchQuery && !tagExists ? {
     id: 'dummy-tag',
     name: searchQuery,
-    color: getRandomColor(),
   } : null;
 
   // Create new tag
@@ -111,7 +104,6 @@ const CloudTagModal: React.FC<CloudTagModalProps> = ({ isOpen, onClose, selected
       const newTag: Tag = {
         id: response.data.id,
         name: response.data.name,
-        color: getRandomColor(), // Backend doesn't have color yet, so we assign randomly
         owner: response.data.owner,
       };
 
