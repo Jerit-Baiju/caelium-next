@@ -1,77 +1,18 @@
 'use client';
+import PostTagModal from '@/components/home/PostTagModal';
 import { Badge } from '@/components/ui/badge';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Switch } from '@/components/ui/switch';
 import AuthContext from '@/contexts/AuthContext';
 import { User } from '@/helpers/props';
 import { motion } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 import React, { useContext, useRef, useState } from 'react';
-import { FiArrowLeft, FiImage, FiMessageSquare, FiPlus, FiSearch, FiUserPlus, FiX } from 'react-icons/fi';
+import { FiArrowLeft, FiImage, FiMessageSquare, FiUserPlus, FiX } from 'react-icons/fi';
 
 const CreatePostPage = () => {
   const router = useRouter();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { user } = useContext(AuthContext);
-
-  // Dummy users for tagging
-  const dummyUsers: User[] = [
-    {
-      id: 1,
-      email: 'john@example.com',
-      name: 'John Doe',
-      avatar: 'https://i.pravatar.cc/150?img=1',
-      username: 'johndoe',
-      last_seen: new Date(),
-      birthdate: new Date(),
-      location: 'New York',
-      gender: 'male',
-    },
-    {
-      id: 2,
-      email: 'jane@example.com',
-      name: 'Jane Smith',
-      avatar: 'https://i.pravatar.cc/150?img=2',
-      username: 'janesmith',
-      last_seen: new Date(),
-      birthdate: new Date(),
-      location: 'Los Angeles',
-      gender: 'female',
-    },
-    {
-      id: 3,
-      email: 'alex@example.com',
-      name: 'Alex Johnson',
-      avatar: 'https://i.pravatar.cc/150?img=3',
-      username: 'alexjohnson',
-      last_seen: new Date(),
-      birthdate: new Date(),
-      location: 'Chicago',
-      gender: 'non-binary',
-    },
-    {
-      id: 4,
-      email: 'sarah@example.com',
-      name: 'Sarah Williams',
-      avatar: 'https://i.pravatar.cc/150?img=4',
-      username: 'sarahw',
-      last_seen: new Date(),
-      birthdate: new Date(),
-      location: 'Miami',
-      gender: 'female',
-    },
-    {
-      id: 5,
-      email: 'mike@example.com',
-      name: 'Mike Brown',
-      avatar: 'https://i.pravatar.cc/150?img=5',
-      username: 'mikebrown',
-      last_seen: new Date(),
-      birthdate: new Date(),
-      location: 'Seattle',
-      gender: 'male',
-    },
-  ];
 
   // State management
   const [step, setStep] = useState<'select' | 'preview'>('select');
@@ -81,7 +22,11 @@ const CreatePostPage = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [taggedUsers, setTaggedUsers] = useState<User[]>([]);
   const [isTagDialogOpen, setIsTagDialogOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
+  
+  // Handle when users are selected in the tag dialog
+  const handleUserTagging = (selectedUsers: User[]) => {
+    setTaggedUsers(selectedUsers);
+  };
 
   // Handle image selection
   const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -223,7 +168,7 @@ const CreatePostPage = () => {
 
               {/* Tagged Users */}
               <div className='mb-6'>
-                <h3 className='text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-3'>Tagged users</h3>
+                <h3 className='text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-3'>People in this post</h3>
                 <div className='flex flex-wrap gap-2'>
                   {taggedUsers.map((taggedUser) => (
                     <Badge key={taggedUser.id} variant='outline' className='flex items-center gap-2'>
@@ -244,7 +189,7 @@ const CreatePostPage = () => {
                     onClick={() => setIsTagDialogOpen(true)}
                     className='px-4 py-2 bg-neutral-100 dark:bg-neutral-700 rounded-xl text-neutral-800 dark:text-neutral-200 flex items-center gap-2'>
                     <FiUserPlus className='w-5 h-5' />
-                    Add Tags
+                    Tag People
                   </motion.button>
                 </div>
               </div>
@@ -262,58 +207,13 @@ const CreatePostPage = () => {
           </motion.div>
         )}
 
-        {/* Tag Users Dialog */}
-        <Dialog open={isTagDialogOpen} onOpenChange={setIsTagDialogOpen}>
-          <DialogTrigger asChild>
-            <div></div>
-          </DialogTrigger>
-          <DialogContent className='max-w-lg'>
-            <DialogHeader>
-              <DialogTitle className='text-lg font-semibold'>Tag Users</DialogTitle>
-            </DialogHeader>
-            <div className='mt-4'>
-              <p className='text-sm text-neutral-500 dark:text-neutral-400 mb-4'>
-                Start typing a username to tag users in your post. They will be notified when you share the post.
-              </p>
-              {/* Search bar */}
-              <div className='relative mb-4'>
-                <div className='absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none'>
-                  <FiSearch className='h-5 w-5 text-neutral-500 dark:text-neutral-400' />
-                </div>
-                <input
-                  type='text'
-                  placeholder='Search users...'
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className='w-full pl-10 pr-4 py-3 rounded-xl bg-neutral-100 dark:bg-neutral-700 text-neutral-800 dark:text-neutral-200 focus:outline-none focus:ring-2 focus:ring-violet-500'
-                />
-              </div>
-              <div className='flex flex-col gap-2'>
-                {dummyUsers
-                  .filter((u) => 
-                    !taggedUsers.find((t) => t.id === u.id) && 
-                    (u.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                     u.username.toLowerCase().includes(searchQuery.toLowerCase()))
-                  )
-                  .map((user) => (
-                    <motion.button
-                      key={user.id}
-                      whileTap={{ scale: 0.95 }}
-                      onClick={() => setTaggedUsers([...taggedUsers, user])}
-                      className='flex items-center justify-between p-3 rounded-xl bg-neutral-100 dark:bg-neutral-700 hover:bg-neutral-200 dark:hover:bg-neutral-600'>
-                      <div className='flex items-center gap-3'>
-                        <div className='h-8 w-8 rounded-full overflow-hidden'>
-                          <img src={user.avatar} alt={user.name} className='w-full h-full object-cover' />
-                        </div>
-                        <span className='text-sm font-medium text-neutral-800 dark:text-neutral-200'>{user.name}</span>
-                      </div>
-                      <FiPlus className='w-5 h-5 text-neutral-500 dark:text-neutral-400' />
-                    </motion.button>
-                  ))}
-              </div>
-            </div>
-          </DialogContent>
-        </Dialog>
+        {/* Post Tag Modal */}
+        <PostTagModal 
+          isOpen={isTagDialogOpen} 
+          onClose={() => setIsTagDialogOpen(false)} 
+          onUserTagApply={handleUserTagging} 
+          selectedUsers={taggedUsers}
+        />
       </div>
     </main>
   );
