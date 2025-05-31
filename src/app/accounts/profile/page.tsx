@@ -1,35 +1,34 @@
 'use client';
 import Loader from '@/components/layout/Loader';
+import PostCard from '@/components/profile/PostCard';
 import AuthContext from '@/contexts/AuthContext';
+import { dummyPosts } from '@/helpers/dummyData';
 import useAxios from '@/hooks/useAxios';
 import { motion } from 'framer-motion';
 import { useContext, useEffect, useRef, useState } from 'react';
-import { FiEdit2, FiLogOut, FiShare2, FiUser } from 'react-icons/fi';
+import { FiBookmark, FiEdit2, FiGrid, FiSettings, FiTag, FiUser } from 'react-icons/fi';
+import { toast } from 'sonner';
 
 const Profile = () => {
   const api = useAxios();
-  const { user, logoutUser } = useContext(AuthContext);
+  const { user } = useContext(AuthContext);
   const [profile, setProfile] = useState({
     name: user?.name || '',
     email: user?.email || '',
     birthdate: user?.birthdate || '',
-    location: user?.location || '',
-    gender: user?.gender || '',
     avatar: user?.avatar,
   });
-  const [editable, setEditable] = useState(false);
+  const [activeTab, setActiveTab] = useState('posts');
   const [errors, setErrors] = useState({});
-  const [alert, setAlert] = useState(false);
   const [avatarSrc, setAvatarSrc] = useState<string | undefined>(user?.avatar);
   const [newData, setNewData] = useState({});
+  const [editProfileVisible, setEditProfileVisible] = useState(false);
 
   useEffect(() => {
     setProfile({
       name: user?.name || '',
       email: user?.email || '',
       birthdate: user?.birthdate || '',
-      location: user?.location || '',
-      gender: user?.gender || '',
       avatar: user?.avatar,
     });
     setAvatarSrc(user?.avatar);
@@ -37,30 +36,16 @@ const Profile = () => {
 
   const fields = [
     { name: 'Name', value: profile.name, fieldName: 'name' },
-    { name: 'Email', value: profile.email, placeholder: 'Add your E-mail here', fieldName: 'email' },
     {
       name: 'Date of Birth',
       value: profile.birthdate instanceof Date ? profile.birthdate.toISOString().split('T')[0] : profile.birthdate || '',
-      placeholder: 'Add your age here',
+      placeholder: 'Add your date of birth',
       type: 'date',
       fieldName: 'birthdate',
     },
-    { name: 'Location', value: profile.location, placeholder: 'Mark your location', fieldName: 'location' },
-    {
-      name: 'Gender',
-      value: profile.gender,
-      placeholder: 'Choose Gender',
-      fieldName: 'gender',
-      type: 'select',
-      options: ['Male', 'Female', 'Other'],
-    },
   ];
 
-  const handleInputChange = (
-    fieldName: string,
-    stateName: string,
-    value: string | number | Date
-  ) => {
+  const handleInputChange = (fieldName: string, _stateName: string, value: string | number | Date) => {
     setErrors({ ...errors, [fieldName]: null });
     setNewData((prevData) => ({
       ...prevData,
@@ -73,12 +58,12 @@ const Profile = () => {
     api
       .patch(`/api/auth/update/${user?.id}/`, newData)
       .then(() => {
-        setAlert(true);
+        toast.success('Profile updated successfully.');
+        setEditProfileVisible(false);
       })
       .catch((error) => {
         if (error.response && error.response.data) {
           setErrors(error.response.data);
-          setEditable(true);
         }
       });
   };
@@ -104,145 +89,210 @@ const Profile = () => {
           'Content-Type': 'multipart/form-data',
         },
       });
-      setAlert(true);
+      toast.success('Avatar updated successfully.');
     } catch (error) {
       console.error('Error updating avatar:', error);
     }
   };
 
+  // Stats for user profile
+  const stats = [
+    { label: 'Posts', value: dummyPosts.length },
+    { label: 'Followers', value: 845 },
+    { label: 'Following', value: 231 },
+  ];
+
   return user ? (
-    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className='container mx-auto px-4 py-8'>
-      {alert && (
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className='p-4 mb-6 text-sm text-center text-green-800 rounded-xl bg-green-50 dark:bg-neutral-800/50 dark:text-green-400'
-          role='alert'
-        >
-          <span className='font-medium'>Profile updated successfully.</span>
-        </motion.div>
-      )}
-
-      <div className='max-w-2xl mx-auto bg-white dark:bg-neutral-800 rounded-2xl shadow-xs p-8'>
-        <div className='relative flex flex-col items-center mb-8'>
-          <div className='relative'>
-            {avatarSrc ? (
-              <img className='h-32 w-32 rounded-full border object-cover' src={avatarSrc} alt={user.name} />
-            ) : (
-              <div className='h-32 w-32 rounded-full bg-linear-to-br from-violet-500/10 to-purple-500/10 flex items-center justify-center'>
-                <FiUser className='w-16 h-16 text-violet-500' />
-              </div>
-            )}
-            <button
-              onClick={handleEditAvatarClick}
-              className='absolute bottom-0 right-0 bg-violet-500 p-2 rounded-full text-white hover:bg-violet-600 transition-colors'
-            >
-              <FiEdit2 className='w-4 h-4' />
-            </button>
-            <input type='file' ref={fileInputRef} className='hidden' onChange={handleFileChange} />
+    <div className='flex grow mt-6 md:px-6 md:gap-6 md:h-[calc(100vh-8rem)] overflow-scroll'>
+      {/* Header & Profile Info Section */}
+      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className='container mx-auto px-4 py-8 max-w-5xl'>
+        {/* Profile Header */}
+        <div className='md:flex items-center gap-8'>
+          {/* Avatar */}
+          <div className='flex justify-center md:justify-normal mb-6 md:mb-0'>
+            <div className='relative'>
+              {avatarSrc ? (
+                <img
+                  className='h-28 w-28 md:h-40 md:w-40 rounded-full border-2 border-white dark:border-neutral-700 object-cover'
+                  src={avatarSrc}
+                  alt={user.name}
+                />
+              ) : (
+                <div className='h-28 w-28 md:h-40 md:w-40 rounded-full bg-gradient-to-br from-violet-500/10 to-purple-500/10 flex items-center justify-center border-2 border-white dark:border-neutral-700'>
+                  <FiUser className='w-12 h-12 md:w-16 md:h-16 text-violet-500' />
+                </div>
+              )}
+              <button
+                onClick={handleEditAvatarClick}
+                className='absolute bottom-0 right-0 bg-violet-500 p-1.5 md:p-2 rounded-full text-white hover:bg-violet-600 transition-colors shadow-md'>
+                <FiEdit2 className='w-3 h-3 md:w-4 md:h-4' />
+              </button>
+              <input type='file' ref={fileInputRef} className='hidden' onChange={handleFileChange} accept='image/*' />
+            </div>
           </div>
-          <h1 className='text-2xl font-semibold mt-4 dark:text-white'>{profile.name}</h1>
 
-          <div className='flex gap-3 mt-4'>
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              onClick={() => {
-                if (editable) {
-                  updateProfile();
-                  setEditable(false);
-                } else {
-                  setEditable(true);
-                }
-              }}
-              className={`px-6 py-2 rounded-xl flex items-center gap-2 ${
-                editable
-                  ? 'bg-linear-to-br from-violet-500 to-purple-500 text-white'
-                  : 'bg-neutral-100 dark:bg-neutral-700 text-neutral-700 dark:text-white'
-              }`}
-            >
-              <FiEdit2 className='w-4 h-4' />
-              {editable ? 'Save' : 'Edit'}
-            </motion.button>
+          {/* Profile Info */}
+          <div className='flex-grow'>
+            <div className='flex flex-col md:flex-row md:items-center gap-4 md:gap-6'>
+              <h1 className='text-2xl md:text-3xl font-bold text-center md:text-left dark:text-white'>{profile.name}</h1>
+              <div className='flex justify-center md:justify-start gap-2'>
+                <button
+                  onClick={() => setEditProfileVisible(!editProfileVisible)}
+                  className='px-4 md:px-5 py-1.5 md:py-2 bg-neutral-100 dark:bg-neutral-800 hover:bg-neutral-200 dark:hover:bg-neutral-700 rounded-lg text-sm font-medium transition-colors dark:text-white'>
+                  Edit Profile
+                </button>
+                <button className='p-1.5 md:p-2 bg-neutral-100 dark:bg-neutral-800 hover:bg-neutral-200 dark:hover:bg-neutral-700 rounded-lg text-neutral-600 dark:text-neutral-300 transition-colors'>
+                  <FiSettings className='w-5 h-5' />
+                </button>
+              </div>
+            </div>
 
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              data-copy-to-clipboard-target='shareLink'
-              className='px-6 py-2 bg-neutral-100 dark:bg-neutral-700 rounded-xl flex items-center gap-2'
-            >
-              <FiShare2 className='w-4 h-4' />
-              Share
-            </motion.button>
+            {/* Stats - Mobile only shows on larger screens */}
+            <div className='hidden md:flex items-center gap-8 mt-6'>
+              {stats.map((stat, i) => (
+                <div key={i} className='flex flex-col items-center md:items-start'>
+                  <span className='font-bold text-lg dark:text-white'>{stat.value.toLocaleString()}</span>
+                  <span className='text-neutral-600 dark:text-neutral-400'>{stat.label}</span>
+                </div>
+              ))}
+            </div>
+
+            {/* Bio */}
+            <div className='mt-4 text-center md:text-left dark:text-white'>
+              <p className='text-sm md:text-base'>Photography enthusiast and tech lover exploring the world one photo at a time. ✌️</p>
+            </div>
           </div>
         </div>
 
-        <div className='space-y-6'>
-          {fields.map((field, i) => (
-            <div key={i}>
-              {field.type !== 'select' ? (
-                <div className='space-y-2'>
-                  <label className='text-sm text-neutral-500 dark:text-neutral-400'>{field.name}</label>
-                  <input
-                    type={field.type || 'text'}
-                    className='w-full p-3 bg-neutral-50 dark:bg-neutral-700/50 rounded-xl border-0'
-                    value={field.value || ''}
-                    placeholder={field.placeholder}
-                    disabled={!editable}
-                    onChange={(e) => handleInputChange(field.fieldName, field.name, e.target.value)}
-                  />
-                </div>
-              ) : (
-                <div className='space-y-2'>
-                  <label className='text-sm text-neutral-500 dark:text-neutral-400'>{field.name}</label>
-                  <div className='flex gap-4 mt-2'>
-                    {field.options?.map((option, i) => (
-                      <div key={i} className='flex-1'>
-                        <input
-                          type='radio'
-                          id={`gender-${option}`}
-                          name='gender'
-                          value={option}
-                          checked={field.value === option}
-                          className='hidden peer'
-                          disabled={!editable}
-                          onChange={(e) => handleInputChange(field.fieldName, field.name, e.target.value)}
-                        />
-                        <label
-                          htmlFor={`gender-${option}`}
-                          className={`
-                            w-full p-3 flex justify-center items-center rounded-xl cursor-pointer
-                            ${!editable ? 'opacity-70 cursor-not-allowed' : ''}
-                            ${
-                              field.value === option
-                                ? 'bg-violet-100 dark:bg-violet-900/30 text-violet-700 dark:text-violet-300 border-2 border-violet-500'
-                                : 'bg-neutral-50 dark:bg-neutral-700/50 text-neutral-600 dark:text-neutral-400 border-2 border-transparent'
-                            }
-                            transition-all hover:bg-violet-50 dark:hover:bg-violet-900/20 peer-checked:border-violet-500
-                          `}
-                        >
-                          {option}
-                        </label>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-              {errors[field.fieldName as keyof typeof errors] && (
-                <p className='text-sm text-red-500 mt-1'>{(errors[field.fieldName as keyof typeof errors] as string[])[0]}</p>
-              )}
+        {/* Stats - Mobile version */}
+        <div className='flex justify-around md:hidden border-y border-neutral-200 dark:border-neutral-800 my-6 py-3'>
+          {stats.map((stat, i) => (
+            <div key={i} className='flex flex-col items-center'>
+              <span className='font-bold dark:text-white'>{stat.value.toLocaleString()}</span>
+              <span className='text-xs text-neutral-600 dark:text-neutral-400'>{stat.label}</span>
             </div>
           ))}
         </div>
 
-        <motion.button
-          whileHover={{ scale: 1.05 }}
-          onClick={logoutUser}
-          className='w-full mt-8 px-6 py-3 bg-red-500 hover:bg-red-600 text-white rounded-xl flex items-center gap-2 justify-center'
-        >
-          <FiLogOut className='w-5 h-5' />
-          Logout
-        </motion.button>
-      </div>
-    </motion.div>
+        {/* Edit Profile Form - Conditionally rendered */}
+        {editProfileVisible && (
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className='bg-white dark:bg-neutral-800 rounded-xl p-6 shadow-md mt-6'>
+            <h2 className='text-xl font-semibold mb-4 dark:text-white'>Edit Profile</h2>
+            <div className='space-y-4'>
+              {fields.map((field, i) => (
+                <div key={i} className='space-y-1'>
+                  <label className='text-sm text-neutral-500 dark:text-neutral-400'>{field.name}</label>
+                  <input
+                    type={field.type || 'text'}
+                    className='w-full p-2.5 bg-neutral-50 dark:bg-neutral-700/50 rounded-lg border border-neutral-200 dark:border-neutral-700 dark:text-white'
+                    value={field.value || ''}
+                    placeholder={field.placeholder}
+                    onChange={(e) => handleInputChange(field.fieldName, field.name, e.target.value)}
+                  />
+                  {errors[field.fieldName as keyof typeof errors] && (
+                    <p className='text-sm text-red-500'>{(errors[field.fieldName as keyof typeof errors] as string[])[0]}</p>
+                  )}
+                </div>
+              ))}
+              <div className='flex justify-end gap-2 mt-4'>
+                <button
+                  onClick={() => setEditProfileVisible(false)}
+                  className='px-4 py-2 rounded-lg text-neutral-600 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-700'>
+                  Cancel
+                </button>
+                <button
+                  onClick={updateProfile}
+                  className='px-4 py-2 bg-violet-500 text-white rounded-lg hover:bg-violet-600 transition-colors'>
+                  Save
+                </button>
+              </div>
+            </div>
+          </motion.div>
+        )}
+
+        {/* Tabs Navigation */}
+        <div className='border-t border-neutral-200 dark:border-neutral-800 mt-8'>
+          <div className='flex justify-around md:justify-center md:gap-12'>
+            <button
+              onClick={() => setActiveTab('posts')}
+              className={`flex items-center gap-2 py-3 px-4 border-t-2 transition-colors ${
+                activeTab === 'posts'
+                  ? 'border-violet-500 text-violet-500'
+                  : 'border-transparent text-neutral-500 dark:text-neutral-400'
+              }`}>
+              <FiGrid className='w-4 h-4' />
+              <span className='text-sm font-medium'>Posts</span>
+            </button>
+            <button
+              onClick={() => setActiveTab('saved')}
+              className={`flex items-center gap-2 py-3 px-4 border-t-2 transition-colors ${
+                activeTab === 'saved'
+                  ? 'border-violet-500 text-violet-500'
+                  : 'border-transparent text-neutral-500 dark:text-neutral-400'
+              }`}>
+              <FiBookmark className='w-4 h-4' />
+              <span className='text-sm font-medium'>Saved</span>
+            </button>
+            <button
+              onClick={() => setActiveTab('tagged')}
+              className={`flex items-center gap-2 py-3 px-4 border-t-2 transition-colors ${
+                activeTab === 'tagged'
+                  ? 'border-violet-500 text-violet-500'
+                  : 'border-transparent text-neutral-500 dark:text-neutral-400'
+              }`}>
+              <FiTag className='w-4 h-4' />
+              <span className='text-sm font-medium'>Tagged</span>
+            </button>
+          </div>
+        </div>
+
+        {/* Posts Grid */}
+        <div className='mt-6'>
+          {activeTab === 'posts' && (
+            <>
+              {dummyPosts.length > 0 ? (
+                <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4'>
+                  {dummyPosts.map((post) => (
+                    <PostCard key={post.id} post={post} user={user} />
+                  ))}
+                </div>
+              ) : (
+                <div className='py-12 text-center'>
+                  <div className='inline-flex justify-center items-center w-20 h-20 rounded-full bg-neutral-100 dark:bg-neutral-800 mb-4'>
+                    <FiGrid className='w-10 h-10 text-neutral-400' />
+                  </div>
+                  <h3 className='text-xl font-semibold dark:text-white'>No Posts Yet</h3>
+                  <p className='text-neutral-500 dark:text-neutral-400 mt-2'>When you share photos, they&apos;ll appear here.</p>
+                </div>
+              )}
+            </>
+          )}
+
+          {activeTab === 'saved' && (
+            <div className='py-12 text-center'>
+              <div className='inline-flex justify-center items-center w-20 h-20 rounded-full bg-neutral-100 dark:bg-neutral-800 mb-4'>
+                <FiBookmark className='w-10 h-10 text-neutral-400' />
+              </div>
+              <h3 className='text-xl font-semibold dark:text-white'>No Saved Posts</h3>
+              <p className='text-neutral-500 dark:text-neutral-400 mt-2'>Save photos to revisit them later.</p>
+            </div>
+          )}
+
+          {activeTab === 'tagged' && (
+            <div className='py-12 text-center'>
+              <div className='inline-flex justify-center items-center w-20 h-20 rounded-full bg-neutral-100 dark:bg-neutral-800 mb-4'>
+                <FiTag className='w-10 h-10 text-neutral-400' />
+              </div>
+              <h3 className='text-xl font-semibold dark:text-white'>No Tagged Posts</h3>
+              <p className='text-neutral-500 dark:text-neutral-400 mt-2'>When people tag you in photos, they&apos;ll appear here.</p>
+            </div>
+          )}
+        </div>
+      </motion.div>
+    </div>
   ) : (
     <div className='flex h-screen items-center justify-center'>
       <Loader />
