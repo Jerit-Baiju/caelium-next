@@ -1,6 +1,7 @@
 'use client';
 import PostTagModal from '@/components/home/PostTagModal';
 import { Badge } from '@/components/ui/badge';
+import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import AuthContext from '@/contexts/AuthContext';
 import { User } from '@/helpers/props';
@@ -8,6 +9,9 @@ import { motion } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 import React, { useContext, useRef, useState } from 'react';
 import { FiArrowLeft, FiImage, FiMessageSquare, FiUserPlus, FiX } from 'react-icons/fi';
+
+// Caption character limit constant
+const CAPTION_MAX_LENGTH = 200;
 
 const CreatePostPage = () => {
   const router = useRouter();
@@ -22,7 +26,10 @@ const CreatePostPage = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [taggedUsers, setTaggedUsers] = useState<User[]>([]);
   const [isTagDialogOpen, setIsTagDialogOpen] = useState(false);
-  
+
+  // Check if caption exceeds the character limit
+  const isExceedingLimit = caption.length > CAPTION_MAX_LENGTH;
+
   // Handle when users are selected in the tag dialog
   const handleUserTagging = (selectedUsers: User[]) => {
     setTaggedUsers(selectedUsers);
@@ -56,6 +63,12 @@ const CreatePostPage = () => {
 
   // Handle post submission
   const handleSubmitPost = async () => {
+    // Validate caption length
+    if (caption.length > CAPTION_MAX_LENGTH) {
+      // You could show a toast notification here
+      return;
+    }
+
     setIsSubmitting(true);
 
     // Mock API call - will be implemented later
@@ -67,7 +80,7 @@ const CreatePostPage = () => {
 
   return (
     <main className='flex grow mt-6 md:px-6 md:gap-6 md:h-[calc(100vh-8rem)] overflow-scroll'>
-      <div className='w-full max-w-3xl mx-auto px-4 py-6'>
+      <div className='w-full max-w-6xl mx-auto px-4 py-6'>
         <header className='flex items-center justify-between mb-6'>
           <motion.button
             whileTap={{ scale: 0.95 }}
@@ -111,64 +124,67 @@ const CreatePostPage = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className='flex flex-col bg-white dark:bg-neutral-800 rounded-2xl shadow-xs overflow-hidden'>
-            {/* User Info */}
-            <div className='px-4 py-3 border-b dark:border-neutral-700'>
-              <div className='flex items-center gap-3'>
-                <div className='h-8 w-8 rounded-full overflow-hidden'>
-                  <img src={user?.avatar} alt={user?.name} className='w-full h-full object-cover' />
-                </div>
-                <div>
-                  <p className='text-sm font-medium dark:text-white'>{user?.name}</p>
-                  <p className='text-xs text-neutral-500 dark:text-neutral-400'>@{user?.username}</p>
-                </div>
-              </div>
-            </div>
-
-            {/* Image Preview */}
-            <div className='relative'>
-              <div className='h-[400px] overflow-hidden'>
-                {selectedImage && <img src={selectedImage} alt='Preview' className='w-full h-full object-cover' />}
-              </div>
-              <motion.button
-                whileTap={{ scale: 0.9 }}
-                onClick={handleRemoveImage}
-                className='absolute top-4 right-4 p-2 bg-black/50 backdrop-blur-sm rounded-full text-white'>
-                <FiX className='w-5 h-5' />
-              </motion.button>
-            </div>
-
-            {/* Post Details Form */}
-            <div className='p-6'>
-              <div className='mb-6'>
-                <label htmlFor='caption' className='block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2'>
-                  Write a caption
-                </label>
-                <textarea
-                  id='caption'
-                  rows={3}
-                  placeholder="What's on your mind?"
-                  value={caption}
-                  onChange={(e) => setCaption(e.target.value)}
-                  className='w-full px-4 py-3 rounded-xl bg-neutral-100 dark:bg-neutral-700 text-neutral-800 dark:text-neutral-200 focus:outline-none focus:ring-2 focus:ring-violet-500 resize-none'
-                />
-              </div>
-
-              {/* Post Options */}
-              <div className='mb-8'>
-                <h3 className='text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-3'>Post settings</h3>
-                <div className='flex items-center justify-between p-4 rounded-xl bg-neutral-100 dark:bg-neutral-700'>
-                  <div className='flex items-center gap-3'>
-                    <FiMessageSquare className='w-5 h-5 text-neutral-700 dark:text-neutral-300' />
-                    <span className='text-neutral-800 dark:text-neutral-200'>Turn off comments</span>
+            className='grid grid-cols-1 md:grid-cols-2 gap-6 bg-white dark:bg-neutral-800 rounded-2xl shadow-xs overflow-hidden p-4'>
+            {/* Left Column - Image Preview */}
+            <div className='flex flex-col'>
+              {/* User Info */}
+              <div className='px-4 py-3 dark:border-neutral-700'>
+                <div className='flex items-center gap-3'>
+                  <div className='h-12 w-12 rounded-full overflow-hidden'>
+                    <img src={user?.avatar} alt={user?.name} className='w-full h-full object-cover' />
                   </div>
-                  <Switch checked={disableComments} onCheckedChange={setDisableComments} />
+                  <div>
+                    <p className='font-medium dark:text-white'>{user?.name}</p>
+                    <p className='text-xs text-neutral-500 dark:text-neutral-400'>@{user?.username}</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Image Preview */}
+              <div className='relative flex-1 min-h-[300px] sm:min-h-[400px] md:min-h-[500px] md:h-full'>
+                {selectedImage && (
+                  <div className='image-preview-container h-full flex items-center justify-center rounded-2xl overflow-hidden'>
+                    <img src={selectedImage} alt='Preview' className='w-full h-full rounded-2xl object-cover' />
+                    <motion.button
+                      whileTap={{ scale: 0.9 }}
+                      onClick={handleRemoveImage}
+                      className='absolute top-3 right-3 p-2 bg-neutral-800/70 rounded-full text-white hover:bg-neutral-900/80 transition-colors'>
+                      <FiX className='w-5 h-5' />
+                    </motion.button>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Right Column - Post Details Form */}
+            <div className='p-6 flex flex-col'>
+              <div className='mb-6'>
+                <Label htmlFor='caption' className='block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2'>
+                  Write a caption
+                </Label>
+                <div className='relative'>
+                  <textarea
+                    id='caption'
+                    rows={5}
+                    placeholder="What's on your mind?"
+                    value={caption}
+                    onChange={(e) => setCaption(e.target.value)}
+                    className={`w-full px-4 py-3 rounded-xl bg-neutral-100 dark:bg-neutral-700 text-neutral-800 dark:text-neutral-200 focus:outline-none resize-none ${
+                      isExceedingLimit ? 'border-1 border-red-500' : 'focus:ring-1'
+                    }`}
+                  />
+                  <div
+                    className={`absolute bottom-2 right-3 text-xs font-medium ${
+                      isExceedingLimit ? 'text-red-500 dark:text-red-400' : 'text-neutral-500 dark:text-neutral-400'
+                    }`}>
+                    {caption.length}/{CAPTION_MAX_LENGTH} chars
+                  </div>
                 </div>
               </div>
 
               {/* Tagged Users */}
               <div className='mb-6'>
-                <h3 className='text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-3'>People in this post</h3>
+                <Label className='text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-3'>People in this post</Label>
                 <div className='flex flex-wrap gap-2'>
                   {taggedUsers.map((taggedUser) => (
                     <Badge key={taggedUser.id} variant='outline' className='flex items-center gap-2'>
@@ -194,13 +210,25 @@ const CreatePostPage = () => {
                 </div>
               </div>
 
+              {/* Post Options */}
+              <div className='mb-auto'>
+                <h3 className='text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-3'>Post settings</h3>
+                <div className='flex items-center justify-between p-4 rounded-xl bg-neutral-100 dark:bg-neutral-700'>
+                  <div className='flex items-center gap-3'>
+                    <FiMessageSquare className='w-5 h-5 text-neutral-700 dark:text-neutral-300' />
+                    <span className='text-neutral-800 dark:text-neutral-200'>Turn off comments</span>
+                  </div>
+                  <Switch checked={disableComments} onCheckedChange={setDisableComments} />
+                </div>
+              </div>
+
               {/* Submit Button */}
               <motion.button
                 whileHover={{ scale: 1.01 }}
                 whileTap={{ scale: 0.98 }}
                 onClick={handleSubmitPost}
                 disabled={isSubmitting}
-                className='w-full py-3 bg-linear-to-br from-violet-500 to-purple-500 hover:from-violet-600 hover:to-purple-600 text-white rounded-xl font-medium disabled:opacity-70 disabled:cursor-not-allowed'>
+                className='w-full py-3 mt-6 bg-linear-to-br from-violet-500 to-purple-500 hover:from-violet-600 hover:to-purple-600 text-white rounded-xl font-medium disabled:opacity-70 disabled:cursor-not-allowed'>
                 {isSubmitting ? 'Posting...' : 'Share Post'}
               </motion.button>
             </div>
@@ -208,10 +236,10 @@ const CreatePostPage = () => {
         )}
 
         {/* Post Tag Modal */}
-        <PostTagModal 
-          isOpen={isTagDialogOpen} 
-          onClose={() => setIsTagDialogOpen(false)} 
-          onUserTagApply={handleUserTagging} 
+        <PostTagModal
+          isOpen={isTagDialogOpen}
+          onClose={() => setIsTagDialogOpen(false)}
+          onUserTagApply={handleUserTagging}
           selectedUsers={taggedUsers}
         />
       </div>
