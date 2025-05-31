@@ -48,13 +48,21 @@ const PostCard = ({ post, user }: PostProps) => {
           className='w-full h-full object-cover'
           draggable={false} // Prevent image dragging
         />
-        <div className='absolute bottom-3 right-3 bg-black/50 text-white py-1 px-2 text-xs rounded-full'>
+        <div className='absolute bottom-3 right-3 bg-black/50 text-white py-1 px-2 text-xs rounded-full max-sm:hidden'>
           {formatTimeAgo(post.createdAt)}
+        </div>
+        <div className='absolute bottom-0 right-0 py-1 px-2 text-xs rounded-full max-lg:hidden max-md:hidden max-sm:block'>
+          <motion.button
+            whileTap={{ scale: 1.3 }}
+            onClick={handleLike}
+            className={`${liked ? 'text-violet-500' : 'text-neutral-600 dark:text-neutral-400'}`}>
+            <FiHeart className={`w-5 h-5 ${liked ? 'fill-current' : ''}`} />
+          </motion.button>
         </div>
       </div>
 
       {/* Post Footer */}
-      <div className='p-3'>
+      <div className='p-3 max-sm:hidden'>
         <div className='flex items-center justify-between mb-2'>
           <div className='flex items-center gap-2'>
             <motion.button
