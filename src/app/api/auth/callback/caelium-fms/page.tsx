@@ -22,7 +22,7 @@ const Page = () => {
       return;
     }
     window.location.href = `${process.env.NEXT_PUBLIC_FMS_HOST}/api/auth/callback/caelium?access=${authTokens?.access || ''}&refresh=${authTokens?.refresh}`;
-  }, [user]);
+  }, [user, authTokens]);
   return <Loader fullScreen />;
 };
 
