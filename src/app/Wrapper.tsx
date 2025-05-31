@@ -2,6 +2,7 @@
 import BottomNav from '@/components/layout/BottomNav';
 import NavBar from '@/components/layout/NavBar';
 import SideBar from '@/components/layout/SideBar';
+import { Toaster } from '@/components/ui/sonner';
 import { useNavbar } from '@/contexts/NavContext';
 import { ReactNode } from 'react';
 
@@ -22,6 +23,7 @@ const Wrapper = ({ children }: WrapperProps) => {
       <div className={viewSM ? 'max-lg:mt-16' : 'max-lg:hidden'}>
         <BottomNav />
       </div>
+      <Toaster position='top-right' />
     </main>
   ) : (
     children
