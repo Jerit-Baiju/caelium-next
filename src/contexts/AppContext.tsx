@@ -4,6 +4,7 @@ import useAxios from '@/hooks/useAxios';
 import useChatUtils from '@/hooks/useChat';
 import { createContext, ReactNode, useContext, useEffect, useState } from 'react';
 import AuthContext from './AuthContext';
+import { Post } from '@/types/post';
 
 interface AppContextType {
   chats: Chat[];
@@ -18,6 +19,7 @@ interface AppContextType {
   setActiveUsers: (ids: number[]) => void;
   lastSeenUsers: LastSeen[];
   updateLastSeen: (userId: number) => void;
+  posts: Post[];
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -25,12 +27,13 @@ const AppContext = createContext<AppContextType | undefined>(undefined);
 export function AppProvider({ children }: { children: ReactNode }) {
   const api = useAxios();
   const { user } = useContext(AuthContext);
-  const {sortChats} = useChatUtils()
+  const { sortChats } = useChatUtils();
   const [chats, setChats] = useState<Chat[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [lastFetched, setLastFetched] = useState<Date | null>(null);
   const [activeUsers, setActiveUsers] = useState<number[]>([]);
   const [lastSeenUsers, setLastSeenUsers] = useState<LastSeen[]>([]);
+  const [posts, setPosts] = useState([]);
 
   const refreshChats = async () => {
     if (!user) return;
@@ -47,17 +50,22 @@ export function AppProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  const fetchPosts = async () => {
+    // const posts = await api.get('/api/posts/');
+    setPosts([]);
+  };
+
   const addActiveUser = (id: number) => {
-    setActiveUsers(prev => [...prev, id]);
+    setActiveUsers((prev) => [...prev, id]);
   };
 
   const removeActiveUser = (id: number) => {
-    setActiveUsers(prev => prev.filter(user => user !== id));
+    setActiveUsers((prev) => prev.filter((user) => user !== id));
   };
 
   const updateLastSeen = (userId: number) => {
-    setLastSeenUsers(prev => {
-      const filtered = prev.filter(user => user.userId !== userId);
+    setLastSeenUsers((prev) => {
+      const filtered = prev.filter((user) => user.userId !== userId);
       return [...filtered, { userId, timestamp: new Date() }];
     });
   };
@@ -65,7 +73,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (!user || lastFetched) return;
     refreshChats();
-  }, [user, lastFetched]);
+    fetchPosts();
+  }, [user]);
 
   const value = {
     chats,
@@ -80,6 +89,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     setActiveUsers,
     lastSeenUsers,
     updateLastSeen,
+    posts,
   };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
