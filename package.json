@@ -3,11 +3,12 @@
   "version": "0.1.0",
   "private": true,
   "engines": {
-    "node": "22.x",
-    "pnpm": ">=10.11.1"
+    "pnpm": ">=10.11.1",
+    "node": "22.x"
   },
+  "packageManager": "pnpm@10.11.1",
   "scripts": {
-    "dev": "next dev --turbopack",
+    "dev": "next dev --turbo",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"
