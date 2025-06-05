@@ -2,11 +2,7 @@
   "name": "caelium-next",
   "version": "0.1.0",
   "private": true,
-  "engines": {
-    "pnpm": ">=10.11.1",
-    "node": "22.x"
-  },
-  "packageManager": "pnpm@10.11.1",
+ "packageManager": "pnpm@10.11.1",
   "scripts": {
     "dev": "next dev --turbo",
     "build": "next build",
