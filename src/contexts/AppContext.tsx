@@ -4,7 +4,16 @@ import useAxios from '@/hooks/useAxios';
 import useChatUtils from '@/hooks/useChat';
 import { createContext, ReactNode, useContext, useEffect, useState } from 'react';
 import AuthContext from './AuthContext';
-import { Post } from '@/types/post';
+
+interface Post {
+  id: number;
+  title: string;
+  content: string;
+  authorId: number;
+  createdAt: Date;
+  updatedAt: Date;
+  
+}
 
 interface AppContextType {
   chats: Chat[];
