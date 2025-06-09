@@ -5,6 +5,7 @@ import AuthContext from '@/contexts/AuthContext';
 import { dummyPosts } from '@/helpers/dummyData';
 import useAxios from '@/hooks/useAxios';
 import { motion } from 'framer-motion';
+import Link from 'next/link';
 import { useContext, useEffect, useRef, useState } from 'react';
 import { FiBookmark, FiEdit2, FiGrid, FiSettings, FiTag, FiUser } from 'react-icons/fi';
 import { toast } from 'sonner';
@@ -141,9 +142,9 @@ const Profile = () => {
                   className='px-4 md:px-5 py-1.5 md:py-2 bg-neutral-100 dark:bg-neutral-800 hover:bg-neutral-200 dark:hover:bg-neutral-700 rounded-lg text-sm font-medium transition-colors dark:text-white'>
                   Edit Profile
                 </button>
-                <button className='p-1.5 md:p-2 bg-neutral-100 dark:bg-neutral-800 hover:bg-neutral-200 dark:hover:bg-neutral-700 rounded-lg text-neutral-600 dark:text-neutral-300 transition-colors'>
+                <Link href={'/accounts/settings'} className='p-1.5 md:p-2 bg-neutral-100 dark:bg-neutral-800 hover:bg-neutral-200 dark:hover:bg-neutral-700 rounded-lg text-neutral-600 dark:text-neutral-300 transition-colors'>
                   <FiSettings className='w-5 h-5' />
-                </button>
+                </Link>
               </div>
             </div>
 
