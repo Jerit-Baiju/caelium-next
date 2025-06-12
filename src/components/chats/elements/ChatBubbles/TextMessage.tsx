@@ -19,7 +19,7 @@ const TextMessage = ({ message }: { message: Message }) => {
 
   return (
     <div
-      className={`flex ${isMe ? 'flex-row-reverse' : 'flex-row'} items-start gap-3 my-6 max-w-[85%] ${isMe ? 'ml-auto' : 'mr-auto'}`}
+      className={`flex ${isMe ? 'flex-row-reverse' : 'flex-row'} items-start gap-3 my-1 max-w-[85%] ${isMe ? 'ml-auto' : 'mr-auto'}`}
     >
       {!isMe&&<div className='shrink-0'>
         <div className='relative w-9 h-9'>

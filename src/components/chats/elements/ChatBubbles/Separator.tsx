@@ -22,7 +22,7 @@ const formatTimestamp = (timestamp: Date) => {
 
 export const Separator = ({ timestamp }: { timestamp: Date }) => {
   return (
-    <div className='flex grow items-center justify-center my-2'>
+    <div className='flex grow items-center justify-center my-4'>
       <p className='dark:bg-neutral-800 text-sm dark:text-neutral-400 bg-neutral-200 text-neutral-800 py-0.5 px-4 rounded-lg'>
       {formatTimestamp(timestamp)}
       </p>
