@@ -1,7 +1,0 @@
-packages:
-  - '.'  # Include the root package
-
-onlyBuiltDependencies:
-  - '@tailwindcss/oxide'
-  - sharp
-  - unrs-resolver
