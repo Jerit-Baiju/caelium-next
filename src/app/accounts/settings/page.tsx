@@ -38,7 +38,7 @@ const SettingsPage = () => {
               <div className='flex items-center justify-between'>
                 <div className='space-y-0.5'>
                   <p className='text-sm font-medium'>Sign out of your account</p>
-                  <p className='text-sm text-gray-500 dark:text-gray-400'>You'll need to sign in again to access your account</p>
+                  <p className='text-sm text-gray-500 dark:text-gray-400'>You&apos;ll need to sign in again to access your account</p>
                 </div>
                 <Button
                   variant='destructive' 

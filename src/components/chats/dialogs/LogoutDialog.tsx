@@ -37,7 +37,7 @@ const LogoutDialog = ({ isOpen, onClose }: LogoutDialogProps) => {
             <div className='space-y-2'>
               <AlertDialogTitle className='text-xl font-semibold'>Sign out of your account?</AlertDialogTitle>
               <AlertDialogDescription className='text-sm text-muted-foreground leading-relaxed'>
-                You'll be signed out of Caelium and will need to sign in again to access your account.
+                You&apos;ll be signed out of Caelium and will need to sign in again to access your account.
               </AlertDialogDescription>
             </div>
           </AlertDialogHeader>
