@@ -15,8 +15,7 @@ const Page = () => {
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className='hidden lg:flex flex-col flex-1 items-center justify-center rounded-2xl shadow-xs'
-      >
+        className='hidden lg:flex flex-col flex-1 items-center justify-center rounded-2xl shadow-xs'>
         <div className='text-center items-center justify-center flex flex-col space-y-6'>
           <div className='h-24 w-24 rounded-full bg-linear-to-br from-violet-500/10 to-purple-500/10 flex items-center justify-center mx-auto'>
             <FiMessageSquare className='w-12 h-12 text-violet-500' />
@@ -28,8 +27,7 @@ const Page = () => {
           <motion.button
             whileHover={{ scale: 1.05 }}
             onClick={() => setIsModalOpen(true)}
-            className={`px-6 py-3 bg-linear-to-br from-violet-500 to-purple-500 text-white rounded-xl flex items-center gap-2`}
-          >
+            className={`px-6 py-3 bg-linear-to-br from-violet-500 to-purple-500 text-white rounded-xl flex items-center gap-2`}>
             <FiPlus className='w-5 h-5' />
             New Conversation
           </motion.button>
@@ -42,16 +40,14 @@ const Page = () => {
           <motion.div
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            className='relative min-h-full w-full flex items-center justify-center p-4'
-          >
+            className='relative min-h-full w-full flex items-center justify-center p-4'>
             <div className='relative w-3/4 max-w-2xl bg-white dark:bg-neutral-800 rounded-2xl shadow-lg overflow-hidden'>
               <div className='flex items-center justify-between p-6 border-b dark:border-neutral-700'>
                 <h3 className='text-xl font-semibold dark:text-white'>New Conversation</h3>
                 <button
                   type='button'
                   className='text-neutral-500 hover:text-neutral-700 dark:text-neutral-400 dark:hover:text-white rounded-lg p-2'
-                  onClick={() => setIsModalOpen(false)}
-                >
+                  onClick={() => setIsModalOpen(false)}>
                   <FiPlus className='w-6 h-6 rotate-45' />
                 </button>
               </div>
@@ -65,16 +61,14 @@ const Page = () => {
       <motion.div
         initial={{ scale: 0.8, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
-        className='fixed right-6 bottom-20 lg:hidden'
-      >
+        className='fixed right-6 bottom-20 lg:hidden'>
         <motion.button
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.9 }}
           onClick={() => {
             router.replace('/chats/main/new');
           }}
-          className='w-14 h-14 bg-linear-to-br from-violet-500 to-purple-500 rounded-full flex items-center justify-center text-white shadow-lg'
-        >
+          className='w-14 h-14 bg-linear-to-br from-violet-500 to-purple-500 rounded-full flex items-center justify-center text-white shadow-lg'>
           <FiPlus className='w-6 h-6' />
         </motion.button>
       </motion.div>
