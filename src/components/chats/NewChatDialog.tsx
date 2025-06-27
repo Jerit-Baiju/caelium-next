@@ -181,7 +181,7 @@ const NewChatDialog = ({ onClose }: NewChatDialogProps) => {
                       className='p-3 rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-700 transition-colors cursor-pointer'
                     >
                       <div className='flex items-center gap-3'>
-                        <img className='w-12 h-12 rounded-full object-cover' src={recipient.avatar} alt={recipient.name} />
+                        <img className='w-12 h-12 rounded-full object-cover bg-white' src={recipient.avatar} alt={recipient.name} />
                         <div>
                           <p className='font-semibold text-neutral-900 dark:text-white'>{recipient.name}</p>
                           <p className='text-sm text-neutral-600 dark:text-neutral-400'>{recipient.email}</p>
