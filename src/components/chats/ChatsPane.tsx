@@ -190,7 +190,7 @@ const ChatsPane = () => {
                                 <>
                                   <div className='w-12 h-12 rounded-xl overflow-hidden'>
                                     <img
-                                      className='w-full h-full object-cover rounded-[10px]'
+                                      className='w-full h-full object-cover rounded-[10px] bg-white'
                                       src={chat.participants.find((p) => p.id !== user?.id)?.avatar}
                                       alt='avatar'
                                     />
@@ -202,7 +202,7 @@ const ChatsPane = () => {
                               ) : (
                                 <div className='w-12 h-12 rounded-xl overflow-hidden'>
                                   {chat.group_icon ? (
-                                    <img className='w-full h-full object-cover rounded-[10px] src={chat.group_icon}' alt='group' />
+                                    <img className='w-full h-full object-cover rounded-[10px] src={chat.group_icon} bg-white' alt='group' />
                                   ) : (
                                     <div className='w-full h-full rounded-[10px] bg-white dark:bg-neutral-800 flex items-center justify-center'>
                                       <i className='fa-solid fa-people-group text-xl text-violet-500'></i>

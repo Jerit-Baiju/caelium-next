@@ -3,13 +3,13 @@ import ChatContext from '@/contexts/ChatContext';
 import { Message } from '@/helpers/props';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useContext, useEffect, useRef, useState } from 'react';
-import DocMessage from './ChatBubbles/DocMessage';
-import ImageMessage from './ChatBubbles/ImageMessage';
+import DocMessage from './ChatBubbles/Bubbles/DocMessage';
+import ImageMessage from './ChatBubbles/Bubbles/ImageMessage';
+import TextMessage from './ChatBubbles/Bubbles/TextMessage';
+import VideoMessage from './ChatBubbles/Bubbles/VideoMessage';
+import VoiceMessage from './ChatBubbles/Bubbles/VoiceMessage';
 import { Separator } from './ChatBubbles/Separator';
-import TextMessage from './ChatBubbles/TextMessage';
 import UploadingMessage from './ChatBubbles/UploadingMessage';
-import VideoMessage from './ChatBubbles/VideoMessage';
-import VoiceMessage from './ChatBubbles/VoiceMessage';
 import Typing from './states/Typing';
 
 const ChatMain = ({ viewportHeight }: { viewportHeight?: number }) => {

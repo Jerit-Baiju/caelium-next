@@ -34,14 +34,6 @@ const CloudUpload = () => {
     },
   };
 
-  const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: { type: 'spring', stiffness: 100, damping: 15 },
-    },
-  };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
@@ -223,7 +215,7 @@ const CloudUpload = () => {
     <motion.div className='flex grow flex-col gap-6 p-6 lg:p-8' initial='hidden' animate='visible' variants={containerVariants}>
       <div className='flex flex-col grow p-6 mx-auto space-y-8 w-full max-w-7xl'>
         {/* Header */}
-        <motion.div className='flex justify-between items-center' variants={itemVariants}>
+        <motion.div className='flex justify-between items-center'>
           <div className='flex items-center gap-4'>
             <Link href='/cloud' className='text-neutral-600 hover:text-neutral-800 dark:text-neutral-400 dark:hover:text-neutral-200'>
               <FiArrowLeft size={20} />
@@ -260,7 +252,6 @@ const CloudUpload = () => {
         {/* File Drop Area */}
         <motion.div
           className='w-full bg-white dark:bg-neutral-800 rounded-xl p-8 mb-6 border-2 border-dashed border-neutral-300 dark:border-neutral-700'
-          variants={itemVariants}
           onDragOver={(e) => e.preventDefault()}
           onDrop={handleDrop}>
           <div className='flex flex-col items-center justify-center'>
@@ -307,7 +298,7 @@ const CloudUpload = () => {
 
         {/* Selected Files */}
         {displayedFiles.length > 0 && !tooManyFiles && (
-          <motion.div className='bg-white dark:bg-neutral-800 rounded-xl p-6 shadow-sm' variants={itemVariants}>
+          <motion.div className='bg-white dark:bg-neutral-800 rounded-xl p-6 shadow-sm'>
             <div className='flex justify-between items-center mb-4'>
               <h3 className='text-lg font-medium dark:text-neutral-200 flex items-center'>
                 <FiLock className='mr-2' /> Selected Files ({selectedFiles.length})
