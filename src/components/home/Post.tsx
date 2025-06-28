@@ -307,7 +307,7 @@ const Post = ({ post }: PostProps) => {
           {/* Comment Input */}
           <div className='mt-3 flex items-center gap-2'>
             <div className='h-8 w-8 rounded-full overflow-hidden'>
-              <img src={user?.avatar} alt='Your avatar' className='h-full w-full object-cover' />
+              <img src={user?.avatar} alt='Your avatar' className='h-full w-full object-cover bg-white' />
             </div>
             <input
               type='text'
