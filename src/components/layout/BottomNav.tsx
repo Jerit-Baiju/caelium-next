@@ -13,12 +13,12 @@ const BottomNav = () => {
           return (
             <Link href={option.url} key={id} className='relative inline-flex flex-col items-center justify-center px-5 group'>
               <motion.div
-                className={`p-2 rounded-lg ${isActive ? 'bg-neutral-200 dark:bg-neutral-800' : ''}`}
+                className={`p-2 rounded-lg ${isActive ? 'bg-neutral-200 dark:bg-neutral-700' : ''}`}
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.95 }}
               >
                 <option.icon
-                  className={`w-6 h-6 ${isActive ? 'text-violet-500 dark:text-purple-400' : 'text-neutral-600 dark:text-neutral-400'}`}
+                  className={`w-6 h-6 ${isActive ? 'text-neutral-900 dark:text-white' : 'text-neutral-600 dark:text-neutral-400'}`}
                 />
               </motion.div>
             </Link>

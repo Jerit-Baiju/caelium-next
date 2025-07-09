@@ -6,7 +6,9 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useContext } from 'react';
 import { IconType } from 'react-icons';
-import { FiCloud, FiHome, FiMessageCircle, FiPlus, FiUser } from 'react-icons/fi';
+import { FiHome, FiMessageCircle, FiPlus, FiUser } from 'react-icons/fi';
+// import { FaHandSpock } from 'react-icons/fa6';
+import { IoSparkles } from 'react-icons/io5';
 
 // Define interfaces to match those in NavContext
 interface SidebarOption {
@@ -25,7 +27,7 @@ export const options: SidebarOption[] = [
   { name: 'Home', url: '/', icon: FiHome },
   { name: 'Chats', url: '/chats/main', icon: FiMessageCircle },
   { name: 'Create', url: '/create', icon: FiPlus },
-  { name: 'Cloud', url: '/cloud', icon: FiCloud },
+  { name: 'Community', url: '/community', icon:  IoSparkles},
   { name: 'Profile', url: '/accounts/profile', icon: FiUser },
 ];
 
@@ -55,9 +57,9 @@ const SideBar = () => {
         <div className='h-full flex flex-col px-4 py-8 overflow-y-auto scrollbar-hide'>
           {/* User Profile Section */}
           <div className='mb-8'>
-            <motion.div className='p-4 rounded-2xl bg-linear-to-br from-violet-500/10 to-purple-500/10' whileHover={{ scale: 1.02 }}>
+            <motion.div className='p-4 rounded-2xl' whileHover={{ scale: 1.02 }}>
               <div className='flex items-center gap-4'>
-                <div className='w-12 h-12 rounded-xl overflow-hidden bg-linear-to-br from-violet-500 to-purple-500 p-0.5'>
+                <div className='w-12 h-12 rounded-xl overflow-hidden dark:bg-white p-0.5'>
                   <img src={user?.avatar} alt='Profile' className='w-full h-full object-cover rounded-[10px]' />
                 </div>
                 <div>
@@ -86,7 +88,7 @@ const SideBar = () => {
                             // For other paths, highlight if it's an exact match or starts with the URL (but not /cloud/photos special case)
                             (option.url !== '/cloud/photos' &&
                               (route === option.url || (route?.startsWith(option.url + '/') && option.url !== '/cloud')))
-                              ? 'bg-linear-to-br from-violet-500 to-purple-500 text-white'
+                              ? 'bg-neutral-200 dark:bg-neutral-700 text-neutral-900 dark:text-white'
                               : 'hover:bg-white/10 dark:text-white dark:hover:bg-neutral-800'
                           }`}>
                         <option.icon className='w-5 h-5' />
@@ -110,7 +112,7 @@ const SideBar = () => {
                           (option.url.includes('/cloud') && route === option.url) ||
                           // For non-cloud routes, use the original logic
                           (!option.url.includes('/cloud') && (route === option.url || route?.startsWith(option.url + '/')))
-                            ? 'bg-linear-to-br from-violet-500 to-purple-500 text-white'
+                            ? 'bg-neutral-200 dark:bg-neutral-700 text-neutral-900 dark:text-white'
                             : 'hover:bg-white/10 dark:text-white dark:hover:bg-neutral-800'
                         }`}>
                       <option.icon className='w-5 h-5' />
