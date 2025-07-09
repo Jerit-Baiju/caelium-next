@@ -27,7 +27,7 @@ export const options: SidebarOption[] = [
   { name: 'Home', url: '/', icon: FiHome },
   { name: 'Chats', url: '/chats/main', icon: FiMessageCircle },
   { name: 'Create', url: '/create', icon: FiPlus },
-  { name: 'Community', url: '/community', icon:  IoSparkles},
+  { name: 'Community', url: '/community', icon: IoSparkles },
   { name: 'Profile', url: '/accounts/profile', icon: FiUser },
 ];
 
@@ -51,13 +51,13 @@ const SideBar = () => {
       <motion.aside
         initial={{ x: -15, opacity: 0 }}
         animate={{ x: 0, opacity: 1 }}
-        className='fixed top-20 left-0 z-40 w-72 h-screen hidden lg:block transition-transform 
+        className='fixed top-22 left-0 z-40 w-72 h-screen hidden lg:block transition-transform 
           translate-x-0'
         aria-label='Sidebar'>
-        <div className='h-full flex flex-col px-4 py-8 overflow-y-auto scrollbar-hide'>
+        <div className='h-full mt-5 flex flex-col px-4 py-8 overflow-y-auto scrollbar-hide border-r dark:border-neutral-600 border-dashed'>
           {/* User Profile Section */}
           <div className='mb-8'>
-            <motion.div className='p-4 rounded-2xl' whileHover={{ scale: 1.02 }}>
+            <motion.div className='p-4 rounded-2xl border-1 dark:border-neutral-600' whileHover={{ scale: 1.02 }}>
               <div className='flex items-center gap-4'>
                 <div className='w-12 h-12 rounded-xl overflow-hidden dark:bg-white p-0.5'>
                   <img src={user?.avatar} alt='Profile' className='w-full h-full object-cover rounded-[10px]' />
