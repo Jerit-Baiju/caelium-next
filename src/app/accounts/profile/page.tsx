@@ -114,7 +114,7 @@ const Profile = () => {
             <div className='relative'>
               {avatarSrc ? (
                 <img
-                  className='h-28 w-28 md:h-40 md:w-40 rounded-full border-2 border-white dark:border-neutral-700 object-cover'
+                  className='h-28 w-28 md:h-40 md:w-40 rounded-full border-2 border-white dark:bg-white dark:border-neutral-700 object-cover'
                   src={avatarSrc}
                   alt={user.name}
                 />
