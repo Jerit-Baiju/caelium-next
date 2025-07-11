@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
 import { FiPlus, FiRefreshCw, FiUsers } from 'react-icons/fi';
 import Post from './Post';
+import UserAvatar from '../profile/UserAvatar';
 
 // Sample data for posts (in a real app, this would come from API)
 const samplePosts = [
@@ -152,9 +153,7 @@ const HomePageLayout = () => {
               {suggestions.map((suggestion) => (
                 <div key={suggestion.id} className='flex items-center justify-between'>
                   <div className='flex items-center gap-3'>
-                    <div className='h-10 w-10 rounded-full overflow-hidden'>
-                      <img src={suggestion.avatar} alt={suggestion.name} className='h-full w-full object-cover' />
-                    </div>
+                   <UserAvatar image={suggestion.avatar} alt={suggestion.name} size={10} /> 
                     <div>
                       <h4 className='text-sm font-medium dark:text-white'>{suggestion.name}</h4>
                       <p className='text-xs text-neutral-500 dark:text-neutral-400 flex items-center gap-1'>

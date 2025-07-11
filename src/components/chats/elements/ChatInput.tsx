@@ -88,7 +88,7 @@ const ChatInput = () => {
           whileTap={{ scale: 0.95 }}
           type='submit'
           className='inline-flex justify-center text-neutral-600 p-2 rounded-lg cursor-pointer hover:text-violet-500 hover:bg-neutral-100 dark:text-neutral-400 dark:hover:text-violet-400 dark:hover:bg-neutral-600'>
-          <FaPaperPlane className='text-xl'/>
+          <FaPaperPlane className='text-xl' />
           <span className='sr-only'>Send message</span>
         </motion.button>
       </div>

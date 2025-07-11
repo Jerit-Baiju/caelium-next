@@ -1,5 +1,6 @@
 'use client';
 import PostTagModal from '@/components/home/PostTagModal';
+import UserAvatar from '@/components/profile/UserAvatar';
 import { Badge } from '@/components/ui/badge';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
@@ -254,9 +255,7 @@ const CreatePostPage = () => {
               {/* User Info */}
               <div className='px-4 py-3 dark:border-neutral-700'>
                 <div className='flex items-center gap-3'>
-                  <div className='h-12 w-12 rounded-full overflow-hidden'>
-                    <img src={user?.avatar} alt={user?.name} className='w-full h-full object-cover' />
-                  </div>
+                  <UserAvatar image={user?.avatar ?? ''} alt='Profile' />
                   <div>
                     <p className='font-medium dark:text-white'>{user?.name}</p>
                     <p className='text-xs text-neutral-500 dark:text-neutral-400'>@{user?.username}</p>
