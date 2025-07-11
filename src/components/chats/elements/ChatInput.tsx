@@ -1,6 +1,7 @@
 import ChatContext from '@/contexts/ChatContext';
 import { motion } from 'framer-motion';
 import { useContext, useEffect, useRef } from 'react';
+import { FaPaperclip, FaPaperPlane } from 'react-icons/fa6';
 
 const ChatInput = () => {
   const { textInput, setTextInput, handleSubmit, sendFile, handleTyping } = useContext(ChatContext);
@@ -51,8 +52,7 @@ const ChatInput = () => {
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.3 }}
       ref={formRef}
-      onSubmit={handleSubmit}
-    >
+      onSubmit={handleSubmit}>
       <label htmlFor='chat' className='sr-only'>
         Your message
       </label>
@@ -65,9 +65,8 @@ const ChatInput = () => {
           whileTap={{ scale: 0.95 }}
           type='button'
           onClick={handleButtonClick}
-          className='inline-flex justify-center p-2 text-neutral-600 rounded-lg cursor-pointer hover:text-violet-500 hover:bg-neutral-100 dark:text-neutral-400 dark:hover:text-violet-400 dark:hover:bg-neutral-600'
-        >
-          <i className='fa-solid fa-paperclip text-xl p-1'></i>
+          className='inline-flex justify-center p-2 text-neutral-600 rounded-lg cursor-pointer hover:text-violet-500 hover:bg-neutral-100 dark:text-neutral-400 dark:hover:text-violet-400 dark:hover:bg-neutral-600'>
+          <FaPaperclip className='text-xl' />
           <span className='sr-only'>Upload image</span>
         </motion.button>
         <input
@@ -88,9 +87,8 @@ const ChatInput = () => {
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.95 }}
           type='submit'
-          className='inline-flex justify-center text-neutral-600 p-2 rounded-lg cursor-pointer hover:text-violet-500 hover:bg-neutral-100 dark:text-neutral-400 dark:hover:text-violet-400 dark:hover:bg-neutral-600'
-        >
-          <i className='fa-solid fa-paper-plane text-xl p-1'></i>
+          className='inline-flex justify-center text-neutral-600 p-2 rounded-lg cursor-pointer hover:text-violet-500 hover:bg-neutral-100 dark:text-neutral-400 dark:hover:text-violet-400 dark:hover:bg-neutral-600'>
+          <FaPaperPlane className='text-xl'/>
           <span className='sr-only'>Send message</span>
         </motion.button>
       </div>
