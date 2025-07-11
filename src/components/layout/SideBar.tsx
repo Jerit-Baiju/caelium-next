@@ -4,11 +4,12 @@ import { useNavbar } from '@/contexts/NavContext';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useContext } from 'react';
+import { Suspense, useContext } from 'react';
 import { IconType } from 'react-icons';
 import { FiHome, FiMessageCircle, FiPlus, FiUser } from 'react-icons/fi';
 // import { FaHandSpock } from 'react-icons/fa6';
 import { IoSparkles } from 'react-icons/io5';
+import UserAvatar from '../profile/UserAvatar';
 
 // Define interfaces to match those in NavContext
 interface SidebarOption {
@@ -46,7 +47,7 @@ const SideBar = () => {
   const isCloudRoute = route?.startsWith('/cloud');
   const navigationOptions = isCloudRoute ? sidebarOptions : options;
 
-  return (
+  return user ? (
     <>
       <motion.aside
         initial={{ x: -15, opacity: 0 }}
@@ -59,9 +60,7 @@ const SideBar = () => {
           <div className='mb-8'>
             <motion.div className='p-4 rounded-2xl border-1 dark:border-neutral-600' whileHover={{ scale: 1.02 }}>
               <div className='flex items-center gap-4'>
-                <div className='w-12 h-12 rounded-xl overflow-hidden dark:bg-white p-0.5'>
-                  <img src={user?.avatar} alt='Profile' className='w-full h-full object-cover rounded-[10px]' />
-                </div>
+                <UserAvatar image={user.avatar ?? ''} alt='Profile' />
                 <div>
                   <h3 className='font-medium dark:text-white'>{user?.name}</h3>
                   <p className='text-sm text-neutral-500 dark:text-neutral-400'>@{user?.username}</p>
@@ -147,6 +146,8 @@ const SideBar = () => {
         </div>
       </motion.aside>
     </>
+  ) : (
+    <Suspense />
   );
 };
 

@@ -142,7 +142,9 @@ const Profile = () => {
                   className='px-4 md:px-5 py-1.5 md:py-2 bg-neutral-100 dark:bg-neutral-800 hover:bg-neutral-200 dark:hover:bg-neutral-700 rounded-lg text-sm font-medium transition-colors dark:text-white'>
                   Edit Profile
                 </button>
-                <Link href={'/accounts/settings'} className='p-1.5 md:p-2 bg-neutral-100 dark:bg-neutral-800 hover:bg-neutral-200 dark:hover:bg-neutral-700 rounded-lg text-neutral-600 dark:text-neutral-300 transition-colors'>
+                <Link
+                  href={'/accounts/settings'}
+                  className='p-1.5 md:p-2 bg-neutral-100 dark:bg-neutral-800 hover:bg-neutral-200 dark:hover:bg-neutral-700 rounded-lg text-neutral-600 dark:text-neutral-300 transition-colors'>
                   <FiSettings className='w-5 h-5' />
                 </Link>
               </div>

@@ -17,6 +17,7 @@ import { motion } from 'framer-motion';
 import { Archive, BellOff, ChevronRight, Download, Info, Mail, Pin, PinOff, Trash2 } from 'lucide-react';
 import { usePathname, useRouter } from 'next/navigation';
 import { useContext, useEffect, useState } from 'react';
+import { FaPeopleGroup } from 'react-icons/fa6';
 import { FiSearch, FiX } from 'react-icons/fi';
 import Loader from '../layout/Loader';
 import { DeleteChatDialog } from './dialogs/DeleteChatDialog';
@@ -32,7 +33,8 @@ const ChatsPane = () => {
   const { user } = useContext(AuthContext);
   const { activeUsers } = useAppContext();
   const { deleteChat } = useChatUtils();
-  const { chats, isLoading, searchQuery, setSearchQuery, searchChats, updateChatOrder, togglePinChat, removeChatFromPane } = useChatsPaneContext();
+  const { chats, isLoading, searchQuery, setSearchQuery, searchChats, updateChatOrder, togglePinChat, removeChatFromPane } =
+    useChatsPaneContext();
   const { refreshChats, lastFetched } = useAppContext();
   const pathname = usePathname();
   const router = useRouter();
@@ -67,9 +69,7 @@ const ChatsPane = () => {
   // Fix: Only filter if user exists
   const filteredChats = user
     ? chats.filter((chat: Chat) => {
-        const chatName = chat.is_group
-          ? chat.name
-          : chat.participants.find((p) => p.id !== user.id)?.name;
+        const chatName = chat.is_group ? chat.name : chat.participants.find((p) => p.id !== user.id)?.name;
         return chatName?.toLowerCase().includes(searchQuery.toLowerCase());
       })
     : [];
@@ -100,8 +100,7 @@ const ChatsPane = () => {
           ${variant === 'default' ? 'hover:bg-violet-50 dark:hover:bg-violet-900/20' : ''}
           ${variant === 'warning' ? 'text-yellow-600 dark:text-yellow-400 hover:bg-yellow-50 dark:hover:bg-yellow-900/20' : ''}
           ${variant === 'danger' ? 'text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20' : ''}
-        `}
-      >
+        `}>
         <div className='flex items-center gap-3'>
           <Icon className='w-4 h-4' />
           <span className='font-medium'>{label}</span>
@@ -116,8 +115,7 @@ const ChatsPane = () => {
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        className='flex flex-col max-md:h-[calc(100dvh-8rem)] h-[calc(100dvh-8rem)] w-full lg:bg-white lg:dark:bg-neutral-900 md:rounded-2xl shadow-xs'
-      >
+        className='flex flex-col max-md:h-[calc(100dvh-8rem)] h-[calc(100dvh-8rem)] w-full lg:bg-white lg:dark:bg-neutral-900 md:rounded-2xl shadow-xs'>
         {/* Search Header */}
         <div className='sticky top-0 z-10 p-4 lg:border-b lg:dark:border-neutral-800'>
           <form onSubmit={(e) => e.preventDefault()} className='relative'>
@@ -138,8 +136,7 @@ const ChatsPane = () => {
                   whileTap={{ scale: 0.95 }}
                   type='button'
                   onClick={() => setSearchQuery('')}
-                  className='absolute right-3 top-1/2 -translate-y-1/2'
-                >
+                  className='absolute right-3 top-1/2 -translate-y-1/2'>
                   <FiX className='w-5 h-5 text-neutral-400 hover:text-neutral-600 dark:hover:text-white' />
                 </motion.button>
               )}
@@ -182,8 +179,7 @@ const ChatsPane = () => {
                           whileHover={{ scale: 1.01 }}
                           className={`px-3 py-2 rounded-xl transition-all ${
                             isActive ? 'bg-neutral-200 dark:bg-neutral-800' : 'hover:bg-neutral-100 my-1 dark:hover:bg-neutral-800'
-                          }`}
-                        >
+                          }`}>
                           <div className='flex items-center gap-4'>
                             <div className='relative'>
                               {!chat?.is_group ? (
@@ -202,10 +198,13 @@ const ChatsPane = () => {
                               ) : (
                                 <div className='w-12 h-12 rounded-xl overflow-hidden'>
                                   {chat.group_icon ? (
-                                    <img className='w-full h-full object-cover rounded-[10px] src={chat.group_icon} bg-white' alt='group' />
+                                    <img
+                                      className='w-full h-full object-cover rounded-[10px] src={chat.group_icon} bg-white'
+                                      alt='group'
+                                    />
                                   ) : (
                                     <div className='w-full h-full rounded-[10px] bg-white dark:bg-neutral-800 flex items-center justify-center'>
-                                      <i className='fa-solid fa-people-group text-xl text-violet-500'></i>
+                                      <FaPeopleGroup className='text-xl text-violet-500' />
                                     </div>
                                   )}
                                 </div>
@@ -228,8 +227,8 @@ const ChatsPane = () => {
                                 {chat.last_message?.sender?.id === user?.id
                                   ? 'You: '
                                   : chat.last_message?.sender
-                                    ? `${chat.last_message.sender.name}: `
-                                    : ''}
+                                  ? `${chat.last_message.sender.name}: `
+                                  : ''}
                                 {chat.last_message
                                   ? chat.last_message.type === 'txt'
                                     ? truncate({ chars: chat.last_message.content, length: 45 })
@@ -250,8 +249,7 @@ const ChatsPane = () => {
                                 staggerChildren: 0.04,
                               },
                             },
-                          }}
-                        >
+                          }}>
                           <MenuGroup label='Quick Actions'>
                             <MenuItem
                               icon={chat.is_pinned ? PinOff : Pin}
