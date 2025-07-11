@@ -121,7 +121,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     if (loading) return;
 
     const path = window.location.pathname;
-    const publicPaths = ['/welcome', '/privacy-policy', '/terms-and-conditions'];
+    const publicPaths = ['/welcome', '/privacy-policy', '/terms-and-conditions', '/community/invite'];
     const isCallbackPath = path.startsWith('/api/auth/callback');
     const isPublicPath = publicPaths.includes(path) || isCallbackPath;
 

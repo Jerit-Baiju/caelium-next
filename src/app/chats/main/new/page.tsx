@@ -1,6 +1,7 @@
 'use client';
 import NewChatDialog from '@/components/chats/NewChatDialog';
 import Link from 'next/link';
+import { FaX } from 'react-icons/fa6';
 
 const NewChat = () => {
   return (
@@ -12,9 +13,8 @@ const NewChat = () => {
             <Link
               href={'/chats'}
               className='end-2.5 text-neutral-600 dark:text-neutral-400 bg-transparent hover:bg-neutral-200 hover:text-neutral-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-neutral-600 dark:hover:text-white'
-              data-modal-hide='new-chat-modal'
-            >
-              <i className='fa-solid fa-xmark'></i>
+              data-modal-hide='new-chat-modal'>
+              <FaX />
               <span className='sr-only'>Close modal</span>
             </Link>
           </div>

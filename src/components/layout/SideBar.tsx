@@ -4,9 +4,12 @@ import { useNavbar } from '@/contexts/NavContext';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useContext } from 'react';
+import { Suspense, useContext } from 'react';
 import { IconType } from 'react-icons';
-import { FiCloud, FiHome, FiMessageCircle, FiPlus, FiUser } from 'react-icons/fi';
+import { FiHome, FiMessageCircle, FiPlus, FiUser } from 'react-icons/fi';
+// import { FaHandSpock } from 'react-icons/fa6';
+import { IoSparkles } from 'react-icons/io5';
+import UserAvatar from '../profile/UserAvatar';
 
 // Define interfaces to match those in NavContext
 interface SidebarOption {
@@ -25,7 +28,7 @@ export const options: SidebarOption[] = [
   { name: 'Home', url: '/', icon: FiHome },
   { name: 'Chats', url: '/chats/main', icon: FiMessageCircle },
   { name: 'Create', url: '/create', icon: FiPlus },
-  { name: 'Cloud', url: '/cloud', icon: FiCloud },
+  { name: 'Community', url: '/community', icon: IoSparkles },
   { name: 'Profile', url: '/accounts/profile', icon: FiUser },
 ];
 
@@ -44,22 +47,20 @@ const SideBar = () => {
   const isCloudRoute = route?.startsWith('/cloud');
   const navigationOptions = isCloudRoute ? sidebarOptions : options;
 
-  return (
+  return user ? (
     <>
       <motion.aside
         initial={{ x: -15, opacity: 0 }}
         animate={{ x: 0, opacity: 1 }}
-        className='fixed top-20 left-0 z-40 w-72 h-screen hidden lg:block transition-transform 
+        className='fixed top-22 left-0 z-40 w-72 h-screen hidden lg:block transition-transform 
           translate-x-0'
         aria-label='Sidebar'>
-        <div className='h-full flex flex-col px-4 py-8 overflow-y-auto scrollbar-hide'>
+        <div className='h-full mt-5 flex flex-col px-4 py-8 overflow-y-auto scrollbar-hide border-r dark:border-neutral-600 border-dashed'>
           {/* User Profile Section */}
           <div className='mb-8'>
-            <motion.div className='p-4 rounded-2xl bg-linear-to-br from-violet-500/10 to-purple-500/10' whileHover={{ scale: 1.02 }}>
+            <motion.div className='p-4 rounded-2xl border-1 dark:border-neutral-600' whileHover={{ scale: 1.02 }}>
               <div className='flex items-center gap-4'>
-                <div className='w-12 h-12 rounded-xl overflow-hidden bg-linear-to-br from-violet-500 to-purple-500 p-0.5'>
-                  <img src={user?.avatar} alt='Profile' className='w-full h-full object-cover rounded-[10px]' />
-                </div>
+                <UserAvatar image={user.avatar ?? ''} alt='Profile' />
                 <div>
                   <h3 className='font-medium dark:text-white'>{user?.name}</h3>
                   <p className='text-sm text-neutral-500 dark:text-neutral-400'>@{user?.username}</p>
@@ -86,7 +87,7 @@ const SideBar = () => {
                             // For other paths, highlight if it's an exact match or starts with the URL (but not /cloud/photos special case)
                             (option.url !== '/cloud/photos' &&
                               (route === option.url || (route?.startsWith(option.url + '/') && option.url !== '/cloud')))
-                              ? 'bg-linear-to-br from-violet-500 to-purple-500 text-white'
+                              ? 'bg-neutral-200 dark:bg-neutral-700 text-neutral-900 dark:text-white'
                               : 'hover:bg-white/10 dark:text-white dark:hover:bg-neutral-800'
                           }`}>
                         <option.icon className='w-5 h-5' />
@@ -110,7 +111,7 @@ const SideBar = () => {
                           (option.url.includes('/cloud') && route === option.url) ||
                           // For non-cloud routes, use the original logic
                           (!option.url.includes('/cloud') && (route === option.url || route?.startsWith(option.url + '/')))
-                            ? 'bg-linear-to-br from-violet-500 to-purple-500 text-white'
+                            ? 'bg-neutral-200 dark:bg-neutral-700 text-neutral-900 dark:text-white'
                             : 'hover:bg-white/10 dark:text-white dark:hover:bg-neutral-800'
                         }`}>
                       <option.icon className='w-5 h-5' />
@@ -145,6 +146,8 @@ const SideBar = () => {
         </div>
       </motion.aside>
     </>
+  ) : (
+    <Suspense />
   );
 };
 

@@ -1,5 +1,6 @@
 import { Message } from '@/helpers/props';
 import MessageBubble from '../MessageBubble';
+import { FaDownload, FaFile } from 'react-icons/fa6';
 
 const DocMessage = ({ message }: { message: Message }) => {
   return (
@@ -7,7 +8,7 @@ const DocMessage = ({ message }: { message: Message }) => {
       <div className='flex items-center justify-between gap-3'>
         <div className='flex items-start gap-3'>
           <div className='text-2xl text-neutral-500 dark:text-neutral-400'>
-            <i className='fa-regular fa-file'></i>
+            <FaFile />
           </div>
           <div className='flex flex-col'>
             <span className='text-sm font-medium truncate max-w-[200px] sm:max-w-[300px]'>{message?.file_name}</span>
@@ -25,7 +26,7 @@ const DocMessage = ({ message }: { message: Message }) => {
               hover:bg-neutral-200 dark:hover:bg-neutral-600 
               transition-colors duration-200 text-neutral-700 dark:text-neutral-200'
           aria-label='Download file'>
-          <i className='fa-solid fa-download text-sm'></i>
+          <FaDownload className='text-sm' />
         </a>
       </div>
     </MessageBubble>

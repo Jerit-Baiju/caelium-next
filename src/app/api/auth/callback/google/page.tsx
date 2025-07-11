@@ -79,7 +79,7 @@ const Page = () => {
             console.log({
               variant: 'destructive',
               title: 'Authentication Failed',
-              description: errorData.error || 'Only @mariancollege.org email addresses are allowed.',
+              description: errorData.error 
             });
           } else {
             console.log({

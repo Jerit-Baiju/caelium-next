@@ -2,6 +2,7 @@ import AuthContext from '@/contexts/AuthContext';
 import { motion } from 'framer-motion';
 import { useContext, useRef, useState } from 'react';
 import { FiBookmark, FiHeart, FiMessageSquare, FiMoreHorizontal, FiSend } from 'react-icons/fi';
+import UserAvatar from '../profile/UserAvatar';
 
 interface PostUser {
   id: number;
@@ -122,9 +123,7 @@ const Post = ({ post }: PostProps) => {
       {/* Post Header */}
       <div className='p-4 flex items-center justify-between'>
         <div className='flex items-center gap-3'>
-          <div className='h-12 w-12 rounded-full overflow-hidden'>
-            <img src={post.user.avatar} alt={post.user.name} className='h-full w-full object-cover' />
-          </div>
+          <UserAvatar image={post.user.avatar} alt='User Avatar' />
           <div>
             <h4 className='font-medium text-sm dark:text-white'>{post.user.name}</h4>
             <p className='text-xs text-neutral-500 dark:text-neutral-400'>
@@ -306,9 +305,7 @@ const Post = ({ post }: PostProps) => {
 
           {/* Comment Input */}
           <div className='mt-3 flex items-center gap-2'>
-            <div className='h-8 w-8 rounded-full overflow-hidden'>
-              <img src={user?.avatar} alt='Your avatar' className='h-full w-full object-cover' />
-            </div>
+            <UserAvatar image={user?.avatar ?? ''} alt='Profile' size={8} />
             <input
               type='text'
               placeholder='Add a comment...'

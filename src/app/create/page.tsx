@@ -1,26 +1,44 @@
 'use client';
 import PostTagModal from '@/components/home/PostTagModal';
+import UserAvatar from '@/components/profile/UserAvatar';
 import { Badge } from '@/components/ui/badge';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import AuthContext from '@/contexts/AuthContext';
 import { User } from '@/helpers/props';
+import useAxios from '@/hooks/useAxios';
 import { motion } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 import React, { useContext, useRef, useState } from 'react';
 import { FiArrowLeft, FiImage, FiMessageSquare, FiUserPlus, FiX } from 'react-icons/fi';
+import { toast } from 'sonner';
 
 // Caption character limit constant
 const CAPTION_MAX_LENGTH = 200;
+
+// Type for axios error
+interface AxiosError {
+  response?: {
+    status: number;
+    data?: {
+      detail?: string;
+      error?: string;
+    };
+  };
+  request?: unknown;
+  message?: string;
+}
 
 const CreatePostPage = () => {
   const router = useRouter();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { user } = useContext(AuthContext);
+  const api = useAxios();
 
   // State management
   const [step, setStep] = useState<'select' | 'preview'>('select');
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [caption, setCaption] = useState('');
   const [disableComments, setDisableComments] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -39,6 +57,7 @@ const CreatePostPage = () => {
   const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
+      setSelectedFile(file); // Store the actual file
       const reader = new FileReader();
 
       reader.onload = (event) => {
@@ -55,6 +74,7 @@ const CreatePostPage = () => {
   // Handle remove image
   const handleRemoveImage = () => {
     setSelectedImage(null);
+    setSelectedFile(null);
     setStep('select');
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
@@ -63,19 +83,124 @@ const CreatePostPage = () => {
 
   // Handle post submission
   const handleSubmitPost = async () => {
+    console.log('handleSubmitPost called');
+
     // Validate caption length
     if (caption.length > CAPTION_MAX_LENGTH) {
-      // You could show a toast notification here
+      toast.error(`Caption too long! Maximum ${CAPTION_MAX_LENGTH} characters allowed.`);
       return;
     }
 
-    setIsSubmitting(true);
+    // Check if image is selected
+    if (!selectedFile && !selectedImage) {
+      toast.error('Please select an image to share.');
+      return;
+    }
 
-    // Mock API call - will be implemented later
-    setTimeout(() => {
-      // Handle success
-      router.push('/');
-    }, 1000);
+    // Use stored file or fallback to file input
+    const file = selectedFile || fileInputRef.current?.files?.[0];
+
+    if (!file) {
+      toast.error('Image data not found. Please select the image again.');
+      return;
+    }
+
+    // Check file size (10MB limit)
+    const maxFileSize = 10 * 1024 * 1024; // 10MB in bytes
+    if (file.size > maxFileSize) {
+      toast.error('File size must be less than 10MB.');
+      return;
+    }
+
+    console.log('File selected:', {
+      name: file.name,
+      size: file.size,
+      type: file.type,
+    });
+
+    setIsSubmitting(true);
+    toast.loading('Creating post...');
+
+    try {
+      const formData = new FormData();
+
+      // Add the file
+      formData.append('file', file);
+      console.log('Added file to formData');
+
+      // Add caption if provided
+      if (caption.trim()) {
+        formData.append('caption', caption.trim());
+        console.log('Added caption:', caption.trim());
+      }
+
+      // Add tagged users (if any)
+      if (taggedUsers.length > 0) {
+        taggedUsers.forEach((user) => {
+          formData.append('tagged_users', user.id.toString());
+        });
+        console.log(
+          'Added tagged users:',
+          taggedUsers.map((u) => u.id)
+        );
+      }
+
+      // Add comment settings
+      formData.append('allow_comments', (!disableComments).toString());
+      console.log('Added allow_comments:', !disableComments);
+
+      console.log('Making API request to /api/posts/');
+
+      const response = await api.post('/api/posts/', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+
+      console.log('API Response:', response);
+
+      if (response.status === 201) {
+        toast.dismiss();
+        toast.success('Post created successfully!');
+        console.log('Post created successfully, redirecting to home');
+        // Success - redirect to home
+        router.push('/');
+      }
+    } catch (error: unknown) {
+      console.error('Error creating post:', error);
+      toast.dismiss();
+
+      if (error && typeof error === 'object' && 'response' in error) {
+        // Server responded with error status
+        const axiosError = error as AxiosError;
+        console.error('Server error response:', axiosError.response);
+        console.error('Error data:', axiosError.response?.data);
+        console.error('Error status:', axiosError.response?.status);
+
+        if (axiosError.response?.status === 401) {
+          toast.error('You need to be logged in to create a post.');
+        } else if (axiosError.response?.status === 413) {
+          toast.error('File is too large. Please try with a smaller image.');
+        } else if (axiosError.response?.data?.detail) {
+          toast.error(axiosError.response.data.detail);
+        } else if (axiosError.response?.data?.error) {
+          toast.error(axiosError.response.data.error);
+        } else {
+          toast.error(`Failed to create post. Status: ${axiosError.response?.status || 'Unknown'}`);
+        }
+      } else if (error && typeof error === 'object' && 'request' in error) {
+        // Network error
+        const axiosError = error as AxiosError;
+        console.error('Network error:', axiosError.request);
+        toast.error('Network error. Please check your connection and try again.');
+      } else {
+        // Other error
+        console.error('Error message:', error);
+        toast.error('Something went wrong. Please try again.');
+      }
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -130,9 +255,7 @@ const CreatePostPage = () => {
               {/* User Info */}
               <div className='px-4 py-3 dark:border-neutral-700'>
                 <div className='flex items-center gap-3'>
-                  <div className='h-12 w-12 rounded-full overflow-hidden'>
-                    <img src={user?.avatar} alt={user?.name} className='w-full h-full object-cover' />
-                  </div>
+                  <UserAvatar image={user?.avatar ?? ''} alt='Profile' />
                   <div>
                     <p className='font-medium dark:text-white'>{user?.name}</p>
                     <p className='text-xs text-neutral-500 dark:text-neutral-400'>@{user?.username}</p>
@@ -141,10 +264,10 @@ const CreatePostPage = () => {
               </div>
 
               {/* Image Preview */}
-              <div className='relative flex-1 min-h-[300px] sm:min-h-[400px] md:min-h-[500px] md:h-full'>
+              <div className='relative flex-1 min-h-[300px] sm:min-h-[400px] md:min-h-[500px] max-h-[600px]'>
                 {selectedImage && (
-                  <div className='image-preview-container h-full flex items-center justify-center rounded-2xl overflow-hidden'>
-                    <img src={selectedImage} alt='Preview' className='w-full h-full rounded-2xl object-cover' />
+                  <div className='image-preview-container h-full flex items-center justify-center rounded-2xl overflow-hidden bg-neutral-50 dark:bg-neutral-900'>
+                    <img src={selectedImage} alt='Preview' className='max-w-full max-h-full rounded-2xl object-contain' />
                     <motion.button
                       whileTap={{ scale: 0.9 }}
                       onClick={handleRemoveImage}
