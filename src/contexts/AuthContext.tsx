@@ -1,10 +1,9 @@
 'use client';
-import Loader from '@/components/layout/Loader';
 import { User } from '@/helpers/props';
 import axios from 'axios';
 import { jwtDecode, JwtPayload } from 'jwt-decode';
 import { useRouter } from 'next/navigation';
-import { createContext, ReactNode, useEffect, useRef, useState } from 'react';
+import { createContext, ReactNode, Suspense, useEffect, useRef, useState } from 'react';
 
 interface TokenData {
   access: string;
@@ -199,5 +198,5 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     refreshToken,
   };
 
-  return <AuthContext.Provider value={contextData}>{loading ? <Loader fullScreen /> : children}</AuthContext.Provider>;
+  return <AuthContext.Provider value={contextData}>{loading ? <Suspense /> : children}</AuthContext.Provider>;
 };
