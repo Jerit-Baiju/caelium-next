@@ -1,8 +1,7 @@
 'use client';
 import HomePageLayout from '@/components/home/HomePage';
-import Loader from '@/components/layout/Loader';
 import AuthContext from '@/contexts/AuthContext';
-import { useContext } from 'react';
+import { Suspense, useContext } from 'react';
 
 export default function Home() {
   const { user } = useContext(AuthContext);
@@ -10,7 +9,7 @@ export default function Home() {
   if (!user) {
     return (
       <div className='flex items-center justify-center h-screen'>
-        <Loader />
+        <Suspense />
       </div>
     );
   }
