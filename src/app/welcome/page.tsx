@@ -82,55 +82,59 @@ const Page: React.FC = () => {
   };
 
   return !isLoading ? (
-    <div className='relative min-h-screen w-full overflow-hidden bg-slate-900'>
-      {/* Simplified background elements */}
-      <div className='absolute top-0 -right-20 w-[500px] h-[500px] rounded-full bg-linear-to-r from-purple-500 to-indigo-500 blur-[180px] opacity-20' />
-      <div className='absolute -bottom-20 -left-20 w-[500px] h-[500px] rounded-full bg-linear-to-r from-indigo-500 to-purple-500 blur-[180px] opacity-20' />
+    <div className='relative min-h-screen w-full overflow-hidden bg-zinc-950'>
+      {/* Subtle gradient background */}
+      <div className='absolute top-0 right-0 w-[800px] h-[800px] rounded-full bg-gradient-to-br from-zinc-800/10 via-purple-900/5 to-transparent blur-[120px]' />
 
       <Vortex
         backgroundColor='transparent'
-        rangeY={800}
-        particleCount={80}
-        baseHue={240}
+        rangeY={1000}
+        particleCount={50}
+        baseHue={220}
         className='relative z-10 flex items-center justify-center min-h-screen w-full px-5 sm:px-8'
       >
         <motion.div
           variants={containerVariants}
           initial='hidden'
           animate='visible'
-          className='flex flex-col items-center max-w-3xl w-full py-8 sm:py-10'
+          className='flex flex-col items-center max-w-2xl w-full py-12 sm:py-16 space-y-16'
         >
           {/* Hero Section */}
-          <motion.div variants={itemVariants} className='flex flex-col items-center text-center mb-10 w-full'>
-            <div className='flex flex-col items-center mb-5'>
-              <h1 className='text-4xl md:text-5xl lg:text-6xl font-bold bg-linear-to-r from-purple-400 via-indigo-400 to-purple-400 bg-clip-text text-transparent drop-shadow-[0_0_10px_rgba(139,92,246,0.25)]'>
-                Welcome to Caelium
-              </h1>
+          <motion.div variants={itemVariants} className='flex flex-col items-center text-center space-y-8 w-full'>
+            <div className='space-y-4'>
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8 }}
+              >
+                <h1 className='text-4xl md:text-5xl lg:text-6xl font-bold text-zinc-100'>
+                  Welcome to <span className='text-transparent bg-clip-text bg-gradient-to-r from-zinc-200 to-zinc-400'>Caelium</span>
+                </h1>
+              </motion.div>
+              <p className='text-lg text-zinc-400 max-w-md mx-auto leading-relaxed'>
+                Your gateway to a seamless digital experience. Simple, powerful, and designed for the future.
+              </p>
             </div>
-
-            <p className='text-lg text-slate-200 mb-6 max-w-lg mx-auto'>
-              <span className='font-medium text-indigo-300'>Right now</span>, the future of all-in-one digital experience is evolving.
-            </p>
 
             {authURL && (
               <motion.button
                 variants={itemVariants}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className='flex items-center justify-center px-7 py-3.5 gap-3 bg-linear-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 rounded-xl text-white shadow-lg transition-all duration-300'
+                whileHover={{ scale: 1.02, backgroundColor: 'rgb(39 39 42)' }}
+                whileTap={{ scale: 0.98 }}
+                className='flex items-center justify-center px-8 py-4 gap-3 bg-zinc-900 rounded-lg text-zinc-100 shadow-lg transition-all duration-300 border border-zinc-800 hover:border-zinc-700'
                 onClick={() => {
                   window.location.href = authURL as string;
                 }}
               >
                 <img
                   loading='lazy'
-                  height='24'
-                  width='24'
+                  height='20'
+                  width='20'
                   id='provider-logo'
                   src='https://authjs.dev/img/providers/google.svg'
-                  className='filter brightness-0 invert'
+                  className='filter brightness-0 invert opacity-90'
                 />
-                <span className='font-medium'>Sign in with Google</span>
+                <span className='font-medium'>Continue with Google</span>
               </motion.button>
             )}
           </motion.div>
@@ -181,13 +185,13 @@ const Page: React.FC = () => {
 
 const FeatureCard: React.FC<FeatureCardProps> = ({ icon, title, description }) => (
   <motion.div
-    whileHover={{ scale: 1.03, y: -2 }}
-    className='p-4 rounded-lg bg-gradient-to-br from-indigo-600/10 to-purple-600/10 border border-indigo-500/20 
-               hover:border-indigo-500/40 transition-all duration-300 shadow-sm'
+    whileHover={{ scale: 1.02 }}
+    className='p-6 rounded-lg bg-zinc-900/50 border border-zinc-800/50 
+               hover:border-zinc-700/50 transition-all duration-300'
   >
-    <div className='text-indigo-400 mb-2'>{icon}</div>
-    <h3 className='text-base font-semibold text-white mb-1'>{title}</h3>
-    <p className='text-slate-300 text-xs'>{description}</p>
+    <div className='text-zinc-400 mb-3'>{icon}</div>
+    <h3 className='text-base font-medium text-zinc-200 mb-2'>{title}</h3>
+    <p className='text-zinc-400 text-sm leading-relaxed'>{description}</p>
   </motion.div>
 );
 
