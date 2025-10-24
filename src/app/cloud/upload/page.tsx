@@ -4,20 +4,26 @@ import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useRef, useState } from 'react';
-import { FiAlertCircle, FiArrowLeft, FiCheck, FiFile, FiGrid, FiList, FiLock, FiUpload, FiX } from 'react-icons/fi';
+import { FiAlertCircle, FiArrowLeft, FiCheck, FiFile, FiGrid, FiList, FiLock, FiUnlock, FiUpload, FiX } from 'react-icons/fi';
 
-// Maximum number of files allowed per upload (must match DATA_UPLOAD_MAX_NUMBER_FILES in Django settings)
+// Maximum number of files allowed per upload
 const MAX_FILES_ALLOWED = 200;
 // Maximum number of files to display in the UI
 const MAX_UI_DISPLAY = 250;
+
+interface UploadStatus {
+  progress: number; // 0-100 or -1 for failed
+  uploaded: boolean;
+}
 
 const CloudUpload = () => {
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [displayedFiles, setDisplayedFiles] = useState<File[]>([]);
   const [isUploading, setIsUploading] = useState(false);
-  const [uploadProgress, setUploadProgress] = useState<Record<string, number>>({});
+  const [uploadStatus, setUploadStatus] = useState<Record<string, UploadStatus>>({});
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [tooManyFiles, setTooManyFiles] = useState(false);
+  const [encryptFiles, setEncryptFiles] = useState(false); // New state for encryption toggle
   const fileInputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
   const [viewMode, setViewMode] = useState<'list' | 'grid'>('grid');
@@ -138,64 +144,83 @@ const CloudUpload = () => {
     setIsUploading(true);
     setErrorMessage(null);
 
-    // Create FormData object to hold files
-    const formData = new FormData();
-
-    // Add all selected files to FormData
+    // Initialize upload status for all files
+    const initialStatus: Record<string, UploadStatus> = {};
     selectedFiles.forEach((file) => {
-      formData.append('files', file);
+      initialStatus[file.name] = { progress: 0, uploaded: false };
     });
+    setUploadStatus(initialStatus);
 
-    try {
-      // Set progress tracking for each file
-      const newProgress: Record<string, number> = {};
-      displayedFiles.forEach((file) => {
-        newProgress[file.name] = 0;
-      });
-      setUploadProgress(newProgress);
+    let uploadedCount = 0;
+    let failedCount = 0;
 
-      // Configure upload with progress tracking
-      await api.post('/api/cloud/upload/', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-        onUploadProgress: (progressEvent) => {
-          if (progressEvent.total) {
-            const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
-            // Update all files with same progress since we can't track individual files
-            const updatedProgress: Record<string, number> = {};
-            displayedFiles.forEach((file) => {
-              updatedProgress[file.name] = percentCompleted;
-            });
-            setUploadProgress(updatedProgress);
-          }
-        },
-      });
+    // Upload files one at a time
+    for (let i = 0; i < selectedFiles.length; i++) {
+      const file = selectedFiles[i];
 
-      // Set all files to 100% complete
-      const completedProgress: Record<string, number> = {};
-      displayedFiles.forEach((file) => {
-        completedProgress[file.name] = 100;
-      });
-      setUploadProgress(completedProgress);
+      try {
+        // Create FormData for single file
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('encrypt', encryptFiles.toString());
 
-      // Wait a moment to show completion before redirecting
+        // Upload with progress tracking
+        await api.post('/api/cloud/upload/', formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+          onUploadProgress: (progressEvent) => {
+            if (progressEvent.total) {
+              const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+
+              setUploadStatus((prev) => ({
+                ...prev,
+                [file.name]: {
+                  progress: percentCompleted,
+                  uploaded: false,
+                },
+              }));
+            }
+          },
+        });
+
+        // Mark as uploaded
+        uploadedCount++;
+        setUploadStatus((prev) => ({
+          ...prev,
+          [file.name]: {
+            progress: 100,
+            uploaded: true,
+          },
+        }));
+      } catch (error) {
+        console.error(`Error uploading file ${file.name}:`, error);
+        failedCount++;
+
+        // Mark as failed
+        setUploadStatus((prev) => ({
+          ...prev,
+          [file.name]: {
+            progress: -1,
+            uploaded: false,
+          },
+        }));
+      }
+    }
+
+    setIsUploading(false);
+
+    // Show summary
+    if (failedCount === 0) {
+      setErrorMessage(`Successfully uploaded ${uploadedCount} file${uploadedCount !== 1 ? 's' : ''}`);
+      // Wait a moment before redirecting
       setTimeout(() => {
         router.push('/cloud');
-      }, 1500);
-    } catch (error) {
-      console.error('Error uploading files:', error);
-
-      // Set failed status for all files
-      const failedProgress: Record<string, number> = {};
-      displayedFiles.forEach((file) => {
-        failedProgress[file.name] = -1; // -1 indicates failure
-      });
-      setUploadProgress(failedProgress);
-
-      setErrorMessage('Failed to upload files. Please try again later.');
-    } finally {
-      setIsUploading(false);
+      }, 2000);
+    } else {
+      setErrorMessage(
+        `Uploaded ${uploadedCount} file${uploadedCount !== 1 ? 's' : ''}, ${failedCount} failed. Please retry failed files.`
+      );
     }
   };
 
@@ -260,8 +285,25 @@ const CloudUpload = () => {
             </div>
             <h3 className='text-lg font-medium dark:text-neutral-200 mb-2'>Drag and drop files here</h3>
             <p className='text-neutral-500 dark:text-neutral-400 text-sm mb-4 text-center'>
-              Your files will be encrypted automatically for maximum security
+              Select files to upload to your cloud storage
             </p>
+
+            {/* Encryption Toggle */}
+            <div className='flex items-center gap-3 mb-4'>
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={() => setEncryptFiles(!encryptFiles)}
+                className={`flex items-center gap-2 px-4 py-2 rounded-lg transition ${
+                  encryptFiles
+                    ? 'bg-violet-100 dark:bg-violet-900/30 text-violet-700 dark:text-violet-300 border-2 border-violet-500'
+                    : 'bg-neutral-100 dark:bg-neutral-700 text-neutral-600 dark:text-neutral-400 border-2 border-neutral-300 dark:border-neutral-600'
+                }`}>
+                {encryptFiles ? <FiLock size={18} /> : <FiUnlock size={18} />}
+                <span className='text-sm font-medium'>{encryptFiles ? 'Encryption Enabled' : 'No Encryption'}</span>
+              </motion.button>
+            </div>
+
             <div className='flex items-center gap-3'>
               <motion.button
                 whileHover={{ scale: 1.02 }}
@@ -359,18 +401,18 @@ const CloudUpload = () => {
                     </div>
 
                     {/* Progress indicator */}
-                    {uploadProgress[file.name] !== undefined && (
+                    {uploadStatus[file.name] && (
                       <div className='w-24 mr-3'>
-                        {uploadProgress[file.name] === -1 ? (
+                        {uploadStatus[file.name].progress === -1 ? (
                           <span className='text-red-500 text-xs'>Failed</span>
-                        ) : uploadProgress[file.name] === 100 ? (
+                        ) : uploadStatus[file.name].uploaded ? (
                           <div className='flex items-center text-green-500 dark:text-green-400'>
                             <FiCheck className='mr-1' />
                             <span className='text-xs'>Complete</span>
                           </div>
                         ) : (
                           <div className='w-full bg-neutral-200 dark:bg-neutral-600 rounded-full h-1.5'>
-                            <div className='bg-violet-500 h-1.5 rounded-full' style={{ width: `${uploadProgress[file.name]}%` }} />
+                            <div className='bg-violet-500 h-1.5 rounded-full' style={{ width: `${uploadStatus[file.name].progress}%` }} />
                           </div>
                         )}
                       </div>
@@ -414,18 +456,18 @@ const CloudUpload = () => {
                         </div>
                       )}
 
-                      {uploadProgress[file.name] !== undefined && (
+                      {uploadStatus[file.name] && (
                         <div className='absolute bottom-0 left-0 right-0 bg-black/20 p-1'>
-                          {uploadProgress[file.name] === -1 ? (
+                          {uploadStatus[file.name].progress === -1 ? (
                             <div className='text-red-500 text-xs text-center'>Failed</div>
-                          ) : uploadProgress[file.name] === 100 ? (
+                          ) : uploadStatus[file.name].uploaded ? (
                             <div className='flex items-center justify-center text-green-500 dark:text-green-400 text-xs'>
                               <FiCheck className='mr-1' />
                               <span>Complete</span>
                             </div>
                           ) : (
                             <div className='w-full bg-neutral-200/60 dark:bg-neutral-600/60 rounded-full h-1.5'>
-                              <div className='bg-violet-500 h-1.5 rounded-full' style={{ width: `${uploadProgress[file.name]}%` }} />
+                              <div className='bg-violet-500 h-1.5 rounded-full' style={{ width: `${uploadStatus[file.name].progress}%` }} />
                             </div>
                           )}
                         </div>
@@ -451,7 +493,15 @@ const CloudUpload = () => {
             )}
 
             <div className='mt-4 text-xs text-neutral-500 dark:text-neutral-400 flex items-center'>
-              <FiLock className='mr-1' /> Files will be encrypted before upload for your security
+              {encryptFiles ? (
+                <>
+                  <FiLock className='mr-1' /> Files will be encrypted with AES-256-GCM before upload for your security
+                </>
+              ) : (
+                <>
+                  <FiUnlock className='mr-1' /> Files will be uploaded without encryption
+                </>
+              )}
             </div>
           </motion.div>
         )}
