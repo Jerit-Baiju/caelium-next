@@ -140,10 +140,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
         const response = await fetch(`${process.env.NEXT_PUBLIC_API_HOST}/api/auth/accounts/${decodedToken.user_id}/`);
 
-        if (!response.ok) {
-          throw new Error('Failed to fetch user data');
-        }
-
         const userData = await response.json();
         setUser(userData);
       } catch (error) {
