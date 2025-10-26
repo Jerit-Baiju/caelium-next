@@ -5,6 +5,7 @@ import { handleeFont } from './font';
 import './globals.css';
 import ProvidersWrapper from './providers';
 import Wrapper from './Wrapper';
+import { Analytics } from '@vercel/analytics/next';
 
 export const metadata: Metadata = {
   title: 'Caelium',
@@ -47,6 +48,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             gtag('config', 'G-RN3WVJ9FLK');
           `}
         </Script>
+        <Analytics />
       </body>
     </html>
   );
