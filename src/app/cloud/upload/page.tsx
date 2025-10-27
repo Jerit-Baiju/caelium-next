@@ -10,10 +10,16 @@ import { FiAlertCircle, FiArrowLeft, FiCheck, FiFile, FiGrid, FiList, FiLock, Fi
 const MAX_FILES_ALLOWED = 200;
 // Maximum number of files to display in the UI
 const MAX_UI_DISPLAY = 250;
+// Chunk size for large files: 80MB
+const CHUNK_SIZE = 80 * 1024 * 1024; // 80MB in bytes
+// Minimum file size to use chunked upload: 80MB
+const MIN_CHUNK_SIZE = 80 * 1024 * 1024; // 80MB
 
 interface UploadStatus {
   progress: number; // 0-100 or -1 for failed
   uploaded: boolean;
+  currentChunk?: number;
+  totalChunks?: number;
 }
 
 const CloudUpload = () => {
@@ -147,7 +153,13 @@ const CloudUpload = () => {
     // Initialize upload status for all files
     const initialStatus: Record<string, UploadStatus> = {};
     selectedFiles.forEach((file) => {
-      initialStatus[file.name] = { progress: 0, uploaded: false };
+      const totalChunks = Math.ceil(file.size / CHUNK_SIZE);
+      initialStatus[file.name] = {
+        progress: 0,
+        uploaded: false,
+        currentChunk: 0,
+        totalChunks: totalChunks > 1 ? totalChunks : undefined,
+      };
     });
     setUploadStatus(initialStatus);
 
@@ -159,30 +171,14 @@ const CloudUpload = () => {
       const file = selectedFiles[i];
 
       try {
-        // Create FormData for single file
-        const formData = new FormData();
-        formData.append('file', file);
-        formData.append('encrypt', encryptFiles.toString());
-
-        // Upload with progress tracking
-        await api.post('/api/cloud/upload/', formData, {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-          },
-          onUploadProgress: (progressEvent) => {
-            if (progressEvent.total) {
-              const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
-
-              setUploadStatus((prev) => ({
-                ...prev,
-                [file.name]: {
-                  progress: percentCompleted,
-                  uploaded: false,
-                },
-              }));
-            }
-          },
-        });
+        // Check if file needs chunked upload (larger than 80MB)
+        if (file.size > MIN_CHUNK_SIZE) {
+          // Use chunked upload
+          await uploadFileInChunks(file);
+        } else {
+          // Use regular upload for smaller files
+          await uploadFileDirect(file);
+        }
 
         // Mark as uploaded
         uploadedCount++;
@@ -222,6 +218,84 @@ const CloudUpload = () => {
         `Uploaded ${uploadedCount} file${uploadedCount !== 1 ? 's' : ''}, ${failedCount} failed. Please retry failed files.`
       );
     }
+  };
+
+  // Direct upload for files smaller than 80MB
+  const uploadFileDirect = async (file: File) => {
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('encrypt', encryptFiles.toString());
+
+    await api.post('/api/cloud/upload/', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+      onUploadProgress: (progressEvent) => {
+        if (progressEvent.total) {
+          const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+
+          setUploadStatus((prev) => ({
+            ...prev,
+            [file.name]: {
+              progress: percentCompleted,
+              uploaded: false,
+            },
+          }));
+        }
+      },
+    });
+  };
+
+  // Chunked upload for files larger than 80MB
+  const uploadFileInChunks = async (file: File) => {
+    const totalChunks = Math.ceil(file.size / CHUNK_SIZE);
+
+    // Step 1: Initiate chunked upload
+    const initiateResponse = await api.post('/api/cloud/upload/initiate/', {
+      filename: file.name,
+      file_size: file.size,
+      total_chunks: totalChunks,
+      encrypt: encryptFiles,
+    });
+
+    const { upload_id } = initiateResponse.data;
+
+    // Step 2: Upload each chunk
+    for (let chunkIndex = 0; chunkIndex < totalChunks; chunkIndex++) {
+      const start = chunkIndex * CHUNK_SIZE;
+      const end = Math.min(start + CHUNK_SIZE, file.size);
+      const chunk = file.slice(start, end);
+
+      const chunkFormData = new FormData();
+      chunkFormData.append('chunk', chunk);
+      chunkFormData.append('chunk_number', chunkIndex.toString());
+
+      await api.post(`/api/cloud/upload/${upload_id}/chunk/`, chunkFormData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+        onUploadProgress: (progressEvent) => {
+          if (progressEvent.total) {
+            // Calculate overall progress based on chunks
+            const chunkProgress = (progressEvent.loaded / progressEvent.total) * 100;
+            const overallProgress = ((chunkIndex + chunkProgress / 100) / totalChunks) * 100;
+
+            setUploadStatus((prev) => ({
+              ...prev,
+              [file.name]: {
+                progress: Math.round(overallProgress),
+                uploaded: false,
+                currentChunk: chunkIndex + 1,
+                totalChunks,
+              },
+            }));
+          }
+        },
+      });
+    }
+
+    // Step 3: Finalize the upload
+    await api.post(`/api/cloud/upload/${upload_id}/finalize/`);
   };
 
   const getFileSize = (size: number): string => {
@@ -402,7 +476,7 @@ const CloudUpload = () => {
 
                     {/* Progress indicator */}
                     {uploadStatus[file.name] && (
-                      <div className='w-24 mr-3'>
+                      <div className='w-32 mr-3'>
                         {uploadStatus[file.name].progress === -1 ? (
                           <span className='text-red-500 text-xs'>Failed</span>
                         ) : uploadStatus[file.name].uploaded ? (
@@ -411,8 +485,15 @@ const CloudUpload = () => {
                             <span className='text-xs'>Complete</span>
                           </div>
                         ) : (
-                          <div className='w-full bg-neutral-200 dark:bg-neutral-600 rounded-full h-1.5'>
-                            <div className='bg-violet-500 h-1.5 rounded-full' style={{ width: `${uploadStatus[file.name].progress}%` }} />
+                          <div className='flex flex-col gap-1'>
+                            <div className='w-full bg-neutral-200 dark:bg-neutral-600 rounded-full h-1.5'>
+                              <div className='bg-violet-500 h-1.5 rounded-full' style={{ width: `${uploadStatus[file.name].progress}%` }} />
+                            </div>
+                            {uploadStatus[file.name].totalChunks && (
+                              <span className='text-xs text-neutral-500 dark:text-neutral-400'>
+                                Chunk {uploadStatus[file.name].currentChunk}/{uploadStatus[file.name].totalChunks}
+                              </span>
+                            )}
                           </div>
                         )}
                       </div>
@@ -466,8 +547,15 @@ const CloudUpload = () => {
                               <span>Complete</span>
                             </div>
                           ) : (
-                            <div className='w-full bg-neutral-200/60 dark:bg-neutral-600/60 rounded-full h-1.5'>
-                              <div className='bg-violet-500 h-1.5 rounded-full' style={{ width: `${uploadStatus[file.name].progress}%` }} />
+                            <div className='space-y-1'>
+                              <div className='w-full bg-neutral-200/60 dark:bg-neutral-600/60 rounded-full h-1.5'>
+                                <div className='bg-violet-500 h-1.5 rounded-full' style={{ width: `${uploadStatus[file.name].progress}%` }} />
+                              </div>
+                              {uploadStatus[file.name].totalChunks && (
+                                <div className='text-white text-xs text-center'>
+                                  {uploadStatus[file.name].currentChunk}/{uploadStatus[file.name].totalChunks}
+                                </div>
+                              )}
                             </div>
                           )}
                         </div>
