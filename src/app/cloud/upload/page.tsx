@@ -18,8 +18,6 @@ const MIN_CHUNK_SIZE = 80 * 1024 * 1024; // 80MB
 interface UploadStatus {
   progress: number; // 0-100 or -1 for failed
   uploaded: boolean;
-  currentChunk?: number;
-  totalChunks?: number;
 }
 
 const CloudUpload = () => {
@@ -153,12 +151,9 @@ const CloudUpload = () => {
     // Initialize upload status for all files
     const initialStatus: Record<string, UploadStatus> = {};
     selectedFiles.forEach((file) => {
-      const totalChunks = Math.ceil(file.size / CHUNK_SIZE);
       initialStatus[file.name] = {
         progress: 0,
         uploaded: false,
-        currentChunk: 0,
-        totalChunks: totalChunks > 1 ? totalChunks : undefined,
       };
     });
     setUploadStatus(initialStatus);
@@ -232,7 +227,7 @@ const CloudUpload = () => {
       },
       onUploadProgress: (progressEvent) => {
         if (progressEvent.total) {
-          const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+          const percentCompleted = (progressEvent.loaded * 100) / progressEvent.total;
 
           setUploadStatus((prev) => ({
             ...prev,
@@ -260,11 +255,15 @@ const CloudUpload = () => {
 
     const { upload_id } = initiateResponse.data;
 
+    // Track total bytes uploaded for smooth progress
+    let totalBytesUploaded = 0;
+
     // Step 2: Upload each chunk
     for (let chunkIndex = 0; chunkIndex < totalChunks; chunkIndex++) {
       const start = chunkIndex * CHUNK_SIZE;
       const end = Math.min(start + CHUNK_SIZE, file.size);
       const chunk = file.slice(start, end);
+      const chunkSize = end - start;
 
       const chunkFormData = new FormData();
       chunkFormData.append('chunk', chunk);
@@ -276,22 +275,26 @@ const CloudUpload = () => {
         },
         onUploadProgress: (progressEvent) => {
           if (progressEvent.total) {
-            // Calculate overall progress based on chunks
-            const chunkProgress = (progressEvent.loaded / progressEvent.total) * 100;
-            const overallProgress = ((chunkIndex + chunkProgress / 100) / totalChunks) * 100;
+            // Calculate bytes uploaded for this chunk
+            const chunkBytesUploaded = progressEvent.loaded;
+            // Total bytes = bytes from previous chunks + current chunk progress
+            const currentTotalBytes = totalBytesUploaded + chunkBytesUploaded;
+            // Calculate overall progress as percentage of total file size
+            const overallProgress = (currentTotalBytes / file.size) * 100;
 
             setUploadStatus((prev) => ({
               ...prev,
               [file.name]: {
-                progress: Math.round(overallProgress),
+                progress: overallProgress,
                 uploaded: false,
-                currentChunk: chunkIndex + 1,
-                totalChunks,
               },
             }));
           }
         },
       });
+
+      // Update total bytes uploaded after chunk completes
+      totalBytesUploaded += chunkSize;
     }
 
     // Step 3: Finalize the upload
@@ -485,15 +488,8 @@ const CloudUpload = () => {
                             <span className='text-xs'>Complete</span>
                           </div>
                         ) : (
-                          <div className='flex flex-col gap-1'>
-                            <div className='w-full bg-neutral-200 dark:bg-neutral-600 rounded-full h-1.5'>
-                              <div className='bg-violet-500 h-1.5 rounded-full' style={{ width: `${uploadStatus[file.name].progress}%` }} />
-                            </div>
-                            {uploadStatus[file.name].totalChunks && (
-                              <span className='text-xs text-neutral-500 dark:text-neutral-400'>
-                                Chunk {uploadStatus[file.name].currentChunk}/{uploadStatus[file.name].totalChunks}
-                              </span>
-                            )}
+                          <div className='w-full bg-neutral-200 dark:bg-neutral-600 rounded-full h-1.5'>
+                            <div className='bg-violet-500 h-1.5 rounded-full' style={{ width: `${uploadStatus[file.name].progress}%` }} />
                           </div>
                         )}
                       </div>
@@ -547,15 +543,8 @@ const CloudUpload = () => {
                               <span>Complete</span>
                             </div>
                           ) : (
-                            <div className='space-y-1'>
-                              <div className='w-full bg-neutral-200/60 dark:bg-neutral-600/60 rounded-full h-1.5'>
-                                <div className='bg-violet-500 h-1.5 rounded-full' style={{ width: `${uploadStatus[file.name].progress}%` }} />
-                              </div>
-                              {uploadStatus[file.name].totalChunks && (
-                                <div className='text-white text-xs text-center'>
-                                  {uploadStatus[file.name].currentChunk}/{uploadStatus[file.name].totalChunks}
-                                </div>
-                              )}
+                            <div className='w-full bg-neutral-200/60 dark:bg-neutral-600/60 rounded-full h-1.5'>
+                              <div className='bg-violet-500 h-1.5 rounded-full' style={{ width: `${uploadStatus[file.name].progress}%` }} />
                             </div>
                           )}
                         </div>
