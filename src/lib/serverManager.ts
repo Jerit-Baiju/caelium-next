@@ -15,7 +15,7 @@ class ServerManager {
   private lastFetchTime: number = 0;
   private fetchInterval: number = 10 * 60 * 1000; // 10 minutes in milliseconds
   private isFetching: boolean = false;
-  private serverListUrl: string = 'https://cs1.caelium.co/api/core/servers/';
+  private serverListUrl: string = `${process.env.NEXT_PUBLIC_API_HOST}/api/core/servers/`;
 
   /**
    * Fetches the list of servers from the API
@@ -63,7 +63,7 @@ class ServerManager {
    */
   async selectServer(): Promise<Server | null> {
     const servers = await this.getServers();
-    
+
     // Filter only active servers
     const activeServers = servers.filter((server) => server.active_status);
 
@@ -96,7 +96,7 @@ class ServerManager {
    */
   async reportServerError(serverId: number): Promise<void> {
     try {
-      const response = await fetch('https://cs1.caelium.co/api/core/public_server_error_handler/', {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_HOST}/api/core/public_server_error_handler/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
