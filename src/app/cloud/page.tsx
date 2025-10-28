@@ -34,6 +34,7 @@ const CloudExplorer = () => {
   const searchParams = useSearchParams();
   const { formatFileSize, fetchExplorerData, fetchImageUrls, getFileThumbnailType, createFolder } = useCloud();
   const [loading, setLoading] = useState(true);
+  const [initialLoad, setInitialLoad] = useState(true);
   const [explorerData, setExplorerData] = useState<ExplorerData>({
     directories: [],
     files: [],
@@ -177,6 +178,7 @@ const CloudExplorer = () => {
       try {
         const data = await fetchExplorerData(currentPath);
         setExplorerData(data);
+        setInitialLoad(false); // Mark initial load as complete
       } catch (error) {
         console.error('Error fetching explorer data:', error);
       } finally {
@@ -314,6 +316,18 @@ const CloudExplorer = () => {
   };
 
   const navigateToDirectory = (dirId: string) => {
+    // Find the directory in the current explorer data
+    const directory = explorerData.directories.find((dir) => dir.id === dirId);
+    
+    if (directory) {
+      // Optimistically update breadcrumbs and current directory
+      setExplorerData((prev) => ({
+        ...prev,
+        breadcrumbs: [...prev.breadcrumbs, { id: directory.id, name: directory.name, parent: currentPath || null }],
+        current_directory: { id: directory.id, name: directory.name, parent: currentPath || null },
+      }));
+    }
+
     const params = new URLSearchParams();
     if (dirId) params.set('dir', dirId);
     router.push(`/cloud?${params.toString()}`);
@@ -323,6 +337,24 @@ const CloudExplorer = () => {
 
   const navigateToBreadcrumb = (breadcrumb: BreadcrumbItem) => {
     const dirId = breadcrumb.id;
+    
+    // Optimistically update breadcrumbs by slicing up to the clicked breadcrumb
+    const breadcrumbIndex = explorerData.breadcrumbs.findIndex((b) => b.id === breadcrumb.id);
+    if (breadcrumbIndex !== -1) {
+      setExplorerData((prev) => ({
+        ...prev,
+        breadcrumbs: prev.breadcrumbs.slice(0, breadcrumbIndex + 1),
+        current_directory: breadcrumb,
+      }));
+    } else if (!dirId) {
+      // Navigating to home
+      setExplorerData((prev) => ({
+        ...prev,
+        breadcrumbs: [],
+        current_directory: null,
+      }));
+    }
+
     const params = new URLSearchParams();
     if (dirId) params.set('dir', dirId);
     router.push(`/cloud?${params.toString()}`);
@@ -492,7 +524,7 @@ const CloudExplorer = () => {
       {/* Header Section */}
       <div className='rounded-xl px-6 pt-6'>
         <div className='mb-6 flex justify-between items-center'>
-          {loading ? (
+          {initialLoad ? (
             <div className='animate-pulse'>
               <div className='h-7 bg-neutral-200 dark:bg-neutral-700 rounded w-64 mb-2'></div>
               <div className='h-4 bg-neutral-200 dark:bg-neutral-700 rounded w-40'></div>
@@ -510,7 +542,7 @@ const CloudExplorer = () => {
           )}
 
           {/* Button area: Upload or Management, with framer-motion animation */}
-          {!loading && (explorerData.directories.length > 0 || explorerData.files.length > 0) && (
+          {!initialLoad && (explorerData.directories.length > 0 || explorerData.files.length > 0) && (
             <motion.div className='flex items-center gap-3 min-w-[120px]' initial={false}>
               <motion.div style={{ position: 'relative', minWidth: 120 }}>
                 <motion.div
@@ -570,7 +602,7 @@ const CloudExplorer = () => {
         </div>
 
         <div className='flex items-center mb-0 shadow-sm backdrop-blur-sm rounded-xl px-4 min-h-[48px] overflow-hidden border border-neutral-100 dark:border-neutral-700'>
-          {loading ? (
+          {initialLoad ? (
             <div className='flex items-center space-x-2 w-full py-1'>
               <div className='flex items-center py-1.5 px-3 rounded-lg'>
                 <div className='h-5 bg-neutral-200 dark:bg-neutral-700 rounded w-14'></div>
@@ -624,7 +656,9 @@ const CloudExplorer = () => {
 
       <div className='grow'>
         {loading ? (
-          <ItemSkeleton />
+          <div className='mx-6 min-h-[calc(100dvh-16rem)] rounded-xl'>
+            <ItemSkeleton />
+          </div>
         ) : (
           <EmptySpaceContextMenu
             currentFolderId={currentPath || null}
