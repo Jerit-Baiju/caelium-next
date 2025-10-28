@@ -32,7 +32,7 @@ const Page = () => {
     const auth_code = searchParams.get('code');
     if (!auth_code) {
       // No auth code, redirect to welcome
-      router.push('/welcome');
+      window.location.href = '/welcome';
       return;
     }
 
@@ -90,29 +90,24 @@ const Page = () => {
           }
           
           setIsError(true);
-          setTimeout(() => {
-            router.push('/welcome');
-          }, 1500);
+          window.location.href = '/welcome';
           return;
         }
 
         const data = await response.json();
         console.log("Authentication successful, logging in user");
         
-        // Store tokens first before calling loginUser
-        localStorage.setItem('authTokens', JSON.stringify(data));
-        
         // Mark as success to prevent re-execution
         setIsSuccess(true);
         
-        // Call loginUser and navigate manually to ensure proper redirection
+        // Call loginUser which will set tokens and auth state
         await loginUser(data);
         
-        // Force navigation to home after a small delay
-        setTimeout(() => {
-          router.push('/');
-          router.refresh();
-        }, 1000);
+        console.log("Login successful, redirecting to home...");
+        
+        // Use window.location.href for a hard redirect to ensure clean navigation
+        // This is more reliable than router.push() for OAuth callbacks
+        window.location.href = '/';
         
       } catch (error) {
         console.error('Error fetching tokens:', error);
@@ -124,9 +119,7 @@ const Page = () => {
         });
         
         setIsError(true);
-        setTimeout(() => {
-          router.push('/welcome');
-        }, 1500);
+        window.location.href = '/welcome';
       } finally {
         setIsProcessing(false);
       }

@@ -24,10 +24,10 @@ const Media = ({ src, type, ...props }: AuthMediaProps) => {
     const accessToken = authTokens.access;
 
     const myHeaders = new Headers();
-    myHeaders.append("Authorization", `Bearer ${accessToken}`);
+    myHeaders.append('Authorization', `Bearer ${accessToken}`);
 
     const requestOptions: RequestInit = {
-      method: "GET",
+      method: 'GET',
       headers: myHeaders,
     };
 
@@ -50,15 +50,29 @@ const Media = ({ src, type, ...props }: AuthMediaProps) => {
     let isMounted = true;
     let currentUrl: string | null = null;
 
+    // Check if URL is from the API host - if not, use directly without authentication
+    const apiHost = process.env.NEXT_PUBLIC_API_HOST || '';
+    const needsAuth = apiHost && src.includes(apiHost);
+
     async function fetchAndSet() {
       try {
         setLoading(true);
         setError(null);
-        const url = await loadMedia(src);
-        currentUrl = url;
-        if (isMounted) {
-          setBlobUrl(url);
-          setLoading(false);
+
+        if (needsAuth) {
+          // Use authenticated fetch for API host URLs
+          const url = await loadMedia(src);
+          currentUrl = url;
+          if (isMounted) {
+            setBlobUrl(url);
+            setLoading(false);
+          }
+        } else {
+          // Use external URL directly without authentication
+          if (isMounted) {
+            setBlobUrl(src);
+            setLoading(false);
+          }
         }
       } catch (err) {
         console.error('Media loading error:', err);
