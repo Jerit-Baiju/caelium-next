@@ -15,6 +15,7 @@ class ServerManager {
   private lastFetchTime: number = 0;
   private fetchInterval: number = 10 * 60 * 1000; // 10 minutes in milliseconds
   private isFetching: boolean = false;
+  private fetchPromise: Promise<Server[]> | null = null;
   private serverListUrl: string = `${process.env.NEXT_PUBLIC_API_HOST}/api/core/servers/`;
 
   /**
@@ -42,17 +43,29 @@ class ServerManager {
     const now = Date.now();
     const shouldRefetch = now - this.lastFetchTime > this.fetchInterval;
 
+    // If a fetch is already in progress, wait for it
+    if (this.isFetching && this.fetchPromise) {
+      await this.fetchPromise;
+      return this.servers;
+    }
+
     if ((shouldRefetch || this.servers.length === 0) && !this.isFetching) {
       this.isFetching = true;
-      try {
-        const freshServers = await this.fetchServers();
-        if (freshServers.length > 0) {
-          this.servers = freshServers;
-          this.lastFetchTime = now;
+      this.fetchPromise = (async () => {
+        try {
+          const freshServers = await this.fetchServers();
+          if (freshServers.length > 0) {
+            this.servers = freshServers;
+            this.lastFetchTime = now;
+          }
+          return this.servers;
+        } finally {
+          this.isFetching = false;
+          this.fetchPromise = null;
         }
-      } finally {
-        this.isFetching = false;
-      }
+      })();
+      
+      await this.fetchPromise;
     }
 
     return this.servers;

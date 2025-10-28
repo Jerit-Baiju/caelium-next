@@ -102,6 +102,21 @@ const useCloud = () => {
     return 'file';
   };
 
+  const createFolder = async (name: string, parentId: string | null = null) => {
+    try {
+      const payload: { name: string; parent?: string } = { name };
+      if (parentId) {
+        payload.parent = parentId;
+      }
+
+      const response = await api.post('/api/cloud/directory/create/', payload);
+      return response.data;
+    } catch (error) {
+      console.error('Error creating folder:', error);
+      throw error;
+    }
+  };
+
   
 
   return {
@@ -110,6 +125,7 @@ const useCloud = () => {
     fetchImageUrls,
     uploadFiles,
     getFileThumbnailType,
+    createFolder,
   };
 };
 

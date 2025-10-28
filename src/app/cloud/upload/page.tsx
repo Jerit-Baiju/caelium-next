@@ -2,7 +2,7 @@
 import useAxios from '@/hooks/useAxios';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useRef, useState } from 'react';
 import { FiAlertCircle, FiArrowLeft, FiCheck, FiFile, FiGrid, FiList, FiLock, FiUnlock, FiUpload, FiX } from 'react-icons/fi';
 
@@ -30,8 +30,12 @@ const CloudUpload = () => {
   const [encryptFiles, setEncryptFiles] = useState(false); // New state for encryption toggle
   const fileInputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [viewMode, setViewMode] = useState<'list' | 'grid'>('grid');
   const api = useAxios();
+  
+  // Get the target directory from query parameters
+  const targetDirectory = searchParams?.get('dir') || null;
 
   // Animation variants
   const containerVariants = {
@@ -204,9 +208,11 @@ const CloudUpload = () => {
     // Show summary
     if (failedCount === 0) {
       setErrorMessage(`Successfully uploaded ${uploadedCount} file${uploadedCount !== 1 ? 's' : ''}`);
-      // Wait a moment before redirecting
+      // Wait a moment before redirecting back to the folder
       setTimeout(() => {
-        router.push('/cloud');
+        const params = new URLSearchParams();
+        if (targetDirectory) params.set('dir', targetDirectory);
+        router.push(`/cloud?${params.toString()}`);
       }, 2000);
     } else {
       setErrorMessage(
@@ -220,6 +226,9 @@ const CloudUpload = () => {
     const formData = new FormData();
     formData.append('file', file);
     formData.append('encrypt', encryptFiles.toString());
+    if (targetDirectory) {
+      formData.append('directory', targetDirectory);
+    }
 
     await api.post('/api/cloud/upload/', formData, {
       headers: {
@@ -246,12 +255,18 @@ const CloudUpload = () => {
     const totalChunks = Math.ceil(file.size / CHUNK_SIZE);
 
     // Step 1: Initiate chunked upload
-    const initiateResponse = await api.post('/api/cloud/upload/initiate/', {
+    const initiatePayload: any = {
       filename: file.name,
       file_size: file.size,
       total_chunks: totalChunks,
       encrypt: encryptFiles,
-    });
+    };
+    
+    if (targetDirectory) {
+      initiatePayload.directory = targetDirectory;
+    }
+    
+    const initiateResponse = await api.post('/api/cloud/upload/initiate/', initiatePayload);
 
     const { upload_id } = initiateResponse.data;
 
@@ -319,7 +334,10 @@ const CloudUpload = () => {
         {/* Header */}
         <motion.div className='flex justify-between items-center'>
           <div className='flex items-center gap-4'>
-            <Link href='/cloud' className='text-neutral-600 hover:text-neutral-800 dark:text-neutral-400 dark:hover:text-neutral-200'>
+            <Link 
+              href={targetDirectory ? `/cloud?dir=${encodeURIComponent(targetDirectory)}` : '/cloud'} 
+              className='text-neutral-600 hover:text-neutral-800 dark:text-neutral-400 dark:hover:text-neutral-200'
+            >
               <FiArrowLeft size={20} />
             </Link>
             <div>

@@ -32,7 +32,7 @@ import {
 const CloudExplorer = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { formatFileSize, fetchExplorerData, fetchImageUrls, getFileThumbnailType } = useCloud();
+  const { formatFileSize, fetchExplorerData, fetchImageUrls, getFileThumbnailType, createFolder } = useCloud();
   const [loading, setLoading] = useState(true);
   const [explorerData, setExplorerData] = useState<ExplorerData>({
     directories: [],
@@ -456,17 +456,35 @@ const CloudExplorer = () => {
   // End of file download handler
 
   const handleCreateFolder = async (name: string) => {
-    // TODO: Implement API call to create folder
-    // For now, just log and refresh
-    console.log('Create folder:', name, 'in', currentPath);
-    // Simulate refresh
-    // await fetchExplorerData(currentPath)
+    try {
+      await createFolder(name, currentPath || null);
+      // Refresh the explorer data to show the new folder
+      const data = await fetchExplorerData(currentPath);
+      setExplorerData(data);
+      console.log('Folder created successfully:', name);
+    } catch (error) {
+      console.error('Failed to create folder:', error);
+      // You might want to show an error toast/notification here
+    }
   };
 
   const handleShareCurrentFolder = () => {
     // TODO: Implement share logic for current folder
     // For now, just log
     console.log('Share folder:', currentPath);
+  };
+
+  const handleCreateSubfolder = async (parentId: string, name: string) => {
+    try {
+      await createFolder(name, parentId);
+      // Refresh the explorer data to show the new subfolder
+      const data = await fetchExplorerData(currentPath);
+      setExplorerData(data);
+      console.log('Subfolder created successfully:', name, 'in', parentId);
+    } catch (error) {
+      console.error('Failed to create subfolder:', error);
+      // You might want to show an error toast/notification here
+    }
   };
 
   return (
@@ -534,7 +552,7 @@ const CloudExplorer = () => {
                       </motion.button>
                     </div>
                   ) : (
-                    <Link href='/cloud/upload'>
+                    <Link href={currentPath ? `/cloud/upload?dir=${encodeURIComponent(currentPath)}` : '/cloud/upload'}>
                       <motion.button
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
@@ -607,8 +625,6 @@ const CloudExplorer = () => {
       <div className='grow'>
         {loading ? (
           <ItemSkeleton />
-        ) : explorerData.directories.length === 0 && explorerData.files.length === 0 ? (
-          <CloudEmptyState />
         ) : (
           <EmptySpaceContextMenu
             currentFolderId={currentPath || null}
@@ -616,14 +632,17 @@ const CloudExplorer = () => {
             onShareFolder={handleShareCurrentFolder}
           >
             <div className='mx-6 min-h-[calc(100dvh-16rem)] rounded-xl'>
-              <div
-                ref={gridRef}
-                className='grid p-8 grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-5 gap-6 relative select-none'
-                style={{ userSelect: isSelecting ? 'none' : undefined }}
-                onMouseDown={handleMouseDown}
-                onMouseMove={isSelecting ? handleMouseMove : undefined}
-                onMouseUp={isSelecting ? handleMouseUp : undefined}
-              >
+              {explorerData.directories.length === 0 && explorerData.files.length === 0 ? (
+                <CloudEmptyState currentPath={currentPath} />
+              ) : (
+                <div
+                  ref={gridRef}
+                  className='grid p-8 grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-5 gap-6 relative select-none'
+                  style={{ userSelect: isSelecting ? 'none' : undefined }}
+                  onMouseDown={handleMouseDown}
+                  onMouseMove={isSelecting ? handleMouseMove : undefined}
+                  onMouseUp={isSelecting ? handleMouseUp : undefined}
+                >
                 {/* Selection rectangle overlay */}
                 {isSelecting && selectionBox && (
                   <div
@@ -671,10 +690,7 @@ const CloudExplorer = () => {
                       // TODO: Implement folder copy logic
                       console.log('Copy folder', id);
                     }}
-                    onCreateSubfolder={(parentId, name) => {
-                      // TODO: Implement create subfolder logic
-                      console.log('Create subfolder', name, 'in', parentId);
-                    }}
+                    onCreateSubfolder={handleCreateSubfolder}
                   >
                     <div
                       ref={(el) => {
@@ -773,7 +789,8 @@ const CloudExplorer = () => {
                     </div>
                   </FileContextMenu>
                 ))}
-              </div>
+                </div>
+              )}
             </div>
           </EmptySpaceContextMenu>
         )}
