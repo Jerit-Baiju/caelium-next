@@ -20,6 +20,15 @@ interface UploadStatus {
   uploaded: boolean;
 }
 
+// Payload type used to initiate a chunked upload
+interface InitiatePayload {
+  filename: string;
+  file_size: number;
+  total_chunks: number;
+  encrypt: boolean;
+  directory?: string | null;
+}
+
 const CloudUpload = () => {
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [displayedFiles, setDisplayedFiles] = useState<File[]>([]);
@@ -255,7 +264,7 @@ const CloudUpload = () => {
     const totalChunks = Math.ceil(file.size / CHUNK_SIZE);
 
     // Step 1: Initiate chunked upload
-    const initiatePayload: any = {
+    const initiatePayload: InitiatePayload = {
       filename: file.name,
       file_size: file.size,
       total_chunks: totalChunks,
