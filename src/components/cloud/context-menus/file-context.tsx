@@ -20,11 +20,21 @@ interface FileContextMenuProps {
     mime_type?: string;
     parent?: string | null;
   };
+  onRename?: (id: string, newName: string) => void;
+  onDelete?: (id: string) => void;
+  onShare?: (id: string) => void;
+  onMove?: (id: string) => void;
+  onCopy?: (id: string) => void;
 }
 
 const FileContextMenu: React.FC<FileContextMenuProps> = ({
   children,
   file,
+  onRename,
+  onDelete,
+  onShare,
+  onMove,
+  onCopy,
 }) => {
 
   const [isRenameDialogOpen, setIsRenameDialogOpen] = useState(false);
@@ -54,25 +64,8 @@ const FileContextMenu: React.FC<FileContextMenuProps> = ({
       return;
     }
 
-    try {
-      console.log('Renaming file', file.id, 'to', newFileName);
-      // Simulate API call success
-      console.log({
-        title: "File renamed",
-        description: `Successfully renamed to "${newFileName}"`,
-      });
-      // Simulate refresh
-      console.log('Refreshing directory contents');
-    } catch (error) {
-      console.error('Error renaming file:', error);
-      console.log({
-        title: "Rename failed",
-        description: "An error occurred while renaming the file",
-        variant: "destructive",
-      });
-    } finally {
-      setIsRenameDialogOpen(false);
-    }
+    onRename?.(file.id, newFileName);
+    setIsRenameDialogOpen(false);
   };
 
   const handleShare = async () => {
@@ -82,7 +75,7 @@ const FileContextMenu: React.FC<FileContextMenuProps> = ({
       // Mock share URL
       const mockShareUrl = `https://example.com/shared/${file.id}`;
       console.log('Share URL:', mockShareUrl);
-      
+
       // Simulate copying to clipboard
       console.log({
         title: "Link copied to clipboard",
@@ -158,7 +151,7 @@ const FileContextMenu: React.FC<FileContextMenuProps> = ({
             <span>Download</span>
             <ContextMenuShortcut>⌘D</ContextMenuShortcut>
           </ContextMenuItem>
-          
+
           <ContextMenuItem
             onClick={() => setIsRenameDialogOpen(true)}
             className="flex items-center cursor-pointer"
@@ -167,7 +160,7 @@ const FileContextMenu: React.FC<FileContextMenuProps> = ({
             <span>Rename</span>
             <ContextMenuShortcut>⌘R</ContextMenuShortcut>
           </ContextMenuItem>
-          
+
           <ContextMenuItem
             onClick={handleShare}
             className="flex items-center cursor-pointer"
@@ -176,9 +169,9 @@ const FileContextMenu: React.FC<FileContextMenuProps> = ({
             <span>Share</span>
             <ContextMenuShortcut>⌘S</ContextMenuShortcut>
           </ContextMenuItem>
-          
+
           <ContextMenuSeparator />
-          
+
           <ContextMenuItem
             onClick={handleMove}
             className="flex items-center cursor-pointer"
@@ -186,7 +179,7 @@ const FileContextMenu: React.FC<FileContextMenuProps> = ({
             <FiMove className="mr-2 h-4 w-4" />
             <span>Move</span>
           </ContextMenuItem>
-          
+
           <ContextMenuItem
             onClick={handleCopy}
             className="flex items-center cursor-pointer"
@@ -195,7 +188,7 @@ const FileContextMenu: React.FC<FileContextMenuProps> = ({
             <span>Copy</span>
             <ContextMenuShortcut>⌘C</ContextMenuShortcut>
           </ContextMenuItem>
-          
+
           <ContextMenuItem
             onClick={handleViewDetails}
             className="flex items-center cursor-pointer"
@@ -204,9 +197,9 @@ const FileContextMenu: React.FC<FileContextMenuProps> = ({
             <span>Details</span>
             <ContextMenuShortcut>⌘I</ContextMenuShortcut>
           </ContextMenuItem>
-          
+
           <ContextMenuSeparator />
-          
+
           <ContextMenuItem
             onClick={handleDelete}
             className="flex items-center cursor-pointer text-red-600 dark:text-red-400"

@@ -32,7 +32,7 @@ import {
 const CloudExplorer = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { formatFileSize, fetchExplorerData, fetchImageUrls, getFileThumbnailType, createFolder } = useCloud();
+  const { formatFileSize, fetchExplorerData, fetchImageUrls, getFileThumbnailType, createFolder, renameDirectory, renameFile, moveDirectory, moveFile } = useCloud();
   const [loading, setLoading] = useState(true);
   const [initialLoad, setInitialLoad] = useState(true);
   const [explorerData, setExplorerData] = useState<ExplorerData>({
@@ -64,6 +64,14 @@ const CloudExplorer = () => {
 
   // Drag and drop upload states
   const [isDragging, setIsDragging] = useState(false);
+  // ID of the folder/file we're dragging over as a potential move target
+  const [dragOverTargetId, setDragOverTargetId] = useState<string | null>(null);
+  // Info about the item currently being dragged so we can show badges/labels
+  const [draggingItem, setDraggingItem] = useState<{
+    id: string;
+    type: 'file' | 'folder';
+    name?: string;
+  } | null>(null);
 
   // Marquee selection states
   const [selectionBox, setSelectionBox] = useState<null | { x: number; y: number; w: number; h: number }>(null);
@@ -318,7 +326,7 @@ const CloudExplorer = () => {
   const navigateToDirectory = (dirId: string) => {
     // Find the directory in the current explorer data
     const directory = explorerData.directories.find((dir) => dir.id === dirId);
-    
+
     if (directory) {
       // Optimistically update breadcrumbs and current directory
       setExplorerData((prev) => ({
@@ -337,7 +345,7 @@ const CloudExplorer = () => {
 
   const navigateToBreadcrumb = (breadcrumb: BreadcrumbItem) => {
     const dirId = breadcrumb.id;
-    
+
     // Optimistically update breadcrumbs by slicing up to the clicked breadcrumb
     const breadcrumbIndex = explorerData.breadcrumbs.findIndex((b) => b.id === breadcrumb.id);
     if (breadcrumbIndex !== -1) {
@@ -506,6 +514,40 @@ const CloudExplorer = () => {
     console.log('Share folder:', currentPath);
   };
 
+  const handleRenameFolder = async (id: string, newName: string) => {
+    try {
+      await renameDirectory(id, newName);
+      const data = await fetchExplorerData(currentPath);
+      setExplorerData(data);
+    } catch (error) {
+      console.error('Failed to rename folder:', error);
+    }
+  };
+
+  const handleRenameFile = async (id: string, newName: string) => {
+    try {
+      await renameFile(id, newName);
+      const data = await fetchExplorerData(currentPath);
+      setExplorerData(data);
+    } catch (error) {
+      console.error('Failed to rename file:', error);
+    }
+  };
+
+  const handleMoveItem = async (itemId: string, itemType: 'file' | 'folder', targetFolderId: string | null) => {
+    try {
+      if (itemType === 'folder') {
+        await moveDirectory(itemId, targetFolderId);
+      } else {
+        await moveFile(itemId, targetFolderId);
+      }
+      const data = await fetchExplorerData(currentPath);
+      setExplorerData(data);
+    } catch (error) {
+      console.error('Failed to move item:', error);
+    }
+  };
+
   const handleCreateSubfolder = async (parentId: string, name: string) => {
     try {
       await createFolder(name, parentId);
@@ -517,6 +559,54 @@ const CloudExplorer = () => {
       console.error('Failed to create subfolder:', error);
       // You might want to show an error toast/notification here
     }
+  };
+
+  const handleDragStart = (
+    e: React.DragEvent,
+    id: string,
+    type: 'file' | 'folder',
+    name?: string,
+  ) => {
+    e.dataTransfer.setData('application/json', JSON.stringify({ id, type }));
+    e.dataTransfer.effectAllowed = 'move';
+    setIsDragging(true);
+    setDraggingItem({ id, type, name });
+  };
+
+  const handleDragEnd = () => {
+    setIsDragging(false);
+    setDraggingItem(null);
+    setDragOverTargetId(null);
+  };
+
+  const handleDragOverOnItem = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (e.dataTransfer.types.includes('application/json')) {
+      e.dataTransfer.dropEffect = 'move';
+    }
+  };
+
+  const handleDropOnFolder = async (e: React.DragEvent, targetFolderId: string) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+
+    try {
+      const data = e.dataTransfer.getData('application/json');
+      if (!data) return;
+
+      const { id, type } = JSON.parse(data);
+      if (id !== targetFolderId) {
+        console.log(`Moving ${type} ${id} to folder ${targetFolderId}`);
+        await handleMoveItem(id, type, targetFolderId);
+      }
+    } catch (err) {
+      console.error("Drop failed", err);
+    }
+    // clear hover/dragging state after drop
+    setDragOverTargetId(null);
+    setDraggingItem(null);
   };
 
   return (
@@ -559,7 +649,7 @@ const CloudExplorer = () => {
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
                         className='flex items-center gap-2 border-white border-2 text-white px-4 py-2 rounded-lg font-medium transition-all duration-200'
-                        // onClick={handleDeleteSelected} // implement as needed
+                      // onClick={handleDeleteSelected} // implement as needed
                       >
                         <FiX size={18} />
                         <span>Delete</span>
@@ -568,7 +658,7 @@ const CloudExplorer = () => {
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
                         className='flex items-center gap-2 border-white border-2 text-white px-4 py-2 rounded-lg font-medium transition-all duration-200'
-                        // onClick={handleMoveSelected} // implement as needed
+                      // onClick={handleMoveSelected} // implement as needed
                       >
                         <FiFolder size={18} />
                         <span>Move</span>
@@ -677,152 +767,229 @@ const CloudExplorer = () => {
                   onMouseMove={isSelecting ? handleMouseMove : undefined}
                   onMouseUp={isSelecting ? handleMouseUp : undefined}
                 >
-                {/* Selection rectangle overlay */}
-                {isSelecting && selectionBox && (
-                  <div
-                    style={{
-                      position: 'absolute',
-                      left: selectionBox.x,
-                      top: selectionBox.y,
-                      width: selectionBox.w,
-                      height: selectionBox.h,
-                      background: 'rgba(82,82,91,0.15)',
-                      border: document.documentElement.classList.contains('dark') 
-                        ? '2px solid #ffffff' 
-                        : '2px solid #525252',
-                      zIndex: 10,
-                      pointerEvents: 'none',
-                    }}
-                  />
-                )}
-                {/* Directories */}
-                {explorerData.directories.map((directory) => (
-                  <FolderContextMenu
-                    key={directory.id}
-                    folder={{
-                      id: directory.id,
-                      name: directory.name,
-                      parent: currentPath || null,
-                    }}
-                    onRename={(id, newName) => {
-                      // TODO: Implement folder rename logic
-                      console.log('Rename folder', id, 'to', newName);
-                    }}
-                    onDelete={(id) => {
-                      // TODO: Implement folder delete logic
-                      console.log('Delete folder', id);
-                    }}
-                    onShare={(id) => {
-                      // TODO: Implement folder share logic
-                      console.log('Share folder', id);
-                    }}
-                    onMove={(id) => {
-                      // TODO: Implement folder move logic
-                      console.log('Move folder', id);
-                    }}
-                    onCopy={(id) => {
-                      // TODO: Implement folder copy logic
-                      console.log('Copy folder', id);
-                    }}
-                    onCreateSubfolder={handleCreateSubfolder}
-                  >
+                  {/* Selection rectangle overlay */}
+                  {isSelecting && selectionBox && (
                     <div
-                      ref={(el) => {
-                        itemRefs.current[directory.id] = el;
+                      style={{
+                        position: 'absolute',
+                        left: selectionBox.x,
+                        top: selectionBox.y,
+                        width: selectionBox.w,
+                        height: selectionBox.h,
+                        background: 'rgba(82,82,91,0.15)',
+                        border: document.documentElement.classList.contains('dark')
+                          ? '2px solid #ffffff'
+                          : '2px solid #525252',
+                        zIndex: 10,
+                        pointerEvents: 'none',
                       }}
-                      className={`group relative bg-neutral-50 dark:bg-neutral-900 rounded-lg transition-all duration-200 overflow-hidden border border-neutral-300 dark:border-neutral-800 hover:shadow-md ${selectedIds.has(directory.id) ? 'ring-2 ring-neutral-600 dark:ring-white bg-blue-50 dark:bg-blue-950' : ''}`}
-                      onClick={(e) => {
-                        if (e.metaKey || e.ctrlKey) {
-                          // When meta/ctrl key is pressed, toggle selection without navigation
-                          setSelectedIds((prev) => {
-                            const newSet = new Set(prev);
-                            if (newSet.has(directory.id)) {
-                              newSet.delete(directory.id);
-                            } else {
-                              newSet.add(directory.id);
-                            }
-                            return newSet;
-                          });
-                        } else {
-                          // Regular click should just navigate without setting selection
-                          // Selection will be cleared by the navigateToDirectory function
-                          navigateToDirectory(directory.id);
-                        }
-                        e.stopPropagation();
+                    />
+                  )}
+                  {/* Directories */}
+                  {explorerData.directories.map((directory) => (
+                    <FolderContextMenu
+                      key={directory.id}
+                      folder={{
+                        id: directory.id,
+                        name: directory.name,
+                        parent: currentPath || null,
+                      }}
+                      onRename={handleRenameFolder}
+                      onDelete={(id) => {
+                        // TODO: Implement folder delete logic
+                        console.log('Delete folder', id);
+                      }}
+                      onShare={(id) => {
+                        // TODO: Implement folder share logic
+                        console.log('Share folder', id);
+                      }}
+                      onMove={(id) => {
+                        // We will rely on drag and drop mainly, but for context menu move we need a dialog.
+                        // For now we can just log or implement a simple prompt if needed.
+                        // Or we can leave it as TODO if we only focus on Drag & Drop.
+                        // But since we have handleMoveItem, we could use a dialog to select destination.
+                        // Let's stick to the plan: "Implement File/Folder Drag-and-Drop Move Logic".
+                        // Context Menu Move would require a directory picker dialog which is out of scope for now.
+                        console.log('Move folder', id);
+                      }}
+                      onCopy={(id) => {
+                        // TODO: Implement folder copy logic
+                        console.log('Copy folder', id);
+                      }}
+                      onCreateSubfolder={handleCreateSubfolder}
+                    >
+                      <div
+                        ref={(el) => {
+                          itemRefs.current[directory.id] = el;
+                        }}
+                        className={`group relative bg-neutral-50 dark:bg-neutral-900 rounded-lg transition-all duration-200 overflow-hidden border border-neutral-300 dark:border-neutral-800 hover:shadow-md ${selectedIds.has(directory.id) ? 'ring-2 ring-neutral-600 dark:ring-white bg-blue-50 dark:bg-blue-950' : ''} ${dragOverTargetId === directory.id ? 'ring-4 ring-green-400 dark:ring-green-300 bg-green-50 dark:bg-green-950' : ''}`}
+                        draggable
+                        onDragStart={(e) => handleDragStart(e, directory.id, 'folder', directory.name)}
+                        onDragEnd={handleDragEnd}
+                        onDragEnter={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          // mark this folder as the potential drop target
+                          setDragOverTargetId(directory.id);
+                        }}
+                        onDragLeave={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          // only clear if we're leaving this element
+                          setDragOverTargetId((prev) => (prev === directory.id ? null : prev));
+                        }}
+                        onDragOver={handleDragOverOnItem}
+                        onDrop={(e) => {
+                          handleDropOnFolder(e, directory.id);
+                        }}
+                        onClick={(e) => {
+                          if (e.metaKey || e.ctrlKey) {
+                            // When meta/ctrl key is pressed, toggle selection without navigation
+                            setSelectedIds((prev) => {
+                              const newSet = new Set(prev);
+                              if (newSet.has(directory.id)) {
+                                newSet.delete(directory.id);
+                              } else {
+                                newSet.add(directory.id);
+                              }
+                              return newSet;
+                            });
+                          } else {
+                            // Regular click should just navigate without setting selection
+                            // Selection will be cleared by the navigateToDirectory function
+                            navigateToDirectory(directory.id);
+                          }
+                          e.stopPropagation();
+                        }}
+                      >
+                        <div className='cursor-pointer'>
+                          <div className='aspect-square bg-neutral-200 dark:bg-neutral-950 flex justify-center items-center overflow-hidden'>
+                            <div className='flex justify-center items-center w-full h-full text-blue-500 dark:text-blue-400'>
+                              <FiFolder size={64} />
+                            </div>
+                          </div>
+                          <div className='p-3'>
+                            <p className='font-medium text-sm whitespace-nowrap overflow-hidden text-ellipsis text-neutral-800 dark:text-neutral-300 mb-1'>
+                              {directory.name}
+                            </p>
+                            <p className='text-xs text-neutral-500 dark:text-neutral-500'>Folder</p>
+                          </div>
+                        </div>
+                        {/* Drop target overlay */}
+                        {dragOverTargetId === directory.id && draggingItem && draggingItem.id !== directory.id && (
+                          <div className='absolute inset-0 flex items-center justify-center pointer-events-none z-20'>
+                            <div className='px-3 py-1 rounded-full bg-green-600 text-white text-sm font-medium shadow'>
+                              Drop here to move {draggingItem.type === 'file' ? 'file' : 'folder'} "{draggingItem.name || ''}" 
+                            </div>
+                          </div>
+                        )}
+                        {/* Moving badge on item itself if it's the dragged item */}
+                        {draggingItem && draggingItem.id === directory.id && (
+                          <div className='absolute top-2 right-2 z-30'>
+                            <div className='px-2 py-0.5 rounded bg-blue-600 text-white text-xs font-medium'>Moving</div>
+                          </div>
+                        )}
+                      </div>
+                    </FolderContextMenu>
+                  ))}
+                  {/* Files */}
+                  {explorerData.files.map((file, index) => (
+                    <FileContextMenu
+                      key={file.id}
+                      file={{
+                        id: file.id,
+                        name: file.name,
+                        download_url: file.download_url,
+                        mime_type: file.mime_type,
+                        parent: currentPath || null,
+                      }}
+                      onRename={handleRenameFile}
+                      onMove={(id) => {
+                        console.log('Move file', id);
+                      }}
+                      onDelete={(id) => {
+                        console.log('Delete file', id);
                       }}
                     >
-                      <div className='cursor-pointer'>
-                        <div className='aspect-square bg-neutral-200 dark:bg-neutral-950 flex justify-center items-center overflow-hidden'>
-                          <div className='flex justify-center items-center w-full h-full text-blue-500 dark:text-blue-400'>
-                            <FiFolder size={64} />
+                      <div
+                        ref={(el) => {
+                          itemRefs.current[file.id] = el;
+                        }}
+                        className={`group relative bg-neutral-50 dark:bg-neutral-900 rounded-lg transition-all duration-200 overflow-hidden border border-neutral-300 dark:border-neutral-800 hover:shadow-md ${selectedIds.has(file.id) ? 'ring-2 ring-neutral-600 dark:ring-white bg-blue-50 dark:bg-blue-950' : ''} ${dragOverTargetId === file.id ? 'ring-4 ring-green-400 dark:ring-green-300 bg-green-50 dark:bg-green-950' : ''} ${draggingItem && draggingItem.id === file.id ? 'opacity-60' : ''}`}
+                        draggable
+                        onDragStart={(e) => handleDragStart(e, file.id, 'file', file.name)}
+                        onDragEnd={handleDragEnd}
+                        onDragEnter={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          setDragOverTargetId(file.id);
+                        }}
+                        onDragLeave={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          setDragOverTargetId((prev) => (prev === file.id ? null : prev));
+                        }}
+                        onDragOver={handleDragOverOnItem}
+                        onDrop={(e) => {
+                          // Treat dropping onto a file as dropping into its parent folder (if that makes sense)
+                          // For now, just clear hover state and attempt a no-op move if appropriate.
+                          e.preventDefault();
+                          e.stopPropagation();
+                          setDragOverTargetId(null);
+                        }}
+                        onClick={(e) => {
+                          if (e.metaKey || e.ctrlKey) {
+                            setSelectedIds((prev) => {
+                              const newSet = new Set(prev);
+                              if (newSet.has(file.id)) {
+                                newSet.delete(file.id);
+                              } else {
+                                newSet.add(file.id);
+                              }
+                              return newSet;
+                            });
+                          } else {
+                            setSelectedIds(new Set([file.id]));
+                            openFilePreview(file, index);
+                          }
+                          e.stopPropagation();
+                        }}
+                      >
+                        <div className='cursor-pointer'>
+                          <div className='aspect-square bg-neutral-200 dark:bg-neutral-950 flex justify-center items-center overflow-hidden'>
+                            {renderThumbnail(file)}
+                          </div>
+                          <div className='p-3'>
+                            <div className='flex items-center mb-1'>
+                              <p className='font-medium text-sm whitespace-nowrap overflow-hidden text-ellipsis text-neutral-800 dark:text-neutral-300 flex-grow'>
+                                {file.name}
+                              </p>
+                            </div>
+                            <div className='flex justify-between items-center'>
+                              <p className='text-xs text-neutral-500 dark:text-neutral-500'>{formatFileSize(file.size)}</p>
+                              <p className='text-xs text-neutral-500 dark:text-neutral-500'>
+                                {new Date(file.created_at).toLocaleDateString()}
+                              </p>
+                            </div>
                           </div>
                         </div>
-                        <div className='p-3'>
-                          <p className='font-medium text-sm whitespace-nowrap overflow-hidden text-ellipsis text-neutral-800 dark:text-neutral-300 mb-1'>
-                            {directory.name}
-                          </p>
-                          <p className='text-xs text-neutral-500 dark:text-neutral-500'>Folder</p>
-                        </div>
+                        {/* Drop target overlay for files */}
+                        {dragOverTargetId === file.id && draggingItem && draggingItem.id !== file.id && (
+                          <div className='absolute inset-0 flex items-center justify-center pointer-events-none z-20'>
+                            <div className='px-3 py-1 rounded-full bg-green-600 text-white text-sm font-medium shadow'>
+                              Drop here to move {draggingItem.type === 'file' ? 'file' : 'folder'} "{draggingItem.name || ''}"
+                            </div>
+                          </div>
+                        )}
+                        {/* Moving badge for dragged file */}
+                        {draggingItem && draggingItem.id === file.id && (
+                          <div className='absolute top-2 right-2 z-30'>
+                            <div className='px-2 py-0.5 rounded bg-blue-600 text-white text-xs font-medium'>Moving</div>
+                          </div>
+                        )}
                       </div>
-                    </div>
-                  </FolderContextMenu>
-                ))}
-                {/* Files */}
-                {explorerData.files.map((file, index) => (
-                  <FileContextMenu
-                    key={file.id}
-                    file={{
-                      id: file.id,
-                      name: file.name,
-                      download_url: file.download_url,
-                      mime_type: file.mime_type,
-                      parent: currentPath || null,
-                    }}
-                  >
-                    <div
-                      ref={(el) => {
-                        itemRefs.current[file.id] = el;
-                      }}
-                      className={`group relative bg-neutral-50 dark:bg-neutral-900 rounded-lg transition-all duration-200 overflow-hidden border border-neutral-300 dark:border-neutral-800 hover:shadow-md ${selectedIds.has(file.id) ? 'ring-2 ring-neutral-600 dark:ring-white bg-blue-50 dark:bg-blue-950' : ''}`}
-                      onClick={(e) => {
-                        if (e.metaKey || e.ctrlKey) {
-                          setSelectedIds((prev) => {
-                            const newSet = new Set(prev);
-                            if (newSet.has(file.id)) {
-                              newSet.delete(file.id);
-                            } else {
-                              newSet.add(file.id);
-                            }
-                            return newSet;
-                          });
-                        } else {
-                          setSelectedIds(new Set([file.id]));
-                          openFilePreview(file, index);
-                        }
-                        e.stopPropagation();
-                      }}
-                    >
-                      <div className='cursor-pointer'>
-                        <div className='aspect-square bg-neutral-200 dark:bg-neutral-950 flex justify-center items-center overflow-hidden'>
-                          {renderThumbnail(file)}
-                        </div>
-                        <div className='p-3'>
-                          <div className='flex items-center mb-1'>
-                            <p className='font-medium text-sm whitespace-nowrap overflow-hidden text-ellipsis text-neutral-800 dark:text-neutral-300 flex-grow'>
-                              {file.name}
-                            </p>
-                          </div>
-                          <div className='flex justify-between items-center'>
-                            <p className='text-xs text-neutral-500 dark:text-neutral-500'>{formatFileSize(file.size)}</p>
-                            <p className='text-xs text-neutral-500 dark:text-neutral-500'>
-                              {new Date(file.created_at).toLocaleDateString()}
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </FileContextMenu>
-                ))}
+                    </FileContextMenu>
+                  ))}
                 </div>
               )}
             </div>

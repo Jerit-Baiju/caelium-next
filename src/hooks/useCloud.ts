@@ -30,16 +30,16 @@ const useCloud = () => {
 
     for (let i = 0; i < imageFiles.length; i += batchSize) {
       const batch = imageFiles.slice(i, i + batchSize);
-      
+
       // Process each image in the batch individually
       batch.forEach(async (file) => {
         try {
           const response = await api.get(file.download_url, { responseType: 'blob' });
           const objectUrl = URL.createObjectURL(response.data);
-          
+
           // Update the URLs object
           urls[file.id] = objectUrl;
-          
+
           // Call the callback immediately when an individual image is loaded
           if (onImageLoaded) {
             onImageLoaded(file.id, objectUrl);
@@ -117,7 +117,47 @@ const useCloud = () => {
     }
   };
 
-  
+  const renameDirectory = async (id: string, name: string) => {
+    try {
+      const response = await api.post(`/api/cloud/directory/${id}/rename/`, { name });
+      return response.data;
+    } catch (error) {
+      console.error('Error renaming directory:', error);
+      throw error;
+    }
+  };
+
+  const renameFile = async (id: string, name: string) => {
+    try {
+      const response = await api.post(`/api/cloud/files/${id}/rename/`, { name });
+      return response.data;
+    } catch (error) {
+      console.error('Error renaming file:', error);
+      throw error;
+    }
+  };
+
+  const moveDirectory = async (id: string, parentId: string | null) => {
+    try {
+      const response = await api.post(`/api/cloud/directory/${id}/move/`, { parent: parentId });
+      return response.data;
+    } catch (error) {
+      console.error('Error moving directory:', error);
+      throw error;
+    }
+  };
+
+  const moveFile = async (id: string, parentId: string | null) => {
+    try {
+      const response = await api.post(`/api/cloud/files/${id}/move/`, { parent: parentId });
+      return response.data;
+    } catch (error) {
+      console.error('Error moving file:', error);
+      throw error;
+    }
+  };
+
+
 
   return {
     formatFileSize,
@@ -126,6 +166,10 @@ const useCloud = () => {
     uploadFiles,
     getFileThumbnailType,
     createFolder,
+    renameDirectory,
+    renameFile,
+    moveDirectory,
+    moveFile,
   };
 };
 
