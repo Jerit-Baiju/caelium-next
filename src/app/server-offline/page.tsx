@@ -3,12 +3,12 @@
 import Loader from '@/components/layout/Loader';
 import { useNavbar } from '@/contexts/NavContext';
 import { serverManager } from '@/lib/serverManager';
-import { motion } from 'framer-motion';
+import { Variants, motion } from 'framer-motion';
 import { ServerCrash, Wifi } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
-const pulseVariants = {
+const pulseVariants: Variants = {
   animate: {
     scale: [1, 1.08, 1],
     opacity: [0.7, 1, 0.7],
