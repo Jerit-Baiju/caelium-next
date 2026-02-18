@@ -14,7 +14,6 @@ const Page = () => {
 
   const { setShowNav } = useNavbar();
   const searchParams = useSearchParams();
-  const router = useRouter();
 
   // Hide navbar and sidebar on mount, restore on unmount
   useEffect(() => {
