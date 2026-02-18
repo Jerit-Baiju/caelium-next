@@ -1,8 +1,9 @@
 import AuthContext from '@/contexts/AuthContext';
-import { serverManager } from '@/lib/serverManager';
+import { NoActiveServersError, serverManager } from '@/lib/serverManager';
 import axios, { AxiosError, InternalAxiosRequestConfig } from 'axios';
 import { jwtDecode } from 'jwt-decode';
 import { useContext } from 'react';
+import { useRouter } from 'next/navigation';
 
 interface CustomAxiosRequestConfig extends InternalAxiosRequestConfig {
   _retry?: boolean;
@@ -11,6 +12,7 @@ interface CustomAxiosRequestConfig extends InternalAxiosRequestConfig {
 
 const useAxios = () => {
   const { authTokens, logoutUser, refreshToken } = useContext(AuthContext);
+  const router = useRouter();
   
   const axiosInstance = axios.create({
     // Don't set baseURL here - we'll set it dynamically per request
@@ -18,10 +20,20 @@ const useAxios = () => {
 
   axiosInstance.interceptors.request.use(async (request: CustomAxiosRequestConfig) => {
     // Select a server dynamically for each request
-    const selectedServer = await serverManager.selectServer();
-    
+    let selectedServer;
+    try {
+      selectedServer = await serverManager.selectServer();
+    } catch (err) {
+      if (err instanceof NoActiveServersError) {
+        router.push('/server-offline');
+        return Promise.reject(err);
+      }
+      return Promise.reject(err);
+    }
+
     if (!selectedServer) {
-      return Promise.reject(new Error('No active servers available'));
+      router.push('/server-offline');
+      return Promise.reject(new NoActiveServersError());
     }
 
     // Store server ID in request config for error handling
@@ -100,7 +112,11 @@ const useAxios = () => {
         try {
           return await axiosInstance.request(originalRequest);
         } catch (retryError) {
-          console.error('[Axios] Retry failed:', retryError);
+          if (retryError instanceof NoActiveServersError) {
+            router.push('/server-offline');
+          } else {
+            console.error('[Axios] Retry failed:', retryError);
+          }
           return Promise.reject(retryError);
         }
       }

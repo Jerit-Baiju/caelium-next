@@ -1,3 +1,10 @@
+export class NoActiveServersError extends Error {
+  constructor() {
+    super('No active servers available');
+    this.name = 'NoActiveServersError';
+  }
+}
+
 interface Server {
   id: number;
   name: string;
@@ -81,8 +88,7 @@ class ServerManager {
     const activeServers = servers.filter((server) => server.active_status);
 
     if (activeServers.length === 0) {
-      console.error('No active servers available');
-      return null;
+      throw new NoActiveServersError();
     }
 
     // Calculate total weight
